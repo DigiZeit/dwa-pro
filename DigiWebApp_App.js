@@ -2470,7 +2470,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2360
+    , softwareVersion: 2361
 
 
     /**
@@ -5997,6 +5997,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	}
 	
 	, closeChildbrowser: function() {
+		alert("pause");
 		try {
 			plugins.childBrowser.close();
 		} catch(e) {
@@ -9351,7 +9352,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2360',
+            value: 'Build: 2361',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -12437,6 +12438,250 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: MediaListTemplateView
+// ==========================================================================
+
+DigiWebApp.MediaListTemplateView = M.ListItemView.design({
+
+    isSelectable: NO,
+
+    childViews: 'date order position activity latitude longitude',
+
+    events: {
+        tap: {
+			action: function(id, m_id) {
+			}
+        }
+    },
+
+	date: M.LabelView.design({
+        cssClass: 'date',
+        computedValue: {
+            valuePattern: '<%= date %>',
+            //value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
+            operation: function(v) {
+                v = v.split(',');
+                var date1 = M.Date.create(Number(v[0]));
+                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                if(date2) {
+                    // cut minutes down => 12:05:59 is going to be 12:05:00
+                    date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
+                    date2 = M.Date.create(date2.format('mm/dd/yyyy HH:MM'));
+
+                    if(date1.format('mm/dd/yyyy HH:MM') === date2.format('mm/dd/yyyy HH:MM')) { // if booking is closed in the same minute
+                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', 00:01 h';
+                    } else {
+                        var timeBetween = date1.timeBetween(date2, M.MINUTES);
+                        if(timeBetween < 1) {
+                            timeBetween = M.Math.round(timeBetween, M.CEIL);
+                        } else {
+                            timeBetween = M.Math.round(date1.timeBetween(date2, M.MINUTES), M.FLOOR);
+                        }
+                        if(timeBetween > 59) {
+                            var hours = M.Math.round(timeBetween / 60, M.FLOOR);
+                            hours = hours < 10 ? '0' + hours : hours;
+                            var minutes = timeBetween % 60;
+                            minutes = minutes < 10 ? '0' + minutes : minutes;
+                            timeBetween = hours + ':' + minutes;
+                        } else {
+                            timeBetween = '00:' + (timeBetween < 10 ? '0' : '') + timeBetween;
+                        }
+                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', ' + timeBetween + ' h';
+                    }
+
+
+                } else {
+                    return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + M.I18N.l('now') + ' (' + M.Date.create().format('HH:MM') + ')';
+                }
+
+            }
+        }
+    }),
+
+    order: M.LabelView.design({
+        cssClass: 'application',
+        computedValue: {
+            valuePattern: '<%= orderId %>',
+            operation: function(v) {
+                var order = _.select(DigiWebApp.Order.find().concat(DigiWebApp.HandOrder.find()), function(o) {
+                    return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
+                });
+                if(order && order.length > 0) {
+                    order = order[0];
+                    if (DigiWebApp.SettingsController.getSetting('debug')) {
+                    	return M.I18N.l('order') + ': ' + order.get('name') + ' (' + order.get('id') + ')';
+                    } else {
+                    	return M.I18N.l('order') + ': ' + order.get('name');
+                    }
+                } else {
+                    return M.I18N.l('order') + ': nicht definiert.';
+                }
+            }
+        }
+    }),
+
+    position: M.LabelView.design({
+        cssClass: 'position',
+        computedValue: {
+            valuePattern: '<%= positionId %>',
+            operation: function(v) {
+                if(v) {
+                    var position = _.select(DigiWebApp.Position.find(), function(p) {
+                        return v == p.get('id');
+                    });
+                    if(position && position.length > 0) {
+                        position = position[0];
+                        return M.I18N.l('position') + ': ' + position.get('name');
+                    } else {
+                        return M.I18N.l('position') + ': nicht definiert';
+                    }
+                } else {
+                    return M.I18N.l('position') + ': nicht angegeben.';
+                }
+
+            }
+        }
+    }),
+
+    activity: M.LabelView.design({
+        cssClass: 'activity',
+        computedValue: {
+            valuePattern: '<%= activityId %>',
+            operation: function(v) {
+                if(v) {
+                    var activity = _.select(DigiWebApp.Activity.find(), function(a) {
+                        return v == a.get('id');
+                    });
+                    if(activity && activity.length > 0) {
+                        activity = activity[0];
+                        return M.I18N.l('activity') + ': ' + activity.get('name');
+                    } else {
+                        return M.I18N.l('activity') + ': nicht definiert';
+                    }
+
+                } else {
+                    return M.I18N.l('activity') + ': nicht angegeben';
+                }
+            }
+        }
+    }),
+    
+    latitude: M.LabelView.design({
+        cssClass: 'location',
+        computedValue: {
+            valuePattern: '<%= latitude %>',
+            operation: function(v) {
+                if(v > 0) {
+                	var str = v;
+               		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
+                } else {
+                    //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+                	return '';
+                }
+            }
+        }
+    }),
+
+    longitude: M.LabelView.design({
+        cssClass: 'location',
+        computedValue: {
+            valuePattern: '<%= longitude %>',
+            operation: function(v) {
+                if (v > 0) { 
+                	var str = v;
+               		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
+                } else {
+                    //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+                    return '';
+                }
+            }
+        }
+    }),
+
+    remark: M.LabelView.design({
+        cssClass: 'remark',
+        computedValue: {
+            valuePattern: '<%= remark %>',
+            operation: function(v) {
+                if (v) { 
+               		return M.I18N.l('remark') + ': ' + v;
+                } else {
+                    return '';
+                }
+            }
+        }
+    })
+
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: MediaListPage
+// ==========================================================================
+
+m_require('app/views/MediaListTemplateView.js');
+
+DigiWebApp.MediaListPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+    events: {
+		pagebeforeshow: {
+            target: DigiWebApp.MediaListController,
+            action: 'init'
+        }
+    },
+
+    childViews: 'header content',
+
+    header: M.ToolbarView.design({
+        childViews: 'backButton title',
+        cssClass: 'header',
+        isFixed: YES,
+        backButton: M.ButtonView.design({
+            value: M.I18N.l('back'),
+            icon: 'arrow-l',
+            anchorLocation: M.LEFT,
+            events: {
+                tap: {
+                    target: DigiWebApp.NavigationController,
+                    action: 'backToDashboardPage'
+                }
+            }
+        }),
+        title: M.LabelView.design({
+            value: M.I18N.l('mediaList'),
+            anchorLocation: M.CENTER
+        }),
+        anchorLocation: M.TOP
+    }),
+
+    content: M.ScrollView.design({
+
+        childViews: 'list',
+
+        list: M.ListView.design({
+            contentBinding: {
+                target: DigiWebApp.MediaListController,
+                property: 'items'
+            },
+            listItemTemplateView: DigiWebApp.MediaListTemplateView
+        })
+    })
+    
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: TimeDataTemplateView
 // ==========================================================================
 
@@ -13150,250 +13395,6 @@ DigiWebApp.DemoMediaPage = M.PageView.design({
         })
     })
 
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: MediaListTemplateView
-// ==========================================================================
-
-DigiWebApp.MediaListTemplateView = M.ListItemView.design({
-
-    isSelectable: NO,
-
-    childViews: 'date order position activity latitude longitude',
-
-    events: {
-        tap: {
-			action: function(id, m_id) {
-			}
-        }
-    },
-
-	date: M.LabelView.design({
-        cssClass: 'date',
-        computedValue: {
-            valuePattern: '<%= date %>',
-            //value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
-            operation: function(v) {
-                v = v.split(',');
-                var date1 = M.Date.create(Number(v[0]));
-                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                if(date2) {
-                    // cut minutes down => 12:05:59 is going to be 12:05:00
-                    date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
-                    date2 = M.Date.create(date2.format('mm/dd/yyyy HH:MM'));
-
-                    if(date1.format('mm/dd/yyyy HH:MM') === date2.format('mm/dd/yyyy HH:MM')) { // if booking is closed in the same minute
-                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', 00:01 h';
-                    } else {
-                        var timeBetween = date1.timeBetween(date2, M.MINUTES);
-                        if(timeBetween < 1) {
-                            timeBetween = M.Math.round(timeBetween, M.CEIL);
-                        } else {
-                            timeBetween = M.Math.round(date1.timeBetween(date2, M.MINUTES), M.FLOOR);
-                        }
-                        if(timeBetween > 59) {
-                            var hours = M.Math.round(timeBetween / 60, M.FLOOR);
-                            hours = hours < 10 ? '0' + hours : hours;
-                            var minutes = timeBetween % 60;
-                            minutes = minutes < 10 ? '0' + minutes : minutes;
-                            timeBetween = hours + ':' + minutes;
-                        } else {
-                            timeBetween = '00:' + (timeBetween < 10 ? '0' : '') + timeBetween;
-                        }
-                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', ' + timeBetween + ' h';
-                    }
-
-
-                } else {
-                    return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + M.I18N.l('now') + ' (' + M.Date.create().format('HH:MM') + ')';
-                }
-
-            }
-        }
-    }),
-
-    order: M.LabelView.design({
-        cssClass: 'application',
-        computedValue: {
-            valuePattern: '<%= orderId %>',
-            operation: function(v) {
-                var order = _.select(DigiWebApp.Order.find().concat(DigiWebApp.HandOrder.find()), function(o) {
-                    return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
-                });
-                if(order && order.length > 0) {
-                    order = order[0];
-                    if (DigiWebApp.SettingsController.getSetting('debug')) {
-                    	return M.I18N.l('order') + ': ' + order.get('name') + ' (' + order.get('id') + ')';
-                    } else {
-                    	return M.I18N.l('order') + ': ' + order.get('name');
-                    }
-                } else {
-                    return M.I18N.l('order') + ': nicht definiert.';
-                }
-            }
-        }
-    }),
-
-    position: M.LabelView.design({
-        cssClass: 'position',
-        computedValue: {
-            valuePattern: '<%= positionId %>',
-            operation: function(v) {
-                if(v) {
-                    var position = _.select(DigiWebApp.Position.find(), function(p) {
-                        return v == p.get('id');
-                    });
-                    if(position && position.length > 0) {
-                        position = position[0];
-                        return M.I18N.l('position') + ': ' + position.get('name');
-                    } else {
-                        return M.I18N.l('position') + ': nicht definiert';
-                    }
-                } else {
-                    return M.I18N.l('position') + ': nicht angegeben.';
-                }
-
-            }
-        }
-    }),
-
-    activity: M.LabelView.design({
-        cssClass: 'activity',
-        computedValue: {
-            valuePattern: '<%= activityId %>',
-            operation: function(v) {
-                if(v) {
-                    var activity = _.select(DigiWebApp.Activity.find(), function(a) {
-                        return v == a.get('id');
-                    });
-                    if(activity && activity.length > 0) {
-                        activity = activity[0];
-                        return M.I18N.l('activity') + ': ' + activity.get('name');
-                    } else {
-                        return M.I18N.l('activity') + ': nicht definiert';
-                    }
-
-                } else {
-                    return M.I18N.l('activity') + ': nicht angegeben';
-                }
-            }
-        }
-    }),
-    
-    latitude: M.LabelView.design({
-        cssClass: 'location',
-        computedValue: {
-            valuePattern: '<%= latitude %>',
-            operation: function(v) {
-                if(v > 0) {
-                	var str = v;
-               		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
-                } else {
-                    //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
-                	return '';
-                }
-            }
-        }
-    }),
-
-    longitude: M.LabelView.design({
-        cssClass: 'location',
-        computedValue: {
-            valuePattern: '<%= longitude %>',
-            operation: function(v) {
-                if (v > 0) { 
-                	var str = v;
-               		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
-                } else {
-                    //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
-                    return '';
-                }
-            }
-        }
-    }),
-
-    remark: M.LabelView.design({
-        cssClass: 'remark',
-        computedValue: {
-            valuePattern: '<%= remark %>',
-            operation: function(v) {
-                if (v) { 
-               		return M.I18N.l('remark') + ': ' + v;
-                } else {
-                    return '';
-                }
-            }
-        }
-    })
-
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: MediaListPage
-// ==========================================================================
-
-m_require('app/views/MediaListTemplateView.js');
-
-DigiWebApp.MediaListPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-    events: {
-		pagebeforeshow: {
-            target: DigiWebApp.MediaListController,
-            action: 'init'
-        }
-    },
-
-    childViews: 'header content',
-
-    header: M.ToolbarView.design({
-        childViews: 'backButton title',
-        cssClass: 'header',
-        isFixed: YES,
-        backButton: M.ButtonView.design({
-            value: M.I18N.l('back'),
-            icon: 'arrow-l',
-            anchorLocation: M.LEFT,
-            events: {
-                tap: {
-                    target: DigiWebApp.NavigationController,
-                    action: 'backToDashboardPage'
-                }
-            }
-        }),
-        title: M.LabelView.design({
-            value: M.I18N.l('mediaList'),
-            anchorLocation: M.CENTER
-        }),
-        anchorLocation: M.TOP
-    }),
-
-    content: M.ScrollView.design({
-
-        childViews: 'list',
-
-        list: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.MediaListController,
-                property: 'items'
-            },
-            listItemTemplateView: DigiWebApp.MediaListTemplateView
-        })
-    })
-    
 });
 
 
