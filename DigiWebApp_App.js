@@ -2470,7 +2470,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2361
+    , softwareVersion: 2362
 
 
     /**
@@ -9352,7 +9352,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2361',
+            value: 'Build: 2362',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -12243,7 +12243,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 			    				if (typeof(plugins.childBrowser) !== "undefined") {
 			    					try { plugins.childBrowser.close(); } catch(e) { alert("Error: " + e.message); };
 			    					try { 
-			    						plugins.childBrowser.showWebPage(encodeURI(url_byAddress), { showLocationBar: true, showNavigationBar: true });
+			    						plugins.childBrowser.showWebPage(encodeURI(url_byAddress), { showLocationBar: true, showNavigationBar: true, showAddress: true });
 			    					} catch(e) { alert("Error: " + e.message); };
 			    				} else {
 			    					window.open(url_byAddress,'childBrowser','width=800,height=600,menubar=no,status=no,location=no,copyhistory=no,directories=no');
@@ -12293,7 +12293,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 			    				if (typeof(plugins.childBrowser) !== "undefined") {
 			    					try { plugins.childBrowser.close(); } catch(e) { alert("Error: " + e.message); };
 			    					try { 
-				    					plugins.childBrowser.showWebPage(encodeURI(url_byCoordinates), { showLocationBar: true, showNavigationBar: true });
+				    					plugins.childBrowser.showWebPage(encodeURI(url_byCoordinates), { showLocationBar: true, showNavigationBar: true, showAddress: true });
 			    					} catch(e) { alert("Error: " + e.message); };
 			    				} else {
 			    					window.open(url_byCoordinates,'childBrowser','width=800,height=600,menubar=no,status=no,location=no,copyhistory=no,directories=no');
