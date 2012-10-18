@@ -1,18 +1,18 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.3.4.2358, Timestamp:1349787931776
+#Application:DigiWebApp, Version:1.3.4.2360 beta, Timestamp:1350558991285
 
 
 # Explicitly cached entries
 CACHE:
-de_de.js
-underscore-min.js
 d8-0.1.3.min.js
+underscore-min.js
 theme/tmp.css
+de_de.js
 bootstrap.js
-jquery.xml2json_1.1.js
 ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+jquery.xml2json_1.1.js
 theme/style.css
 pen.cur
 theme/images/icon_handApplication.png
@@ -34,7 +34,6 @@ theme/images/ajax-loader.png
 theme/images/icon_ios_114.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/Icon_2x.png
-theme/images/arrow_white.png
 theme/images/640x960_90_DIGI-WebApp.png
 theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/ic_launcher_ldpi.png
@@ -59,18 +58,20 @@ theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/icon_searchPicture.png
 theme/images/icon_closingTime.png
-childbrowser.js
-cordova.js
-core.js
+theme/images/arrow_white.png
 jquery-1.6.4.min.js.dist
 jquery-1.6.4.js
+core.js
+jquery_mobile.js
 theme/jquery.mobile-1.0.min.css
 theme/images/icons-18-white.png
 theme/images/ajax-loader.png
 theme/images/icons-18-black.png
 theme/images/icons-36-white.png
 theme/images/icons-36-black.png
-jquery_mobile.js
+childbrowser.js
+cordova.js
+DigiWebApp_App.js
 theme/journal.woff
 flashcanvas.swf
 jquery.signaturepad.min.js
@@ -81,13 +82,13 @@ pen.cur
 json2.min.js
 theme/jquery.signaturepad.css
 theme/journal.eot
-DigiWebApp_App.js
 
 
 # Resources that require the device/user to be online.
 NETWORK:
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 
