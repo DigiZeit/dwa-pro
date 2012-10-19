@@ -2379,7 +2379,8 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 	    	//honorificPrefix: The contacts prefix (example Mr. or Dr.) (DOMString)
 	    	//honorificSuffix: The contacts suffix (example Esq.). (DOMString)
 		myContactName.familyName = item.orderName;
-		myContactName.givenName =  item.positionName;
+		myContactName.givenName = item.positionName;
+		myContactName.honorificPrefix = 'DIGI-WebApp ' + M.I18N.l('orderInfo')
 	   	myContact.name = myContactName;
 	   	myContact.displayName = 'DIGI-WebApp ' + M.I18N.l('orderInfo') + ': ' + item.orderName + ", " + item.positionName;
     	
@@ -2483,7 +2484,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2367
+    , softwareVersion: 2368
 
 
     /**
@@ -9365,7 +9366,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2367',
+            value: 'Build: 2368',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
