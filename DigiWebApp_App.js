@@ -2270,7 +2270,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
     	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("searching contact for orderName=" + item.orderName + ", positionName=" + item.positionName);
     	// try to load the contact to prevent duplicates
     	var options = new ContactFindOptions();
-    	options.filter = item.positionName + ", " + item.orderName; 
+    	options.filter = item.orderName + ", " + item.positionName; 
     	var fields = ["displayName", "name", "givenName", "familyName"];
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('saveAsContact'));
     	navigator.contacts.find(fields, DigiWebApp.OrderInfoController.saveAsContactFound, DigiWebApp.OrderInfoController.saveAsContactFoundError, options);
@@ -2286,7 +2286,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
         	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("creating new contact for orderName=" + item.orderName + ", positionName=" + item.positionName);
         	var myContact = navigator.contacts.create({
         		//displayName: The name of this Contact, suitable for display to end-users. (DOMString)
-        		"displayName": item.positionName + ", " + item.orderName
+        		"displayName": item.orderName + ", " + item.positionName
         	});
     		return DigiWebApp.OrderInfoController.saveAsContactSave(myContact);
     		
@@ -2297,7 +2297,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
             	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("creating new contact for orderName=" + item.orderName + ", positionName=" + item.positionName);
             	var myContact = navigator.contacts.create({
             		//displayName: The name of this Contact, suitable for display to end-users. (DOMString)
-            		"displayName": item.positionName + ", " + item.orderName
+            		"displayName": item.orderName + ", " + item.positionName
             	});
         		return DigiWebApp.OrderInfoController.saveAsContactSave(myContact);
     		} else if (contacts.length > 1) {
@@ -2342,7 +2342,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
     	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("creating new contact for orderName=" + item.orderName + ", positionName=" + item.positionName);
     	var myContact = navigator.contacts.create({
     		//displayName: The name of this Contact, suitable for display to end-users. (DOMString)
-    		"displayName": item.positionName + ", " + item.orderName
+    		"displayName": item.orderName + ", " + item.positionName
     	});
 		return DigiWebApp.OrderInfoController.saveAsContactSave(myContact);
     }
@@ -2378,11 +2378,11 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 	    	//middleName: The contacts middle name. (DOMString)
 	    	//honorificPrefix: The contacts prefix (example Mr. or Dr.) (DOMString)
 	    	//honorificSuffix: The contacts suffix (example Esq.). (DOMString)
-		myContactName.familyName = item.orderName;
-		myContactName.givenName = item.positionName;
+		myContactName.givenName = item.orderName;
+		myContactName.familyName = item.positionName;
 		myContactName.honorificPrefix = 'DIGI-WebApp ' + M.I18N.l('orderInfo')
 	   	myContact.name = myContactName;
-	   	myContact.displayName = item.positionName + ", " + item.orderName;
+	   	//myContact.displayName = item.orderName + ", " + item.positionName;
     	
     	//nickname: A casual name to address the contact by. (DOMString)
 		//phoneNumbers: An array of all the contact's phone numbers. (ContactField[])
@@ -2484,7 +2484,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2369
+    , softwareVersion: 2370
 
 
     /**
@@ -9366,7 +9366,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2369',
+            value: 'Build: 2370',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
