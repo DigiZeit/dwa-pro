@@ -2270,7 +2270,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
     	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("searching contact for orderName=" + item.orderName + ", positionName=" + item.positionName);
     	// try to load the contact to prevent duplicates
     	var options = new ContactFindOptions();
-    	options.filter = item.orderName + ", " + item.positionName; 
+    	options.filter = 'DIGI-WebApp ' + M.I18N.l('orderInfo') + ' ' + item.orderName + ", " + item.positionName; 
     	var fields = ["displayName", "name", "givenName", "familyName"];
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('saveAsContact'));
     	navigator.contacts.find(fields, DigiWebApp.OrderInfoController.saveAsContactFound, DigiWebApp.OrderInfoController.saveAsContactFoundError, options);
@@ -2484,7 +2484,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2370
+    , softwareVersion: 2371
 
 
     /**
@@ -9366,7 +9366,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2370',
+            value: 'Build: 2371',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
