@@ -2378,15 +2378,27 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 	    	//middleName: The contacts middle name. (DOMString)
 	    	//honorificPrefix: The contacts prefix (example Mr. or Dr.) (DOMString)
 	    	//honorificSuffix: The contacts suffix (example Esq.). (DOMString)
-		myContactName.givenName = M.I18N.l('orderInfo');
-		myContactName.familyName = item.orderName + ", " + item.positionName;
+		myContactName.familyName = 'DIGI-WebApp ' + M.I18N.l('orderInfo');
+		myContactName.givenName = item.orderName + ", " + item.positionName;
 	   	myContact.name = myContactName;
     	
     	//nickname: A casual name to address the contact by. (DOMString)
 		//phoneNumbers: An array of all the contact's phone numbers. (ContactField[])
-	   	// TODO: save phonenumber item.positionTelefon
+	   	var phoneNumbers = [];
+	   	var myTel = '';
+	   	var myFax = '';
+	   	try { myTel = item.positionTelefon } catch(e) {}
+	   	try { myFax = item.positionFax } catch(e) {}
+	   	phoneNumbers[0] = new ContactField('work', myTel, true);
+	   	phoneNumbers[1] = new ContactField('fax', myFax, false);
+	   	myContact.phoneNumbers = phoneNumbers;
 	   	
 		//emails: An array of all the contact's email addresses. (ContactField[])
+	   	var eMail = [];
+	   	var myemail = '';
+	   	try { myemail = item.positionEmail } catch(e) {}
+	   	eMail[0] = new ContactField('work', myemail, true);
+	   	myContact.emails = eMail;
 
         //addresses: An array of all the contact's addresses. (ContactAddresses[])
         var myContactAdress = new ContactAddress();
@@ -2470,7 +2482,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2364
+    , softwareVersion: 2365
 
 
     /**
@@ -9352,7 +9364,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2364',
+            value: 'Build: 2365',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
