@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2382
+    , softwareVersion: 2383
 
 
     /**
@@ -9513,7 +9513,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2382',
+            value: 'Build: 2383',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -10747,7 +10747,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 				//DigiWebApp.BookingController.setNotBookedBookings();
 				
         		// Feature 405 (Unterschrift)
-        		if (DigiWebApp.SettingsController.featureAvailable('405')) {
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
         			$('#' + DigiWebApp.EditTimeDataPage.content.signature.id).show();
 					// init canvas
 					var sigPadOptions = {
@@ -10796,7 +10796,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 				}
         		
         		// Feature 405 (Unterschrift)
-        		if (DigiWebApp.SettingsController.featureAvailable('405')) {
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
         			// load signature
         			DigiWebApp.EditTimeDataPage.bookingToEdit.readFromFile(function(fileContent){
         				if (fileContent && (fileContent !== "")) {
@@ -10820,7 +10820,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
     	
     	var unterschriftString = "";
     	// Feature 405 (Unterschrift)
-    	if (DigiWebApp.SettingsController.featureAvailable('405')) {
+		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
 			//unterschriftImageString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureImage();
     		unterschriftString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureString();
 			//var unterschriftRawValue = $('#' + DigiWebApp.EditTimeDataPage.content.signature.signatureform.signaturecanvas.id).val();
@@ -11001,7 +11001,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
         tap: {
 			action: function(id, m_id) {
 			    // Start::Bemerkungsfeld (403) oder Unterschrift (405)
-			    if (DigiWebApp.SettingsController.featureAvailable('403') || DigiWebApp.SettingsController.featureAvailable('405')) {
+			    if (DigiWebApp.SettingsController.featureAvailable('403') || ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined"))) {
 					// if remark-feature active: go to remarkpage
 					// load booking in EditTimeData.bookingToEdit
 			    	//console.log('remark is active');
