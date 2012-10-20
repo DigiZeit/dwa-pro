@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2383
+    , softwareVersion: 2384
 
 
     /**
@@ -8187,19 +8187,20 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
         
     , saveAsContactSuccess: function() {
     	DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		DigiWebApp.ApplicationController.nativeAlertDialogView({
-			title: M.I18N.l('saveAsContact'),
-			message: M.I18N.l('saveAsContactSuccess')
-		});
+		//DigiWebApp.ApplicationController.nativeAlertDialogView({
+		//	title: M.I18N.l('saveAsContact'),
+		//	message: M.I18N.l('saveAsContactSuccess')
+		//});
     }
 
     , saveAsContactError: function(error) {
+    	console.log('savingContactError');
     	console.log(error);
     	DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		DigiWebApp.ApplicationController.nativeAlertDialogView({
-			title: M.I18N.l('saveAsContact'),
-			message: M.I18N.l('saveAsContactError')
-		});
+		//DigiWebApp.ApplicationController.nativeAlertDialogView({
+		//	title: M.I18N.l('saveAsContact'),
+		//	message: M.I18N.l('saveAsContactError')
+		//});
     }
 });
 
@@ -9513,7 +9514,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2383',
+            value: 'Build: 2384',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
