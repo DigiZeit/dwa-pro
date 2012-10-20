@@ -215,6 +215,7 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-top: 10px;
 }
 
+/* mediaListPage */
 .mediaListPage .ui-content li {
     border:  none;
     font-size: 20px;
@@ -249,6 +250,42 @@ label.ui-input-text, .ui-controlgroup-label {
     max-height: 64px;
 }
 
+/* demoMediaPage */
+.demoMediaPage .ui-content li {
+    border:  none;
+    font-size: 20px;
+    padding: 0px;
+    margin: 0px;
+    padding-left: 64px;
+    min-height: 36px;
+    height: 36px;
+    padding-top: 16px;
+    text-shadow: none;
+    background: url('images/arrow_white.png') 100% 50% no-repeat;
+}
+
+.demoMediaPage .ui-content li img {
+    width: 32px;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+.demoMediaPage .ui-content li.selected {
+    background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
+    color: #FFFFFF;
+}
+
+.demoMediaPage .ui-content .ui-grid-b {
+    text-align: center;
+    font-size: 12px;
+}
+
+.demoMediaPage .ui-content .ui-grid-b img {
+    max-width: 64px;
+    max-height: 64px;
+}
+
+/* bookTimePage */
 .bookTimePage .ui-content .ui-grid-a .ui-block-a {
     width: 85%;
 }
@@ -261,46 +298,67 @@ label.ui-input-text, .ui-controlgroup-label {
 .bookTimePage .ui-content .ui-grid-a .ui-block-a div.ui-select {
     width: 100%;
 }
-
-div.ui-select {
-    margin-bottom: 10px;
-}
-
-label.ui-select {
-	color: #ffffff;
-}
-
-option.ui-select {
-	color: #00000 !important;
-}
-
-li.ui-li {
-	color: #ffffff;
-}
-
 .bookTimePage .ui-content .ui-grid-a .ui-block-b {
     width: 15%;
     padding-top: 28px;
     text-align: right;
 }
-
 .bookTimePage .ui-content .ui-grid-a:nth-child(3) {
     margin-bottom: 20px;
 }
 
+
+/* employeePage */
+.employeePage .ui-content .ui-grid-a .ui-block-a {
+    width: 85%;
+}
+
+.employeePage .ui-content .ui-grid-a .ui-block-a label {
+    width: 100%;
+    font-weight: bold;
+}
+
+.employeePage .ui-content .ui-grid-a .ui-block-a div.ui-select {
+    width: 100%;
+}
+
+/* infoPage */
+.infoPage .ui-content .ui-grid-a .ui-block-a {
+    width: 85%;
+}
+
+.infoPage .ui-content .ui-grid-a .ui-block-a label {
+    width: 100%;
+    font-weight: bold;
+}
+
+.infoPage .ui-content .ui-grid-a .ui-block-a div.ui-select {
+    width: 100%;
+}
+
+.infoLabel {
+    font-size: 1.1em;
+    color: #ffffff;
+}
+
+/* handApplicationPage */
 .handApplicationPage [data-role="content"] div:nth-child(2) {
     margin-top: 20px;
+}
+.handApplicationPage .ui-content input {
+    margin-bottom: 50px;
+}
+
+/* timeDataPage & remarkPage */
+.timeDataPage .sentBookings .ui-listview {
+	background: #003366 !important;
+	font-style: italic !important;
+    padding-left: 0.7em;
 }
 
 .remarkPage .ui-listview li {
     padding-left: 0.7em;
     margin-bottom: 30px;
-}
-
-.timeDataPage .sentBookings .ui-listview {
-	background: #003366 !important;
-	font-style: italic !important;
-    padding-left: 0.7em;
 }
 
 .timeDataPage .ui-listview li {
@@ -330,6 +388,7 @@ li.ui-li {
     color: #000000;
 }
 
+/* orderInfoPage */
 .orderInfoPage .ui-listview li {
     padding-left: 0.7em;
     margin-left: 20px;
@@ -363,10 +422,7 @@ li.ui-li {
 	margin-top: 10px;
 }
 
-.timeDataPage .ui-listview li {
-    padding-left: 0.7em;
-}
-
+/* anwesenheitslistePage */
 .anwesenheitslistePage .ui-listview { 
     font-size: 12px;
     color: #000000 !important;
@@ -380,6 +436,21 @@ li.ui-li {
     font-weight: normal;
 }
 
+/* zeitbuchungenPage */
+.zeitbuchungenPage .ui-listview { 
+    font-size: 12px;
+    color: #000000 !important;
+}
+
+.zeitbuchungenPage .ui-listview .bold {
+    font-weight: bold;
+}
+
+.zeitbuchungenPage .ui-listview .normal { 
+    font-weight: normal;
+}
+
+/* settingsPage */
 .settingsPage input[type="text"], 
 .settingsPage input[type="password"], 
 .settingsPasswordPage input[type="text"], 
@@ -403,10 +474,6 @@ li.ui-li {
 .settingsPage .ui-content .lastSelectBox_container, 
 .settingsPasswordPage .ui-content .lastSelectBox_container {
     margin-bottom: 10px;
-}
-
-.handApplicationPage .ui-content input {
-    margin-bottom: 50px;
 }
 
 /* IOS LIKE FOOTER / TABBAR */
@@ -471,9 +538,21 @@ li.ui-li {
     background: url(images/tabSprite.png) -32px -32px no-repeat;
 }
 
-.infoLabel {
-    font-size: 1.1em;
-    color: #ffffff;
+/* allgemeine Klassen */
+div.ui-select {
+    margin-bottom: 10px;
+}
+
+label.ui-select {
+	color: #ffffff;
+}
+
+option.ui-select {
+	color: #00000 !important;
+}
+
+li.ui-li {
+	color: #ffffff;
 }
 
 .whiteLabel {

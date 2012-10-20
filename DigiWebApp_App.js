@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2379
+    , softwareVersion: 2380
 
 
     /**
@@ -9124,6 +9124,8 @@ DigiWebApp.SplashViewPage = M.PageView.design({
 
     childViews: 'content',
 
+    cssClass: 'splashViewPage',
+
     logo: M.ImageView.design({
         value:'theme/images/logo.png',
         cssClass: 'logoSplashPage'
@@ -9273,6 +9275,8 @@ DigiWebApp.SignatureView = M.PageView.design({
 
     childViews: 'header content footer',
 
+    cssClass: 'signatureView',
+
     header: M.ToolbarView.design({
         value: 'HEADER',
         anchorLocation: M.TOP
@@ -9312,7 +9316,7 @@ DigiWebApp.EmployeePage = M.PageView.design({
         }
     },
 
-    cssClass: 'bookTimePage',
+    cssClass: 'employeePage',
 
     header: M.ToolbarView.design({
         cssClass: 'header',
@@ -9432,7 +9436,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }
     },
 
-    cssClass: 'bookTimePage',
+    cssClass: 'infoPage',
 
     //childViews: 'header content tabBar',
     childViews: 'header content',
@@ -9508,7 +9512,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2379',
+            value: 'Build: 2380',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -10244,6 +10248,8 @@ DigiWebApp.AudioPage = M.PageView.design({
     },
 
     childViews: 'header content',
+
+    cssClass: 'audioPage',
 
     header: M.ToolbarView.design({
         childViews: 'backButton title',
@@ -11187,6 +11193,8 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
 DigiWebApp.noSettingsiOSPage = M.PageView.design({
 
     childViews: 'header content',
+
+    cssClass: 'noSettingsiOSPage',
 
     header: M.ToolbarView.design({
         value: M.I18N.l('noSettingsiOSHeader'),
@@ -12230,7 +12238,7 @@ DigiWebApp.TimeDataPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: CameraPage
+// View: DemoCameraPage
 // ==========================================================================
 
 DigiWebApp.DemoCameraPage = M.PageView.design({
@@ -12326,6 +12334,8 @@ DigiWebApp.DemoAudioPage = M.PageView.design({
     },
 
     childViews: 'header content',
+
+    cssClass: 'demoAudioPage',
 
     header: M.ToolbarView.design({
         childViews: 'backButton title',
@@ -12496,7 +12506,7 @@ DigiWebApp.DemoMediaPage = M.PageView.design({
 
     childViews: 'header content',
 
-    cssClass: 'dashboardPage',
+    cssClass: 'demoMediaPage',
 
     events: {
 		pagebeforeshow: {
@@ -13238,7 +13248,7 @@ DigiWebApp.ZeitbuchungenPage = M.PageView.design({
 
     , childViews: 'header content'
 
-    , cssClass: 'anwesenheitslistePage unselectable'
+    , cssClass: 'zeitbuchungenPage unselectable'
 
     , header: M.ToolbarView.design({
         childViews: 'backButton title'
