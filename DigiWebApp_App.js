@@ -1372,17 +1372,17 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
 DigiWebApp.CameraController = M.Controller.extend({
 
     // arrays for selection lists
-    orders: null,
-    positions: null,
-    activities: null,
+      orders: null
+    , positions: null
+    , activities: null
 
-    selections: {
+    , selections: {
         order: null,
         position: null,
         activity: null
-    },
+    }
 
-    init: function(isFirstLoad) {
+    , init: function(isFirstLoad) {
 		
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
@@ -1409,9 +1409,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         } else {
         	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).hide();
         }
-    },
+    }
 
-    setSelectionByCurrentBooking: function() {
+    , setSelectionByCurrentBooking: function() {
         var booking = DigiWebApp.BookingController.currentBooking;
         
         // get all items from local storage
@@ -1501,9 +1501,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
-    },
+    }
 
-    setPositions: function() {
+    , setPositions: function() {
         var orderId = M.ViewManager.getView('cameraPage', 'order').getSelection(YES).value;
         if(!orderId) {
             return;
@@ -1535,10 +1535,10 @@ DigiWebApp.CameraController = M.Controller.extend({
         this.setActivities(YES);
 
         this.saveSelection();
-    },
+    }
 
     /* only set those activities that are related to the chosen position */
-    setActivities: function(checkForWorkPlan) {
+    , setActivities: function(checkForWorkPlan) {
         var posId = null;
 
         if(checkForWorkPlan) {
@@ -1611,9 +1611,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         this.set('activities', activities);
 
         this.saveSelection();
-    },
+    }
 
-    initSelection: function() {
+    , initSelection: function() {
        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
        var positions = DigiWebApp.Position.findSorted();
        var activities = DigiWebApp.CameraController.getActivities();
@@ -1672,15 +1672,15 @@ DigiWebApp.CameraController = M.Controller.extend({
         M.ViewManager.getView('cameraPage', 'order').setSelection('0');
         M.ViewManager.getView('cameraPage', 'position').setSelection('0');
         M.ViewManager.getView('cameraPage', 'activity').setSelection('0');
-    },
+    }
     
-    resetSelection: function() {
+    , resetSelection: function() {
         M.ViewManager.getView('cameraPage', 'order').resetSelection();
         M.ViewManager.getView('cameraPage', 'position').resetSelection();
         M.ViewManager.getView('cameraPage', 'activity').resetSelection();
-    },
+    }
 
-    isPositionSelected: function() {
+    , isPositionSelected: function() {
         // implemented adjustment to M.SeletionListView to return null if no item is available
         var posObj = M.ViewManager.getView('cameraPage', 'position').getSelection(YES);
         if(posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
@@ -1688,18 +1688,18 @@ DigiWebApp.CameraController = M.Controller.extend({
         } else {
             return NO;
         }
-    },
+    }
 
-    isActivitySelected: function() {
+    , isActivitySelected: function() {
         var actObj = M.ViewManager.getView('cameraPage', 'activity').getSelection(YES);
         if(actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
             return YES;
         } else {
             return NO;
         }
-    },
+    }
 
-    saveSelection: function() {
+    , saveSelection: function() {
         var orderValue = M.ViewManager.getView('cameraPage', 'order').getSelection();
         var positionValue = M.ViewManager.getView('cameraPage', 'position').getSelection();
         var activityValue = M.ViewManager.getView('cameraPage', 'activity').getSelection();
@@ -1709,9 +1709,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         this.selections.activity = activityValue;
 
         this.useSelections = YES;
-    },
+    }
     
-    getActivities: function(queryobj) {
+    , getActivities: function(queryobj) {
     	var activities;
     	if (queryobj) {
     		activities = DigiWebApp.Activity.find(queryobj);
@@ -1729,9 +1729,9 @@ DigiWebApp.CameraController = M.Controller.extend({
     	});
     	activities = _.compact(activities);
     	return activities;
-    },
+    }
 
-    getActivitiesFromWorkplan: function(workplan) {
+    , getActivitiesFromWorkplan: function(workplan) {
         var actIds = workplan.get('activityIds').split(',');
         var activities = [];
         if(actIds && actIds.length > 0) {
@@ -1769,9 +1769,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         };
         activities = _.compact(activities);
         return activities;
-    },
+    }
 
-    takePicture: function() {
+    , takePicture: function() {
     			navigator.camera.getPicture(
     			DigiWebApp.CameraController.cameraSuccessBase64,
     			DigiWebApp.CameraController.cameraError,{ 
@@ -1781,14 +1781,14 @@ DigiWebApp.CameraController = M.Controller.extend({
     				//, destinationType: navigator.camera.DestinationType.FILE_URI
     				//, sourceType: navigator.camera.PictureSourceType.CAMERA 
     	        });    	
-    },
+    }
     
-    savePicture: function() {
+    , savePicture: function() {
     	var that = this;
     	that.savePictureWithLocation(null);
-    },
+    }
     
-    savePictureWithLocation: function(location) {
+    , savePictureWithLocation: function(location) {
     	var that = this;
     	
     	that.saveSelection();
@@ -1856,9 +1856,9 @@ DigiWebApp.CameraController = M.Controller.extend({
         });
     }
     
-    myImageData: null,
-    myImageObj: null,
-    cameraSuccessBase64: function(imageData) {
+    , myImageData: null
+    , myImageObj: null
+    , cameraSuccessBase64: function(imageData) {
     	DigiWebApp.CameraController.myImageData = imageData;
         var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = 'data:image/jpeg;base64,' + imageData;
@@ -1866,16 +1866,16 @@ DigiWebApp.CameraController = M.Controller.extend({
         DigiWebApp.CameraController.myImageObj = new Image();
         DigiWebApp.CameraController.myImageObj.src = 'data:image/jpeg;base64,' + imageData;
 
-    },
+    }
 
-    myImageURI: null,
-    cameraSuccessURI: function(imageURI) {
+    , myImageURI: null
+    , cameraSuccessURI: function(imageURI) {
     	DigiWebApp.CameraController.myImageURI = imageURI;
         var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = imageURI;
-    },
+    }
     
-    cameraError: function(mymessage) {
+    , cameraError: function(mymessage) {
         DigiWebApp.ApplicationController.nativeAlertDialogView({
             title: 'ERROR',
             message: mymessage
@@ -2961,30 +2961,30 @@ DigiWebApp.AudioController = M.Controller.extend({
 DigiWebApp.SelectionController = M.Controller.extend({
 
     // arrays for selection lists
-    orders: null,
-    positions: null,
-    activities: null,
+      orders: null
+    , positions: null
+    , activities: null
 
-    selections: {
+    , selections: {
         order: null,
         position: null,
         activity: null
-    },
+    }
 
     // use selection that has been made by hand
-    useSelections: NO,
+    , useSelections: NO
 
-    showHandOrderFirst: NO,
+    , showHandOrderFirst: NO
 
     /*
-    setSelection: function() {
+    , setSelection: function() {
         var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
         var positions = DigiWebApp.Position.findSorted();
         var activities = DigiWebApp.SelectionController.getActivities();
-    },
+    }
     */
 
-    setSelectionByPreviousSelection: function() {
+    , setSelectionByPreviousSelection: function() {
         var that = this;
         
         var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
@@ -3050,9 +3050,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
-    },
+    }
 
-    setSelectionWithCurrentHandOrderFirst: function() {
+    , setSelectionWithCurrentHandOrderFirst: function() {
         //var that = this;
 
         var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
@@ -3115,9 +3115,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('positions', positionArray);
         this.set('activities', activityArray);
         M.ViewManager.getView('bookingPage', 'position').setSelection('0');
-    },
+    }
 
-    setSelectionByCurrentBooking: function() {
+    , setSelectionByCurrentBooking: function() {
         var booking = DigiWebApp.BookingController.currentBooking;
         
         // get all items from local storage
@@ -3208,9 +3208,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
-    },
+    }
 
-    setPositions: function() {
+    , setPositions: function() {
         var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
         if(!orderId) {
             return;
@@ -3242,10 +3242,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.setActivities(YES);
 
         this.saveSelection();
-    },
+    }
 
     /* only set those activities that are related to the chosen position */
-    setActivities: function(checkForWorkPlan) {
+    , setActivities: function(checkForWorkPlan) {
         var posId = null;
 
         if(checkForWorkPlan) {
@@ -3318,9 +3318,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('activities', activities);
 
         this.saveSelection();
-    },
+    }
 
-    initSelection: function() {
+    , initSelection: function() {
        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
        var positions = DigiWebApp.Position.findSorted();
        var activities = DigiWebApp.SelectionController.getActivities();
@@ -3379,15 +3379,15 @@ DigiWebApp.SelectionController = M.Controller.extend({
         M.ViewManager.getView('bookingPage', 'order').setSelection('0');
         M.ViewManager.getView('bookingPage', 'position').setSelection('0');
         M.ViewManager.getView('bookingPage', 'activity').setSelection('0');
-    },
+    }
 
-    resetSelection: function() {
+    , resetSelection: function() {
         M.ViewManager.getView('bookingPage', 'order').resetSelection();
         M.ViewManager.getView('bookingPage', 'position').resetSelection();
         M.ViewManager.getView('bookingPage', 'activity').resetSelection();
-    },
+    }
 
-    isPositionSelected: function() {
+    , isPositionSelected: function() {
         // implemented adjustment to M.SeletionListView to return null if no item is available
         var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
         if(posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
@@ -3395,18 +3395,18 @@ DigiWebApp.SelectionController = M.Controller.extend({
         } else {
             return NO;
         }
-    },
+    }
 
-    isActivitySelected: function() {
+    , isActivitySelected: function() {
         var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
         if(actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
             return YES;
         } else {
             return NO;
         }
-    },
+    }
 
-    saveSelection: function() {
+    , saveSelection: function() {
         var orderValue = M.ViewManager.getView('bookingPage', 'order').getSelection();
         var positionValue = M.ViewManager.getView('bookingPage', 'position').getSelection();
         var activityValue = M.ViewManager.getView('bookingPage', 'activity').getSelection();
@@ -3416,9 +3416,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.selections.activity = activityValue;
 
         this.useSelections = YES;
-    },
+    }
     
-    getActivities: function(queryobj) {
+    , getActivities: function(queryobj) {
     	var activities;
     	if (queryobj) {
     		activities = DigiWebApp.Activity.find(queryobj);
@@ -3436,9 +3436,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	});
     	activities = _.compact(activities);
     	return activities;
-    },
+    }
 
-    getActivitiesFromWorkplan: function(workplan) {
+    , getActivitiesFromWorkplan: function(workplan) {
         var actIds = workplan.get('activityIds').split(',');
         var activities = [];
         if(actIds && actIds.length > 0) {
@@ -5056,7 +5056,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2391
+    , softwareVersion: 2392
 
 
     /**
@@ -9807,7 +9807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2391',
+            value: 'Build: 2392',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
