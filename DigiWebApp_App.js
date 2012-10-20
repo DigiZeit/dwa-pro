@@ -1832,7 +1832,7 @@ DigiWebApp.CameraController = M.Controller.extend({
 			lat: lat,
 			lon: lon,
 			pId: posId,
-			aId: actId,
+			aId: actId
     	});
 	    
 	    var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
@@ -5056,7 +5056,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2390
+    , softwareVersion: 2391
 
 
     /**
@@ -9807,7 +9807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2390',
+            value: 'Build: 2391',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
