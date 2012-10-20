@@ -1375,23 +1375,7 @@ DigiWebApp.CameraController = M.Controller.extend({
     },
 
     init: function(isFirstLoad) {
-	
-/*	// UPDATED -> NOW WORKS WITH jQuery 1.3.1
-	$.fn.listHandlers = function(events, outputFunction) {
-	    return this.each(function(i){
-	        var elem = this,
-	            dEvents = $(this).data('events');
-	        if (!dEvents) {return;}
-	        $.each(dEvents, function(name, handler){
-	            if((new RegExp('^(' + (events === '*' ? '.+' : events.replace(',','|').replace(/^on/i,'')) + ')$' ,'i')).test(name)) {
-	               $.each(handler, function(i,handler){
-	                   outputFunction(elem, '\n' + i + ': [' + name + '] : ' + handler );
-	               });
-	           }
-	        });
-	    });
-	}; */
-	
+		
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
         }
@@ -1408,9 +1392,106 @@ DigiWebApp.CameraController = M.Controller.extend({
         	// camera probably available
         	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).show();
         	DigiWebApp.CameraController.takePicture();
+            if(DigiWebApp.BookingController.currentBooking) {
+                DigiWebApp.CameraController.setSelectionByCurrentBooking();
+            } else {
+                DigiWebApp.CameraController.initSelection();
+            }
         } else {
         	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).hide();
         }
+    },
+
+    setSelectionByCurrentBooking: function() {
+        var booking = DigiWebApp.BookingController.currentBooking;
+        
+        // get all items from local storage
+        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
+        var positions = DigiWebApp.Position.findSorted();
+        var activities = DigiWebApp.CameraController.getActivities();
+
+        // get the ids from the current booking
+        var orderId = (booking.get('orderId') == "0" ? 0 : booking.get('orderId')) || booking.get('handOrderId'); // we need to check handOrders also
+        var positionId = booking.get('positionId');
+        var activityId = booking.get('activityId');
+
+        
+        /**
+         * ORDERS
+         */
+        var orderArray = _.map(orders, function(order) {
+            if(order.get('id') == orderId) {
+                return { label: order.get('name'), value: order.get('id'), isSelected: YES };
+            } else {
+                return { label: order.get('name'), value: order.get('id') };
+            }
+        });
+        orderArray = _.compact(orderArray);
+        // push "Bitte wählen Option"
+        orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+
+        
+        /**
+         * POSITIONS
+         */
+        var positionArray = _.map(positions, function(pos) {
+            if(pos.get('orderId') === orderId) {
+            	var obj = null;
+                if(pos.get('id') === positionId) {
+                    obj = { label: pos.get('name'), value: pos.get('id'), isSelected: YES };
+                } else {
+                    obj = { label: pos.get('name'), value: pos.get('id') };
+                }
+                return obj;
+            }
+            return null;
+        });
+        positionArray = _.compact(positionArray);
+        // push "Bitte wählen Option"
+        positionArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+
+
+        /**
+         * ACTIVITIES
+         */
+        var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+            return wp.get('id') == positionId;
+        });
+
+        var itemSelected = NO;
+
+        /* if a workplan exists, only use those activities that are in the workplan */
+        if(workPlans.length > 0) {
+            activities = this.getActivitiesFromWorkplan(workPlans[0]);
+        } else {
+            activities = DigiWebApp.CameraController.getActivities();
+        }
+
+        var activityArray = _.map(activities, function(act) {
+        	if ( typeof(act) === "undefined" ) {
+        		console.log("UNDEFINED ACTIVITY");
+        		return null;
+        	} else {
+        		var obj = null;
+        		if(act.get('id') == activityId) {
+        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+        			//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setSelectionByCurrentBooking isSelected");
+        			itemSelected = YES;
+        		} else {
+        			obj = { label: act.get('name'), value: act.get('id') };
+        			//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setSelectionByCurrentBooking");
+        		}
+        		return obj;
+        	}
+        });
+        activityArray = _.compact(activityArray);
+        activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+
+        this.resetSelection();
+        // set selection arrays to start content binding process
+        this.set('orders', orderArray);
+        this.set('positions', positionArray);
+        this.set('activities', activityArray);
     },
 
     setPositions: function() {
@@ -4893,7 +4974,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2387
+    , softwareVersion: 2388
 
 
     /**
@@ -9640,7 +9721,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2387',
+            value: 'Build: 2388',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
