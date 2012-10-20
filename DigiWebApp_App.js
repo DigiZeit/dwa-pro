@@ -1363,6 +1363,17 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
 
 DigiWebApp.CameraController = M.Controller.extend({
 
+    // arrays for selection lists
+    orders: null,
+    positions: null,
+    activities: null,
+
+    selections: {
+        order: null,
+        position: null,
+        activity: null
+    },
+
     init: function(isFirstLoad) {
 	
 /*	// UPDATED -> NOW WORKS WITH jQuery 1.3.1
@@ -1402,174 +1413,275 @@ DigiWebApp.CameraController = M.Controller.extend({
         }
     },
 
-    paintMoveEvent: null,
-    
-    paintOnCanvasStopPaint: function(ev) {
-    	//console.log("paintOnCanvasStopPaint");    	
-    	ev.preventDefault();
-    	
-    	//context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
-    	//context.stroke();
+    setPositions: function() {
+        var orderId = M.ViewManager.getView('cameraPage', 'order').getSelection(YES).value;
+        if(!orderId) {
+            return;
+        }
+//        M.ViewManager.getView('cameraPage', 'position').removeSelection(); /* to avoid bug of not setting selected... */
+        var positions = DigiWebApp.Position.findSorted();
 
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
+        var i = 0;
+        positions = _.map(positions, function(pos) {
+            if(pos.get('orderId') === orderId) {
+                var obj = { label: pos.get('name'), value: pos.get('id') };
+                if(i === 0) {
+                    obj.isSelected = YES;
+                }
+                i += 1;
+                return obj;
+            }
+            return null;
+        });
+        positions = _.compact(positions);/* remove falsy values from positions with _.compact() */
+
+        if(positions.length < 1) {
+            positions.push({label: M.I18N.l('noData'), value: '0'});
+        }
+
+
+        M.ViewManager.getView('cameraPage', 'position').resetSelection();
+        this.set('positions', positions);
+        this.setActivities(YES);
+
+        this.saveSelection();
     },
-    
-    paintOnCanvasStartMove: function(ev) {
-    	console.log("paintOnCanvasStartMove");
-    	ev.preventDefault();
-    	//ev.stopPropagation();
-    	
-    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
 
-    	if (canvas.getContext) {
-    		DigiWebApp.CameraController.myImageTouchPos = DigiWebApp.CameraController.getCoordinates(ev);
-	
-    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-    	}
-    },
-    
-    paintOnCanvasStopMove: function(ev) {
-    	console.log("paintOnCanvasStopMove");    	
-    	ev.preventDefault();
-    	//ev.stopPropagation();
-		DigiWebApp.CameraController.myImageTouchPos = [0, 0];
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-    },
-    
-    myImageTouchPos: [0, 0],
-    myImageTopLeft: [0, 0],
-    myImageBottomRight: [0, 0],
-    myImageScaleFactor: 2,
-    paintOnCanvasMove: function(ev) {
-    	console.log("paintOnCanvasMove");    	
-    	ev.preventDefault();
-    	//ev.stopPropagation();
+    /* only set those activities that are related to the chosen position */
+    setActivities: function(checkForWorkPlan) {
+        var posId = null;
 
-    	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
+        if(checkForWorkPlan) {
+            var posObj = M.ViewManager.getView('cameraPage', 'position').getSelection(YES);
+            if(posObj) {
+                posId = posObj.value;
+            }
+        }
 
-    	if (canvas.getContext) {
-    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
-			var x = coord[0];
-			var y = coord[1];
-			var dx = DigiWebApp.CameraController.myImageTouchPos[0] - coord[0];
-			var dy = DigiWebApp.CameraController.myImageTouchPos[1] - coord[1];
-			//console.log(dx + ", " + dy);
-			DigiWebApp.CameraController.myImageTouchPos[0] = coord[0];
-			DigiWebApp.CameraController.myImageTouchPos[1] = coord[1];
-			//console.log("DigiWebApp.CameraController.myImageTouchPos " + DigiWebApp.CameraController.myImageTouchPos[0] + ", " + DigiWebApp.CameraController.myImageTouchPos[1]);
-			var context = canvas.getContext("2d");
-			if ((DigiWebApp.CameraController.myImageTopLeft[0] + dx) > 0 && (DigiWebApp.CameraController.myImageTopLeft[0] + dx) < image.width) {
-	    		DigiWebApp.CameraController.myImageTopLeft[0] = DigiWebApp.CameraController.myImageTopLeft[0] + dx;
-	    		//DigiWebApp.CameraController.myImageBottomRight[0] = DigiWebApp.CameraController.myImageBottomRight[0] + dx;
+        var activities = [];
+        //var workPlans = DigiWebApp.WorkPlan.find({query: 'id=' + posId}); // pre TMP-1.0
+		//console.log("posId " + posId);
+        var workPlans = DigiWebApp.WorkPlan.find({ query: { 
+            identifier: 'id', 
+            operator: '=', 
+            value: posId 
+        }});
+        var i = 0;
+
+        /* if a workplan exists, only use those activities that are in the workplan */
+		//console.log("posId " + posId + ", workPlans.length " + workPlans.length);
+        if (workPlans.length === 1) {
+            activities = this.getActivitiesFromWorkplan(workPlans[0]);
+        } else {
+            activities = DigiWebApp.CameraController.getActivities();
+        }
+
+        var currentBookingActivityId = -1;
+        if ( typeof(DigiWebApp.BookingController.currentBooking) !== "undefined" && DigiWebApp.BookingController.currentBooking !== null ) { 
+        	currentBookingActivityId = DigiWebApp.BookingController.currentBooking.get('activityId');
+        }
+		var currentBookingActivitySelectable = false;
+		_.each(activities, function(act) {
+        	if ( typeof(act) === "undefined" ) {
+        		console.log("UNDEFINED ACTIVITY");
+        		return null;
+        	} else {
+				if ( act.get('id') === currentBookingActivityId ) { currentBookingActivitySelectable = true; }
 			}
-			if ((DigiWebApp.CameraController.myImageTopLeft[1] + dy) > 0 && (DigiWebApp.CameraController.myImageTopLeft[1] + dy) < image.height) {
-	    		DigiWebApp.CameraController.myImageTopLeft[1] = DigiWebApp.CameraController.myImageTopLeft[1] + dy;
-	    		//DigiWebApp.CameraController.myImageBottomRight[1] = DigiWebApp.CameraController.myImageBottomRight[1] + dy;
-			}
-    				
-    		context.drawImage(image,DigiWebApp.CameraController.myImageTopLeft[0],DigiWebApp.CameraController.myImageTopLeft[1],canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
-    	}
-    },
-    
-    paintOnCanvasStartPaint: function(ev) {
-    	//console.log("paintOnCanvasStartPaint");    	
-    	ev.preventDefault();
-    	//ev.stopPropagation();
-    	
-    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-
-    	if (canvas.getContext) {
-    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
-			var x = coord[0];
-			var y = coord[1];
-	
-	    	var context = canvas.getContext("2d");
-			context.beginPath();
-			context.strokeStyle = "#f00";
-			context.lineWidth = 5;
-			context.lineCap = "round";
-			context.lineJoin = "round";
-			context.moveTo(x, y);
-	
-	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
-	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
-    	}
-    },
-    
-    getCoordinates: function(ev) {
-    	var x = 0;
-    	var y = 0;
-		// Get the mouse position relative to the canvas element.
-        if (typeof(ev.touches) !== "undefined") {
-        	//console.log("touchstart: using ev.touches[0]");
-        	x = ev.touches[0].pageX - ev.touches[0].target.offsetLeft;
-        	y = ev.touches[0].pageY - ev.touches[0].target.offsetTop;
-        } else if (typeof(ev.originalEvent) !== "undefined") {
-    		if (typeof(ev.originalEvent.touches) !== "undefined") {
-        		x = ev.originalEvent.touches[0].pageX - ev.originalEvent.touches[0].target.offsetLeft;
-        		y = ev.originalEvent.touches[0].pageY - ev.originalEvent.touches[0].target.offsetTop;
-        		//console.log(x + ", " + y);
-    		}
-    	} else {
-    		x = ev.offsetX;
-    		y = ev.offsetY;
-    	}
-        return [x, y];
-    },
-    
-    paintOnCanvasPaint: function(ev) {
-    	//console.log("paintOnCanvasPaint");
-    	ev.preventDefault();
-    	//ev.stopPropagation();
-    	
-    	// save event for easier debugging
-    	DigiWebApp.CameraController.paintMoveEvent = ev;
-
-    	var coord = DigiWebApp.CameraController.getCoordinates(ev);
-		var x = coord[0];
-		var y = coord[1];
-
-    	var context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
+		});
 		
-		// The event handler works like a drawing pencil which tracks the mouse 
-		// movements. We start drawing a path made up of lines.
-		context.lineTo(x, y);
-		//context.stroke();
+        activities = _.map(activities, function(act) {
+        	if ( typeof(act) === "undefined" ) {
+        		console.log("UNDEFINED ACTIVITY");
+        		return null;
+        	} else {
+        		var obj = null;
+        		if (currentBookingActivitySelectable) {
+        			obj = { label: act.get('name'), value: act.get('id'), isSelected: act.get('id') === currentBookingActivityId ? YES : NO };
+        		} else {
+        			obj = { label: act.get('name'), value: act.get('id'), isSelected: i === 0 ? YES : NO };
+        		}
+        		//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setActivities");
+                i += 1;
+                return obj;
+        	}
+        });
+
+        activities = _.compact(activities);
+
+        // new to show this when closing day is pressed (corresponds to a reset)
+        if(activities.length > 0) {
+            activities.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:NO});
+        } else {
+            activities.push({label: M.I18N.l('noData'), value: '0'});
+        }
+
+
+        M.ViewManager.getView('cameraPage', 'activity').resetSelection();
+        this.set('activities', activities);
+
+        this.saveSelection();
+    },
+
+    initSelection: function() {
+       var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
+       var positions = DigiWebApp.Position.findSorted();
+       var activities = DigiWebApp.CameraController.getActivities();
+
+       /**
+        * ORDERS
+        */
+
+       // create order selection
+       var orderArray = [];
+       if(orders){
+           orderArray = _.map(orders, function(order) {
+               return { label: order.get('name'), value: order.get('id') };
+           });
+       }
+       // push "Bitte wählen Option"
+       orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+
+       /**
+        * POSITIONS
+        */
+
+       // create position selection
+       var positionArray = [];
+       if(positions){
+           positionArray = _.map(positions, function(pos) {
+               return { label: pos.get('name'), value: pos.get('id') };
+           });
+       }
+       // push "Bitte wählen Option"
+       positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+
+       /**
+        * ACTIVITIES
+        */
+       var activityArray = [];
+       if(activities){
+            activityArray = _.map(activities, function(act) {
+            	if ( typeof(act) === "undefined" ) {
+            		console.log("UNDEFINED ACTIVITY");
+            		return null;
+            	} else {
+            		return obj = { label: act.get('name'), value: act.get('id') };
+            	}
+           });
+       }
+       // push "Bitte wählen Option"
+       activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
+
+
+        this.resetSelection();
+        // set selection arrays to start content binding process
+        this.set('orders', orderArray);
+        this.set('positions', positionArray);
+        this.set('activities', activityArray);
+        M.ViewManager.getView('cameraPage', 'order').setSelection('0');
+        M.ViewManager.getView('cameraPage', 'position').setSelection('0');
+        M.ViewManager.getView('cameraPage', 'activity').setSelection('0');
     },
     
-    paintOnCanvasTouchMove: function(ev) {
-    	//console.log("paintOnCanvasTouchMove");
+    resetSelection: function() {
+        M.ViewManager.getView('cameraPage', 'order').resetSelection();
+        M.ViewManager.getView('cameraPage', 'position').resetSelection();
+        M.ViewManager.getView('cameraPage', 'activity').resetSelection();
+    },
+
+    isPositionSelected: function() {
+        // implemented adjustment to M.SeletionListView to return null if no item is available
+        var posObj = M.ViewManager.getView('cameraPage', 'position').getSelection(YES);
+        if(posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    },
+
+    isActivitySelected: function() {
+        var actObj = M.ViewManager.getView('cameraPage', 'activity').getSelection(YES);
+        if(actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    },
+
+    saveSelection: function() {
+        var orderValue = M.ViewManager.getView('cameraPage', 'order').getSelection();
+        var positionValue = M.ViewManager.getView('cameraPage', 'position').getSelection();
+        var activityValue = M.ViewManager.getView('cameraPage', 'activity').getSelection();
+
+        this.selections.order = orderValue;
+        this.selections.position = positionValue;
+        this.selections.activity = activityValue;
+
+        this.useSelections = YES;
     },
     
+    getActivities: function(queryobj) {
+    	var activities;
+    	if (queryobj) {
+    		activities = DigiWebApp.Activity.find(queryobj);
+    	} else {
+    		activities = DigiWebApp.Activity.findSorted();
+    	}
+    	activities = _.map(activities, function(acti) {
+	    	if(acti.get("positionId") === "1") {
+	            // normale Tätigkeit
+	            return acti;
+	         } else {
+	            // Tätigkeit nur bei Arbeitsplan
+	            return null;
+	         }
+    	});
+    	activities = _.compact(activities);
+    	return activities;
+    },
+
+    getActivitiesFromWorkplan: function(workplan) {
+        var actIds = workplan.get('activityIds').split(',');
+        var activities = [];
+        if(actIds && actIds.length > 0) {
+            for(var i = 0; i < actIds.length; i++) {
+                activities.push(_.first(DigiWebApp.Activity.find({ query: {
+                    identifier: 'id', 
+                    operator: '=', 
+                    value: actIds[i] 
+                }})));
+            }
+
+        }
+        if (workplan.get("workplanType") === "1") {
+        	// only those activities which are bound to employee
+            activities = _.map(activities, function(act) {
+            	if ( typeof(act) === "undefined" ) {
+            		console.log("UNDEFINED ACTIVITY");
+            		return null;
+            	} else {
+        			var zugeordnet = NO;
+            		var allActivities = DigiWebApp.Activity.findSorted();
+            		_.each(allActivities, function(acti) {
+            			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
+            			if (acti.get("positionId") === "1") {
+            				zugeordnet = YES;
+            			}
+            		});
+        			if (zugeordnet) {
+        				return act;
+        			} else {
+        				return null;	
+        			}
+            	}
+            });
+        };
+        activities = _.compact(activities);
+        return activities;
+    },
+
     takePicture: function() {
-    	//navigator.camera.getPicture( cameraSuccess, cameraError, [ cameraOptions ] );
-
-    	//URI: navigator.camera.getPicture(onSuccess, onFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI }); 
-    	//Base64: navigator.camera.getPicture(onSuccess, onFail, { quality: 50 }); 
-
-    	//$('#' + DigiWebApp.CameraPage.content.image.id).unbind('change', DigiWebApp.CameraController.fillCanvasFromImage); 
-    	//$('#' + DigiWebApp.CameraPage.content.image.id).bind('change', DigiWebApp.CameraController.fillCanvasFromImage); 
-    			
     			navigator.camera.getPicture(
     			DigiWebApp.CameraController.cameraSuccessBase64,
     			DigiWebApp.CameraController.cameraError,{ 
@@ -1591,16 +1703,6 @@ DigiWebApp.CameraController = M.Controller.extend({
         DigiWebApp.CameraController.myImageObj = new Image();
         DigiWebApp.CameraController.myImageObj.src = 'data:image/jpeg;base64,' + imageData;
 
-        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-		var context = canvas.getContext("2d");
-		console.log("drawing image to canvas with base64");
-		try {
-			//console.log(DigiWebApp.CameraController.myImageObj.src.substr(0,100));
-			context.drawImage(DigiWebApp.CameraController.myImageObj,0,0,canvas.width,canvas.height,0,0,canvas.width,canvas.height);
-		} catch(e) {
-			console.log(e);
-		}
-		DigiWebApp.CameraController.myImageTopLeft = [0, 0];
     },
 
     myImageURI: null,
@@ -1608,17 +1710,6 @@ DigiWebApp.CameraController = M.Controller.extend({
     	DigiWebApp.CameraController.myImageURI = imageURI;
         var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = imageURI;
-        
-        /*var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-        DigiWebApp.CameraController.myImageScaleFactor = image.width / canvas.width;
-        console.log(DigiWebApp.CameraController.myImageScaleFactor);
-
-    	//if (canvas.getContext) {
-    		var context = canvas.getContext("2d");
-    		context.drawImage(image,0,0,canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
-    		DigiWebApp.CameraController.myImageTopLeft = [0, 0];
-    	//}*/
-        DigiWebApp.CameraController.fillCanvasFromImage_var = setTimeout("DigiWebApp.CameraController.fillCanvasFromImage()",1000);
     },
     
     cameraError: function(mymessage) {
@@ -1626,22 +1717,8 @@ DigiWebApp.CameraController = M.Controller.extend({
             title: 'ERROR',
             message: mymessage
         });
-    },
-    
-    fillCanvasFromImage_var: null,
-    fillCanvasFromImage: function() {
-    	console.log("fillCanvasFromImage");
-		if (DigiWebApp.CameraController.fillCanvasFromImage_var !== null) clearTimeout(DigiWebApp.CameraController.fillCanvasFromImage_var);
-		$('#' + DigiWebApp.CameraPage.content.image.id).hide();
-        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-        var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-        DigiWebApp.CameraController.myImageScaleFactor = image.width / canvas.width;
-		var context = canvas.getContext("2d");
-		console.log("drawing image to canvas with file");
-		context.drawImage(image,0,0,canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
-		DigiWebApp.CameraController.myImageTopLeft = [0, 0];
     }
-
+    
 });
 
 // ==========================================================================
@@ -4816,7 +4893,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2385
+    , softwareVersion: 2386
 
 
     /**
@@ -9209,30 +9286,74 @@ DigiWebApp.CameraPage = M.PageView.design({
     }),
 
     content: M.ScrollView.design({
-        childViews: 'image takePictureGrid',
+        childViews: 'image order position activity savePictureGrid',
 
         image: M.ImageView.design({
         		value: '',
         		cssClass: 'photo'
         }),
 
-        imageContainer: M.ContainerView.design({
-        	childViews: 'imageCanvas',
-            cssClass: 'imageContainer marginTop20 marginBottom20',
-
-        	imageCanvas: M.CanvasView.design({
-                cssClass: 'imageCanvas',
-                canvasWidth: 300,
-                canvasHeight: 450,
-                render: function() {
-					this.html += '<canvas id="' + this.id + '" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" class="' + this.cssClass + '"></canvas>';
-	            	return this.html;
-        		}
-	        })
-	        
+        order: M.SelectionListView.design({
+            selectionMode: M.SINGLE_SELECTION_DIALOG,
+            initialText: M.I18N.l('noData'),
+            label: M.I18N.l('order'),
+            //cssClass: 'unselectable',
+            applyTheme: NO,
+            contentBinding: {
+                target: DigiWebApp.CameraController,
+                property: 'orders'
+            },
+            events: {
+                change: {
+                    target: DigiWebApp.CameraController,
+                    action: function() {
+                        this.setPositions();
+                    }
+                }
+            }
         }),
+        
+	    position: M.SelectionListView.design({
+	        selectionMode: M.SINGLE_SELECTION_DIALOG,
+	        label: M.I18N.l('position'),
+	        initialText: M.I18N.l('noData'),
+	        //cssClass: 'unselectable',
+	        applyTheme: NO,
+	        contentBinding: {
+	            target: DigiWebApp.CameraController,
+	            property: 'positions'
+	        },
+	        events: {
+	            change: {
+	                target: DigiWebApp.CameraController,
+	                action: function() {
+	                    this.setActivities(YES);
+	                }
+	            }
+	        }
+	    }),
+	
+	    activity: M.SelectionListView.design({
+	        selectionMode: M.SINGLE_SELECTION_DIALOG,
+	        label: M.I18N.l('activity'),
+	        initialText: M.I18N.l('noData'),
+	        //cssClass: 'unselectable',
+	        applyTheme: NO,
+	        contentBinding: {
+	            target: DigiWebApp.CameraController,
+	            property: 'activities'
+	        },
+	        events: {
+	            change: {
+	                target: DigiWebApp.CameraController,
+	                action: function() {
+	                    //this.saveSelection();
+	                }
+	            }
+	        }
+	    }),
         	        
-        takePictureGrid: M.GridView.design({
+        savePictureGrid: M.GridView.design({
         	childViews: 'button icon',
         	layout: {
             	cssClass: 'marginTop40 digiButton',
@@ -9243,13 +9364,13 @@ DigiWebApp.CameraPage = M.PageView.design({
         	},
         
         	button: M.ButtonView.design({
-        		value: M.I18N.l('takePicture'),
+        		value: M.I18N.l('assume'),
         		cssClass: 'digiButton',
         		anchorLocation: M.RIGHT,
         		events: {
                 	tap: {
         				target: DigiWebApp.CameraController,
-        				action: 'takePicture'
+        				action: 'savePicture'
                 	}
             	}
         	}),
@@ -9519,7 +9640,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2385',
+            value: 'Build: 2386',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13354,7 +13475,7 @@ DigiWebApp.MediaListPage = M.PageView.design({
 
     , childViews: 'header mediafiles actions'
 
-    , cssClass: 'mediaListPage'
+    , cssClass: 'mediaListPage unselectable'
 
     , header: M.ToolbarView.design({
           childViews: 'backButton title'
