@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2376
+    , softwareVersion: 2377
 
 
     /**
@@ -7746,7 +7746,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
     /* mediafiles */
       items: null
 
-    /* aktionen um neue MediaFiles zu erzeugen */
+    /* Aktionen um neue MediaFiles zu erzeugen */
     , actions: null
 
     , latestId: null
@@ -9508,7 +9508,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2376',
+            value: 'Build: 2377',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13326,62 +13326,64 @@ m_require('app/views/MediaActionTemplateView.js');
 DigiWebApp.MediaListPage = M.PageView.design({
 
     /* Use the 'events' property to bind events like 'pageshow' */
-    events: {
+      events: {
 		pagebeforeshow: {
-            target: DigiWebApp.MediaListController,
-            action: 'init'
+              target: DigiWebApp.MediaListController
+            , action: 'init'
         }
-    },
+    }
 
-    needsUpdate: true,
+    , needsUpdate: true
 
-    childViews: 'header mediafiles actions',
+    , childViews: 'header mediafiles actions'
 
-    header: M.ToolbarView.design({
-        childViews: 'backButton title',
-        cssClass: 'header',
-        isFixed: YES,
-        backButton: M.ButtonView.design({
-            value: M.I18N.l('back'),
-            icon: 'arrow-l',
-            anchorLocation: M.LEFT,
-            events: {
+    , cssClass: 'mediaListPage'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
                 tap: {
-                    target: DigiWebApp.NavigationController,
-                    action: 'backToDashboardPage'
+                      target: DigiWebApp.NavigationController
+                    , action: 'backToDashboardPage'
                 }
             }
-        }),
-        title: M.LabelView.design({
-            value: M.I18N.l('mediaList'),
-            anchorLocation: M.CENTER
-        }),
-        anchorLocation: M.TOP
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('mediaList')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
     })
 
     , mediafiles: M.ScrollView.design({
 
-        childViews: 'mediafileslist',
+          childViews: 'mediafileslist'
 
-        mediafileslist: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.MediaListController,
-                property: 'items'
-            },
-            listItemTemplateView: DigiWebApp.MediaListTemplateView
+        , mediafileslist: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.MediaListController
+                , property: 'items'
+              }
+            , listItemTemplateView: DigiWebApp.MediaListTemplateView
         })
     })
     
     , actions: M.ScrollView.design({
 
-        childViews: 'actionslist',
+          childViews: 'actionslist'
 
-        actionslist: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.MediaListController,
-                property: 'actions'
-            },
-            listItemTemplateView: DigiWebApp.MediaActionTemplateView
+        , actionslist: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.MediaListController
+                , property: 'actions'
+              }
+            , listItemTemplateView: DigiWebApp.MediaActionTemplateView
         })
     })
     

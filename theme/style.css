@@ -36,7 +36,8 @@ body {
 	margin-top: 0px; /* pre jqm 1.1 (post jqm 1.1: 3px)*/
 }
 
-.ui-li-has-arrow .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li-has-arrow {
+.ui-li-has-arrow .ui-btn-inner a.ui-link-inherit, 
+.ui-li-static.ui-li-has-arrow {
 	padding-right: 0px;
 }
 
@@ -58,7 +59,10 @@ body {
 .w1024 { background: url('images/1024x1024_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w1536 { background: url('images/1536x2048_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 
-.infoLabel a, .infoLabel a:hover, .infoLabel a:active, .infoLabel a:visited {
+.infoLabel a, 
+.infoLabel a:hover, 
+.infoLabel a:active, 
+.infoLabel a:visited {
     text-decoration: underline;
     color: #FFFFFF !important;
     font-weight: normal !important;
@@ -190,7 +194,8 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.dashboardPage .ui-content li:nth-child(1), .dashboardPage .ui-content li:nth-child(2) {
+.dashboardPage .ui-content li:nth-child(1), 
+.dashboardPage .ui-content li:nth-child(2) {
     background: none;
 }
 
@@ -199,7 +204,8 @@ label.ui-input-text, .ui-controlgroup-label {
     color: #FFFFFF;
 }
 
-.dashboardPage .ui-content li:nth-child(1).selected, .dashboardPage .ui-content li:nth-child(2).selected {
+.dashboardPage .ui-content li:nth-child(1).selected, 
+.dashboardPage .ui-content li:nth-child(2).selected {
     background: #BCBCBC;
 }
 
@@ -207,6 +213,19 @@ label.ui-input-text, .ui-controlgroup-label {
     width: 32px;
     margin-left: 15px;
     margin-top: 10px;
+}
+
+.mediaListPage .ui-content li {
+    border:  none;
+    font-size: 20px;
+    padding: 0px;
+    margin: 0px;
+    padding-left: 64px;
+    min-height: 36px;
+    height: 36px;
+    padding-top: 16px;
+    text-shadow: none;
+    background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
 .bookTimePage .ui-content .ui-grid-a .ui-block-a {
@@ -267,13 +286,23 @@ li.ui-li {
     padding-left: 0.7em;
 }
 
-.timeDataPage .ui-listview .date, .remarkPage .ui-listview .date {
+.timeDataPage .ui-listview .date, 
+.remarkPage .ui-listview .date {
     font-size: 12px;
     margin-bottom: 10px;
     color: #000000 !important;
 }
 
-.timeDataPage .ui-listview .application, .timeDataPage .ui-listview .position, .timeDataPage .ui-listview .activity, .timeDataPage .ui-listview .location, .timeDataPage .ui-listview .remark, .remarkPage .ui-listview .application, .remarkPage .ui-listview .position, .remarkPage .ui-listview .activity, .remarkPage .ui-listview .location, .remarkPage .ui-listview .remark {
+.timeDataPage .ui-listview .application, 
+.timeDataPage .ui-listview .position, 
+.timeDataPage .ui-listview .activity, 
+.timeDataPage .ui-listview .location, 
+.timeDataPage .ui-listview .remark, 
+.remarkPage .ui-listview .application, 
+.remarkPage .ui-listview .position, 
+.remarkPage .ui-listview .activity, 
+.remarkPage .ui-listview .location, 
+.remarkPage .ui-listview .remark {
     font-size: 12px;
     font-weight: normal;
     margin-left: 25px;
@@ -286,7 +315,8 @@ li.ui-li {
     margin-right: 20px;
 }
 
-.orderInfoPage .ui-listview .orderName, .orderInfoPage .ui-listview .positionName {
+.orderInfoPage .ui-listview .orderName, 
+.orderInfoPage .ui-listview .positionName {
     font-weight: bold;
     margin-left: 20px;
     color: #000000 !important;
@@ -329,22 +359,28 @@ li.ui-li {
     font-weight: normal;
 }
 
-.settingsPage input[type="text"], .settingsPage input[type="password"], .settingsPasswordPage input[type="text"], .settingsPasswordPage input[type="password"] {
+.settingsPage input[type="text"], 
+.settingsPage input[type="password"], 
+.settingsPasswordPage input[type="text"], 
+.settingsPasswordPage input[type="password"] {
     width: 90%;
 }
 
-.settingsPage .ui-content .ui-block-a, .settingsPasswordPage .ui-content .ui-block-a {
+.settingsPage .ui-content .ui-block-a, 
+.settingsPasswordPage .ui-content .ui-block-a {
     font-size: 14px;
     padding-top: 10px;
     color: #FFFFFF;
     margin-top: 0px;
 }
 
-.settingsPage .ui-content .ui-grid-a, .settingsPasswordPage .ui-content .ui-grid-a {
+.settingsPage .ui-content .ui-grid-a, 
+.settingsPasswordPage .ui-content .ui-grid-a {
     margin-bottom: 10px;
 }
 
-.settingsPage .ui-content .lastSelectBox_container, .settingsPasswordPage .ui-content .lastSelectBox_container {
+.settingsPage .ui-content .lastSelectBox_container, 
+.settingsPasswordPage .ui-content .lastSelectBox_container {
     margin-bottom: 10px;
 }
 
@@ -492,7 +528,8 @@ li.ui-li {
 	height: 45%;
 }
 
-*.unselectable, .unselectable_container {
+*.unselectable, 
+.unselectable_container {
 /*   
    -moz-user-select: -moz-none;
    -khtml-user-select: none;
