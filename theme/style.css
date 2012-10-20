@@ -172,10 +172,6 @@ label.ui-input-text, .ui-controlgroup-label {
     font-size: 12px;
 }
 
-.dashboardPage .ui-content .ui-grid-b:nth-child(3) {
-    margin-top: 20px;
-}
-
 .dashboardPage .ui-content .ui-grid-b img {
     max-width: 64px;
     max-height: 64px;
@@ -194,14 +190,18 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.dashboardPage .ui-content li:nth-child(1), 
-.dashboardPage .ui-content li:nth-child(2) {
-    background: none;
-}
-
 .dashboardPage .ui-content li.selected {
     background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
     color: #FFFFFF;
+}
+
+.dashboardPage .ui-content .ui-grid-b:nth-child(3) {
+    margin-top: 20px;
+}
+
+.dashboardPage .ui-content li:nth-child(1), 
+.dashboardPage .ui-content li:nth-child(2) {
+    background: none;
 }
 
 .dashboardPage .ui-content li:nth-child(1).selected, 
@@ -226,6 +226,27 @@ label.ui-input-text, .ui-controlgroup-label {
     padding-top: 16px;
     text-shadow: none;
     background: url('images/arrow_white.png') 100% 50% no-repeat;
+}
+
+.mediaListPage .ui-content li img {
+    width: 32px;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+.mediaListPage .ui-content li.selected {
+    background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
+    color: #FFFFFF;
+}
+
+.mediaListPage .ui-content .ui-grid-b {
+    text-align: center;
+    font-size: 12px;
+}
+
+.mediaListPage .ui-content .ui-grid-b img {
+    max-width: 64px;
+    max-height: 64px;
 }
 
 .bookTimePage .ui-content .ui-grid-a .ui-block-a {
