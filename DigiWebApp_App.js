@@ -1406,10 +1406,10 @@ DigiWebApp.CameraController = M.Controller.extend({
         		&& typeof navigator.device.capture.captureImage !== 'undefined'
         	) {
         	// camera probably available
-        	$('#' + DigiWebApp.CameraPage.content.takePictureGrid.id).show();
+        	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).show();
         	DigiWebApp.CameraController.takePicture();
         } else {
-        	$('#' + DigiWebApp.CameraPage.content.takePictureGrid.id).hide();
+        	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).hide();
         }
     },
 
@@ -4893,7 +4893,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2386
+    , softwareVersion: 2387
 
 
     /**
@@ -9640,7 +9640,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2386',
+            value: 'Build: 2387',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
