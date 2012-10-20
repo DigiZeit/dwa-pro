@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2378
+    , softwareVersion: 2379
 
 
     /**
@@ -9508,7 +9508,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2378',
+            value: 'Build: 2379',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -12243,7 +12243,7 @@ DigiWebApp.DemoCameraPage = M.PageView.design({
         }
     },
 
-    cssClass: 'cameraPage',
+    cssClass: 'demoCameraPage',
 
     childViews: 'header content',
 
@@ -12263,7 +12263,7 @@ DigiWebApp.DemoCameraPage = M.PageView.design({
             }
         }),
         title: M.LabelView.design({
-            value: M.I18N.l('takePicture'),
+            value: M.I18N.l('takePictureDemo'),
             anchorLocation: M.CENTER
         }),
         anchorLocation: M.TOP

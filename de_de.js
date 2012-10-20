@@ -349,6 +349,8 @@ M.I18N.de_de = {
     , continueInstall: 'Installation fortsetzen'
     
     , takePicture: 'neues Foto'
+    	
+    , takePictureDemo: 'neues Foto (DEMO)'
     
     , mediaList: 'Medienliste'
     
