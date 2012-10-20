@@ -806,6 +806,14 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     }),
     
+    latitude: M.Model.attr('String', {
+        isRequired:NO
+    }),
+
+    longitude: M.Model.attr('String', {
+        isRequired: NO
+    }),
+
     writeError: M.Model.attr('Boolean', {
         isRequired: NO
     }),
@@ -1397,6 +1405,7 @@ DigiWebApp.CameraController = M.Controller.extend({
             } else {
                 DigiWebApp.CameraController.initSelection();
             }
+            this.saveSelection();
         } else {
         	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).hide();
         }
@@ -1773,7 +1782,80 @@ DigiWebApp.CameraController = M.Controller.extend({
     				//, sourceType: navigator.camera.PictureSourceType.CAMERA 
     	        });    	
     },
-        	
+    
+    savePicture: function() {
+    	var that = this;
+    	that.savePictureWithLocation(null);
+    },
+    
+    savePictureWithLocation: function(location) {
+    	var that = this;
+    	
+    	that.saveSelection();
+    	
+		var orderId = M.ViewManager.getView('cameraPage', 'order').getSelection();
+		
+		var posObj = M.ViewManager.getView('cameraPage', 'position').getSelection(YES);
+		var posId = posObj ? posObj.value : null;
+	
+		var actObj = M.ViewManager.getView('cameraPage', 'activity').getSelection(YES);
+		var actId = actObj ? actObj.value : null;
+
+	    var handOrderId = null;
+	    var handOrderName = null;
+	    if(DigiWebApp.BookingController.isHandOrder(orderId)) {
+			handOrderId = orderId;
+			handOrderName = _.select(DigiWebApp.HandOrder.find(), function(ord) {
+			    return ord.get('id') === orderId || ord.get('name') === orderId;
+			})[0].get('name');
+			orderId = null;
+	
+			// a hand order has no position
+			posId = null;
+	    }
+
+	    var lat = '0';
+	    var lon = '0';
+	    if(location) {
+			if (location.latitude) {
+			    lat = location.latitude;
+			}
+			if(location.longitude) {
+			    lon = location.longitude;
+			}
+	    }
+
+	    var myMediaFile = that.newMediaFile({
+			oId: orderId,
+			hoId: handOrderId,
+			hoName: handOrderName,
+			lat: lat,
+			lon: lon,
+			pId: posId,
+			aId: actId,
+    	});
+	    
+	    var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+
+	    myMediaFile.set('fileType', 'image/jpeg;base64');
+	    myMediaFile.save();
+	    myMediaFile.saveToFile(image.src, DigiWebApp.NavigationController.backToMediaListPageTransition);
+
+    },
+
+    , newMediaFile: function(obj) {
+        return DigiWebApp.MediaFile.createRecord({
+            orderId: obj.oId ? obj.oId : '0',
+            handOrderId: obj.hoId ? obj.hoId : '0',
+            handOrderName: obj.hoName ? obj.hoName : '0',
+            latitude: obj.lat ? obj.lat : '0',
+            longitude: obj.lon ? obj.lon : '0',
+            positionId: obj.pId ? obj.pId : '0',
+            activityId: obj.aId ? obj.aId : '0',
+            timeStamp: +new Date()
+        });
+    }
+    
     myImageData: null,
     myImageObj: null,
     cameraSuccessBase64: function(imageData) {
@@ -4974,7 +5056,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2388
+    , softwareVersion: 2389
 
 
     /**
@@ -9355,7 +9437,7 @@ DigiWebApp.CameraPage = M.PageView.design({
             events: {
                 tap: {
                     target: DigiWebApp.NavigationController,
-                    action: 'backToMediaListPage'
+                    action: 'backToMediaListPageTransition'
                 }
             }
         }),
@@ -9367,11 +9449,15 @@ DigiWebApp.CameraPage = M.PageView.design({
     }),
 
     content: M.ScrollView.design({
-        childViews: 'image order position activity savePictureGrid',
+        childViews: 'image spacer order position activity savePictureGrid',
 
         image: M.ImageView.design({
         		value: '',
         		cssClass: 'photo'
+        }),
+        
+        spacer: M.LabelView.design({
+        		value: ''
         }),
 
         order: M.SelectionListView.design({
@@ -9721,7 +9807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2388',
+            value: 'Build: 2389',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11503,7 +11589,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
     isSelectable: NO,
 
-    childViews: 'date order position activity latitude longitude',
+    childViews: 'timeStamp order position activity latitude longitude',
 
     events: {
         tap: {
@@ -11512,10 +11598,10 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
         }
     },
 
-	date: M.LabelView.design({
+	timeStamp: M.LabelView.design({
         cssClass: 'date',
         computedValue: {
-            valuePattern: '<%= date %>',
+            valuePattern: '<%= timeStamp %>',
             //value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
             operation: function(v) {
                 v = v.split(',');
@@ -11654,22 +11740,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                 }
             }
         }
-    }),
-
-    remark: M.LabelView.design({
-        cssClass: 'remark',
-        computedValue: {
-            valuePattern: '<%= remark %>',
-            operation: function(v) {
-                if (v) { 
-               		return M.I18N.l('remark') + ': ' + v;
-                } else {
-                    return '';
-                }
-            }
-        }
     })
-
 
 });
 
