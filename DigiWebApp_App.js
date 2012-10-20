@@ -786,6 +786,10 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     }),
 
+    date: M.Model.attr('String', { // is aggregated by the two timestamp values above
+
+    }),
+
     orderId: M.Model.attr('String',{
         isRequired: NO
     }),
@@ -5056,7 +5060,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2392
+    , softwareVersion: 2393
 
 
     /**
@@ -9457,7 +9461,7 @@ DigiWebApp.CameraPage = M.PageView.design({
         }),
         
         spacer: M.LabelView.design({
-        		value: ''
+        		value: ' '
         }),
 
         order: M.SelectionListView.design({
@@ -9807,7 +9811,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2392',
+            value: 'Build: 2393',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11604,39 +11608,8 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
             valuePattern: '<%= timeStamp %>',
             //value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
             operation: function(v) {
-                v = v.split(',');
-                var date1 = M.Date.create(Number(v[0]));
-                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                if(date2) {
-                    // cut minutes down => 12:05:59 is going to be 12:05:00
-                    date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
-                    date2 = M.Date.create(date2.format('mm/dd/yyyy HH:MM'));
-
-                    if(date1.format('mm/dd/yyyy HH:MM') === date2.format('mm/dd/yyyy HH:MM')) { // if booking is closed in the same minute
-                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', 00:01 h';
-                    } else {
-                        var timeBetween = date1.timeBetween(date2, M.MINUTES);
-                        if(timeBetween < 1) {
-                            timeBetween = M.Math.round(timeBetween, M.CEIL);
-                        } else {
-                            timeBetween = M.Math.round(date1.timeBetween(date2, M.MINUTES), M.FLOOR);
-                        }
-                        if(timeBetween > 59) {
-                            var hours = M.Math.round(timeBetween / 60, M.FLOOR);
-                            hours = hours < 10 ? '0' + hours : hours;
-                            var minutes = timeBetween % 60;
-                            minutes = minutes < 10 ? '0' + minutes : minutes;
-                            timeBetween = hours + ':' + minutes;
-                        } else {
-                            timeBetween = '00:' + (timeBetween < 10 ? '0' : '') + timeBetween;
-                        }
-                        return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', ' + timeBetween + ' h';
-                    }
-
-
-                } else {
-                    return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + M.I18N.l('now') + ' (' + M.Date.create().format('HH:MM') + ')';
-                }
+                var date1 = M.Date.create(Number(v));
+                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM');
 
             }
         }
