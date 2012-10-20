@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2375
+    , softwareVersion: 2376
 
 
     /**
@@ -9508,7 +9508,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2375',
+            value: 'Build: 2376',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13335,7 +13335,7 @@ DigiWebApp.MediaListPage = M.PageView.design({
 
     needsUpdate: true,
 
-    childViews: 'header content',
+    childViews: 'header mediafiles actions',
 
     header: M.ToolbarView.design({
         childViews: 'backButton title',
