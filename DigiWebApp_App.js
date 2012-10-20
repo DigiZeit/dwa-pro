@@ -1384,6 +1384,11 @@ DigiWebApp.CameraController = M.Controller.extend({
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
         }
+
+        var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+        image.src = '';
+        DigiWebApp.CameraController.myImageObj = new Image();
+
         /* do something, for any other load. */
         if (       typeof navigator.device !== 'undefined' 
         		&& typeof navigator.device.capture !== 'undefined' 
@@ -1391,6 +1396,7 @@ DigiWebApp.CameraController = M.Controller.extend({
         	) {
         	// camera probably available
         	$('#' + DigiWebApp.CameraPage.content.takePictureGrid.id).show();
+        	DigiWebApp.CameraController.takePicture();
         } else {
         	$('#' + DigiWebApp.CameraPage.content.takePictureGrid.id).hide();
         }
@@ -4810,7 +4816,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2384
+    , softwareVersion: 2385
 
 
     /**
@@ -7824,7 +7830,6 @@ DigiWebApp.MediaListController = M.Controller.extend({
 
     , camera: function() {
         DigiWebApp.NavigationController.toCameraPageTransition();
-        DigiWebApp.CameraController.takePicture();
     }
 
     , audio: function() {
@@ -9514,7 +9519,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2384',
+            value: 'Build: 2385',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
