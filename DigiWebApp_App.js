@@ -483,7 +483,7 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -550,7 +550,7 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -613,7 +613,7 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -867,7 +867,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -934,7 +934,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -997,7 +997,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if (typeof LocalFileSystem === "undefined") {
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.log("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return;
@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2380
+    , softwareVersion: 2381
 
 
     /**
@@ -9512,7 +9512,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2380',
+            value: 'Build: 2381',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
