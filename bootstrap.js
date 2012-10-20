@@ -17,19 +17,25 @@ $(document).bind("mobileinit", function(){
 
     /* disable auto initialize */
     $.mobile.autoInitializePage = false;
-
-    /* disable touch overflow */
-    $.mobile.touchOverflowEnabled = false;
 });
 $(document).ready(function(){
-    /* configure jqm */
-    $.mobile.touchOverflowEnabled = M.Application.getConfig('enableTouchOverflow') !== undefined ? M.Application.getConfig('enableTouchOverflow') : $.mobile.touchOverflowEnabled;
+    /* bind the orientationchange event globally */
+    M.EventDispatcher.registerEvent(
+        'orientationchange',
+        $(window),
+        {
+            target: M.EventDispatcher,
+            action: 'dispatchOrientationChangeEvent'
+        },
+        ['orientationchange'],
+        null,
+        NO,
+        YES
+    );
 
     /* init pages */
     $.mobile.initializePage();
 
-    /* bind orientation change event */
-    $(window).bind('orientationchange', function() {
-        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationchange');
-    });
+    /* dont hide the toolbar, ever */
+    $("[data-role=header][data-position=fixed]").fixedtoolbar({ hideDuringFocus: "" });
 });
