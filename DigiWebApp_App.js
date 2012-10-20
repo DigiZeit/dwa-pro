@@ -4810,7 +4810,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2381
+    , softwareVersion: 2382
 
 
     /**
@@ -7824,6 +7824,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 
     , camera: function() {
         DigiWebApp.NavigationController.toCameraPageTransition();
+        DigiWebApp.CameraController.takePicture();
     }
 
     , audio: function() {
@@ -9512,7 +9513,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2381',
+            value: 'Build: 2382',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
