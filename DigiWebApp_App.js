@@ -1841,7 +1841,7 @@ DigiWebApp.CameraController = M.Controller.extend({
 	    myMediaFile.save();
 	    myMediaFile.saveToFile(image.src, DigiWebApp.NavigationController.backToMediaListPageTransition);
 
-    },
+    }
 
     , newMediaFile: function(obj) {
         return DigiWebApp.MediaFile.createRecord({
@@ -5056,7 +5056,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2389
+    , softwareVersion: 2390
 
 
     /**
@@ -9807,7 +9807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2389',
+            value: 'Build: 2390',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
