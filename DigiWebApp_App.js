@@ -1330,8 +1330,6 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     	  , von: M.Model.attr('String', {})
 //    		  vorname: "Michael"
     	  , vorname: M.Model.attr('String', {})
-    			  
-
 
 }, M.DataConsumer.configure({
 
@@ -5272,7 +5270,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2430
+    , softwareVersion: 2431
 
 
     /**
@@ -10095,7 +10093,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2430',
+            value: 'Build: 2431',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13487,7 +13485,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'datum uhrzeit spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit'
+    , childViews: 'datum von bis dauer spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit'
 
     , events: {
         tap: {
@@ -13582,10 +13580,11 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	//	  bis: "10:37:08"
 	, bis: M.LabelView.design({
         cssClass: 'normal unselectable'
+      , isInline: YES
       , computedValue: {
             valuePattern: '<%= bis %>'
           , operation: function(v) {
-                  return v;
+                  return ' - ' + v;
               }
       }
 	})
@@ -13606,10 +13605,11 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	//	  dauer: "00:00"
 	, dauer: M.LabelView.design({
         cssClass: 'normal unselectable'
+      , isInline: YES
       , computedValue: {
             valuePattern: '<%= dauer %>'
           , operation: function(v) {
-                  return v;
+                  return ' (' + v + ')';
               }
       }
 	})
@@ -13754,6 +13754,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	//	  von: "10:36:45"
 	, von: M.LabelView.design({
         cssClass: 'normal unselectable'
+      , isInline: YES
       , computedValue: {
             valuePattern: '<%= von %>'
           , operation: function(v) {
