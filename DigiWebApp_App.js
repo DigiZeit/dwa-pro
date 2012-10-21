@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2413
+    , softwareVersion: 2414
 
 
     /**
@@ -8246,7 +8246,13 @@ DigiWebApp.MediaListController = M.Controller.extend({
             }
             // End::RecordAudio
 
-            this.set('actions', actions);
+        	actions.push({
+                label: M.I18N.l('uploadMediaFiles'),
+                icon: 'icon_dataTransfer.png',
+                id: 'uploadMediaFiles'
+            });
+
+        	this.set('actions', actions);
             DigiWebApp.MediaListPage.needsUpdate = false;
         }
 
@@ -8288,6 +8294,9 @@ DigiWebApp.MediaListController = M.Controller.extend({
         DigiWebApp.NavigationController.toAudioPageTransition();
     }
     
+    , uploadMediaFiles: function() {
+        //TODO: MediaFiles zu WebService übertragen (tbd)
+    }
 
 });
 
@@ -10073,7 +10082,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2413',
+            value: 'Build: 2414',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 

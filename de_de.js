@@ -445,4 +445,7 @@ M.I18N.de_de = {
     , notDefined: 'nicht definiert'
 
     , unknown: 'nicht angegeben'
+
+    , uploadMediaFiles: 'Medien übertragen'
+
 };
