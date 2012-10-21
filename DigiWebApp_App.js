@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2433
+    , softwareVersion: 2434
 
 
     /**
@@ -10101,7 +10101,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2433',
+            value: 'Build: 2434',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13505,7 +13505,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 						var longitude = '0.0';
 						var latitude = '0.0';
 						_.each(DigiWebApp.ZeitbuchungenController.items, function(ZeitbuchungenItem) {
-							if (ZeitbuchungenItem.m_id === mitarbeiter_m_id) {
+							if (ZeitbuchungenItem.m_id === mitarbeiter_modelId) {
 								if (ZeitbuchungenItem.get("gpsLaenge") !== "0.0" && ZeitbuchungenItem.get("gpsBreite") !== "0.0") {
 									longitude = ZeitbuchungenItem.get("gpsLaenge");
 									latitude = ZeitbuchungenItem.get("gpsBreite");
@@ -13599,6 +13599,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	//	  datum: "14.06.2012"
 	, datum: M.LabelView.design({
         cssClass: 'bold unselectable'
+      , isInline: YES
       , computedValue: {
             valuePattern: '<%= datum %>'
           , operation: function(v) {
