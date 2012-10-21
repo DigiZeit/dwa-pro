@@ -1067,6 +1067,10 @@ DigiWebApp.Anwesenheitsliste = M.Model.create({
     
       __name__: 'Anwesenheitsliste'
 
+      	//"auftragsBezeichnung": "27.08.2012",
+    	  	, auftragsBezeichnung: M.Model.attr('String', {})
+    	//"auftragsId": "27.08.2012",
+    	    , auftragsId: M.Model.attr('String', {})
     	//"datum": "27.08.2012",
     	    , datum: M.Model.attr('String', {})
     	//"farbeAmpel": "",
@@ -1127,16 +1131,20 @@ DigiWebApp.Anwesenheitsliste = M.Model.create({
     map: function(obj) {
     	//console.log(obj);
         return {
+        	//"auftragsBezeichnung":"1234Hermann"
+        	  auftragsBezeichnung: obj.auftragsBezeichnung
+        	//"auftragsId":"947"
+			, auftragsId: obj.auftragsId
 			//"datum": "27.08.2012",
-			  datum: obj.datum
+			, datum: obj.datum
 			//"farbeAmpel": "",
 			, farbeAmpel: obj.farbeAmpel
 			//"farbeAnwesenheit": "#00FF00",
 			, farbeAnwesenheit: obj.farbeAnwesenheit
 			//"fehlzeitBezeichnung": "",
-			, fehlzeitBezeichnung: obj.fehlzeitBezeichnung
+			, fehlzeitBezeichnung: obj.fehlzeitBezeichnung // fehlt neuerdings
 			//"fehlzeitFarbe": "",
-			, fehlzeitFarbe: obj.fehlzeitFarbe
+			, fehlzeitFarbe: obj.fehlzeitFarbe // fehlt neuerdings
 			//"gpsBreite": "0.0",
 			, gpsBreite: obj.gpsBreite
 			//"gpsBreitePosition": "0.0",
@@ -5266,7 +5274,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2424
+    , softwareVersion: 2425
 
 
     /**
@@ -10089,7 +10097,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2424',
+            value: 'Build: 2425',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13139,9 +13147,11 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
 			    var view = M.ViewManager.getViewById(id);
 				console.log("view is");
 				console.log(view);
-			    var mitarbeiter_m_id = M.ViewManager.getView(view, 'nameVorname').item.m_id;
-				_.each(DigiWebApp.AnwesenheitslisteController.items, function(AnwesenheitslisteItem) {
-					if (AnwesenheitslisteItem.m_id === mitarbeiter_m_id) {
+			    var mitarbeiter_modelId = M.ViewManager.getView(view, 'nameVorname').item.modelId;
+				console.log("mitarbeiter_modelId is");
+				console.log(mitarbeiter_modelId);
+			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(AnwesenheitslisteItem) {
+					if (AnwesenheitslisteItem.modelId === mitarbeiter_modelId) {
 						if (AnwesenheitslisteItem.get("datum") !== "-") {
 							DigiWebApp.ZeitbuchungenController.set('datum', AnwesenheitslisteItem.get("datum"));
 							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', AnwesenheitslisteItem.get("mitarbeiterId"));
