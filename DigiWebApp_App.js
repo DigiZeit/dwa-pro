@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2419
+    , softwareVersion: 2420
 
 
     /**
@@ -9369,6 +9369,8 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 
     , initWithServer: function(isFirstLoad) {
     	var that = this;
+		console.log("Anwesenheitsliste: that is ");		
+		console.log(that);		
 		console.log("Anwesenheitsliste: items is ");		
 		console.log(that.items);		
 		if(that.items === null) {
@@ -10087,7 +10089,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2419',
+            value: 'Build: 2420',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
