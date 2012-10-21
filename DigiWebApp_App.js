@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2434
+    , softwareVersion: 2435
 
 
     /**
@@ -10101,7 +10101,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2434',
+            value: 'Build: 2435',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13587,7 +13587,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	})
 	//	  bis: "10:37:08"
 	, bis: M.LabelView.design({
-        cssClass: 'normal unselectable'
+        cssClass: 'bold unselectable'
       , isInline: YES
       , computedValue: {
             valuePattern: '<%= bis %>'
@@ -13604,7 +13604,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
             valuePattern: '<%= datum %>'
           , operation: function(v) {
 				if (v !== "-") {
-			        return M.I18N.l('since') + ' ' + v;
+			        return v;
 				} else {
 					return "";
 				}
@@ -13618,7 +13618,11 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= dauer %>'
           , operation: function(v) {
-                  return ' (' + v + ')';
+					if (v!== "00:00") {
+						return ' (' + v + ')';
+					} else {
+						return '';
+					}
               }
       }
 	})
@@ -13786,12 +13790,12 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	})
 	//	  von: "10:36:45"
 	, von: M.LabelView.design({
-        cssClass: 'normal unselectable'
+        cssClass: 'bold unselectable'
       , isInline: YES
       , computedValue: {
             valuePattern: '<%= von %>'
           , operation: function(v) {
-                  return v;
+                  return ' ' + v;
               }
       }
 	})
