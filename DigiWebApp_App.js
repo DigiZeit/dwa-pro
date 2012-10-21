@@ -5241,7 +5241,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2402
+    , softwareVersion: 2403
 
 
     /**
@@ -10011,7 +10011,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2402',
+            value: 'Build: 2403',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11809,7 +11809,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
             //value: '01.01.2011, 08:01:02
             operation: function(v) {
                 var date1 = M.Date.create(Number(v));
-                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM:SS');
+                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM:ss');
 
             }
         }
