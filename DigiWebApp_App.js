@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2418
+    , softwareVersion: 2419
 
 
     /**
@@ -9361,16 +9361,17 @@ DigiWebApp.DemoCameraController = M.Controller.extend({
 
 DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 
-	items: null
+	  items: null
 	
 	, init: function(isFirstLoad) {
 		DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.AnwesenheitslisteController.initWithServer, isFirstLoad);
 	}
 
     , initWithServer: function(isFirstLoad) {
+    	var that = this;
 		console.log("Anwesenheitsliste: items is ");		
-		console.log(this.items);		
-		if(this.items === null) {
+		console.log(that.items);		
+		if(that.items === null) {
 			console.log("Anwesenheitsliste: showing Loader");		
 			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('AnwesenheitslisteLaden'));
 
@@ -9388,7 +9389,7 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 	            		            message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden'),
 	            		            callbacks: {
 	            		                confirm: {
-	            		                    target: this,
+	            		                    target: that,
 	            		                    action: function () {
 	            		        				DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
 	            		                    }
@@ -9411,7 +9412,7 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 	        		            message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden'),
 	        		            callbacks: {
 	        		                confirm: {
-	        		                    target: this,
+	        		                    target: that,
 	        		                    action: function () {
 		        							DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
 	        		                    }
@@ -10086,7 +10087,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2418',
+            value: 'Build: 2419',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
