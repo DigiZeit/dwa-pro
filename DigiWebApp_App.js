@@ -5274,7 +5274,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2428
+    , softwareVersion: 2429
 
 
     /**
@@ -10097,7 +10097,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2428',
+            value: 'Build: 2429',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13139,21 +13139,23 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
-				console.log("id is");
-				console.log(id);
-				console.log("m_id is");
-				console.log(m_id);
+				//console.log("id is");
+				//console.log(id);
+				//console.log("m_id is");
+				//console.log(m_id);
 				var doShow = NO;
 			    var view = M.ViewManager.getViewById(id);
-				console.log("view is");
-				console.log(view);
+				//console.log("view is");
+				//console.log(view);
 			    //var mitarbeiter_modelId = M.ViewManager.getView(view, 'nameVorname').modelId;
 			    var mitarbeiter_modelId = view.modelId;
-				console.log("mitarbeiter_modelId is");
-				console.log(mitarbeiter_modelId);
+				//console.log("mitarbeiter_modelId is");
+				//console.log(mitarbeiter_modelId);
 			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(AnwesenheitslisteItem) {
 					if (AnwesenheitslisteItem.m_id === mitarbeiter_modelId) {
 						if (AnwesenheitslisteItem.get("datum") !== "-") {
+							//console.log("AnwesenheitslisteItem found");
+							//console.log(AnwesenheitslisteItem);
 							DigiWebApp.ZeitbuchungenController.set('datum', AnwesenheitslisteItem.get("datum"));
 							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', AnwesenheitslisteItem.get("mitarbeiterId"));
 							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', AnwesenheitslisteItem.get("nameVorname"));
@@ -13494,7 +13496,8 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 			action: function(id, m_id) {
 						var doShow = NO;
 					    var view = M.ViewManager.getViewById(id);
-					    var mitarbeiter_m_id = M.ViewManager.getView(view, 'nameVorname').item.m_id;
+					    //var mitarbeiter_m_id = M.ViewManager.getView(view, 'nameVorname').item.m_id;
+					    var mitarbeiter_modelId = view.modelId;
 						var longitude = '0.0';
 						var latitude = '0.0';
 						_.each(DigiWebApp.ZeitbuchungenController.items, function(ZeitbuchungenItem) {
