@@ -272,6 +272,12 @@ label.ui-input-text, .ui-controlgroup-label {
     padding-left: 0.7em;
 }
 
+.mediaListPage .mediafilesList .ui-listview .icon {
+    width: 32px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
 .mediaListPage .mediafilesList .ui-listview .date {
     font-size: 12px;
     margin-bottom: 10px;

@@ -5246,7 +5246,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2404
+    , softwareVersion: 2405
 
 
     /**
@@ -10016,7 +10016,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2404',
+            value: 'Build: 2405',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11808,10 +11808,15 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
     },
 
     icon: M.ImageView.design({
+        cssClass: 'icon',
         computedValue: {
             valuePattern: '<%= icon %>',
             operation: function(v) {
-                return 'theme/images/' + v;
+			        if (v) {
+			        	return 'theme/images/' + v;
+			        } else {
+			        	return '';
+			        }
             }
         }
     }),
@@ -13778,11 +13783,7 @@ DigiWebApp.MediaActionTemplateView = M.ListItemView.design({
         computedValue: {
             valuePattern: '<%= icon %>',
             operation: function(v) {
-                if (v) {
                 	return 'theme/images/' + v;
-                } else {
-                	return '';
-                }
             }
         }
     }),
