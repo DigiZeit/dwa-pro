@@ -5274,7 +5274,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2426
+    , softwareVersion: 2427
 
 
     /**
@@ -10097,7 +10097,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2426',
+            value: 'Build: 2427',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13147,7 +13147,8 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
 			    var view = M.ViewManager.getViewById(id);
 				console.log("view is");
 				console.log(view);
-			    var mitarbeiter_modelId = M.ViewManager.getView(view, 'nameVorname').item.modelId;
+			    //var mitarbeiter_modelId = M.ViewManager.getView(view, 'nameVorname').modelId;
+			    var mitarbeiter_modelId = view.modelId;
 				console.log("mitarbeiter_modelId is");
 				console.log(mitarbeiter_modelId);
 			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(AnwesenheitslisteItem) {
