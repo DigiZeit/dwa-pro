@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2443
+    , softwareVersion: 2444
 
 
     /**
@@ -10117,7 +10117,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2443',
+            value: 'Build: 2444',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13154,7 +13154,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'farbeAnwesenheit nameVorname spacer1 datum uhrzeit spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit'
+    , childViews: 'farbeAnwesenheit nameVorname spacer1 datum uhrzeit spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit gpsBreite gpsLaenge gpsBreitePosition gpsLaengePosition'
 
     , events: {
         tap: {
@@ -13256,43 +13256,67 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
           }
   }
 })
-//"gpsBreite": "0.0",
+//	  gpsBreite: "0.0"
 , gpsBreite: M.LabelView.design({
     cssClass: 'normal unselectable'
   , computedValue: {
         valuePattern: '<%= gpsBreite %>'
       , operation: function(v) {
-              return v;
+		        if (v != "0.0") { 
+		        	var str = new Number(v);
+		       		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
+		        } else {
+		            //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+		            return '';
+		        }
           }
   }
 })
-//"gpsBreitePosition": "0.0",
+//	  gpsBreitePosition: "0.0"
 , gpsBreitePosition: M.LabelView.design({
     cssClass: 'normal unselectable'
   , computedValue: {
         valuePattern: '<%= gpsBreitePosition %>'
       , operation: function(v) {
-              return v;
+	        if (v != "0.0") { 
+	        	var str = new Number(v);
+	       		return M.I18N.l('position') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
+	        } else {
+	            //return M.I18N.l('position') + '-' + M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+	            return '';
+	        }
           }
   }
 })
-//"gpsLaenge": "0.0",
+//	  gpsLaenge: "0.0"
 , gpsLaenge: M.LabelView.design({
     cssClass: 'normal unselectable'
   , computedValue: {
         valuePattern: '<%= gpsLaenge %>'
       , operation: function(v) {
-              return v;
+	        if (v != "0.0") { 
+	        	var str = new Number(v);
+	       		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
+	        } else {
+	            //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+	            return '';
+	        }
           }
   }
 })
-//"gpsLaengePosition": "0.0",
+//	  gpsLaengePosition: "0.0"
 , gpsLaengePosition: M.LabelView.design({
     cssClass: 'normal unselectable'
   , computedValue: {
         valuePattern: '<%= gpsLaengePosition %>'
       , operation: function(v) {
-              return v;
+		        if (v != "0.0") { 
+		        	var str = new Number(v);
+		       		return M.I18N.l('position') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
+		        } else {
+		            //return M.I18N.l('position') + '-' + M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+		            return '';
+		        }
           }
   }
 })
@@ -13510,7 +13534,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'datum von bis dauer spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit'
+    , childViews: 'datum von bis dauer spacer2 positionsBezeichnung handauftragsBezeichnung taetigkeit gpsBreite gpsLaenge gpsBreitePosition gpsLaengePosition'
 
     , events: {
         tap: {
@@ -13659,7 +13683,13 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsBreite %>'
           , operation: function(v) {
-                  return v;
+			        if (v != "0.0") { 
+			        	var str = new Number(v);
+			       		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
+			        } else {
+			            //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+			            return '';
+			        }
               }
       }
 	})
@@ -13669,7 +13699,13 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsBreitePosition %>'
           , operation: function(v) {
-                  return v;
+		        if (v != "0.0") { 
+		        	var str = new Number(v);
+		       		return M.I18N.l('position') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
+		        } else {
+		            //return M.I18N.l('position') + '-' + M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+		            return '';
+		        }
               }
       }
 	})
@@ -13679,7 +13715,13 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsLaenge %>'
           , operation: function(v) {
-                  return v;
+		        if (v != "0.0") { 
+		        	var str = new Number(v);
+		       		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
+		        } else {
+		            //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+		            return '';
+		        }
               }
       }
 	})
@@ -13689,7 +13731,13 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsLaengePosition %>'
           , operation: function(v) {
-                  return v;
+			        if (v != "0.0") { 
+			        	var str = new Number(v);
+			       		return M.I18N.l('position') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
+			        } else {
+			            //return M.I18N.l('position') + '-' + M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+			            return '';
+			        }
               }
       }
 	})
