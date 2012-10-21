@@ -247,7 +247,7 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.actionsList .ui-body-c li img {
+.actionsList .ui-li-thumb {
     width: 32px;
     margin-left: 15px;
     margin-top: 10px;
