@@ -441,5 +441,8 @@ M.I18N.de_de = {
     , wrongServer: 'Falscher Server'
 
     , wrongServerMessage: 'Sie haben die WebApp auf dem falschen Server gestartet! Sie werden nun auf den zuständigen Server weitergeleitet.'
+    
+    , notDefined: 'nicht definiert'
 
+    , unknown: 'nicht angegeben'
 };

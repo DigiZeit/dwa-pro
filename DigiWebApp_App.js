@@ -830,6 +830,14 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     }),
 
+    remark: M.Model.attr('String', {
+        isRequired: NO
+    }),
+
+    setRemark: function(v) {
+        this.set('remark', v);
+    },
+
     writeError: M.Model.attr('Boolean', {
         isRequired: NO
     }),
@@ -1805,6 +1813,7 @@ DigiWebApp.CameraController = M.Controller.extend({
     	that.savePictureWithLocation(null);
     }
     
+   
     , savePictureWithLocation: function(location) {
     	var that = this;
     	
@@ -1851,6 +1860,8 @@ DigiWebApp.CameraController = M.Controller.extend({
 			pId: posId,
 			aId: actId
     	});
+	    
+	    myMediaFile.setRemark(M.ViewManager.getView('cameraPage', 'remarkInput').value);
 	    
 	    var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
 
@@ -5255,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2409
+    , softwareVersion: 2410
 
 
     /**
@@ -9650,7 +9661,7 @@ DigiWebApp.CameraPage = M.PageView.design({
     }),
 
     content: M.ScrollView.design({
-        childViews: 'image spacer order position activity savePictureGrid',
+        childViews: 'image spacer order position activity remarkInput savePictureGrid',
 
         image: M.ImageView.design({
         		value: '',
@@ -9721,6 +9732,13 @@ DigiWebApp.CameraPage = M.PageView.design({
 	        }
 	    }),
         	        
+        remarkInput: M.TextFieldView.design({
+            label: M.I18N.l('remark'),
+            cssClass: 'remarkInput',
+            hasMultipleLines: YES,
+            numberOfChars: 255
+        }),
+
 //        imageContainer: M.ContainerView.design({
 //        	childViews: 'imageCanvas',
 //            cssClass: 'imageContainer marginTop20 marginBottom20',
@@ -9736,6 +9754,30 @@ DigiWebApp.CameraPage = M.PageView.design({
 //	        })
 //	        
 //        }),
+
+        savePicture: function() {
+        	
+    		if (M.ViewManager.getView('cameraPage', 'remarkInput').value.length > 255) {
+    	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+        			title: M.I18N.l('remarkTooLong'),
+        			message: M.I18N.l('remarkTooLongMessage')
+        		});
+    		} else {
+    			
+	            //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
+	            if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
+	    	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                    title: M.I18N.l('specialCharProblem'),
+	                    message: M.I18N.l('specialCharProblemMsg')
+	                });
+	            } else {
+	            	DigiWebApp.CameraController.savePicture();
+	            }
+
+    		}
+        },
 
         savePictureGrid: M.GridView.design({
         	childViews: 'button icon',
@@ -9753,7 +9795,7 @@ DigiWebApp.CameraPage = M.PageView.design({
         		anchorLocation: M.RIGHT,
         		events: {
                 	tap: {
-        				target: DigiWebApp.CameraController,
+        				target: this,
         				action: 'savePicture'
                 	}
             	}
@@ -10025,7 +10067,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2409',
+            value: 'Build: 2410',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -10964,7 +11006,7 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                     	return M.I18N.l('order') + ': ' + order.get('name');
                     }
                 } else {
-                    return M.I18N.l('order') + ': nicht definiert.';
+                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
                 }
             }
         }
@@ -10983,10 +11025,10 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                         position = position[0];
                         return M.I18N.l('position') + ': ' + position.get('name');
                     } else {
-                        return M.I18N.l('position') + ': nicht definiert';
+                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
                     }
                 } else {
-                    return M.I18N.l('position') + ': nicht angegeben.';
+                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
                 }
 
             }
@@ -11006,11 +11048,11 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                         activity = activity[0];
                         return M.I18N.l('activity') + ': ' + activity.get('name');
                     } else {
-                        return M.I18N.l('activity') + ': nicht definiert';
+                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
                     }
 
                 } else {
-                    return M.I18N.l('activity') + ': nicht angegeben';
+                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
                 }
             }
         }
@@ -11592,7 +11634,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                     	return M.I18N.l('order') + ': ' + order.get('name');
                     }
                 } else {
-                    return M.I18N.l('order') + ': nicht definiert.';
+                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
                 }
             }
         }
@@ -11611,10 +11653,10 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                         position = position[0];
                         return M.I18N.l('position') + ': ' + position.get('name');
                     } else {
-                        return M.I18N.l('position') + ': nicht definiert';
+                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
                     }
                 } else {
-                    return M.I18N.l('position') + ': nicht angegeben.';
+                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
                 }
 
             }
@@ -11634,11 +11676,11 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                         activity = activity[0];
                         return M.I18N.l('activity') + ': ' + activity.get('name');
                     } else {
-                        return M.I18N.l('activity') + ': nicht definiert';
+                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
                     }
 
                 } else {
-                    return M.I18N.l('activity') + ': nicht angegeben';
+                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
                 }
             }
         }
@@ -11805,18 +11847,18 @@ DigiWebApp.noSettingsiOSPage = M.PageView.design({
 
 DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
-    isSelectable: YES,
+      isSelectable: YES
 
-    childViews: 'icon timeStamp order position activity latitude longitude',
+    , childViews: 'icon timeStamp order position activity latitude longitude remark'
 
-    events: {
+    , events: {
         tap: {
 			action: function(id, m_id) {
 			}
         }
-    },
+    }
 
-    icon: M.ImageView.design({
+    , icon: M.ImageView.design({
         cssClass: 'icon',
         computedValue: {
             valuePattern: '<%= icon %>',
@@ -11828,9 +11870,9 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 			        }
             }
         }
-    }),
+    })
 
-	timeStamp: M.LabelView.design({
+	, timeStamp: M.LabelView.design({
         cssClass: 'date',
         computedValue: {
             valuePattern: '<%= timeStamp %>',
@@ -11841,9 +11883,9 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
             }
         }
-    }),
+    })
 
-    order: M.LabelView.design({
+    , order: M.LabelView.design({
         cssClass: 'application',
         computedValue: {
             valuePattern: '<%= orderId %>',
@@ -11859,13 +11901,13 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                     	return M.I18N.l('order') + ': ' + order.get('name');
                     }
                 } else {
-                    return M.I18N.l('order') + ': nicht definiert.';
+                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
                 }
             }
         }
-    }),
+    })
 
-    position: M.LabelView.design({
+    , position: M.LabelView.design({
         cssClass: 'position',
         computedValue: {
             valuePattern: '<%= positionId %>',
@@ -11878,17 +11920,17 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                         position = position[0];
                         return M.I18N.l('position') + ': ' + position.get('name');
                     } else {
-                        return M.I18N.l('position') + ': nicht definiert';
+                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
                     }
                 } else {
-                    return M.I18N.l('position') + ': nicht angegeben.';
+                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
                 }
 
             }
         }
-    }),
+    })
 
-    activity: M.LabelView.design({
+    , activity: M.LabelView.design({
         cssClass: 'activity',
         computedValue: {
             valuePattern: '<%= activityId %>',
@@ -11901,17 +11943,17 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                         activity = activity[0];
                         return M.I18N.l('activity') + ': ' + activity.get('name');
                     } else {
-                        return M.I18N.l('activity') + ': nicht definiert';
+                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
                     }
 
                 } else {
-                    return M.I18N.l('activity') + ': nicht angegeben';
+                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
                 }
             }
         }
-    }),
+    })
     
-    latitude: M.LabelView.design({
+    , latitude: M.LabelView.design({
         cssClass: 'location',
         computedValue: {
             valuePattern: '<%= latitude %>',
@@ -11925,9 +11967,9 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                 }
             }
         }
-    }),
+    })
 
-    longitude: M.LabelView.design({
+    , longitude: M.LabelView.design({
         cssClass: 'location',
         computedValue: {
             valuePattern: '<%= longitude %>',
@@ -11937,6 +11979,20 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
                		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
                 } else {
                     //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+                    return '';
+                }
+            }
+        }
+    })
+    
+    , remark: M.LabelView.design({
+        cssClass: 'remark unselectable',
+        computedValue: {
+            valuePattern: '<%= remark %>',
+            operation: function(v) {
+                if (v) { 
+               		return M.I18N.l('remark') + ': ' + v;
+                } else {
                     return '';
                 }
             }
@@ -12540,7 +12596,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                     	return M.I18N.l('order') + ': ' + order.get('name');
                     }
                 } else {
-                    return M.I18N.l('order') + ': nicht definiert.';
+                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
                 }
             }
         }
@@ -12559,10 +12615,10 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                         position = position[0];
                         return M.I18N.l('position') + ': ' + position.get('name');
                     } else {
-                        return M.I18N.l('position') + ': nicht definiert';
+                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
                     }
                 } else {
-                    return M.I18N.l('position') + ': nicht angegeben.';
+                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
                 }
 
             }
@@ -12582,11 +12638,11 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                         activity = activity[0];
                         return M.I18N.l('activity') + ': ' + activity.get('name');
                     } else {
-                        return M.I18N.l('activity') + ': nicht definiert';
+                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
                     }
 
                 } else {
-                    return M.I18N.l('activity') + ': nicht angegeben';
+                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
                 }
             }
         }
