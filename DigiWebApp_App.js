@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2436
+    , softwareVersion: 2437
 
 
     /**
@@ -9488,6 +9488,7 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
             callbacks: {
                 success: {
                     action: function(records) {
+						console.log(records);
             			DigiWebApp.ApplicationController.DigiLoaderView.hide();
                         if(records && records.length === 0) {
                     		console.log("Zeitbuchungen: error length==0");		
@@ -10101,7 +10102,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2436',
+            value: 'Build: 2437',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
