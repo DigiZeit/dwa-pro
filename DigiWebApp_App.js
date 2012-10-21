@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2415
+    , softwareVersion: 2416
 
 
     /**
@@ -5360,6 +5360,7 @@ DigiWebApp.RequestController = M.Controller.extend({
             },
             onSuccess: function(xmldata, msg, xhr) {
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				console.log(xmldata);
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
 		    	if (data['return'] !== "") {
@@ -10084,7 +10085,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2415',
+            value: 'Build: 2416',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
