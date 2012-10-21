@@ -1290,48 +1290,48 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     
       __name__: 'Zeitbuchungen'
 
-//          "datum": "22.05.2012",
+//    	  	  auftragsBezeichnung: "6657Heim"
+    	  , auftragsBezeichnung: M.Model.attr('String', {})
+//    		  auftragsId: "950"
+    	  , auftragsId: M.Model.attr('String', {})
+//    		  bis: "10:37:08"
+    	  , bis: M.Model.attr('String', {})
+//    		  datum: "14.06.2012"
     	  , datum: M.Model.attr('String', {})
-//          "farbeAmpel": "",
+//    		  dauer: "00:00"
+    	  , dauer: M.Model.attr('String', {})
+//    		  farbeAmpel: ""
     	  , farbeAmpel: M.Model.attr('String', {})
-//          "farbeAnwesenheit": "",
-    	  , farbeAnwesenheit: M.Model.attr('String', {})
-//          "fehlzeitBezeichnung": "",
-    	  , fehlzeitBezeichnung: M.Model.attr('String', {})
-//          "fehlzeitFarbe": "",
-    	  , fehlzeitFarbe: M.Model.attr('String', {})
-//          "gpsBreite": "0.0",
+//    		  gpsBreite: "0.0"
     	  , gpsBreite: M.Model.attr('String', {})
-//          "gpsBreitePosition": "0.0",
+//    		  gpsBreitePosition: "0.0"
     	  , gpsBreitePosition: M.Model.attr('String', {})
-//          "gpsLaenge": "0.0",
+//    		  gpsLaenge: "0.0"
     	  , gpsLaenge: M.Model.attr('String', {})
-//          "gpsLaengePosition": "0.0",
+//    		  gpsLaengePosition: "0.0"
     	  , gpsLaengePosition: M.Model.attr('String', {})
-//          "handauftragsBezeichnung": "",
-    	  , handauftragsBezeichnung: M.Model.attr('String', {})
-//          "handauftragsId": "",
-    	  , handauftragsId: M.Model.attr('String', {})
-//          "mitarbeiterId": "0",
+//    		  mitarbeiterId: "12"
     	  , mitarbeiterId: M.Model.attr('String', {})
-//          "name": "MÃ¼ller",
+//    		  name: "Alber"
     	  , name: M.Model.attr('String', {})
-//          "nameVorname": "MÃ¼ller, Peter",
+//    		  nameVorname: "Alber, Michael"
     	  , nameVorname: M.Model.attr('String', {})
-//          "positionsBezeichnung": "1002Schuster",
+//    		  positionsBezeichnung: "6657Heim"
     	  , positionsBezeichnung: M.Model.attr('String', {})
-//          "positionsId": "0",
+//    		  positionsId: "1874"
     	  , positionsId: M.Model.attr('String', {})
-//          "taetigkeit": "Montagearbeit",
+//    		  taetigkeit: "HolzLackraum"
     	  , taetigkeit: M.Model.attr('String', {})
-//          "taetigkeitsId": "0",
+//    		  taetigkeitsId: "21"
     	  , taetigkeitsId: M.Model.attr('String', {})
-//          "taetigkeitsart": "0",
+//    		  taetigkeitsart: "0"
     	  , taetigkeitsart: M.Model.attr('String', {})
-//          "uhrzeit": "14:13:36",
-    	  , uhrzeit: M.Model.attr('String', {})
-//          "vorname": "Peter"
+//    		  von: "10:36:45"
+    	  , von: M.Model.attr('String', {})
+//    		  vorname: "Michael"
     	  , vorname: M.Model.attr('String', {})
+    			  
+
 
 }, M.DataConsumer.configure({
 
@@ -1348,48 +1348,46 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     map: function(obj) {
     	//console.log(obj);
         return {
-        	  //  "datum": "22.05.2012",
-        	    datum: obj.datum
-        	  //  "farbeAmpel": "",
-        	  , farbeAmpel: obj.farbeAmpel
-        	  //  "farbeAnwesenheit": "",
-        	  , farbeAnwesenheit: obj.farbeAnwesenheit
-        	  //  "fehlzeitBezeichnung": "",
-        	  , fehlzeitBezeichnung: obj.fehlzeitBezeichnung
-        	  //  "fehlzeitFarbe": "",
-        	  , fehlzeitFarbe: obj.fehlzeitFarbe
-        	  //  "gpsBreite": "0.0",
-        	  , gpsBreite: obj.gpsBreite
-        	  //  "gpsBreitePosition": "0.0",
-        	  , gpsBreitePosition: obj.gpsBreitePosition
-        	  //  "gpsLaenge": "0.0",
-        	  , gpsLaenge: obj.gpsLaenge
-        	  //  "gpsLaengePosition": "0.0",
-        	  , gpsLaengePosition: obj.gpsLaengePosition
-        	  //  "handauftragsBezeichnung": "",
-        	  , handauftragsBezeichnung: obj.handauftragsBezeichnung
-        	  //  "handauftragsId": "",
-        	  , handauftragsId: obj.handauftragsId
-        	  //  "mitarbeiterId": "0",
-        	  , mitarbeiterId: obj.mitarbeiterId
-        	  //  "name": "MÃ¼ller",
-        	  , name: obj.name
-        	  //  "nameVorname": "MÃ¼ller, Peter",
-        	  , nameVorname: obj.nameVorname
-        	  //  "positionsBezeichnung": "1002Schuster",
-        	  , positionsBezeichnung: obj.positionsBezeichnung
-        	  //  "positionsId": "0",
-        	  , positionsId: obj.positionsId
-        	  //  "taetigkeit": "Montagearbeit",
-        	  , taetigkeit: obj.taetigkeit
-        	  //  "taetigkeitsId": "0",
-        	  , taetigkeitsId: obj.taetigkeitsId
-        	  //  "taetigkeitsart": "0",
-        	  , taetigkeitsart: obj.taetigkeitsart
-        	  //  "uhrzeit": "14:13:36",
-        	  , uhrzeit: obj.uhrzeit
-        	  //  "vorname": "Peter"
-        	  , vorname: obj.vorname
+//    	  	  auftragsBezeichnung: "6657Heim"
+    	    auftragsBezeichnung: obj.vorname
+//    		  auftragsId: "950"
+    	  , auftragsId: obj.vorname
+//    		  bis: "10:37:08"
+    	  , bis: obj.bis
+//    		  datum: "14.06.2012"
+    	  , datum: obj.datum
+//    		  dauer: "00:00"
+    	  , dauer: obj.dauer
+//    		  farbeAmpel: ""
+    	  , farbeAmpel: obj.farbeAmpel
+//    		  gpsBreite: "0.0"
+    	  , gpsBreite: obj.gpsBreite
+//    		  gpsBreitePosition: "0.0"
+    	  , gpsBreitePosition: obj.gpsBreitePosition
+//    		  gpsLaenge: "0.0"
+    	  , gpsLaenge: obj.gpsLaenge
+//    		  gpsLaengePosition: "0.0"
+    	  , gpsLaengePosition: obj.gpsLaengePosition
+//    		  mitarbeiterId: "12"
+    	  , mitarbeiterId: obj.mitarbeiterId
+//    		  name: "Alber"
+    	  , name: obj.name
+//    		  nameVorname: "Alber, Michael"
+    	  , nameVorname: obj.nameVorname
+//    		  positionsBezeichnung: "6657Heim"
+    	  , positionsBezeichnung: obj.positionsBezeichnung
+//    		  positionsId: "1874"
+    	  , positionsId: obj.positionsId
+//    		  taetigkeit: "HolzLackraum"
+    	  , taetigkeit: obj.taetigkeit
+//    		  taetigkeitsId: "21"
+    	  , taetigkeitsId: obj.taetigkeitsId
+//    		  taetigkeitsart: "0"
+    	  , taetigkeitsart: obj.taetigkeitsart
+//    		  von: "10:36:45"
+    	  , von: obj.von
+//    		  vorname: "Michael"
+    	  , vorname: obj.vorname
         };
     }
 
@@ -5274,7 +5272,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2429
+    , softwareVersion: 2430
 
 
     /**
@@ -10097,7 +10095,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2429',
+            value: 'Build: 2430',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13557,250 +13555,222 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	    value: ' '
 	})
 
-	//"datum": "22.05.2012",
-	, datum: M.LabelView.design({
-	    cssClass: 'bold unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= datum %>'
-	      , operation: function(v) {
-	              return v;
-	          }
-	  }
+	//	  auftragsBezeichnung: "6657Heim"
+	, auftragsBezeichnung: M.LabelView.design({
+        cssClass: 'bold unselectable'
+      , computedValue: {
+            valuePattern: '<%= auftragsBezeichnung %>'
+          , operation: function(v) {
+				if (v !== "") {
+					return M.I18N.l('order') + ': ' + v;
+				} else {
+					return v;
+				}
+              }
+      }
 	})
-
-	//"farbeAmpel": "",
+	//	  auftragsId: "950"
+	, auftragsId: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= auftragsId %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  bis: "10:37:08"
+	, bis: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= bis %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  datum: "14.06.2012"
+	, datum: M.LabelView.design({
+        cssClass: 'bold unselectable'
+      , computedValue: {
+            valuePattern: '<%= datum %>'
+          , operation: function(v) {
+				if (v !== "-") {
+			        return M.I18N.l('since') + ' ' + v;
+				} else {
+					return "";
+				}
+              }
+      }
+	})
+	//	  dauer: "00:00"
+	, dauer: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= dauer %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  farbeAmpel: ""
 	, farbeAmpel: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= farbeAmpel %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"farbeAnwesenheit": "",
-	, farbeAnwesenheit: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= farbeAnwesenheit %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"fehlzeitBezeichnung": "",
-	, fehlzeitBezeichnung: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= fehlzeitBezeichnung %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"fehlzeitFarbe": "",
-	, fehlzeitFarbe: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= fehlzeitFarbe %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"gpsBreite": "0.0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= farbeAmpel %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  gpsBreite: "0.0"
 	, gpsBreite: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= gpsBreite %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"gpsBreitePosition": "0.0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= gpsBreite %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  gpsBreitePosition: "0.0"
 	, gpsBreitePosition: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= gpsBreitePosition %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"gpsLaenge": "0.0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= gpsBreitePosition %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  gpsLaenge: "0.0"
 	, gpsLaenge: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= gpsLaenge %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"gpsLaengePosition": "0.0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= gpsLaenge %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  gpsLaengePosition: "0.0"
 	, gpsLaengePosition: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= gpsLaengePosition %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"handauftragsBezeichnung": "",
-	, handauftragsBezeichnung: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= handauftragsBezeichnung %>'
-            , operation: function(v) {
-					if (v !== "") {
-						return M.I18N.l('handApplications') + ': ' + v;
-					} else {
-						return v;
-					}
-                }
-        }
-    })
-
-    //"handauftragsId": "",
-	, handauftragsId: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= handauftragsId %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"mitarbeiterId": "0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= gpsLaengePosition %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  mitarbeiterId: "12"
 	, mitarbeiterId: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= mitarbeiterId %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"name": "MÃ¼ller",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= mitarbeiterId %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  name: "Alber"
 	, name: M.LabelView.design({
-          cssClass: 'bold unselectable'
-        , computedValue: {
-              valuePattern: '<%= name %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"nameVorname": "MÃ¼ller, Peter",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= name %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  nameVorname: "Alber, Michael"
 	, nameVorname: M.LabelView.design({
-          cssClass: 'bold unselectable'
-        , computedValue: {
-              valuePattern: '<%= nameVorname %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"positionsBezeichnung": "1002Schuster",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= nameVorname %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  positionsBezeichnung: "6657Heim"
 	, positionsBezeichnung: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= positionsBezeichnung %>'
-            , operation: function(v) {
-					if (v !== "") {
-						return M.I18N.l('position') + ': ' + v;
-					} else {
-						return v;
-					}
-                }
-        }
-    })
-
-    //"positionsId": "0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionsBezeichnung %>'
+          , operation: function(v) {
+				if (v !== "") {
+					return M.I18N.l('position') + ': ' + v;
+				} else {
+					return v;
+				}
+              }
+      }
+	})
+	//	  positionsId: "1874"
 	, positionsId: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= positionsId %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"taetigkeit": "Montagearbeit",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionsId %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  taetigkeit: "HolzLackraum"
 	, taetigkeit: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= taetigkeit %>'
-            , operation: function(v) {
-					if (v !== "") {
-						return M.I18N.l('activity') + ': ' + v;
-					} else {
-						return v;
-					}
-                }
-        }
-    })
-
-    //"taetigkeitsId": "0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= taetigkeit %>'
+          , operation: function(v) {
+				if (v !== "") {
+					return M.I18N.l('activity') + ': ' + v;
+				} else {
+					return v;
+				}
+              }
+      }
+	})
+	//	  taetigkeitsId: "21"
 	, taetigkeitsId: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= taetigkeitsId %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"taetigkeitsart": "0",
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= taetigkeitsId %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  taetigkeitsart: "0"
 	, taetigkeitsart: M.LabelView.design({
-          cssClass: 'normal unselectable'
-        , computedValue: {
-              valuePattern: '<%= taetigkeitsart %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
-
-    //"uhrzeit": "14:13:36",
-	, uhrzeit: M.LabelView.design({
-          cssClass: 'bold unselectable'
-    	, isInline: YES
-        , computedValue: {
-              valuePattern: '<%= uhrzeit %>'
-            , operation: function(v) {
-                    return ' ' + v;
-                }
-        }
-    })
-
-    //"vorname": "Peter"
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= taetigkeitsart %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  von: "10:36:45"
+	, von: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= von %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  vorname: "Michael"
 	, vorname: M.LabelView.design({
-          cssClass: 'bold unselectable'
-        , computedValue: {
-              valuePattern: '<%= vorname %>'
-            , operation: function(v) {
-                    return v;
-                }
-        }
-    })
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= vorname %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
       
 });
 
