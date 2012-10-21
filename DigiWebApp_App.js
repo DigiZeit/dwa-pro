@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2412
+    , softwareVersion: 2413
 
 
     /**
@@ -9798,8 +9798,11 @@ DigiWebApp.CameraPage = M.PageView.design({
         		anchorLocation: M.RIGHT,
         		events: {
                 	tap: {
-        				target: DigiWebApp.CameraPage,
-        				action: 'savePicture'
+        				//target: DigiWebApp.CameraPage,
+        				//action: 'savePicture'
+        				action: function() {
+        					DigiWebApp.CameraPage.savePicture();
+        				}
                 	}
             	}
         	})
@@ -10070,7 +10073,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2412',
+            value: 'Build: 2413',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
