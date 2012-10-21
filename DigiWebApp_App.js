@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2441
+    , softwareVersion: 2442
 
 
     /**
@@ -9491,7 +9491,7 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
 						console.log(records);
             			DigiWebApp.ApplicationController.DigiLoaderView.hide();
             			try {
-	                        if ((!records) || (records && records.length === 0) || (records && records.length === 1 && records[0].mitarbeiterId === "undefined")) {
+	                        if ((!records) || (records && records.length === 0) || (records && records.length === 1 && records[0].get('mitarbeiterId') === "undefined")) {
 	                    		console.log("Zeitbuchungen: error length==0");		
 	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
 	            		            title: M.I18N.l('error'),
@@ -10117,7 +10117,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2441',
+            value: 'Build: 2442',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
