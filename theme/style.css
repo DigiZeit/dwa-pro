@@ -216,7 +216,7 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 /* mediaListPage */
-.mediaListPage .actionsList .ui-content li {
+.mediaListPage .actionsList .ui-content .ui-listview li {
     border:  none;
     font-size: 20px;
     padding: 0px;
@@ -229,23 +229,23 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.mediaListPage .actionsList .ui-content li img {
+.mediaListPage .actionsList .ui-content .ui-listview li img {
     width: 32px;
     margin-left: 15px;
     margin-top: 10px;
 }
 
-.mediaListPage .actionsList .ui-content li.selected {
+.mediaListPage .actionsList .ui-content .ui-listview li.selected {
     background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
     color: #FFFFFF;
 }
 
-.mediaListPage .actionsList .ui-content .ui-grid-b {
+.mediaListPage .actionsList .ui-content .ui-listview .ui-grid-b {
     text-align: center;
     font-size: 12px;
 }
 
-.mediaListPage .actionsList .ui-content .ui-grid-b img {
+.mediaListPage .actionsList .ui-content .ui-listview .ui-grid-b img {
     max-width: 64px;
     max-height: 64px;
 }
