@@ -1121,10 +1121,9 @@ DigiWebApp.Anwesenheitsliste = M.Model.create({
     responsePath: 'anwesenheitsliste',
 
     url: function() {
-		//return 'http://www.digi-gps.de/Handy2WebServices/services/DatenTransfer/empfangeAnwesenheitslisteMitAnmeldung?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2' + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&response=application/json';
-        //console.log('http://www.digi-gps.de/WebAppServices/anwesenheitsliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion);
-		// url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/' + DigiWebApp.RequestController.handy2WebServicesUrl + '/' + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
-    	return 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/anwesenheitsliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/anwesenheitsliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		console.log('Anwesenheitsliste: using ' + myURL);
+		return myURL;
     },
 
     /* map needs to return record obj which can be handled by createRecord */
@@ -1342,8 +1341,9 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     responsePath: 'zeitbuchungen',
 
     url: function(datum, mitarbeiterID) {
-		// url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/' + DigiWebApp.RequestController.handy2WebServicesUrl + '/' + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
-		return 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdatenliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdatenliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		console.log('Zeitbuchungen: using ' + myURL);
+		return myURL;
     },
 
     /* map needs to return record obj which can be handled by createRecord */
@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2435
+    , softwareVersion: 2436
 
 
     /**
@@ -10101,7 +10101,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2435',
+            value: 'Build: 2436',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
