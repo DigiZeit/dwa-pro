@@ -234,7 +234,7 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.actionsList .ui-content li {
+.actionsList .ui-body-c li {
     border:  none;
     font-size: 20px;
     padding: 0px;
@@ -247,23 +247,23 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.actionsList .ui-content li img {
+.actionsList .ui-body-c li img {
     width: 32px;
     margin-left: 15px;
     margin-top: 10px;
 }
 
-.actionsList .ui-content li.selected {
+.actionsList .ui-body-c li.selected {
     background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
     color: #FFFFFF;
 }
 
-.actionsList .ui-content .ui-grid-b {
+.actionsList .ui-body-c .ui-grid-b {
     text-align: center;
     font-size: 12px;
 }
 
-.actionsList .ui-content .ui-grid-b img {
+.actionsList .ui-body-c .ui-grid-b img {
     max-width: 64px;
     max-height: 64px;
 }
