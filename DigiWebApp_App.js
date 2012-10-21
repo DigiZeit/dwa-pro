@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2423
+    , softwareVersion: 2424
 
 
     /**
@@ -9369,10 +9369,10 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 
     , initWithServer: function(isFirstLoad) {
     	var that = DigiWebApp.AnwesenheitslisteController;
-		console.log("Anwesenheitsliste: that is ");		
-		console.log(that);		
-		console.log("Anwesenheitsliste: items is ");		
-		console.log(that.items);		
+		//console.log("Anwesenheitsliste: that is ");		
+		//console.log(that);		
+		//console.log("Anwesenheitsliste: items is ");		
+		//console.log(that.items);		
 		if(that.items === null) {
 			console.log("Anwesenheitsliste: showing Loader");		
 			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('AnwesenheitslisteLaden'));
@@ -10089,7 +10089,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2423',
+            value: 'Build: 2424',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13131,8 +13131,14 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
+				console.log("id is");
+				console.log(id);
+				console.log("m_id is");
+				console.log(m_id);
 				var doShow = NO;
 			    var view = M.ViewManager.getViewById(id);
+				console.log("view is");
+				console.log(view);
 			    var mitarbeiter_m_id = M.ViewManager.getView(view, 'nameVorname').item.m_id;
 				_.each(DigiWebApp.AnwesenheitslisteController.items, function(AnwesenheitslisteItem) {
 					if (AnwesenheitslisteItem.m_id === mitarbeiter_m_id) {
