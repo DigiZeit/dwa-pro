@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2432
+    , softwareVersion: 2433
 
 
     /**
@@ -10101,7 +10101,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2432',
+            value: 'Build: 2433',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13285,10 +13285,10 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= handauftragsBezeichnung %>'
       , operation: function(v) {
-			if (v !== "") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 				return M.I18N.l('handApplications') + ': ' + v;
 			} else {
-				return v;
+				return '';
 			}
           }
   }
@@ -13340,10 +13340,10 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= positionsBezeichnung %>'
       , operation: function(v) {
-			if (v !== "") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 				return M.I18N.l('position') + ': ' + v;
 			} else {
-				return v;
+				return '';
 			}
           }
   }
@@ -13364,10 +13364,10 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= taetigkeit %>'
       , operation: function(v) {
-			if (v !== "") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 				return M.I18N.l('activity') + ': ' + v;
 			} else {
-				return v;
+				return '';
 			}
           }
   }
@@ -13567,10 +13567,10 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= auftragsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 					return M.I18N.l('order') + ': ' + v;
 				} else {
-					return v;
+					return '';
 				}
               }
       }
@@ -13673,14 +13673,14 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
 	})
 	//	  handauftragsBezeichnung: "6657Heim"
 	, handauftragsBezeichnung: M.LabelView.design({
-        cssClass: 'bold unselectable'
+        cssClass: 'normal unselectable'
       , computedValue: {
             valuePattern: '<%= handauftragsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 					return M.I18N.l('handApplications') + ': ' + v;
 				} else {
-					return v;
+					return '';
 				}
               }
       }
@@ -13731,10 +13731,10 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= positionsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 					return M.I18N.l('position') + ': ' + v;
 				} else {
-					return v;
+					return '';
 				}
               }
       }
@@ -13755,10 +13755,10 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= taetigkeit %>'
           , operation: function(v) {
-				if (v !== "") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
 					return M.I18N.l('activity') + ': ' + v;
 				} else {
-					return v;
+					return '';
 				}
               }
       }
