@@ -827,6 +827,7 @@ DigiWebApp.MediaFile = M.Model.create({
     }),
     
     deleteAll: function() {
+		var that = this;
 	    _.each(this.find(), function(el) {
 			if (that.hasFileName()) {
 		    	// delete mediafile from device
@@ -5246,7 +5247,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2406
+    , softwareVersion: 2407
 
 
     /**
@@ -10016,7 +10017,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2406',
+            value: 'Build: 2407',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
