@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2421
+    , softwareVersion: 2422
 
 
     /**
@@ -5385,11 +5385,11 @@ DigiWebApp.RequestController = M.Controller.extend({
 	        		            }
 	        		        });
 		    		} else {
-		    			console.log(myFunc);
+		    			//console.log(myFunc);
 						myFunc(obj);
 		    		}
 		    	} else {
-	    			console.log(myFunc);
+	    			//console.log(myFunc);
 					myFunc(obj);
 				}
             },
@@ -10089,7 +10089,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2421',
+            value: 'Build: 2422',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
