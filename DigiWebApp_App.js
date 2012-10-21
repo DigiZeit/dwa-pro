@@ -5241,7 +5241,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2401
+    , softwareVersion: 2402
 
 
     /**
@@ -8190,7 +8190,10 @@ DigiWebApp.MediaListController = M.Controller.extend({
             /* do something here, when page is loaded the first time. */
         }
         /* do something, for any other load. */
-        this.set('items', DigiWebApp.MediaFile.find());
+        items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
+            return parseInt(mediafile.get('timeStamp'));
+        });
+        this.set('items', items.reverse());
 
 
         if(DigiWebApp.MediaListPage.needsUpdate) {
@@ -10008,7 +10011,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2401',
+            value: 'Build: 2402',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11788,7 +11791,7 @@ DigiWebApp.noSettingsiOSPage = M.PageView.design({
 
 DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
-    isSelectable: NO,
+    isSelectable: YES,
 
     childViews: 'timeStamp order position activity latitude longitude',
 
@@ -11803,10 +11806,10 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
         cssClass: 'date',
         computedValue: {
             valuePattern: '<%= timeStamp %>',
-            //value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
+            //value: '01.01.2011, 08:01:02
             operation: function(v) {
                 var date1 = M.Date.create(Number(v));
-                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM');
+                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM:SS');
 
             }
         }
