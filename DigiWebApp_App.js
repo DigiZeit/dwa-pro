@@ -5278,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2439
+    , softwareVersion: 2440
 
 
     /**
@@ -9490,8 +9490,27 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
                     action: function(records) {
 						console.log(records);
             			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                        if(records && records.length === 0) {
-                    		console.log("Zeitbuchungen: error length==0");		
+            			try {
+	                        if ((!records) || (records && records.length === 0) || (records && records.length === 1 && typeof(records[0].mitarbeiterId) === "undefined")) {
+	                    		console.log("Zeitbuchungen: error length==0");		
+	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	            		            title: M.I18N.l('error'),
+	            		            message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden'),
+	            		            callbacks: {
+	            		                confirm: {
+	            		                    target: this,
+	            		                    action: function () {
+	            		        				DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition();
+	            		                    }
+	            		                }
+	            		            }
+	            		        });
+	                        } else {
+	                    		console.log("Zeitbuchungen: success");		
+	                        	DigiWebApp.ZeitbuchungenController.set('items', records);
+	                            //M.Controller.switchToPage(M.ViewManager.getPage('page2'));
+	                        }
+            			} catch(e) {
             		        DigiWebApp.ApplicationController.nativeAlertDialogView({
             		            title: M.I18N.l('error'),
             		            message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden'),
@@ -9504,11 +9523,7 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
             		                }
             		            }
             		        });
-                        } else {
-                    		console.log("Zeitbuchungen: success");		
-                        	DigiWebApp.ZeitbuchungenController.set('items', records);
-                            //M.Controller.switchToPage(M.ViewManager.getPage('page2'));
-                        }
+            			}
                     }
                 },
                 error: {
@@ -10102,7 +10117,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2439',
+            value: 'Build: 2440',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
