@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2411
+    , softwareVersion: 2412
 
 
     /**
@@ -9627,18 +9627,42 @@ DigiWebApp.SplashViewPage = M.PageView.design({
 DigiWebApp.CameraPage = M.PageView.design({
 
     /* Use the 'events' property to bind events like 'pageshow' */
-    events: {
+      events: {
 		pagebeforeshow: {
             target: DigiWebApp.CameraController,
             action: 'init'
         }
-    },
+    }
 
-    cssClass: 'cameraPage',
+    , cssClass: 'cameraPage'
 
-    childViews: 'header content',
+    , childViews: 'header content'
 
-    header: M.ToolbarView.design({
+    , savePicture: function() {
+    	
+		if (M.ViewManager.getView('cameraPage', 'remarkInput').value.length > 255) {
+	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+    		DigiWebApp.ApplicationController.nativeAlertDialogView({
+    			title: M.I18N.l('remarkTooLong'),
+    			message: M.I18N.l('remarkTooLongMessage')
+    		});
+		} else {
+			
+            //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
+            if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
+    	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                DigiWebApp.ApplicationController.nativeAlertDialogView({
+                    title: M.I18N.l('specialCharProblem'),
+                    message: M.I18N.l('specialCharProblemMsg')
+                });
+            } else {
+            	DigiWebApp.CameraController.savePicture();
+            }
+
+		}
+    }
+
+    , header: M.ToolbarView.design({
         childViews: 'backButton title',
         cssClass: 'header',
         isFixed: YES,
@@ -9658,21 +9682,22 @@ DigiWebApp.CameraPage = M.PageView.design({
             anchorLocation: M.CENTER
         }),
         anchorLocation: M.TOP
-    }),
+    })
 
-    content: M.ScrollView.design({
-        childViews: 'image spacer order position activity remarkInput savePictureGrid',
+    , content: M.ScrollView.design({
+    	
+          childViews: 'image spacer order position activity remarkInput savePictureGrid'
 
-        image: M.ImageView.design({
+        , image: M.ImageView.design({
         		value: '',
         		cssClass: 'photo'
-        }),
+        })
         
-        spacer: M.LabelView.design({
+        , spacer: M.LabelView.design({
         		value: ' '
-        }),
+        })
 
-        order: M.SelectionListView.design({
+        , order: M.SelectionListView.design({
             selectionMode: M.SINGLE_SELECTION_DIALOG,
             initialText: M.I18N.l('noData'),
             label: M.I18N.l('order'),
@@ -9690,9 +9715,9 @@ DigiWebApp.CameraPage = M.PageView.design({
                     }
                 }
             }
-        }),
+        })
         
-	    position: M.SelectionListView.design({
+	    , position: M.SelectionListView.design({
 	        selectionMode: M.SINGLE_SELECTION_DIALOG,
 	        label: M.I18N.l('position'),
 	        initialText: M.I18N.l('noData'),
@@ -9710,9 +9735,9 @@ DigiWebApp.CameraPage = M.PageView.design({
 	                }
 	            }
 	        }
-	    }),
+	    })
 	
-	    activity: M.SelectionListView.design({
+	    , activity: M.SelectionListView.design({
 	        selectionMode: M.SINGLE_SELECTION_DIALOG,
 	        label: M.I18N.l('activity'),
 	        initialText: M.I18N.l('noData'),
@@ -9730,16 +9755,16 @@ DigiWebApp.CameraPage = M.PageView.design({
 	                }
 	            }
 	        }
-	    }),
+	    })
         	        
-        remarkInput: M.TextFieldView.design({
+        , remarkInput: M.TextFieldView.design({
             label: M.I18N.l('remark'),
             cssClass: 'remarkInput',
             hasMultipleLines: YES,
             numberOfChars: 255
-        }),
+        })
 
-//        imageContainer: M.ContainerView.design({
+//        , imageContainer: M.ContainerView.design({
 //        	childViews: 'imageCanvas',
 //            cssClass: 'imageContainer marginTop20 marginBottom20',
 //
@@ -9753,43 +9778,21 @@ DigiWebApp.CameraPage = M.PageView.design({
 //        		}
 //	        })
 //	        
-//        }),
+//        })
 
-        savePicture: function() {
-        	
-    		if (M.ViewManager.getView('cameraPage', 'remarkInput').value.length > 255) {
-    	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-        		DigiWebApp.ApplicationController.nativeAlertDialogView({
-        			title: M.I18N.l('remarkTooLong'),
-        			message: M.I18N.l('remarkTooLongMessage')
-        		});
-    		} else {
-    			
-	            //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
-	            if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
-	    	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                DigiWebApp.ApplicationController.nativeAlertDialogView({
-	                    title: M.I18N.l('specialCharProblem'),
-	                    message: M.I18N.l('specialCharProblemMsg')
-	                });
-	            } else {
-	            	DigiWebApp.CameraController.savePicture();
-	            }
+        , savePictureGrid: M.GridView.design({
 
-    		}
-        },
+        	  childViews: 'button icon'
 
-        savePictureGrid: M.GridView.design({
-        	childViews: 'button icon',
-        	layout: {
+        	, layout: {
             	cssClass: 'marginTop40 digiButton',
             	columns: {
                 	0: 'button',
                 	1: 'icon'
             	}
-        	},
+        	}
         
-        	button: M.ButtonView.design({
+        	, button: M.ButtonView.design({
         		value: M.I18N.l('assume'),
         		cssClass: 'digiButton',
         		anchorLocation: M.RIGHT,
@@ -9799,9 +9802,9 @@ DigiWebApp.CameraPage = M.PageView.design({
         				action: 'savePicture'
                 	}
             	}
-        	}),
+        	})
         
-        	icon: M.ImageView.design({
+        	, icon: M.ImageView.design({
         		value: 'theme/images/icon_bookTime.png'
         	})
         })
@@ -10067,7 +10070,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2411',
+            value: 'Build: 2412',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
