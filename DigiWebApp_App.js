@@ -5266,7 +5266,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2416
+    , softwareVersion: 2417
 
 
     /**
@@ -5360,7 +5360,6 @@ DigiWebApp.RequestController = M.Controller.extend({
             },
             onSuccess: function(xmldata, msg, xhr) {
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-				console.log(xmldata);
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
 		    	if (data['return'] !== "") {
@@ -9369,6 +9368,8 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 	}
 
     , initWithServer: function(isFirstLoad) {
+		console.log("Anwesenheitsliste: items is ");		
+		console.log(this.items);		
 		if(this.items === null) {
 			console.log("Anwesenheitsliste: showing Loader");		
 			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('AnwesenheitslisteLaden'));
@@ -10085,7 +10086,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2416',
+            value: 'Build: 2417',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
