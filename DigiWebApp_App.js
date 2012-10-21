@@ -1310,6 +1310,10 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     	  , gpsLaenge: M.Model.attr('String', {})
 //    		  gpsLaengePosition: "0.0"
     	  , gpsLaengePosition: M.Model.attr('String', {})
+//			  handauftragsBezeichnung: "",
+    	  , handauftragsBezeichnung: M.Model.attr('String', {})
+//			  handauftragsId: "",
+    	  , handauftragsId: M.Model.attr('String', {})
 //    		  mitarbeiterId: "12"
     	  , mitarbeiterId: M.Model.attr('String', {})
 //    		  name: "Alber"
@@ -1366,6 +1370,10 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     	  , gpsLaenge: obj.gpsLaenge
 //    		  gpsLaengePosition: "0.0"
     	  , gpsLaengePosition: obj.gpsLaengePosition
+//            handauftragsBezeichnung: "",
+  	      , handauftragsBezeichnung: obj.handauftragsBezeichnung
+//			  handauftragsId: "",
+  	      , handauftragsId: obj.handauftragsId
 //    		  mitarbeiterId: "12"
     	  , mitarbeiterId: obj.mitarbeiterId
 //    		  name: "Alber"
@@ -5270,7 +5278,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2431
+    , softwareVersion: 2432
 
 
     /**
@@ -10093,7 +10101,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2431',
+            value: 'Build: 2432',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -13658,6 +13666,30 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
         cssClass: 'normal unselectable'
       , computedValue: {
             valuePattern: '<%= gpsLaengePosition %>'
+          , operation: function(v) {
+                  return v;
+              }
+      }
+	})
+	//	  handauftragsBezeichnung: "6657Heim"
+	, handauftragsBezeichnung: M.LabelView.design({
+        cssClass: 'bold unselectable'
+      , computedValue: {
+            valuePattern: '<%= handauftragsBezeichnung %>'
+          , operation: function(v) {
+				if (v !== "") {
+					return M.I18N.l('handApplications') + ': ' + v;
+				} else {
+					return v;
+				}
+              }
+      }
+	})
+	//	  handauftragsId: "950"
+	, handauftragsId: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= handauftragsId %>'
           , operation: function(v) {
                   return v;
               }
