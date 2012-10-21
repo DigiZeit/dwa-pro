@@ -790,6 +790,10 @@ DigiWebApp.MediaFile = M.Model.create({
 
     }),
 
+    icon: M.Model.attr('String',{
+        isRequired: NO
+    }),
+
     orderId: M.Model.attr('String',{
         isRequired: NO
     }),
@@ -1856,6 +1860,7 @@ DigiWebApp.CameraController = M.Controller.extend({
             longitude: obj.lon ? obj.lon : '0',
             positionId: obj.pId ? obj.pId : '0',
             activityId: obj.aId ? obj.aId : '0',
+            icon: 'icon_takePicture.png',
             timeStamp: +new Date()
         });
     }
@@ -5241,7 +5246,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2403
+    , softwareVersion: 2404
 
 
     /**
@@ -10011,7 +10016,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2403',
+            value: 'Build: 2404',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11793,7 +11798,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
     isSelectable: YES,
 
-    childViews: 'timeStamp order position activity latitude longitude',
+    childViews: 'icon timeStamp order position activity latitude longitude',
 
     events: {
         tap: {
@@ -11801,6 +11806,15 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 			}
         }
     },
+
+    icon: M.ImageView.design({
+        computedValue: {
+            valuePattern: '<%= icon %>',
+            operation: function(v) {
+                return 'theme/images/' + v;
+            }
+        }
+    }),
 
 	timeStamp: M.LabelView.design({
         cssClass: 'date',
@@ -13764,7 +13778,11 @@ DigiWebApp.MediaActionTemplateView = M.ListItemView.design({
         computedValue: {
             valuePattern: '<%= icon %>',
             operation: function(v) {
-                return 'theme/images/' + v;
+                if (v) {
+                	return 'theme/images/' + v;
+                } else {
+                	return '';
+                }
             }
         }
     }),
