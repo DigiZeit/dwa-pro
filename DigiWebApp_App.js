@@ -435,12 +435,20 @@ DigiWebApp.Booking = M.Model.create({
     },
 
     deleteAll: function() {
-        _.each(this.find(), function(el) {
-	    	// delete (optional) signature from device
-	    	el.deleteFile(function(n){});
-	    	// delete record regardless if there has been a file
-            el.del();
-        });
+		var that = this;
+	    _.each(that.find(), function(el) {
+			if (el.hasFileName()) {
+		    	// delete signature from device
+		    	el.deleteFile(function(n){
+			    	// delete record from localStorage only if file
+		    		// was deleted successfully from device
+			        el.del();	    		
+		    	});
+	    	} else {
+	    		// there is no file to delete, so delete the record
+	    		el.del();
+	    	}
+	    });
     },
 	
 	hasFileName: function() {
@@ -828,8 +836,8 @@ DigiWebApp.MediaFile = M.Model.create({
     
     deleteAll: function() {
 		var that = this;
-	    _.each(this.find(), function(el) {
-			if (that.hasFileName()) {
+	    _.each(that.find(), function(el) {
+			if (el.hasFileName()) {
 		    	// delete mediafile from device
 		    	el.deleteFile(function(n){
 			    	// delete record from localStorage only if file
@@ -5247,7 +5255,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2407
+    , softwareVersion: 2408
 
 
     /**
@@ -10017,7 +10025,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2407',
+            value: 'Build: 2408',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
