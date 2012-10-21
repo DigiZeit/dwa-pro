@@ -216,6 +216,10 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 /* mediaListPage */
+.actionsList .ui-content {
+    background: url('images/arrow_white.png') 100% 50% no-repeat important!;
+}
+
 .actionsList .ui-content li {
     border:  none;
     font-size: 20px;
