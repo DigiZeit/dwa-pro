@@ -1885,7 +1885,180 @@ DigiWebApp.CameraController = M.Controller.extend({
             message: mymessage
         });
     }
-    
+
+//    , paintMoveEvent: null
+//    
+//    , paintOnCanvasStopPaint: function(ev) {
+//    	//console.log("paintOnCanvasStopPaint");    	
+//    	ev.preventDefault();
+//    	
+//    	//context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
+//    	//context.stroke();
+//
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//    }
+//    
+//    , paintOnCanvasStartMove: function(ev) {
+//    	console.log("paintOnCanvasStartMove");
+//    	ev.preventDefault();
+//    	//ev.stopPropagation();
+//    	
+//    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
+//
+//    	if (canvas.getContext) {
+//    		DigiWebApp.CameraController.myImageTouchPos = DigiWebApp.CameraController.getCoordinates(ev);
+//	
+//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
+//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
+//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
+//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
+//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
+//    	}
+//    }
+//    
+//    , paintOnCanvasStopMove: function(ev) {
+//    	console.log("paintOnCanvasStopMove");    	
+//    	ev.preventDefault();
+//    	//ev.stopPropagation();
+//		DigiWebApp.CameraController.myImageTouchPos = [0, 0];
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
+//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
+//    }
+//    
+//    , myImageTouchPos: [0, 0]
+//    , myImageTopLeft: [0, 0]
+//    , myImageBottomRight: [0, 0]
+//    , myImageScaleFactor: 2
+//    , paintOnCanvasMove: function(ev) {
+//    	console.log("paintOnCanvasMove");    	
+//    	ev.preventDefault();
+//    	//ev.stopPropagation();
+//
+//    	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+//        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
+//
+//    	if (canvas.getContext) {
+//    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
+//			var x = coord[0];
+//			var y = coord[1];
+//			var dx = DigiWebApp.CameraController.myImageTouchPos[0] - coord[0];
+//			var dy = DigiWebApp.CameraController.myImageTouchPos[1] - coord[1];
+//			//console.log(dx + ", " + dy);
+//			DigiWebApp.CameraController.myImageTouchPos[0] = coord[0];
+//			DigiWebApp.CameraController.myImageTouchPos[1] = coord[1];
+//			//console.log("DigiWebApp.CameraController.myImageTouchPos " + DigiWebApp.CameraController.myImageTouchPos[0] + ", " + DigiWebApp.CameraController.myImageTouchPos[1]);
+//			var context = canvas.getContext("2d");
+//			if ((DigiWebApp.CameraController.myImageTopLeft[0] + dx) > 0 && (DigiWebApp.CameraController.myImageTopLeft[0] + dx) < image.width) {
+//	    		DigiWebApp.CameraController.myImageTopLeft[0] = DigiWebApp.CameraController.myImageTopLeft[0] + dx;
+//	    		//DigiWebApp.CameraController.myImageBottomRight[0] = DigiWebApp.CameraController.myImageBottomRight[0] + dx;
+//			}
+//			if ((DigiWebApp.CameraController.myImageTopLeft[1] + dy) > 0 && (DigiWebApp.CameraController.myImageTopLeft[1] + dy) < image.height) {
+//	    		DigiWebApp.CameraController.myImageTopLeft[1] = DigiWebApp.CameraController.myImageTopLeft[1] + dy;
+//	    		//DigiWebApp.CameraController.myImageBottomRight[1] = DigiWebApp.CameraController.myImageBottomRight[1] + dy;
+//			}
+//    				
+//    		context.drawImage(image,DigiWebApp.CameraController.myImageTopLeft[0],DigiWebApp.CameraController.myImageTopLeft[1],canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
+//    	}
+//    }
+//    
+//    , paintOnCanvasStartPaint: function(ev) {
+//    	//console.log("paintOnCanvasStartPaint");    	
+//    	ev.preventDefault();
+//    	//ev.stopPropagation();
+//    	
+//    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
+//
+//    	if (canvas.getContext) {
+//    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
+//			var x = coord[0];
+//			var y = coord[1];
+//	
+//	    	var context = canvas.getContext("2d");
+//			context.beginPath();
+//			context.strokeStyle = "#f00";
+//			context.lineWidth = 5;
+//			context.lineCap = "round";
+//			context.lineJoin = "round";
+//			context.moveTo(x, y);
+//	
+//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
+//    	}
+//    }
+//    
+//    , getCoordinates: function(ev) {
+//    	var x = 0;
+//    	var y = 0;
+//		// Get the mouse position relative to the canvas element.
+//        if (typeof(ev.touches) !== "undefined") {
+//        	//console.log("touchstart: using ev.touches[0]");
+//        	x = ev.touches[0].pageX - ev.touches[0].target.offsetLeft;
+//        	y = ev.touches[0].pageY - ev.touches[0].target.offsetTop;
+//        } else if (typeof(ev.originalEvent) !== "undefined") {
+//    		if (typeof(ev.originalEvent.touches) !== "undefined") {
+//        		x = ev.originalEvent.touches[0].pageX - ev.originalEvent.touches[0].target.offsetLeft;
+//        		y = ev.originalEvent.touches[0].pageY - ev.originalEvent.touches[0].target.offsetTop;
+//        		//console.log(x + ", " + y);
+//    		}
+//    	} else {
+//    		x = ev.offsetX;
+//    		y = ev.offsetY;
+//    	}
+//        return [x, y];
+//    }
+//    
+//    , paintOnCanvasPaint: function(ev) {
+//    	//console.log("paintOnCanvasPaint");
+//    	ev.preventDefault();
+//    	//ev.stopPropagation();
+//    	
+//    	// save event for easier debugging
+//    	DigiWebApp.CameraController.paintMoveEvent = ev;
+//
+//    	var coord = DigiWebApp.CameraController.getCoordinates(ev);
+//		var x = coord[0];
+//		var y = coord[1];
+//
+//    	var context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
+//		
+//		// The event handler works like a drawing pencil which tracks the mouse 
+//		// movements. We start drawing a path made up of lines.
+//		context.lineTo(x, y);
+//		//context.stroke();
+//    }
+//    
+//    , paintOnCanvasTouchMove: function(ev) {
+//    	//console.log("paintOnCanvasTouchMove");
+//    }
+//    
+//    , fillCanvasFromImage_var: null
+//    , fillCanvasFromImage: function() {
+//    	console.log("fillCanvasFromImage");
+//		if (DigiWebApp.CameraController.fillCanvasFromImage_var !== null) clearTimeout(DigiWebApp.CameraController.fillCanvasFromImage_var);
+//		$('#' + DigiWebApp.CameraPage.content.image.id).hide();
+//        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
+//        var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+//        DigiWebApp.CameraController.myImageScaleFactor = image.width / canvas.width;
+//		var context = canvas.getContext("2d");
+//		console.log("drawing image to canvas with file");
+//		context.drawImage(image,0,0,canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
+//		DigiWebApp.CameraController.myImageTopLeft = [0, 0];
+//    }
+
 });
 
 // ==========================================================================
@@ -5060,7 +5233,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2393
+    , softwareVersion: 2394
 
 
     /**
@@ -6314,7 +6487,6 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         
 		//$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousedown', DigiWebApp.CameraController.paintOnCanvasStartPaint);
 		//$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstart', DigiWebApp.CameraController.paintOnCanvasStartPaint);
-		
 		//$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousedown', DigiWebApp.CameraController.paintOnCanvasStartMove);
 		//$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstart', DigiWebApp.CameraController.paintOnCanvasStartMove);
 
@@ -8088,6 +8260,355 @@ DigiWebApp.MediaListController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: WipeController
+// ==========================================================================
+
+DigiWebApp.WipeController = M.Controller.extend({
+
+    wipeStartX: 0,
+    wipeStartY: 0,
+    wipeStopX: 0,
+    wipeStopY: 0,
+    wipeIsMoving: false,
+    wipeIsPressed: false,
+    wipeIsPressedStart: 0,
+    wipeIsPressedStop: 0,
+    wipeDecideX: 150,
+    wipeDecideY: 300,
+    wipeDecideTimeout: 200,
+	
+	wipeActionUp: function() {
+	},
+	
+	wipeActionDown: function() {
+		if (
+				( M.ViewManager.currentPage.id !== DigiWebApp.TimeDataPage.id )
+			 && ( M.ViewManager.currentPage.id !== DigiWebApp.EditTimeDataPage.id )
+			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.SettingsPage.id )
+			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.CameraPage.id )
+			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaPage.id )
+			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaListPage.id )
+		){
+			try {
+				if ( (typeof(M.ViewManager.currentPage.header) !== "undefined") && (M.ViewManager.currentPage.header !== null) ) { 
+	  				if ( (typeof(M.ViewManager.currentPage.header.backButton) !== "undefined") && (M.ViewManager.currentPage.header.backButton !== null)) { 
+	  					if ( (typeof(M.ViewManager.currentPage.header.backButton.events) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events !== null)) { 
+	  						if ( (typeof(M.ViewManager.currentPage.header.backButton.events.tap) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events.tap !== null) ) {
+								if (typeof(M.ViewManager.currentPage.header.backButton.events.tap.action) === "function") {
+									M.ViewManager.currentPage.header.backButton.events.tap.action();					
+								} else {
+									M.ViewManager.currentPage.header.backButton.events.tap.target.get(M.ViewManager.currentPage.header.backButton.events.tap.action)();
+								}
+				}}}}
+			} catch(e) { console.log(e); }
+		}
+    },
+    
+	wipeActionLeft: function() {
+			if ( M.ViewManager.currentPage.id === DigiWebApp.BookingPage.id ) {
+  				DigiWebApp.NavigationController.toDashboardPageFlipTransition();
+  			} else if ( M.ViewManager.currentPage.id === DigiWebApp.DashboardPage.id ){
+	  			DigiWebApp.NavigationController.backToBookTimePageFlipTransition();		  				
+  			} else {
+  				//console.log("else left");
+  			}
+    },
+    
+	wipeActionRight: function() {
+		if ( M.ViewManager.currentPage.id === DigiWebApp.DashboardPage.id ) {
+			DigiWebApp.NavigationController.toBookTimePageFlipTransition();
+		} else if ( M.ViewManager.currentPage.id === DigiWebApp.BookingPage.id ){
+			DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
+		} else {
+			//console.log("else right");
+			if (
+					( M.ViewManager.currentPage.id !== DigiWebApp.EditTimeDataPage.id )
+				 &&	( M.ViewManager.currentPage.id !== DigiWebApp.CameraPage.id )
+			){
+				try {
+					if ( (typeof(M.ViewManager.currentPage.header) !== "undefined") && (M.ViewManager.currentPage.header !== null) ) { 
+		  				if ( (typeof(M.ViewManager.currentPage.header.backButton) !== "undefined") && (M.ViewManager.currentPage.header.backButton !== null)) { 
+		  					if ( (typeof(M.ViewManager.currentPage.header.backButton.events) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events !== null)) { 
+		  						if ( (typeof(M.ViewManager.currentPage.header.backButton.events.tap) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events.tap !== null) ) {
+									if (typeof(M.ViewManager.currentPage.header.backButton.events.tap.action) === "function") {
+										M.ViewManager.currentPage.header.backButton.events.tap.action();					
+									} else {
+										M.ViewManager.currentPage.header.backButton.events.tap.target.get(M.ViewManager.currentPage.header.backButton.events.tap.action)();
+									}
+		  			}}}}
+				} catch(e) { console.log(e); }
+			}
+		}
+	},
+
+	stopDefault: function(evt) {
+	    if ( navigator.userAgent.match(/Android/i) ) {
+	    	//evt.originalEvent.preventDefault();
+	    } else {
+		    if (evt && evt.preventDefault) {
+		        evt.preventDefault();
+		    }
+		    if (window.event && window.event.returnValue) {
+		        window.event.returnValue = false;
+		    }
+	    }
+	},
+	
+	wipeDoStop: function(ev) {
+		var dx = DigiWebApp.WipeController.wipeStartX - DigiWebApp.WipeController.wipeStopX;
+		var dy = DigiWebApp.WipeController.wipeStartY - DigiWebApp.WipeController.wipeStopY;
+		var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
+		var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
+		var dTime = timeStart - timeStop;
+		try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
+		_.each(DigiWebApp.app.pages, function(myPage) {
+			try { $('#' + myPage.id).unbind('touchmove', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while unbind touchmove"); };
+			try { $('#' + myPage.id).unbind('mousemove', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while unbind mousemove"); };
+			try { $('#' + myPage.id).unbind('touchmove'); } catch (e) { console.log("error while unbind touchmove"); };
+			try { $('#' + myPage.id).unbind('mousemove'); } catch (e) { console.log("error while unbind mousemove"); };
+			try { $('#' + myPage.id).unbind('touchstop', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while unbind touchstop"); };
+			try { $('#' + myPage.id).unbind('mouseup',   DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while unbind mouseup"); };
+			try { $('#' + myPage.id).unbind('touchstop'); } catch (e) { console.log("error while unbind touchstop"); };
+			try { $('#' + myPage.id).unbind('mouseup');   } catch (e) { console.log("error while unbind mouseup"); };
+		});
+		var dxIsLongEnough = (Math.abs(dx) >= DigiWebApp.WipeController.wipeDecideX);
+		var dyIsLongEnough = (Math.abs(dy) >= DigiWebApp.WipeController.wipeDecideY);
+		var wipeBelowTimeout = (dTime < DigiWebApp.WipeController.wipeDecideTimeout);
+		var noInitialStopX = (DigiWebApp.WipeController.wipeStopX > 0);
+		var noInitialStopY = (DigiWebApp.WipeController.wipeStopY > 0);
+		//console.log("dxIsLongEnough: " + dxIsLongEnough);
+		//console.log("dyIsLongEnough: " + dyIsLongEnough);
+		//console.log("wipeBelowTimeout: " + wipeBelowTimeout);
+		//console.log("noInitialStopX: " + noInitialStopX);
+		//console.log("noInitialStopY: " + noInitialStopY);
+		if (DigiWebApp.WipeController.wipeIsMoving) {
+			if (wipeBelowTimeout) {
+				if ((dxIsLongEnough || dyIsLongEnough) 
+				&& (noInitialStopX && noInitialStopY)
+				){
+					if (dxIsLongEnough) {
+						if(dx > 0) {
+							console.log("wipe left");
+							//console.log(((DigiWebApp.WipeController.wipeStopX > 0) && (DigiWebApp.WipeController.wipeStopY > 0)));
+							//console.log("dx=" + dx + ", dy=" + dy + ", " + DigiWebApp.WipeController.wipeStopX + ", " + DigiWebApp.WipeController.wipeStopY);
+				  			DigiWebApp.WipeController.wipeActionLeft();
+						} else {
+							console.log("wipe right");
+				  			DigiWebApp.WipeController.wipeActionRight();
+						}
+					}
+					if (dyIsLongEnough) {
+						if(dy > 0) {
+				  			console.log("wipe up");
+		    				DigiWebApp.WipeController.wipeActionUp();
+		    			} else {
+				  			console.log("wipe down");
+		    				DigiWebApp.WipeController.wipeActionDown();
+		    			}
+					}
+					DigiWebApp.WipeController.stopDefault(ev);
+					return false;
+				} else {
+					//console.log("wipe too short");				
+				}
+			} else {
+				//console.log("scroll");
+			}
+		}
+		//console.log("reset touchstats");
+		DigiWebApp.WipeController.wipeIsPressed = false;
+		DigiWebApp.WipeController.wipeIsPressedStop = 0;
+		DigiWebApp.WipeController.wipeIsPressedStart = 0;
+		DigiWebApp.WipeController.wipeStartX = 0;
+		DigiWebApp.WipeController.wipeStartY = 0;
+		DigiWebApp.WipeController.wipeStopX = 0;
+		DigiWebApp.WipeController.wipeStopY = 0;
+		DigiWebApp.WipeController.wipeIsMoving = false;
+    },
+    
+    wipeOnMoveStop: function(ev) {
+		/*
+    	var dx = DigiWebApp.WipeController.wipeStartX - DigiWebApp.WipeController.wipeStopX;
+		var dy = DigiWebApp.WipeController.wipeStartY - DigiWebApp.WipeController.wipeStopY;
+		var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
+		var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
+		var dTime = timeStart - timeStop;
+    	console.log("wipeOnMoveStop: " + DigiWebApp.WipeController.wipeIsMoving + " (" + dx + ", " + dy + ") " + dTime);
+    	*/
+		try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
+		DigiWebApp.WipeController.wipeDoStop(ev);
+	},
+	
+	wipeOnTouchStart: function(ev) {
+		
+	},
+	
+	touchMoveEventSaved: null,
+	touchStartEventSaved: null,
+	
+	wipeOnTouchMove: function(ev) {
+		DigiWebApp.WipeController.touchMoveEventSaved = ev;
+		//try {
+			var x = 0;
+			var y = 0;
+	        if (typeof(ev.touches) !== "undefined") {
+	        	//console.log("touchmove: using ev.touches[0].page...");
+			  	x = ev.touches[0].pageX;
+			  	y = ev.touches[0].pageY;
+	        } else if ( typeof(ev.originalEvent.touches) !== "undefined" ) {
+	        	//console.log("touchmove: using ev.originalEvent.touches[0].page...");
+			  	x = ev.originalEvent.touches[0].pageX;
+			  	y = ev.originalEvent.touches[0].pageY;
+	        } else if ( typeof(ev.originalEvent) !== "undefined" ) {
+	        	//console.log("touchmove: using ev.originalEvent.page...");
+			  	x = ev.originalEvent.pageX;
+			  	y = ev.originalEvent.pageY;
+	        } else {
+	        	//console.log("touchmove: using ev.page...");
+	        	x = ev.pageX;
+	        	y = ev.pageY;
+	        }
+	        var xMoveSinceLastEvent = Math.abs(Math.abs(DigiWebApp.WipeController.wipeStopX) - x); 
+	        var yMoveSinceLastEvent = Math.abs(Math.abs(DigiWebApp.WipeController.wipeStopY) - y);
+	        var enoughMovement = ((xMoveSinceLastEvent < 200) && (yMoveSinceLastEvent < 200));
+	        /*
+	        console.log("xMoveSinceLastEvent=" + xMoveSinceLastEvent);
+	        console.log("yMoveSinceLastEvent=" + yMoveSinceLastEvent);
+	        console.log("DigiWebApp.WipeController.wipeStartX: " + DigiWebApp.WipeController.wipeStartX);
+	        console.log("DigiWebApp.WipeController.wipeStartY: " + DigiWebApp.WipeController.wipeStartY);
+	        console.log("DigiWebApp.WipeController.wipeStopX: " + DigiWebApp.WipeController.wipeStopX);
+	        console.log("DigiWebApp.WipeController.wipeStopY: " + DigiWebApp.WipeController.wipeStopY);
+	        console.log("enoughMovement=" + enoughMovement);
+	        */
+	        if ((enoughMovement && (x > 0) && (y > 0)) 
+	        || ((DigiWebApp.WipeController.wipeStopX === 0) && (DigiWebApp.WipeController.wipeStopY === 0))
+	        ) {
+		        DigiWebApp.WipeController.wipeStopX = x;
+		        DigiWebApp.WipeController.wipeStopY = y;
+		        DigiWebApp.WipeController.wipeIsPressedStop = (+new Date()).toString();
+				var dx = DigiWebApp.WipeController.wipeStartX - x;
+			  	var dy = DigiWebApp.WipeController.wipeStartY - y;
+		        var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
+				var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
+				var dTime = timeStart - timeStop;
+			  	if ( (Math.abs(dx) > 10) || (Math.abs(dy) > 10)) {
+			  		DigiWebApp.WipeController.wipeIsMoving = true;
+			  	} else {
+			  		DigiWebApp.WipeController.wipeIsMoving = false;
+			  	}
+				var dxIsLongEnough = (Math.abs(dx) >= DigiWebApp.WipeController.wipeDecideX);
+				var dyIsLongEnough = (Math.abs(dy) >= DigiWebApp.WipeController.wipeDecideY);
+				var wipeTimeout = (dTime >= DigiWebApp.WipeController.wipeDecideTimeout);
+				//console.log("dx: " + dx);
+				//console.log("dy: " + dy);
+				//console.log("dxIsLongEnough: " + dxIsLongEnough);
+				//console.log("dyIsLongEnough: " + dyIsLongEnough);
+				//console.log("wipeTimeout: " + wipeTimeout);
+				if (( dxIsLongEnough || dyIsLongEnough || wipeTimeout) && (DigiWebApp.WipeController.wipeIsMoving)) {
+			    	//console.log("stopping wipe: " + DigiWebApp.WipeController.wipeIsMoving + " (" + dx + ", " + dy + ") " + dTime);
+					try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
+			  		if (typeof(device) !== "undefined") {
+			  			if ( 
+			  					( device.version.substr(0,1) >= 4 ) && ( device.platform.substr(0,7) >= "Android" ) && (DigiWebApp.SettingsController.getSetting('debug')) )
+			  			{
+			  				DigiWebApp.WipeController.stopDefault(ev);
+			  			}
+			  		}
+					DigiWebApp.WipeController.wipeDoStop(ev);
+				};
+				//return false;
+	        } else {
+	        	console.log("blocked wipe");
+	        	//console.log("x=" + x + ", y=" + y + " " + DigiWebApp.WipeController.wipeStartX + ", " + DigiWebApp.WipeController.wipeStartY + " " + DigiWebApp.WipeController.wipeStopX + ", " + DigiWebApp.WipeController.wipeStopY);
+	    		DigiWebApp.WipeController.wipeIsPressed = false;
+	    		DigiWebApp.WipeController.wipeIsPressedStop = 0;
+	    		DigiWebApp.WipeController.wipeIsPressedStart = 0;
+	    		DigiWebApp.WipeController.wipeStartX = 0;
+	    		DigiWebApp.WipeController.wipeStartY = 0;
+	    		DigiWebApp.WipeController.wipeStopX = 0;
+	    		DigiWebApp.WipeController.wipeStopY = 0;
+	    		DigiWebApp.WipeController.wipeIsMoving = false;
+	        	try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
+	        	DigiWebApp.WipeController.wipeDoStop(ev);
+	        }
+		//} catch (e) { console.log(e); }
+	},
+	
+	regTouchStart: function(pageid,ev) {
+		DigiWebApp.WipeController.wipeIsPressed = false;
+		DigiWebApp.WipeController.wipeIsPressedStop = 0;
+		DigiWebApp.WipeController.wipeIsPressedStart = 0;
+		DigiWebApp.WipeController.wipeStartX = 0;
+		DigiWebApp.WipeController.wipeStartY = 0;
+		DigiWebApp.WipeController.wipeStopX = 0;
+		DigiWebApp.WipeController.wipeStopY = 0;
+		DigiWebApp.WipeController.wipeIsMoving = false;
+		DigiWebApp.WipeController.touchStartEventSaved = ev;
+		if( navigator.userAgent.match(/Android/i) ) {
+			//console.log("preventing touchstarts default");
+			//ev.preventDefault();
+		}
+        if (typeof(ev.touches) !== "undefined") {
+        	//console.log("touchstart: using ev.touches[0]");
+    		DigiWebApp.WipeController.wipeStartX = ev.touches[0].pageX;
+    		DigiWebApp.WipeController.wipeStartY = ev.touches[0].pageY;
+        } else if ( typeof(ev.originalEvent.touches) !== "undefined" ) {
+        	//console.log("touchstart: using ev.originalEvent.touches[0].page...");
+        	DigiWebApp.WipeController.wipeStartX = ev.originalEvent.touches[0].pageX;
+        	DigiWebApp.WipeController.wipeStartY = ev.originalEvent.touches[0].pageY;
+        } else {
+        	//console.log("touchstart: using ev.page...");
+        	DigiWebApp.WipeController.wipeStartX = ev.pageX;
+        	DigiWebApp.WipeController.wipeStartY = ev.pageY;
+        }
+        //console.log("DigiWebApp.WipeController.wipeStartX: " + DigiWebApp.WipeController.wipeStartX);
+        //console.log("DigiWebApp.WipeController.wipeStartY: " + DigiWebApp.WipeController.wipeStartY);
+		DigiWebApp.WipeController.wipeIsMoving = false;
+		DigiWebApp.WipeController.wipeIsPressed = true;
+		DigiWebApp.WipeController.wipeIsPressedStart = (+new Date()).toString();
+		DigiWebApp.WipeController.wipeIsPressedStop = null;
+		var eventType = ev.type.substr(0,5);
+		//alert(eventType);
+		//console.log("binding " + eventType + "move for pageid " + pageid);
+    	var myPlatform = M.Environment.getPlatform();
+
+    	var deviceversion = "0";
+    	if (typeof(device) !== "undefined") deviceversion = new String(device.version);
+
+    	var deviceplatform = "";
+    	if (typeof(device) !== "undefined") deviceplatform = new String(device.platform);
+    	
+
+        if (       ( myPlatform.substr(-2)  === "86" )
+        		|| ( myPlatform.substr(-5)  === "Win32" )
+        		|| ( myPlatform.substr(-5)  === "Win64" )
+        		|| ( myPlatform.substr(0,3) === "Mac" )
+        		|| ( myPlatform.substr(0,2) === "iP")
+        		|| (DigiWebApp.SettingsController.getSetting('debug'))
+        		|| ( ( deviceversion.substr(0,1) >= 4 ) && ( deviceplatform.substr(0,7) >= "Android" ) && (DigiWebApp.SettingsController.getSetting('debug')) )
+        	) {
+    		try { $('#' + pageid).bind(eventType + 'move', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while binding " + eventType + "move for " + pageid);}
+    		if (eventType === "touch") {
+    			//console.log("binding touchstop for pageid " + pageid);
+    			try { $('#' + pageid).bind('touchstop', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while binding touchstop for " + pageid);};
+    		} else if (eventType === "mouse") {
+    			//console.log("binding mouseup for pageid " + pageid);
+    			try { $('#' + pageid).bind('mouseup', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while binding mouseup for " + pageid);};
+    		} else {
+    			console.log("unknown eventtype: " + ev.type);
+    		}
+        } else {
+        	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("skipping touchmove");
+        }
+	}
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: OrderInfoController
 // ==========================================================================
 
@@ -8458,355 +8979,6 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: WipeController
-// ==========================================================================
-
-DigiWebApp.WipeController = M.Controller.extend({
-
-    wipeStartX: 0,
-    wipeStartY: 0,
-    wipeStopX: 0,
-    wipeStopY: 0,
-    wipeIsMoving: false,
-    wipeIsPressed: false,
-    wipeIsPressedStart: 0,
-    wipeIsPressedStop: 0,
-    wipeDecideX: 150,
-    wipeDecideY: 300,
-    wipeDecideTimeout: 200,
-	
-	wipeActionUp: function() {
-	},
-	
-	wipeActionDown: function() {
-		if (
-				( M.ViewManager.currentPage.id !== DigiWebApp.TimeDataPage.id )
-			 && ( M.ViewManager.currentPage.id !== DigiWebApp.EditTimeDataPage.id )
-			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.SettingsPage.id )
-			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.CameraPage.id )
-			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaPage.id )
-			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaListPage.id )
-		){
-			try {
-				if ( (typeof(M.ViewManager.currentPage.header) !== "undefined") && (M.ViewManager.currentPage.header !== null) ) { 
-	  				if ( (typeof(M.ViewManager.currentPage.header.backButton) !== "undefined") && (M.ViewManager.currentPage.header.backButton !== null)) { 
-	  					if ( (typeof(M.ViewManager.currentPage.header.backButton.events) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events !== null)) { 
-	  						if ( (typeof(M.ViewManager.currentPage.header.backButton.events.tap) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events.tap !== null) ) {
-								if (typeof(M.ViewManager.currentPage.header.backButton.events.tap.action) === "function") {
-									M.ViewManager.currentPage.header.backButton.events.tap.action();					
-								} else {
-									M.ViewManager.currentPage.header.backButton.events.tap.target.get(M.ViewManager.currentPage.header.backButton.events.tap.action)();
-								}
-				}}}}
-			} catch(e) { console.log(e); }
-		}
-    },
-    
-	wipeActionLeft: function() {
-			if ( M.ViewManager.currentPage.id === DigiWebApp.BookingPage.id ) {
-  				DigiWebApp.NavigationController.toDashboardPageFlipTransition();
-  			} else if ( M.ViewManager.currentPage.id === DigiWebApp.DashboardPage.id ){
-	  			DigiWebApp.NavigationController.backToBookTimePageFlipTransition();		  				
-  			} else {
-  				//console.log("else left");
-  			}
-    },
-    
-	wipeActionRight: function() {
-		if ( M.ViewManager.currentPage.id === DigiWebApp.DashboardPage.id ) {
-			DigiWebApp.NavigationController.toBookTimePageFlipTransition();
-		} else if ( M.ViewManager.currentPage.id === DigiWebApp.BookingPage.id ){
-			DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
-		} else {
-			//console.log("else right");
-			if (
-					( M.ViewManager.currentPage.id !== DigiWebApp.EditTimeDataPage.id )
-				 &&	( M.ViewManager.currentPage.id !== DigiWebApp.CameraPage.id )
-			){
-				try {
-					if ( (typeof(M.ViewManager.currentPage.header) !== "undefined") && (M.ViewManager.currentPage.header !== null) ) { 
-		  				if ( (typeof(M.ViewManager.currentPage.header.backButton) !== "undefined") && (M.ViewManager.currentPage.header.backButton !== null)) { 
-		  					if ( (typeof(M.ViewManager.currentPage.header.backButton.events) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events !== null)) { 
-		  						if ( (typeof(M.ViewManager.currentPage.header.backButton.events.tap) !== "undefined") && (M.ViewManager.currentPage.header.backButton.events.tap !== null) ) {
-									if (typeof(M.ViewManager.currentPage.header.backButton.events.tap.action) === "function") {
-										M.ViewManager.currentPage.header.backButton.events.tap.action();					
-									} else {
-										M.ViewManager.currentPage.header.backButton.events.tap.target.get(M.ViewManager.currentPage.header.backButton.events.tap.action)();
-									}
-		  			}}}}
-				} catch(e) { console.log(e); }
-			}
-		}
-	},
-
-	stopDefault: function(evt) {
-	    if ( navigator.userAgent.match(/Android/i) ) {
-	    	//evt.originalEvent.preventDefault();
-	    } else {
-		    if (evt && evt.preventDefault) {
-		        evt.preventDefault();
-		    }
-		    if (window.event && window.event.returnValue) {
-		        window.event.returnValue = false;
-		    }
-	    }
-	},
-	
-	wipeDoStop: function(ev) {
-		var dx = DigiWebApp.WipeController.wipeStartX - DigiWebApp.WipeController.wipeStopX;
-		var dy = DigiWebApp.WipeController.wipeStartY - DigiWebApp.WipeController.wipeStopY;
-		var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
-		var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
-		var dTime = timeStart - timeStop;
-		try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
-		_.each(DigiWebApp.app.pages, function(myPage) {
-			try { $('#' + myPage.id).unbind('touchmove', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while unbind touchmove"); };
-			try { $('#' + myPage.id).unbind('mousemove', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while unbind mousemove"); };
-			try { $('#' + myPage.id).unbind('touchmove'); } catch (e) { console.log("error while unbind touchmove"); };
-			try { $('#' + myPage.id).unbind('mousemove'); } catch (e) { console.log("error while unbind mousemove"); };
-			try { $('#' + myPage.id).unbind('touchstop', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while unbind touchstop"); };
-			try { $('#' + myPage.id).unbind('mouseup',   DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while unbind mouseup"); };
-			try { $('#' + myPage.id).unbind('touchstop'); } catch (e) { console.log("error while unbind touchstop"); };
-			try { $('#' + myPage.id).unbind('mouseup');   } catch (e) { console.log("error while unbind mouseup"); };
-		});
-		var dxIsLongEnough = (Math.abs(dx) >= DigiWebApp.WipeController.wipeDecideX);
-		var dyIsLongEnough = (Math.abs(dy) >= DigiWebApp.WipeController.wipeDecideY);
-		var wipeBelowTimeout = (dTime < DigiWebApp.WipeController.wipeDecideTimeout);
-		var noInitialStopX = (DigiWebApp.WipeController.wipeStopX > 0);
-		var noInitialStopY = (DigiWebApp.WipeController.wipeStopY > 0);
-		//console.log("dxIsLongEnough: " + dxIsLongEnough);
-		//console.log("dyIsLongEnough: " + dyIsLongEnough);
-		//console.log("wipeBelowTimeout: " + wipeBelowTimeout);
-		//console.log("noInitialStopX: " + noInitialStopX);
-		//console.log("noInitialStopY: " + noInitialStopY);
-		if (DigiWebApp.WipeController.wipeIsMoving) {
-			if (wipeBelowTimeout) {
-				if ((dxIsLongEnough || dyIsLongEnough) 
-				&& (noInitialStopX && noInitialStopY)
-				){
-					if (dxIsLongEnough) {
-						if(dx > 0) {
-							console.log("wipe left");
-							//console.log(((DigiWebApp.WipeController.wipeStopX > 0) && (DigiWebApp.WipeController.wipeStopY > 0)));
-							//console.log("dx=" + dx + ", dy=" + dy + ", " + DigiWebApp.WipeController.wipeStopX + ", " + DigiWebApp.WipeController.wipeStopY);
-				  			DigiWebApp.WipeController.wipeActionLeft();
-						} else {
-							console.log("wipe right");
-				  			DigiWebApp.WipeController.wipeActionRight();
-						}
-					}
-					if (dyIsLongEnough) {
-						if(dy > 0) {
-				  			console.log("wipe up");
-		    				DigiWebApp.WipeController.wipeActionUp();
-		    			} else {
-				  			console.log("wipe down");
-		    				DigiWebApp.WipeController.wipeActionDown();
-		    			}
-					}
-					DigiWebApp.WipeController.stopDefault(ev);
-					return false;
-				} else {
-					//console.log("wipe too short");				
-				}
-			} else {
-				//console.log("scroll");
-			}
-		}
-		//console.log("reset touchstats");
-		DigiWebApp.WipeController.wipeIsPressed = false;
-		DigiWebApp.WipeController.wipeIsPressedStop = 0;
-		DigiWebApp.WipeController.wipeIsPressedStart = 0;
-		DigiWebApp.WipeController.wipeStartX = 0;
-		DigiWebApp.WipeController.wipeStartY = 0;
-		DigiWebApp.WipeController.wipeStopX = 0;
-		DigiWebApp.WipeController.wipeStopY = 0;
-		DigiWebApp.WipeController.wipeIsMoving = false;
-    },
-    
-    wipeOnMoveStop: function(ev) {
-		/*
-    	var dx = DigiWebApp.WipeController.wipeStartX - DigiWebApp.WipeController.wipeStopX;
-		var dy = DigiWebApp.WipeController.wipeStartY - DigiWebApp.WipeController.wipeStopY;
-		var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
-		var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
-		var dTime = timeStart - timeStop;
-    	console.log("wipeOnMoveStop: " + DigiWebApp.WipeController.wipeIsMoving + " (" + dx + ", " + dy + ") " + dTime);
-    	*/
-		try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
-		DigiWebApp.WipeController.wipeDoStop(ev);
-	},
-	
-	wipeOnTouchStart: function(ev) {
-		
-	},
-	
-	touchMoveEventSaved: null,
-	touchStartEventSaved: null,
-	
-	wipeOnTouchMove: function(ev) {
-		DigiWebApp.WipeController.touchMoveEventSaved = ev;
-		//try {
-			var x = 0;
-			var y = 0;
-	        if (typeof(ev.touches) !== "undefined") {
-	        	//console.log("touchmove: using ev.touches[0].page...");
-			  	x = ev.touches[0].pageX;
-			  	y = ev.touches[0].pageY;
-	        } else if ( typeof(ev.originalEvent.touches) !== "undefined" ) {
-	        	//console.log("touchmove: using ev.originalEvent.touches[0].page...");
-			  	x = ev.originalEvent.touches[0].pageX;
-			  	y = ev.originalEvent.touches[0].pageY;
-	        } else if ( typeof(ev.originalEvent) !== "undefined" ) {
-	        	//console.log("touchmove: using ev.originalEvent.page...");
-			  	x = ev.originalEvent.pageX;
-			  	y = ev.originalEvent.pageY;
-	        } else {
-	        	//console.log("touchmove: using ev.page...");
-	        	x = ev.pageX;
-	        	y = ev.pageY;
-	        }
-	        var xMoveSinceLastEvent = Math.abs(Math.abs(DigiWebApp.WipeController.wipeStopX) - x); 
-	        var yMoveSinceLastEvent = Math.abs(Math.abs(DigiWebApp.WipeController.wipeStopY) - y);
-	        var enoughMovement = ((xMoveSinceLastEvent < 200) && (yMoveSinceLastEvent < 200));
-	        /*
-	        console.log("xMoveSinceLastEvent=" + xMoveSinceLastEvent);
-	        console.log("yMoveSinceLastEvent=" + yMoveSinceLastEvent);
-	        console.log("DigiWebApp.WipeController.wipeStartX: " + DigiWebApp.WipeController.wipeStartX);
-	        console.log("DigiWebApp.WipeController.wipeStartY: " + DigiWebApp.WipeController.wipeStartY);
-	        console.log("DigiWebApp.WipeController.wipeStopX: " + DigiWebApp.WipeController.wipeStopX);
-	        console.log("DigiWebApp.WipeController.wipeStopY: " + DigiWebApp.WipeController.wipeStopY);
-	        console.log("enoughMovement=" + enoughMovement);
-	        */
-	        if ((enoughMovement && (x > 0) && (y > 0)) 
-	        || ((DigiWebApp.WipeController.wipeStopX === 0) && (DigiWebApp.WipeController.wipeStopY === 0))
-	        ) {
-		        DigiWebApp.WipeController.wipeStopX = x;
-		        DigiWebApp.WipeController.wipeStopY = y;
-		        DigiWebApp.WipeController.wipeIsPressedStop = (+new Date()).toString();
-				var dx = DigiWebApp.WipeController.wipeStartX - x;
-			  	var dy = DigiWebApp.WipeController.wipeStartY - y;
-		        var timeStart = DigiWebApp.WipeController.wipeIsPressedStart;
-				var timeStop  = DigiWebApp.WipeController.wipeIsPressedStop;
-				var dTime = timeStart - timeStop;
-			  	if ( (Math.abs(dx) > 10) || (Math.abs(dy) > 10)) {
-			  		DigiWebApp.WipeController.wipeIsMoving = true;
-			  	} else {
-			  		DigiWebApp.WipeController.wipeIsMoving = false;
-			  	}
-				var dxIsLongEnough = (Math.abs(dx) >= DigiWebApp.WipeController.wipeDecideX);
-				var dyIsLongEnough = (Math.abs(dy) >= DigiWebApp.WipeController.wipeDecideY);
-				var wipeTimeout = (dTime >= DigiWebApp.WipeController.wipeDecideTimeout);
-				//console.log("dx: " + dx);
-				//console.log("dy: " + dy);
-				//console.log("dxIsLongEnough: " + dxIsLongEnough);
-				//console.log("dyIsLongEnough: " + dyIsLongEnough);
-				//console.log("wipeTimeout: " + wipeTimeout);
-				if (( dxIsLongEnough || dyIsLongEnough || wipeTimeout) && (DigiWebApp.WipeController.wipeIsMoving)) {
-			    	//console.log("stopping wipe: " + DigiWebApp.WipeController.wipeIsMoving + " (" + dx + ", " + dy + ") " + dTime);
-					try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
-			  		if (typeof(device) !== "undefined") {
-			  			if ( 
-			  					( device.version.substr(0,1) >= 4 ) && ( device.platform.substr(0,7) >= "Android" ) && (DigiWebApp.SettingsController.getSetting('debug')) )
-			  			{
-			  				DigiWebApp.WipeController.stopDefault(ev);
-			  			}
-			  		}
-					DigiWebApp.WipeController.wipeDoStop(ev);
-				};
-				//return false;
-	        } else {
-	        	console.log("blocked wipe");
-	        	//console.log("x=" + x + ", y=" + y + " " + DigiWebApp.WipeController.wipeStartX + ", " + DigiWebApp.WipeController.wipeStartY + " " + DigiWebApp.WipeController.wipeStopX + ", " + DigiWebApp.WipeController.wipeStopY);
-	    		DigiWebApp.WipeController.wipeIsPressed = false;
-	    		DigiWebApp.WipeController.wipeIsPressedStop = 0;
-	    		DigiWebApp.WipeController.wipeIsPressedStart = 0;
-	    		DigiWebApp.WipeController.wipeStartX = 0;
-	    		DigiWebApp.WipeController.wipeStartY = 0;
-	    		DigiWebApp.WipeController.wipeStopX = 0;
-	    		DigiWebApp.WipeController.wipeStopY = 0;
-	    		DigiWebApp.WipeController.wipeIsMoving = false;
-	        	try { /*console.log("unbinding " + ev.type);*/ $(this).unbind(ev); } catch (e) { console.log("error while unbind"); }
-	        	DigiWebApp.WipeController.wipeDoStop(ev);
-	        }
-		//} catch (e) { console.log(e); }
-	},
-	
-	regTouchStart: function(pageid,ev) {
-		DigiWebApp.WipeController.wipeIsPressed = false;
-		DigiWebApp.WipeController.wipeIsPressedStop = 0;
-		DigiWebApp.WipeController.wipeIsPressedStart = 0;
-		DigiWebApp.WipeController.wipeStartX = 0;
-		DigiWebApp.WipeController.wipeStartY = 0;
-		DigiWebApp.WipeController.wipeStopX = 0;
-		DigiWebApp.WipeController.wipeStopY = 0;
-		DigiWebApp.WipeController.wipeIsMoving = false;
-		DigiWebApp.WipeController.touchStartEventSaved = ev;
-		if( navigator.userAgent.match(/Android/i) ) {
-			//console.log("preventing touchstarts default");
-			//ev.preventDefault();
-		}
-        if (typeof(ev.touches) !== "undefined") {
-        	//console.log("touchstart: using ev.touches[0]");
-    		DigiWebApp.WipeController.wipeStartX = ev.touches[0].pageX;
-    		DigiWebApp.WipeController.wipeStartY = ev.touches[0].pageY;
-        } else if ( typeof(ev.originalEvent.touches) !== "undefined" ) {
-        	//console.log("touchstart: using ev.originalEvent.touches[0].page...");
-        	DigiWebApp.WipeController.wipeStartX = ev.originalEvent.touches[0].pageX;
-        	DigiWebApp.WipeController.wipeStartY = ev.originalEvent.touches[0].pageY;
-        } else {
-        	//console.log("touchstart: using ev.page...");
-        	DigiWebApp.WipeController.wipeStartX = ev.pageX;
-        	DigiWebApp.WipeController.wipeStartY = ev.pageY;
-        }
-        //console.log("DigiWebApp.WipeController.wipeStartX: " + DigiWebApp.WipeController.wipeStartX);
-        //console.log("DigiWebApp.WipeController.wipeStartY: " + DigiWebApp.WipeController.wipeStartY);
-		DigiWebApp.WipeController.wipeIsMoving = false;
-		DigiWebApp.WipeController.wipeIsPressed = true;
-		DigiWebApp.WipeController.wipeIsPressedStart = (+new Date()).toString();
-		DigiWebApp.WipeController.wipeIsPressedStop = null;
-		var eventType = ev.type.substr(0,5);
-		//alert(eventType);
-		//console.log("binding " + eventType + "move for pageid " + pageid);
-    	var myPlatform = M.Environment.getPlatform();
-
-    	var deviceversion = "0";
-    	if (typeof(device) !== "undefined") deviceversion = new String(device.version);
-
-    	var deviceplatform = "";
-    	if (typeof(device) !== "undefined") deviceplatform = new String(device.platform);
-    	
-
-        if (       ( myPlatform.substr(-2)  === "86" )
-        		|| ( myPlatform.substr(-5)  === "Win32" )
-        		|| ( myPlatform.substr(-5)  === "Win64" )
-        		|| ( myPlatform.substr(0,3) === "Mac" )
-        		|| ( myPlatform.substr(0,2) === "iP")
-        		|| (DigiWebApp.SettingsController.getSetting('debug'))
-        		|| ( ( deviceversion.substr(0,1) >= 4 ) && ( deviceplatform.substr(0,7) >= "Android" ) && (DigiWebApp.SettingsController.getSetting('debug')) )
-        	) {
-    		try { $('#' + pageid).bind(eventType + 'move', DigiWebApp.WipeController.wipeOnTouchMove); } catch (e) { console.log("error while binding " + eventType + "move for " + pageid);}
-    		if (eventType === "touch") {
-    			//console.log("binding touchstop for pageid " + pageid);
-    			try { $('#' + pageid).bind('touchstop', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while binding touchstop for " + pageid);};
-    		} else if (eventType === "mouse") {
-    			//console.log("binding mouseup for pageid " + pageid);
-    			try { $('#' + pageid).bind('mouseup', DigiWebApp.WipeController.wipeOnMoveStop); } catch (e) { console.log("error while binding mouseup for " + pageid);};
-    		} else {
-    			console.log("unknown eventtype: " + ev.type);
-    		}
-        } else {
-        	if (DigiWebApp.SettingsController.getSetting('debug')) console.log("skipping touchmove");
-        }
-	}
-	
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: MediaPageController
 // ==========================================================================
 
@@ -9067,76 +9239,6 @@ DigiWebApp.DemoAudioController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: CameraController
-// ==========================================================================
-
-DigiWebApp.DemoCameraController = M.Controller.extend({
-
-    init: function(isFirstLoad) {
-		
-        if(isFirstLoad) {
-            /* do something here, when page is loaded the first time. */
-        }
-        /* do something, for any other load. */
-        if (       typeof navigator.device !== 'undefined' 
-        		&& typeof navigator.device.capture !== 'undefined' 
-        		&& typeof navigator.device.capture.captureImage !== 'undefined'
-        	) {
-        	// camera probably available
-        	$('#' + DigiWebApp.DemoCameraPage.content.takePictureGrid.id).show();
-        } else {
-        	$('#' + DigiWebApp.DemoCameraPage.content.takePictureGrid.id).hide();
-        }
-    },
-      
-    takePicture: function() {
-    		navigator.camera.getPicture(
-    			  DigiWebApp.DemoCameraController.cameraSuccessBase64
-    			, DigiWebApp.DemoCameraController.cameraError
-    			, { 
-    				  quality: 40
-    			//	, allowEdit: true
-    				, destinationType: navigator.camera.DestinationType.DATA_URL
-    			//	, destinationType: navigator.camera.DestinationType.FILE_URI
-    			//	, sourceType: navigator.camera.PictureSourceType.CAMERA 
-    			  }
-    		);    	
-    },
-        	
-    myImageData: null,
-    myImageObj: null,
-    cameraSuccessBase64: function(imageData) {
-        //alert("success");
-    	//DigiWebApp.DemoCameraController.myImageData = imageData;
-        var image = document.getElementById(DigiWebApp.DemoCameraPage.content.image.id);
-        image.src = 'data:image/jpeg;base64,' + imageData;
-
-        //DigiWebApp.DemoCameraController.myImageObj = new Image();
-        //DigiWebApp.DemoCameraController.myImageObj.src = 'data:image/jpeg;base64,' + imageData;
-    },
-
-    myImageURI: null,
-    cameraSuccessURI: function(imageURI) {
-        //alert("success");
-    	//DigiWebApp.DemoCameraController.myImageURI = imageURI;
-        var image = document.getElementById(DigiWebApp.DemoCameraPage.content.image.id);
-        image.src = imageURI;
-    },
-    
-    cameraError: function(mymessage) {
-        DigiWebApp.ApplicationController.nativeAlertDialogView({
-            title: 'ERROR',
-            message: mymessage
-        });
-    }
-    
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: AnwesenheitslisteController
 // ==========================================================================
 
@@ -9205,6 +9307,76 @@ DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
 		
     }
 
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: CameraController
+// ==========================================================================
+
+DigiWebApp.DemoCameraController = M.Controller.extend({
+
+    init: function(isFirstLoad) {
+		
+        if(isFirstLoad) {
+            /* do something here, when page is loaded the first time. */
+        }
+        /* do something, for any other load. */
+        if (       typeof navigator.device !== 'undefined' 
+        		&& typeof navigator.device.capture !== 'undefined' 
+        		&& typeof navigator.device.capture.captureImage !== 'undefined'
+        	) {
+        	// camera probably available
+        	$('#' + DigiWebApp.DemoCameraPage.content.takePictureGrid.id).show();
+        } else {
+        	$('#' + DigiWebApp.DemoCameraPage.content.takePictureGrid.id).hide();
+        }
+    },
+      
+    takePicture: function() {
+    		navigator.camera.getPicture(
+    			  DigiWebApp.DemoCameraController.cameraSuccessBase64
+    			, DigiWebApp.DemoCameraController.cameraError
+    			, { 
+    				  quality: 40
+    			//	, allowEdit: true
+    				, destinationType: navigator.camera.DestinationType.DATA_URL
+    			//	, destinationType: navigator.camera.DestinationType.FILE_URI
+    			//	, sourceType: navigator.camera.PictureSourceType.CAMERA 
+    			  }
+    		);    	
+    },
+        	
+    myImageData: null,
+    myImageObj: null,
+    cameraSuccessBase64: function(imageData) {
+        //alert("success");
+    	//DigiWebApp.DemoCameraController.myImageData = imageData;
+        var image = document.getElementById(DigiWebApp.DemoCameraPage.content.image.id);
+        image.src = 'data:image/jpeg;base64,' + imageData;
+
+        //DigiWebApp.DemoCameraController.myImageObj = new Image();
+        //DigiWebApp.DemoCameraController.myImageObj.src = 'data:image/jpeg;base64,' + imageData;
+    },
+
+    myImageURI: null,
+    cameraSuccessURI: function(imageURI) {
+        //alert("success");
+    	//DigiWebApp.DemoCameraController.myImageURI = imageURI;
+        var image = document.getElementById(DigiWebApp.DemoCameraPage.content.image.id);
+        image.src = imageURI;
+    },
+    
+    cameraError: function(mymessage) {
+        DigiWebApp.ApplicationController.nativeAlertDialogView({
+            title: 'ERROR',
+            message: mymessage
+        });
+    }
+    
 });
 
 // ==========================================================================
@@ -9524,6 +9696,22 @@ DigiWebApp.CameraPage = M.PageView.design({
 	        }
 	    }),
         	        
+//        imageContainer: M.ContainerView.design({
+//        	childViews: 'imageCanvas',
+//            cssClass: 'imageContainer marginTop20 marginBottom20',
+//
+//        	imageCanvas: M.CanvasView.design({
+//                cssClass: 'imageCanvas',
+//                canvasWidth: 300,
+//                canvasHeight: 450,
+//                render: function() {
+//					this.html += '<canvas id="' + this.id + '" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" class="' + this.cssClass + '"></canvas>';
+//	            	return this.html;
+//        		}
+//	        })
+//	        
+//        }),
+
         savePictureGrid: M.GridView.design({
         	childViews: 'button icon',
         	layout: {
@@ -9550,6 +9738,7 @@ DigiWebApp.CameraPage = M.PageView.design({
         		value: 'theme/images/icon_bookTime.png'
         	})
         })
+        
     })
 });
 
@@ -9811,7 +10000,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2393',
+            value: 'Build: 2394',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -11486,106 +11675,6 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: noSettingsiOS
-// ==========================================================================
-
-DigiWebApp.noSettingsiOSPage = M.PageView.design({
-
-    childViews: 'header content',
-
-    cssClass: 'noSettingsiOSPage',
-
-    header: M.ToolbarView.design({
-        value: M.I18N.l('noSettingsiOSHeader'),
-        anchorLocation: M.TOP
-    }),
-
-    content: M.ScrollView.design({
-        childViews: 'label exitText spacer spacer continueinstallText continueinstallgrid spacer disclaimer',
-        spacer: M.LabelView.design({
-            value: '',
-            cssClass: 'marginBottom25'
-        }),
-        label: M.LabelView.design({
-            value: M.I18N.l('noSettingsiOSLabel'),
-            cssClass: 'infoLabel marginBottom25'
-        }),
-        exitText: M.LabelView.design({
-            value: M.I18N.l('noSettingsiOSMessage'),
-            cssClass: 'whiteLabel marginBottom25'
-        }),
-        continueinstallText: M.LabelView.design({
-            value: M.I18N.l('continueInstallMessage'),
-            cssClass: 'whiteLabel marginBottom25'
-        }),
-        exitgrid: M.GridView.design({
-            childViews: 'exitbutton icon',
-            cssClass: 'marginBottom25',
-            layout: {
-                cssClass: 'digiButton',
-                columns: {
-                    0: 'button',
-                    1: 'icon'
-                }
-            },
-            exitbutton: M.ButtonView.design({
-                value: M.I18N.l('exitWebApp'),
-                cssClass: 'digiButton',
-                anchorLocation: M.RIGHT,
-                events: {
-                    tap: {
-		                action: function() {
-            				//navigator.app.exitApp();
-		    			}
-                    }
-                }
-            }),
-            icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
-        }),
-        continueinstallgrid: M.GridView.design({
-            childViews: 'continueinstallbutton icon',
-            cssClass: 'marginBottom25',
-            layout: {
-                cssClass: 'digiButton',
-                columns: {
-                    0: 'button',
-                    1: 'icon'
-                }
-            },
-            continueinstallbutton: M.ButtonView.design({
-                value: M.I18N.l('continueInstall'),
-                cssClass: 'digiButton',
-                anchorLocation: M.RIGHT,
-                events: {
-                    tap: {
-                        action: function() {
-            				DigiWebApp.SettingsController.showCredentialsAlert = NO;
-            				DigiWebApp.NavigationController.backToSettingsPage();
-            				DigiWebApp.SettingsController.init();
-            			}
-                    }
-                }
-            }),
-            icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
-        }),
-        disclaimer: M.LabelView.design({
-            value: M.I18N.l('noSettingsiOSDisclamier'),
-            cssClass: 'whiteLabel'
-        })        
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: MediaListTemplateView
 // ==========================================================================
 
@@ -11717,6 +11806,106 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 
 });
 
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: noSettingsiOS
+// ==========================================================================
+
+DigiWebApp.noSettingsiOSPage = M.PageView.design({
+
+    childViews: 'header content',
+
+    cssClass: 'noSettingsiOSPage',
+
+    header: M.ToolbarView.design({
+        value: M.I18N.l('noSettingsiOSHeader'),
+        anchorLocation: M.TOP
+    }),
+
+    content: M.ScrollView.design({
+        childViews: 'label exitText spacer spacer continueinstallText continueinstallgrid spacer disclaimer',
+        spacer: M.LabelView.design({
+            value: '',
+            cssClass: 'marginBottom25'
+        }),
+        label: M.LabelView.design({
+            value: M.I18N.l('noSettingsiOSLabel'),
+            cssClass: 'infoLabel marginBottom25'
+        }),
+        exitText: M.LabelView.design({
+            value: M.I18N.l('noSettingsiOSMessage'),
+            cssClass: 'whiteLabel marginBottom25'
+        }),
+        continueinstallText: M.LabelView.design({
+            value: M.I18N.l('continueInstallMessage'),
+            cssClass: 'whiteLabel marginBottom25'
+        }),
+        exitgrid: M.GridView.design({
+            childViews: 'exitbutton icon',
+            cssClass: 'marginBottom25',
+            layout: {
+                cssClass: 'digiButton',
+                columns: {
+                    0: 'button',
+                    1: 'icon'
+                }
+            },
+            exitbutton: M.ButtonView.design({
+                value: M.I18N.l('exitWebApp'),
+                cssClass: 'digiButton',
+                anchorLocation: M.RIGHT,
+                events: {
+                    tap: {
+		                action: function() {
+            				//navigator.app.exitApp();
+		    			}
+                    }
+                }
+            }),
+            icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        }),
+        continueinstallgrid: M.GridView.design({
+            childViews: 'continueinstallbutton icon',
+            cssClass: 'marginBottom25',
+            layout: {
+                cssClass: 'digiButton',
+                columns: {
+                    0: 'button',
+                    1: 'icon'
+                }
+            },
+            continueinstallbutton: M.ButtonView.design({
+                value: M.I18N.l('continueInstall'),
+                cssClass: 'digiButton',
+                anchorLocation: M.RIGHT,
+                events: {
+                    tap: {
+                        action: function() {
+            				DigiWebApp.SettingsController.showCredentialsAlert = NO;
+            				DigiWebApp.NavigationController.backToSettingsPage();
+            				DigiWebApp.SettingsController.init();
+            			}
+                    }
+                }
+            }),
+            icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        }),
+        disclaimer: M.LabelView.design({
+            value: M.I18N.l('noSettingsiOSDisclamier'),
+            cssClass: 'whiteLabel'
+        })        
+    })
+
+});
 
 
 // ==========================================================================
@@ -13628,6 +13817,8 @@ DigiWebApp.MediaListPage = M.PageView.design({
 
           childViews: 'mediafileslist'
 
+        , cssClass: 'mediafilesList'
+        	
         , mediafileslist: M.ListView.design({
               contentBinding: {
                   target: DigiWebApp.MediaListController
@@ -13640,6 +13831,8 @@ DigiWebApp.MediaListPage = M.PageView.design({
     , actions: M.ScrollView.design({
 
           childViews: 'actionslist'
+        	  
+        , cssClass: 'actionsList'
 
         , actionslist: M.ListView.design({
               contentBinding: {

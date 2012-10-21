@@ -216,7 +216,7 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 /* mediaListPage */
-.mediaListPage .ui-content li {
+.mediaListPage .actionsList .ui-content li {
     border:  none;
     font-size: 20px;
     padding: 0px;
@@ -229,25 +229,45 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url('images/arrow_white.png') 100% 50% no-repeat;
 }
 
-.mediaListPage .ui-content li img {
+.mediaListPage .actionsList .ui-content li img {
     width: 32px;
     margin-left: 15px;
     margin-top: 10px;
 }
 
-.mediaListPage .ui-content li.selected {
+.mediaListPage .actionsList .ui-content li.selected {
     background: #BCBCBC url('images/arrow_white.png') 100% 50% no-repeat;
     color: #FFFFFF;
 }
 
-.mediaListPage .ui-content .ui-grid-b {
+.mediaListPage .actionsList .ui-content .ui-grid-b {
     text-align: center;
     font-size: 12px;
 }
 
-.mediaListPage .ui-content .ui-grid-b img {
+.mediaListPage .actionsList .ui-content .ui-grid-b img {
     max-width: 64px;
     max-height: 64px;
+}
+
+.mediaListPage .mediafilesList .ui-listview li {
+    padding-left: 0.7em;
+}
+
+.mediaListPage .mediafilesList .ui-listview .date {
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: #000000 !important;
+}
+
+.mediaListPage .mediafilesList .ui-listview .application, 
+.mediaListPage .mediafilesList .ui-listview .position, 
+.mediaListPage .mediafilesList .ui-listview .activity, 
+.mediaListPage .mediafilesList .ui-listview .location {
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 25px;
+    color: #000000;
 }
 
 /* demoMediaPage */

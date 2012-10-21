@@ -1,18 +1,18 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.3.4.2393 beta, Timestamp:1350755915529
+#Application:DigiWebApp, Version:1.3.4.2394 beta, Timestamp:1350817783212
 
 
 # Explicitly cached entries
 CACHE:
-de_de.js
 underscore-min.js
-d8-0.1.3.min.js
+de_de.js
 theme/tmp.css
-bootstrap.js
+d8-0.1.3.min.js
 jquery.xml2json_1.1.js
-ui.js
+bootstrap.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+ui.js
 pen.cur
 theme/style.css
 theme/images/arrow_white.png
@@ -59,17 +59,15 @@ theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/ajax-loader.png
-childbrowser.js
-cordova.js
 core.js
-jquery-1.6.4.min.js.dist
-jquery-1.6.4.js
 theme/jquery.mobile-1.0.min.css
 theme/images/ajax-loader.png
 theme/images/icons-18-white.png
 theme/images/icons-18-black.png
-theme/images/icons-36-white.png
 theme/images/icons-36-black.png
+theme/images/icons-36-white.png
+childbrowser.js
+cordova.js
 jquery_mobile.js
 json2.min.js
 theme/jquery.signaturepad.css
@@ -81,6 +79,8 @@ theme/journal.woff
 theme/journal.ttf
 theme/journal.eot
 theme/journal.svg
+jquery-1.6.4.min.js.dist
+jquery-1.6.4.js
 DigiWebApp_App.js
 
 
