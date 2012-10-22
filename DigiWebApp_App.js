@@ -1459,7 +1459,7 @@ DigiWebApp.CameraController = M.Controller.extend({
         var activities = DigiWebApp.CameraController.getActivities();
 
         // get the ids from the current booking
-        var orderId = (booking.get('orderId') == "0" ? 0 : booking.get('orderId')) || booking.get('handOrderId'); // we need to check handOrders also
+        var orderId = (booking.get('orderId') == "0" ? orders.length - 1 : booking.get('orderId')) || booking.get('handOrderId'); // we need to check handOrders also
         var positionId = booking.get('positionId');
         var activityId = booking.get('activityId');
 
@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2464
+    , softwareVersion: 2465
 
 
     /**
@@ -9373,9 +9373,9 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
   , activities: null
 
   , selections: {
-      order: null,
-      position: null,
-      activity: null
+        order: null
+      , position: null
+      , activity: null
   }
 
   , deleteMediaFileFromLocalStorage: function() {
@@ -9427,7 +9427,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       var activities = DigiWebApp.EditPicturePageController.getActivities();
 
       // get the ids from the current MediaFile
-      var orderId = (that.myMediaFile.get('orderId') == "0" ? 0 : that.myMediaFile.get('orderId')) || that.myMediaFile.get('handOrderId'); // we need to check handOrders also
+      var orderId = (that.myMediaFile.get('orderId') == "0" ? orders.length - 1 : that.myMediaFile.get('orderId')) || that.myMediaFile.get('handOrderId'); // we need to check handOrders also
       var positionId = that.myMediaFile.get('positionId');
       var activityId = that.myMediaFile.get('activityId');
 
@@ -10570,7 +10570,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2464',
+            value: 'Build: 2465',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
