@@ -1003,7 +1003,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	
 	deleteFile: function(successCallback, errorCallback) {
 		var that = this;
-		alert('deleteFile');
+
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
@@ -1036,19 +1036,16 @@ DigiWebApp.MediaFile = M.Model.create({
 	        return;
 	    }
 
-		alert('open filesystem');
 	    // open filesystem
 	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
 
-			alert('get dataDirectory from filesystem (create if not exists)');
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
 		    			
-				alert('get fileEntry from filesystem');
 		    	// get fileEntry from filesystem
 		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 		    		
-					alert('remove fileEntry');
+					alert('remove fileEntry "' + that.get("fileName") + '"');
 		    		// remove fileEntry
 		    		fileEntry.remove(successCallback, errorCallback);
 		    		
@@ -1961,7 +1958,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2455
+    , softwareVersion: 2456
 
 
     /**
@@ -9382,7 +9379,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
   , deleteMediaFileFromLocalStorage: function() {
 	  var that = this;
-	  alert(deleteMediaFileFromLocalStorage);
+	  alert('deleteMediaFileFromLocalStorage');
 	  that.myMediaFile.del();
 	  DigiWebApp.NavigationController.backToMediaListPageTransition();
   }
@@ -10559,7 +10556,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2455',
+            value: 'Build: 2456',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
