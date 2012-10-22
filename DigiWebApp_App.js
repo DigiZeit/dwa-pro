@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2466
+    , softwareVersion: 2467
 
 
     /**
@@ -9423,6 +9423,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       
       // get all items from local storage
       var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
+      orders.push({label: M.I18N.l('selectSomething'), value: '0'});
       var positions = DigiWebApp.Position.findSorted();
       var activities = DigiWebApp.EditPicturePageController.getActivities();
 
@@ -9435,16 +9436,20 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       /**
        * ORDERS
        */
+      var orderFound = NO;
       var orderArray = _.map(orders, function(order) {
+       	  var obj = null;
           if(order.get('id') == orderId) {
-              return { label: order.get('name'), value: order.get('id'), isSelected: YES };
+              obj = { label: order.get('name'), value: order.get('id'), isSelected: YES };
+              orderFound = YES;
           } else {
-              return { label: order.get('name'), value: order.get('id') };
+        	  obj = { label: order.get('name'), value: order.get('id') };
           }
+          return obj;
       });
       orderArray = _.compact(orderArray);
       // push "Bitte wählen Option"
-      orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+      //orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
 
       
       /**
@@ -10570,7 +10575,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2466',
+            value: 'Build: 2467',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
