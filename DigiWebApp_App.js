@@ -1957,7 +1957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2449
+    , softwareVersion: 2450
 
 
     /**
@@ -9389,6 +9389,11 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
           /* do something here, when page is loaded the first time. */
       }
 
+	  $('#' + DigiWebApp.EditPicturePage.content.remarkInput.id).val("");
+	  M.ViewManager.getView('editPicturePage', 'remarkInput').value = "";
+	  $('#' + DigiWebApp.EditPicturePage.content.remarkInput.id).val(DigiWebApp.EditPicturePage.myMediaFile.get('remark'));
+	  M.ViewManager.getView('editPicturePage', 'remarkInput').value = DigiWebApp.EditPicturePage.myMediaFile.get('remark');
+
       var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
       image.src = '';
       DigiWebApp.EditPicturePageController.myImageObj = new Image();
@@ -9791,28 +9796,13 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 			posId = null;
 	    }
 
-	    var lat = '0';
-	    var lon = '0';
-	    if(location) {
-			if (location.latitude) {
-			    lat = location.latitude;
-			}
-			if(location.longitude) {
-			    lon = location.longitude;
-			}
-	    }
-
-//	    var myMediaFile = that.newMediaFile({
-//			oId: orderId,
-//			hoId: handOrderId,
-//			hoName: handOrderName,
-//			lat: lat,
-//			lon: lon,
-//			pId: posId,
-//			aId: actId
-//	    });
-	    
-	    myMediaFile.setRemark(M.ViewManager.getView('editPicturePage', 'remarkInput').value);
+	    var myMediaFile = that.myMediaFile;
+		myMediaFile.set('orderId', orderId);
+		myMediaFile.set('handOrderId', handOrderId);
+		myMediaFile.set('handOrderName', handOrderName);
+		myMediaFile.set('positionId', posId);
+		myMediaFile.set('activityId', actId);
+		myMediaFile.set('remark', M.ViewManager.getView('editPicturePage', 'remarkInput').value);
 	    
 	    var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
 
@@ -10564,7 +10554,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2449',
+            value: 'Build: 2450',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
