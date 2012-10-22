@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2462
+    , softwareVersion: 2463
 
 
     /**
@@ -9380,8 +9380,10 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
   , deleteMediaFileFromLocalStorage: function() {
 	  var that = this;
+	  var myMediaFile = DigiWebApp.EditPicturePageController.myMediaFile;
+	  console.log(myMediaFile);
 	  try {
-		  that.myMediaFile.del();
+		  myMediaFile.del();
 	  } catch(e) {}
 	  DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	  DigiWebApp.NavigationController.backToMediaListPageTransition();
@@ -10563,7 +10565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2462',
+            value: 'Build: 2463',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
