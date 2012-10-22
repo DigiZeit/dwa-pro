@@ -1957,7 +1957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2450
+    , softwareVersion: 2451
 
 
     /**
@@ -9391,8 +9391,8 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
 	  $('#' + DigiWebApp.EditPicturePage.content.remarkInput.id).val("");
 	  M.ViewManager.getView('editPicturePage', 'remarkInput').value = "";
-	  $('#' + DigiWebApp.EditPicturePage.content.remarkInput.id).val(DigiWebApp.EditPicturePage.myMediaFile.get('remark'));
-	  M.ViewManager.getView('editPicturePage', 'remarkInput').value = DigiWebApp.EditPicturePage.myMediaFile.get('remark');
+	  $('#' + DigiWebApp.EditPicturePage.content.remarkInput.id).val(that.myMediaFile.get('remark'));
+	  M.ViewManager.getView('editPicturePage', 'remarkInput').value = that.myMediaFile.get('remark');
 
       var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
       image.src = '';
@@ -10554,7 +10554,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2450',
+            value: 'Build: 2451',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
