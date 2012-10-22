@@ -1957,7 +1957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2452
+    , softwareVersion: 2453
 
 
     /**
@@ -10554,7 +10554,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2452',
+            value: 'Build: 2453',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -14571,8 +14571,8 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	              	//target: DigiWebApp.NavigationController,
 	              	//action: 'backToMediaListPageTransition'
 	    			action: function() {
-	    				DigiWebApp.EditPictureController.myMediaFile.deleteFile(
-	    						  DigiWebApp.EditPictureController.deleteMediaFileFromLocalStorage
+	    				DigiWebApp.EditPicturePageController.myMediaFile.deleteFile(
+	    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage
 	    						, function() {
 	    							  DigiWebApp.ApplicationController.nativeAlertDialogView({
 	    									title: M.I18N.l('error'),
