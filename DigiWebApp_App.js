@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2467
+    , softwareVersion: 2468
 
 
     /**
@@ -9423,7 +9423,6 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       
       // get all items from local storage
       var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
-      orders.push({label: M.I18N.l('selectSomething'), value: '0'});
       var positions = DigiWebApp.Position.findSorted();
       var activities = DigiWebApp.EditPicturePageController.getActivities();
 
@@ -9437,7 +9436,8 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
        * ORDERS
        */
       var orderFound = NO;
-      var orderArray = _.map(orders, function(order) {
+      var orderArray = null;
+      var orderTempArray = _.map(orders, function(order) {
        	  var obj = null;
           if(order.get('id') == orderId) {
               obj = { label: order.get('name'), value: order.get('id'), isSelected: YES };
@@ -9447,9 +9447,25 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
           }
           return obj;
       });
-      orderArray = _.compact(orderArray);
+      orderTempArray = _.compact(orderTempArray);
       // push "Bitte wählen Option"
-      //orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+      orderTempArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+
+      if (orderFound === NO) {
+	      var orderTemp2Array = _.map(orderTempArray, function(order) {
+	       	  var obj = null;
+	          if(order.get('value') == orderId) {
+	              obj = { label: order.get('label'), value: order.get('value'), isSelected: YES };
+	          } else {
+	        	  obj = { label: order.get('label'), value: order.get('value') };
+	          }
+	          return obj;
+	      });
+	      orderArray = orderTemp2Array;
+      } else {
+    	  orderArray = orderTempArray;
+      }
+      orderArray = _.compact(orderArray);
 
       
       /**
@@ -10575,7 +10591,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2467',
+            value: 'Build: 2468',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
