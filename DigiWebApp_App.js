@@ -1045,9 +1045,13 @@ DigiWebApp.MediaFile = M.Model.create({
 		    	// get fileEntry from filesystem
 		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 		    		
-					alert('remove fileEntry "' + that.get("fileName") + '"');
+					alert('remove fileEntry');
 		    		// remove fileEntry
-		    		fileEntry.remove(successCallback, errorCallback);
+					try {
+						fileEntry.remove(successCallback, errorCallback);
+					} catch(e) {
+						errorCallback();
+					}
 		    		
 		    	}, errorCallback);     // dataDirectory.getFile
 		    }, errorCallback);         // fileSystem.root.getDirectory
@@ -1958,7 +1962,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2456
+    , softwareVersion: 2457
 
 
     /**
@@ -10556,7 +10560,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2456',
+            value: 'Build: 2457',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
