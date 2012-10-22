@@ -1014,21 +1014,16 @@ DigiWebApp.MediaFile = M.Model.create({
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.log("deleteFileError: successCallback is not a function");
-alert("deleteFileError: successCallback is not a function");
 	        return;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.log("deleteFileError: errorCallback is not a function");
-alert("deleteFileError: errorCallback is not a function");
-	        return;
-//	    } else {
-//	    	var errorCallback = function(evt) {
-//	            //console.log("deleteFileError: " + evt.target.error.code);
-//	    		console.log("deleteFileError");
-//	    		console.log(evt);
-//	    	};
+	    	errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
+	    		console.log("deleteFileError");
+	    		console.log(evt);
 	    };
 	    
 		// check if LocalFileSystem is defined
@@ -1044,11 +1039,9 @@ alert("deleteFileError: errorCallback is not a function");
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
 		    			
-alert("get fileEntry from filesystem");
 		    	// get fileEntry from filesystem
 		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 		    		
-alert('remove fileEntry');
 		    		// remove fileEntry
 					try {
 						fileEntry.remove(successCallback, errorCallback);
@@ -1965,7 +1958,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2459
+    , softwareVersion: 2460
 
 
     /**
@@ -10565,7 +10558,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2459',
+            value: 'Build: 2460',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -14585,11 +14578,10 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	    				DigiWebApp.EditPicturePageController.myMediaFile.deleteFile(
 	    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage
 	    						, function() {
-	    							  alert("error");
-	    							  DigiWebApp.ApplicationController.nativeAlertDialogView({
-	    									  title: M.I18N.l('error')
-	    									, message: M.I18N.l('errorWhileDeletingMediaFile')
-	    							  });
+//	    							  DigiWebApp.ApplicationController.nativeAlertDialogView({
+//	    									  title: M.I18N.l('error')
+//	    									, message: M.I18N.l('errorWhileDeletingMediaFile')
+//	    							  });
 		    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage();
 	    						  }
 	    				);
