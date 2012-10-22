@@ -1024,6 +1024,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.log("deleteFileError");
 	    		console.log(evt);
+	    	}
 	    };
 	    
 		// check if LocalFileSystem is defined
@@ -1958,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2460
+    , softwareVersion: 2461
 
 
     /**
@@ -9379,7 +9380,6 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
   , deleteMediaFileFromLocalStorage: function() {
 	  var that = this;
-	  alert('deleteMediaFileFromLocalStorage');
 	  try {
 		  that.myMediaFile.del();
 	  } catch(e) {}
@@ -10558,7 +10558,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2460',
+            value: 'Build: 2461',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
