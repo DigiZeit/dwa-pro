@@ -485,6 +485,7 @@ label.ui-input-text, .ui-controlgroup-label {
 
 /* zeitbuchungenPage */
 .zeitbuchungenPage .ui-listview { 
+/*    padding-left: 0.7em; */
     font-size: 12px;
     color: #000000 !important;
 }

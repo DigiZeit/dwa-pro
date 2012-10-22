@@ -447,5 +447,9 @@ M.I18N.de_de = {
     , unknown: 'nicht angegeben'
 
     , uploadMediaFiles: 'Medien übertragen'
+    	
+    , editPicture: 'Bild bearbeiten'
+    	
+    , delete: 'Löschen'
 
 };

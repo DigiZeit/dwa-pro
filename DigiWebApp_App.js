@@ -1931,179 +1931,6 @@ DigiWebApp.CameraController = M.Controller.extend({
         });
     }
 
-//    , paintMoveEvent: null
-//    
-//    , paintOnCanvasStopPaint: function(ev) {
-//    	//console.log("paintOnCanvasStopPaint");    	
-//    	ev.preventDefault();
-//    	
-//    	//context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
-//    	//context.stroke();
-//
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);    	
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//    }
-//    
-//    , paintOnCanvasStartMove: function(ev) {
-//    	console.log("paintOnCanvasStartMove");
-//    	ev.preventDefault();
-//    	//ev.stopPropagation();
-//    	
-//    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-//
-//    	if (canvas.getContext) {
-//    		DigiWebApp.CameraController.myImageTouchPos = DigiWebApp.CameraController.getCoordinates(ev);
-//	
-//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-//    		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-//    	}
-//    }
-//    
-//    , paintOnCanvasStopMove: function(ev) {
-//    	console.log("paintOnCanvasStopMove");    	
-//    	ev.preventDefault();
-//    	//ev.stopPropagation();
-//		DigiWebApp.CameraController.myImageTouchPos = [0, 0];
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasMove);    	
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopMove);
-//		$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopMove);
-//    }
-//    
-//    , myImageTouchPos: [0, 0]
-//    , myImageTopLeft: [0, 0]
-//    , myImageBottomRight: [0, 0]
-//    , myImageScaleFactor: 2
-//    , paintOnCanvasMove: function(ev) {
-//    	console.log("paintOnCanvasMove");    	
-//    	ev.preventDefault();
-//    	//ev.stopPropagation();
-//
-//    	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-//        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-//
-//    	if (canvas.getContext) {
-//    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
-//			var x = coord[0];
-//			var y = coord[1];
-//			var dx = DigiWebApp.CameraController.myImageTouchPos[0] - coord[0];
-//			var dy = DigiWebApp.CameraController.myImageTouchPos[1] - coord[1];
-//			//console.log(dx + ", " + dy);
-//			DigiWebApp.CameraController.myImageTouchPos[0] = coord[0];
-//			DigiWebApp.CameraController.myImageTouchPos[1] = coord[1];
-//			//console.log("DigiWebApp.CameraController.myImageTouchPos " + DigiWebApp.CameraController.myImageTouchPos[0] + ", " + DigiWebApp.CameraController.myImageTouchPos[1]);
-//			var context = canvas.getContext("2d");
-//			if ((DigiWebApp.CameraController.myImageTopLeft[0] + dx) > 0 && (DigiWebApp.CameraController.myImageTopLeft[0] + dx) < image.width) {
-//	    		DigiWebApp.CameraController.myImageTopLeft[0] = DigiWebApp.CameraController.myImageTopLeft[0] + dx;
-//	    		//DigiWebApp.CameraController.myImageBottomRight[0] = DigiWebApp.CameraController.myImageBottomRight[0] + dx;
-//			}
-//			if ((DigiWebApp.CameraController.myImageTopLeft[1] + dy) > 0 && (DigiWebApp.CameraController.myImageTopLeft[1] + dy) < image.height) {
-//	    		DigiWebApp.CameraController.myImageTopLeft[1] = DigiWebApp.CameraController.myImageTopLeft[1] + dy;
-//	    		//DigiWebApp.CameraController.myImageBottomRight[1] = DigiWebApp.CameraController.myImageBottomRight[1] + dy;
-//			}
-//    				
-//    		context.drawImage(image,DigiWebApp.CameraController.myImageTopLeft[0],DigiWebApp.CameraController.myImageTopLeft[1],canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
-//    	}
-//    }
-//    
-//    , paintOnCanvasStartPaint: function(ev) {
-//    	//console.log("paintOnCanvasStartPaint");    	
-//    	ev.preventDefault();
-//    	//ev.stopPropagation();
-//    	
-//    	var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-//
-//    	if (canvas.getContext) {
-//    		var coord = DigiWebApp.CameraController.getCoordinates(ev);
-//			var x = coord[0];
-//			var y = coord[1];
-//	
-//	    	var context = canvas.getContext("2d");
-//			context.beginPath();
-//			context.strokeStyle = "#f00";
-//			context.lineWidth = 5;
-//			context.lineCap = "round";
-//			context.lineJoin = "round";
-//			context.moveTo(x, y);
-//	
-//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//	    	$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.CameraController.paintOnCanvasPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.CameraController.paintOnCanvasPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//			$('#' + DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.CameraController.paintOnCanvasStopPaint);
-//    	}
-//    }
-//    
-//    , getCoordinates: function(ev) {
-//    	var x = 0;
-//    	var y = 0;
-//		// Get the mouse position relative to the canvas element.
-//        if (typeof(ev.touches) !== "undefined") {
-//        	//console.log("touchstart: using ev.touches[0]");
-//        	x = ev.touches[0].pageX - ev.touches[0].target.offsetLeft;
-//        	y = ev.touches[0].pageY - ev.touches[0].target.offsetTop;
-//        } else if (typeof(ev.originalEvent) !== "undefined") {
-//    		if (typeof(ev.originalEvent.touches) !== "undefined") {
-//        		x = ev.originalEvent.touches[0].pageX - ev.originalEvent.touches[0].target.offsetLeft;
-//        		y = ev.originalEvent.touches[0].pageY - ev.originalEvent.touches[0].target.offsetTop;
-//        		//console.log(x + ", " + y);
-//    		}
-//    	} else {
-//    		x = ev.offsetX;
-//    		y = ev.offsetY;
-//    	}
-//        return [x, y];
-//    }
-//    
-//    , paintOnCanvasPaint: function(ev) {
-//    	//console.log("paintOnCanvasPaint");
-//    	ev.preventDefault();
-//    	//ev.stopPropagation();
-//    	
-//    	// save event for easier debugging
-//    	DigiWebApp.CameraController.paintMoveEvent = ev;
-//
-//    	var coord = DigiWebApp.CameraController.getCoordinates(ev);
-//		var x = coord[0];
-//		var y = coord[1];
-//
-//    	var context = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id).getContext("2d");
-//		
-//		// The event handler works like a drawing pencil which tracks the mouse 
-//		// movements. We start drawing a path made up of lines.
-//		context.lineTo(x, y);
-//		//context.stroke();
-//    }
-//    
-//    , paintOnCanvasTouchMove: function(ev) {
-//    	//console.log("paintOnCanvasTouchMove");
-//    }
-//    
-//    , fillCanvasFromImage_var: null
-//    , fillCanvasFromImage: function() {
-//    	console.log("fillCanvasFromImage");
-//		if (DigiWebApp.CameraController.fillCanvasFromImage_var !== null) clearTimeout(DigiWebApp.CameraController.fillCanvasFromImage_var);
-//		$('#' + DigiWebApp.CameraPage.content.image.id).hide();
-//        var canvas = document.getElementById(DigiWebApp.CameraPage.content.imageContainer.imageCanvas.id);
-//        var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-//        DigiWebApp.CameraController.myImageScaleFactor = image.width / canvas.width;
-//		var context = canvas.getContext("2d");
-//		console.log("drawing image to canvas with file");
-//		context.drawImage(image,0,0,canvas.width * DigiWebApp.CameraController.myImageScaleFactor,canvas.height * DigiWebApp.CameraController.myImageScaleFactor,0,0,canvas.width,canvas.height);
-//		DigiWebApp.CameraController.myImageTopLeft = [0, 0];
-//    }
-
 });
 
 // ==========================================================================
@@ -2111,26 +1938,1027 @@ DigiWebApp.CameraController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: MediaPageController
+// Controller: RequestController
 // ==========================================================================
 
-DigiWebApp.MediaPageController = M.Controller.extend({
+DigiWebApp.RequestController = M.Controller.extend({
 
-      events: {
-		pagebeforeshow: {
-    		target: this,
-    		action: 'init'
-		}
-	}
+	  GatewayServer: 'www.digi-gps.de'
+	, DatabaseServer: null
+	, handy2WebServicesUrl: '/Handy2WebServices/services/DatenTransfer'
+	
+    /**
+     * Object containing the success callback for the several calls
+     */
+    , successCallback: {}
 
-    , items: null
+    /**
+     * Object containing the success callback for the several calls
+     */
+    , errorCallback: {}
+    
+    , softwareVersion: 2447
 
-    , init: function(isFirstLoad) {
-    	
+
+    /**
+     * Method that performs the GET requests to the server.
+     *
+     * Shows a loader if flag is set in parameter object.
+     *
+     * Success callback:
+     * 1) Hiding the loader
+     * 2) Passing to handleSuccessCallback() with the return data of the request and flag for isWorkplan, isKolonne and the source (function that triggered the request) as string
+     *
+     * Error callback
+     * 1) Hiding the loader
+     * 2) Passing to handleErrorCallback with return data of the request and the source (function that triggered the request) as string
+     *
+     * @param {Object} obj The parameter object
+     */
+    , makeRequest: function(obj) {
+    
+        var that = this;
+        var req = M.Request.init({
+
+            url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/' + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
+
+            /* alternative way by asking if in native container or not => in getUrl() */
+            //url: this.getUrl() + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
+
+            method: 'GET',
+            beforeSend: function(xhr) {
+                if(obj.loaderText) {
+                    DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
+                } else {
+                    DigiWebApp.ApplicationController.DigiLoaderView.show('Lade Daten');
+                }
+
+                xhr.setRequestHeader('Cache-Control', 'no-cache');
+            },
+            onSuccess: function(data, msg, xhr) {
+            	var leaveLoaderOpen = NO;
+            	if (typeof(obj.leaveLoaderOpen) !== "undefined") leaveLoaderOpen = obj.leaveLoaderOpen;
+                if (!leaveLoaderOpen) DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                var source = obj.source;
+                var workPlan = obj.isWorkPlanRequest;
+                var kolonne = obj.isKolonnenRequest;
+                this.bindToCaller(that, that.handleSuccessCallback, [data, msg, xhr, workPlan, kolonne, source])();
+            },
+            onError: function(xhr, err) {
+            	console.log("Error in makeRequest: " + err);
+                DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                this.bindToCaller(that, that.handleErrorCallback, [xhr, err, obj.source])();
+            }
+        });
+
+        req.send();
     }
 
-});
+    , getUrl: function() {
+        try {
+            if(device && device.uuid) {
+            	if (DigiWebApp.SettingsController.getSetting('debug')) console.log(device.uuid);
+                return 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/' ;
+            }
+        } catch(e) {
+            return '/Handy2WebServices/services/DatenTransfer/';
+        }
 
+    }
+
+    , getDatabaseServer: function(myFunc, obj) {
+    
+    	DigiWebApp.RequestController.DatabaseServer = "";
+    	
+        var firmenId = DigiWebApp.SettingsController.getSetting('company');
+
+    	var myGatewayServer = DigiWebApp.RequestController.GatewayServer;
+    	
+    	if (typeof(device) === "undefined") {
+    		myGatewayServer = location.host;
+    	}
+
+		console.log('using: http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
+		
+        var req = M.Request.init({
+        
+            url: 'http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf(),
+
+            method: 'GET',
+            beforeSend: function(xhr) {
+                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('empfangeUrlLoader'));
+                xhr.setRequestHeader('Cache-Control', 'no-cache');
+            },
+            onSuccess: function(xmldata, msg, xhr) {
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+            	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
+		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
+		    	if (data['return'] !== "") {
+		    		DigiWebApp.RequestController.DatabaseServer = data['return'];
+		    	} else {
+		    		console.log("FALLBACK: empty DatabaseServer --> falling back to GatewayServer"); 
+		    		DigiWebApp.RequestController.DatabaseServer = DigiWebApp.RequestController.GatewayServer
+		    	}
+		    	if (typeof(device) === "undefined") {
+		    		if ((location.host !== DigiWebApp.RequestController.DatabaseServer)) {
+	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	        		            title: M.I18N.l('wrongServer'),
+	        		            message: M.I18N.l('wrongServerMessage'),
+	        		            callbacks: {
+	        		                confirm: {
+	        		                    target: this,
+	        		                    action: function () {
+	        		                    	//alert(location.host);
+	        		                    	//alert('http://' + DigiWebApp.RequestController.DatabaseServer + location.pathname);
+							    			location.href = 'http://' + DigiWebApp.RequestController.DatabaseServer + location.pathname;
+	        		                    }
+	        		                }
+	        		            }
+	        		        });
+		    		} else {
+		    			//console.log(myFunc);
+						myFunc(obj);
+		    		}
+		    	} else {
+	    			//console.log(myFunc);
+					myFunc(obj);
+				}
+            },
+            onError: function(xhr, err) {
+            	console.log("Error in getDatabaseServer: " + err);
+                DigiWebApp.ApplicationController.DigiLoaderView.hide();
+        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+        			title: M.I18N.l('empfangeUrlError'),
+        			message: M.I18N.l('empfangeUrlErrorMessage')
+        		});
+            }
+        });
+
+        req.send();
+    }
+    
+    /**
+     * Prepares the authenticate call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param obj
+     */
+    , authenticate: function(obj) {
+    
+    	DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.RequestController.authenticateWithDatabaseServer, obj);
+
+    }
+
+    , authenticateWithDatabaseServer: function(obj) {
+
+        DigiWebApp.RequestController.saveCallbacks(obj.success, obj.error, 'authenticate');
+
+        var firmenId = DigiWebApp.SettingsController.getSetting('company');
+        var kennwort = DigiWebApp.SettingsController.getSetting('password');
+        var geraeteId = DigiWebApp.SettingsController.getSetting('workerId'); //1; // 1: ein einzelner mitarbeiter, 2: kolonne
+        var geraeteTyp = 2; // fixed => 2 stands for app
+        //var softwareVersion = M.Application.getConfig('version');
+
+        var params = {
+            url: 'authentifizieren',
+            urlParams: 'firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' +
+                '&geraeteTyp=' + geraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('authenticateLoader'),
+            source: 'authenticate'
+        };
+
+        DigiWebApp.RequestController.makeRequest(_.extend(obj, params));
+    }
+
+    /**
+     * Prepares the endSession call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , endSession: function(obj) {
+        this.saveCallbacks(obj.success, obj.error, 'endSession');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'beendeSession',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('logout'),
+            source: 'endSession'
+        }));
+    }
+
+    /**
+     * Prepares the getActivities call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getActivities: function(obj) {
+        this.saveCallbacks(obj.success, obj.error, 'getActivities');
+
+        var modus = '1';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'empfangeTaetigkeiten',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getActivitiesLoader'),
+            source: 'getActivities',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    /**
+     * Prepares the getOrders call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getOrders: function(obj) {
+
+        this.saveCallbacks(obj.success, obj.error, 'getOrders');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'empfangeAuftraege',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getOrdersLoader'),
+            source: 'getOrders',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    /**
+     * Prepares the getFeatures call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getFeatures: function(obj) {
+
+        this.saveCallbacks(obj.success, obj.error, 'getFeatures');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'empfangeKonfiguration',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getFeaturesLoader'),
+            source: 'getFeatures',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    /**
+     * Prepares the getPositions call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getPositions: function(obj) {
+
+        this.saveCallbacks(obj.success, obj.error, 'getPositions');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'empfangePositionenInfo',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getPositionsLoader'),
+            source: 'getPositions',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+
+    /**
+     * Prepares the getWorkPlans call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getWorkPlans: function(obj) {
+        this.saveCallbacks(obj.success, obj.error, 'getWorkPlans');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            isWorkPlanRequest: YES,
+            url: 'empfangeArbeitsplanNeu',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getWorkPlansLoader'),
+            source: 'getWorkPlans',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    /**
+     * Prepares the getHandOrders call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getHandOrders: function(obj) {
+        this.saveCallbacks(obj.success, obj.error, 'getHandOrders');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            url: 'empfangeHandauftraege',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getHandOrdersLoader'),
+            source: 'getHandOrders',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    /**
+     * Prepares the getKolonne call and calls makeRequest with the corresponding params.
+     *
+     * Saves callbacks first.
+     *
+     * @param {Object} obj The parameter object
+     */
+    , getKolonne: function(obj) {
+        this.saveCallbacks(obj.success, obj.error, 'getKolonne');
+
+        var modus = '0';
+
+        this.makeRequest(_.extend(obj, {
+            isKolonnenRequest: YES,
+            url: 'empfangeKolonne',
+            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
+            loaderText: M.I18N.l('getKolonne'),
+            source: 'getKolonne',
+            leaveLoaderOpen: YES
+        }));
+    }
+
+    , sendConfiguration: function(obj) {
+    	// all callbacks lead to DigiWebApp.ApplicationController.authenticate()
+    	
+        // call authenticate
+        this.authenticate({
+            success: {  // send configuration in success callback
+                target: this,
+                action: function() {
+                    var that = this;
+                    this.saveCallbacks(obj.success, obj.error, 'sendConfiguration');
+
+                    var soapHeader= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+                        'xmlns:tran="http://transfer.webservice.handy2.digi.de" xmlns:xsd="http://transferClasses.data.handy2.digi.de/xsd">' +
+                        '<soapenv:Header/>' +
+                        '<soapenv:Body>' +
+                        '<tran:sendeKonfiguration>';
+                    var soapFooter = '   <tran:modus>0</tran:modus>' +
+                        '</tran:sendeKonfiguration>' +
+                        '</soapenv:Body>' +
+                        '</soapenv:Envelope>';
+
+                    var data = soapHeader;
+                    data += this.buildDataBodyConfiguration(obj.settings);
+                    data += soapFooter;
+
+                    // send configuration has its own request functionality, not by calling makeRequest()
+                    M.Request.init({
+                        url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '.DatenTransferHttpSoap11Endpoint/',
+                        method: 'POST',
+                        data: data,
+                        timeout: 15000,
+                        contentType: 'text/xml; charset=UTF-8',
+                        dataType: 'xml',
+                        beforeSend: function(xhr) {
+                            if(obj.loaderText) {
+                                DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
+                            } else {
+                                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('sendConfigurationMsg'));
+                            }
+                            xhr.setRequestHeader(
+                                "SOAPAction",
+                                "urn:sendeKonfiguration"
+                            );
+                            xhr.setRequestHeader(
+                                "Content-Type",
+                                "text/xml;charset=UTF-8"
+                            );
+                        },
+                        onSuccess: function(data, msg, xhr) { // success callback of sendConfiguration
+                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of sendConfiguration");
+                            that.endSession({
+                                success: {// success callback of endSession
+                                    target: that,
+                                    action: function() {
+			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of endSession");
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendConfiguration'])();
+                                        DigiWebApp.ApplicationController.authenticate();
+                                    }
+                                },
+                                error: { // error callback of endSession
+                                    target: that,
+                                    action: function() {
+			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of endSession " + err);
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendConfiguration'])();
+                                        DigiWebApp.ApplicationController.authenticate();
+                                    }
+                                }
+                            });
+                        },
+                        onError: function(xhr, err) {// error callback of sendConfiguration
+                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of sendConfiguration " + err);
+                            that.endSession({
+                                success: {// success callback of endSession
+                                    target: that,
+                                    action: function() { // call errorcallback of sendConfiguration
+			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of endSession");
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendConfiguration'])();
+                                        DigiWebApp.ApplicationController.authenticate();
+                                    }
+                                },
+                                error: { // error callback of endSession
+                                    target: that,
+                                    action: function() {
+			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of endSession " + err);
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendConfiguration'])();
+                                        DigiWebApp.ApplicationController.authenticate();
+                                    }
+                                }
+                            });
+
+                        }
+                    }).send();
+                }
+            },
+            error: {
+                target: this,
+                action: function() {
+                    //this.connectionError();
+                    DigiWebApp.ApplicationController.authenticate();
+                    console.log("ConnectionError while sendConfiguration");
+                }
+            }
+        });
+    }
+
+    /**
+     * Sends the data.
+     *
+     * Process:
+     * -----------------------------------------------------
+     * (1) Authenticate => (2) Send Data => (3) End Session 
+     * -----------------------------------------------------
+     * (1) Calls authenticate
+     *
+     * Success Callback of (1):
+     * 1) saves callbacks for sendData
+     * 2) prepares SOAP XML (Envelope, Header, Data, Footer)
+     * 3) Makes SOAP POST Request to SOAP 1.1 Endpoint with data (SOAP XML) in POST body => (2) Send Data
+     * Error Callback of (2):
+     * 1) If it is called in closingDay context, reset employee selection
+     *
+     * Success Callback of (2):
+     * 1) Calls endSession() of this controller
+     * Error Callback of (2):
+     * 1) calls endSession => (3) End Session
+     *
+     * Success Callback of (3)
+     * 1.1) if endSession after sendData success: the success callback passed at the very beginning to sendData (in BookingController.sendData) is called because the call chain completes
+     * 1.2) call DigiWebApp.ApplicationController.init() with parameter true to load all data again
+     *
+     * 2.1) if endSession after sendData error: the error callback passed at the very beginning to sendData (in BookingController.sendData)
+     * is called because the sendData call didn't succeed, even though endSession did
+     *
+     * Error Callback of (3)
+     * 1.1) if endSession after sendData success: the success callback passed at the very beginning to sendData (in BookingController.sendData) is called because the call chain completes
+     * 1.2) call DigiWebApp.ApplicationController.init() with parameter true to load all data again
+     *
+     * 2.1) if endSession after sendData error: the error callback passed at the very beginning to sendData (in BookingController.sendData)
+     * is called because the sendData call didn't succeed, as well as the endSession did not
+     *
+     *
+     * @param obj
+     * @param isClosingDay
+     */
+    , sendData: function(obj, isClosingDay, doSync) {
+        // call authenticate
+        this.authenticate({
+            success: {  // send data in success callback
+                target: this,
+                action: function() {
+                    var that = this;
+                    this.saveCallbacks(obj.success, obj.error, 'sendData');
+
+                    var soapHeader= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+                        'xmlns:tran="http://transfer.webservice.handy2.digi.de" xmlns:xsd="http://transferClasses.data.handy2.digi.de/xsd">' +
+                        '<soapenv:Header/>' +
+                        '<soapenv:Body>' +
+                        '<tran:sendeDaten>';
+                    var soapFooter = '   <tran:modus>0</tran:modus>' +
+                        '</tran:sendeDaten>' +
+                        '</soapenv:Body>' +
+                        '</soapenv:Envelope>';
+
+                    var data = soapHeader;
+                    data += this.buildDataBodyBookings(obj.bookings);
+                    var eb = this.buildEmployeeBody();
+                    data += eb;
+                    data += soapFooter;
+
+                    // send data has its own request functionality, not by calling makeRequest()
+                    M.Request.init({
+                        url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '.DatenTransferHttpSoap11Endpoint/',
+                        method: 'POST',
+                        data: data,
+                        timeout: 15000,
+                        contentType: 'text/xml; charset=UTF-8',
+                        dataType: 'xml',
+                        beforeSend: function(xhr) {
+                            if(obj.loaderText) {
+                                DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
+                            } else {
+                                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('sendDataMsg'));
+                            }
+                            xhr.setRequestHeader(
+                                "SOAPAction",
+                                "urn:sendeDaten"
+                            );
+                            xhr.setRequestHeader(
+                                "Content-Type",
+                                "text/xml;charset=UTF-8"
+                            );
+                        },
+                        onSuccess: function(data, msg, xhr) { // success callback of sendData
+                            that.endSession({
+                                success: {// success callback of endSession
+                                    target: that,
+                                    action: function() {
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
+
+                                        // now call startsync again
+                                        if (DigiWebApp.SettingsController.getSetting('autoSyncAfterBookTime') || doSync === true) {
+                                        	DigiWebApp.ApplicationController.startsync(YES);
+                                        }
+                                    }
+                                },
+                                error: { // error callback of endSession
+                                    target: that,
+                                    action: function() {
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
+
+                                        // now call init again
+                                        DigiWebApp.ApplicationController.init(YES);
+                                    }
+                                }
+                            });
+                        },
+                        onError: function(xhr, err) {// error callback of sendData
+                            that.endSession({
+                                success: {// success callback of endSession
+                                    target: that,
+                                    action: function() { // call errorcallback of sendData
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
+                                    }
+                                },
+                                error: { // error callback of endSession
+                                    target: that,
+                                    action: function() {
+                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
+                                    }
+                                }
+                            });
+
+                        }
+                    }).send();
+                }
+            },
+            error: {
+                target: this,
+                action: function() {
+                    if(isClosingDay) {
+                        if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
+                            DigiWebApp.EmployeeController.setEmployeeState(1);
+                        }
+                        // clear employee selection
+                        localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
+                        localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+                    }
+                    this.connectionError();
+                }
+            }
+        });
+
+
+    }
+
+
+    /**
+     * Constructs the SOAP data body for the bookings.
+     *
+     * Replaces the placeholder with their values of the actual booking
+     *
+     * @param {Array|Object} bookings The booking object(s) to be sent
+     */
+    , buildDataBodyBookings: function(bookings) {
+        var dataStr = '';
+        var soapDataBooking = '';
+        soapDataBooking = soapDataBooking + '   <tran:zeitdatenHandy>\n';
+		soapDataBooking = soapDataBooking + '       <xsd:auftragsId><orderId></xsd:auftragsId>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:von><timeStampStart></xsd:von>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:bis><timeStampEnd></xsd:bis>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:gpsBreite><latitude></xsd:gpsBreite>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:gpsLaenge><longitude></xsd:gpsLaenge>\n';
+        //soapDataBooking = soapDataBooking + '       <xsd:gpsBreite_bis><latitude_bis></xsd:gpsBreite_bis>\n';
+        //soapDataBooking = soapDataBooking + '       <xsd:gpsLaenge_bis><longitude_bis></xsd:gpsLaenge_bis>\n';
+        //soapDataBooking = soapDataBooking + '       <xsd:signature><signature></xsd:signature>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:handauftrag><handOrderName></xsd:handauftrag>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:handauftragsId><handOrderId></xsd:handauftragsId>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:positonsId><positionId></xsd:positonsId>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:taetigkeitsId><activityId></xsd:taetigkeitsId>\n';
+        soapDataBooking = soapDataBooking + '       <xsd:bemerkungsfeld><remark></xsd:bemerkungsfeld>\n';
+        soapDataBooking = soapDataBooking + '   </tran:zeitdatenHandy>\n';
+
+        if(typeof(bookings) === 'object' && !_.isArray(bookings)) {
+            bookings = [bookings];  // if an object was passed, push it into an array, to have one behaviour
+        }
+
+        if(_.isArray(bookings)) {
+        
+            for(var i in bookings) {
+                var booking = bookings[i];
+                var s = soapDataBooking;
+                for(var prop in booking.record) {
+                    if(prop === '_createdAt' || prop === '_updatedAt') { continue; }
+                    if(prop === 'handOrderName') {
+                        s = s.replace(new RegExp('<' + prop + '>'), booking.get(prop) === '0' ? '' : booking.get(prop));
+                    } else if(prop === 'orderId') {
+                        s = s.replace(new RegExp('<' + prop + '>'), (booking.get(prop) === booking.get('handOrderName') || booking.get('handOrderName') !== '') ? '0' : booking.get(prop));
+                    } else if(prop === 'handOrderId') {
+                        s = s.replace(new RegExp('<' + prop + '>'), (booking.get(prop) === booking.get('handOrderName')) ? '' : booking.get(prop));
+                    } else if(prop === 'fileName') {
+                        s = s.replace(new RegExp('<signature>'), typeof(booking.signature) === 'undefined' ? '' : booking.signature);
+                    } else {
+                        s = s.replace(new RegExp('<' + prop + '>'), booking.get(prop));
+                    }
+                }
+                
+                dataStr += s;
+                
+            }
+        }
+
+        // handle left-over properties (maybe the webapp has been updated while there were old bookings in localstorage?)
+        while (dataStr.match(new RegExp('><.*</xsd:')) !== null ) {
+                dataStr = dataStr.replace(new RegExp('><.*</xsd:'), '></xsd:');
+        }
+        
+        //dataStr += '\n';
+        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log('soapDataBooking: ' + dataStr);
+        return dataStr;
+    }
+
+    /**
+     * Constructs the SOAP data body for the settings.
+     * 
+     * as of 12.03.2012 --> working
+     *
+     * Replaces the placeholder with their values of the actual settings
+     *
+     * @param {Array|Object} settings: The settings to be sent
+     */
+    , buildDataBodyConfiguration: function(settings) {
+        var dataStr = '';
+        var soapData = '   <tran:konfigurationHandy>\n' +
+            '       <xsd:keyId><keyId></xsd:keyId>\n' +
+            '       <xsd:value><value></xsd:value>\n' +
+            '       <xsd:valueType><valueType></xsd:valueType>\n' +
+            '       <xsd:mitarbeiter><mitarbeiter></xsd:mitarbeiter>\n' +
+            '       <xsd:timestamp><timestamp></xsd:timestamp>\n' +
+            '   </tran:konfigurationHandy>\n';
+    
+        if(typeof(settings) === 'object' && !_.isArray(settings)) {
+            settings = [settings];  // if an object was passed, push it into an array, to have one behaviour
+        }
+
+        var now_as_timestamp = +new Date();
+        if(_.isArray(settings)) {
+            for(var i in settings) {
+                var setting = settings[i];
+                for(var prop in setting.record) {
+	                var s = soapData;
+                    if(prop === '_createdAt' || prop === '_updatedAt') { continue; }
+                    s = s.replace(new RegExp('<keyId>'), prop);
+                    s = s.replace(new RegExp('<value>'), setting.get(prop));
+                    s = s.replace(new RegExp('<valueType>'), 'SettingRemote_WebApp');
+                    s = s.replace(new RegExp('<mitarbeiter>'), DigiWebApp.SettingsController.getSetting('workerId'));
+                    s = s.replace(new RegExp('<timestamp>'), now_as_timestamp);
+	                dataStr += s;
+                }
+            }
+        }
+
+        // handle left-over properties (just in case)
+        while (dataStr.match(new RegExp('><.*</xsd:')) !== null ) {
+                dataStr = dataStr.replace(new RegExp('><.*</xsd:'), '></xsd:');
+        }
+        
+        //dataStr += '\n';
+        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log('soapDataBooking: ' + dataStr);
+        return dataStr;
+    }
+
+    /**
+     * Constructs the SOAP data body for the employees.
+     *
+     * Replaces the placeholder with the values of the employee selection.
+     */
+    , buildEmployeeBody: function() {
+        var empStr = '';
+        var soapDataEmployees = '   <tran:mitarbeiterIds><mitarbeiterIds></tran:mitarbeiterIds>\n';
+        var employeeIds = localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKey) || localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+        if(employeeIds) {
+            employeeIds = employeeIds.split(',');
+        }
+        if(employeeIds && employeeIds != 'null' && _.isArray(employeeIds) && employeeIds.length > 0) {
+            _.each(employeeIds, function(em) {
+                empStr += soapDataEmployees.replace(/<mitarbeiterIds>/, em);
+            });
+            return empStr;
+        } else {
+            return '<tran:mitarbeiterIds>0</tran:mitarbeiterIds>\n';
+        }
+    }
+
+    /**
+     *
+     * Is a proxy for the success callback and prepares the data returned from the server.
+     *
+     * Transforms it from XML to JSON, either through transformResultToJson() or special functions
+     * for work plans and kolonne, because they cannot be transformed automatically.
+     *
+     * Calls the success callback of the source call afterwards.
+     *
+     * @param {Document|Object} data The returned data of the server as a jQuery Document
+     * @param {Object} msg
+     * @param {Object} xhr The XMLHTTPRequest object.
+     * @param {Boolean} workPlanTransform F
+     * @param {Boolean} kolonneTransform
+     * @param {String} source The name of the method to identify the source of the call
+     */
+    , handleSuccessCallback: function(data, msg, xhr, workPlanTransform, kolonneTransform, source) {
+        var d = null;
+        if(!workPlanTransform && !kolonneTransform) {
+            d = this.transformResultToJson(data);
+        } else {
+            if(workPlanTransform) {
+                d = this.transformWorkPlanXmlToJson(data);
+            } else if(kolonneTransform) {
+                d = this.transformKolonneXmlToJson(data);
+            }
+        }
+        M.EventDispatcher.checkHandler(this.successCallback[source]);
+        this.successCallback[source].target = this.successCallback[source].target || this;
+        this.bindToCaller(this.successCallback[source].target, this.successCallback[source].action, [d, msg, xhr])();
+    }
+
+
+    /**
+     *
+     * Calls the error callback of the source call
+     *
+     * @param {Object} xhr The XMLHTTPRequest object.
+     * @param {String} err The text status, e.g. "parseerror" or "timeout"
+     * @param {String} source The name of the method to identify the source of the call
+     */
+    , handleErrorCallback: function(xhr, err, source) {
+        M.EventDispatcher.checkHandler(this.errorCallback[source]);
+        this.errorCallback[source].target = this.errorCallback[source].target || this;
+        this.bindToCaller(this.errorCallback[source].target, this.errorCallback[source].action, [xhr, err])();
+    }
+
+    /**
+     * Saves the callback objects in the corresponding controller properties:
+     * - successCallback
+     * - errorCallback
+     * with their source as key.
+     *
+     * @param {Object} success The success callback object.
+     * @param {Object} error The error callback object.
+     * @param source
+     */
+    , saveCallbacks: function(success, error, source) {
+        if(success) {
+            this.successCallback[source] = success;
+        }
+        if(error) {
+            this.errorCallback[source] = error;
+        }
+    }
+
+    /**
+     * Automatically transforms the returned XML to JSON.
+     * Uses Xml2Json lib/plugin for jQuery.
+     *
+     * @param {Document|Object} data The returned data of the server, prepared by jQuery
+     * @return {Object} The data in JSON format (=> JavaScript object).
+     */
+    , transformResultToJson: function(data) {
+    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformResultToJson: " + data);
+        return $.xml2json(data);
+    }
+
+
+    /**
+     *
+     * Transforms the work plan xml manually to a JavaScript object.
+     *
+     * Traverses the documented with jQuery function find.
+     *
+     * @param {Document|Object} data The returned data of the server, prepared by jQuery
+     * @return {Object} The data as a JavaScript object underneath a "return" property as an array.
+     */
+    , transformWorkPlanXmlToJson: function(data) {
+    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformWorkPlanXmlToJson: " + data);
+
+        var response = {}; 
+        response['return'] = [];        
+        var xmlDoc = $.parseXML(data);
+        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log(xmlDoc);
+        
+        if ((YES) || ( $(xmlDoc).find('return').length !== xmlDoc.documentElement.childNodes.length )) {
+
+        	_.forEach(xmlDoc.documentElement.childNodes,function(el, i){
+        	
+				var obj = {};
+        		obj.positionen = [];
+        		obj.taetigkeitsIds = [];
+
+        		var anzahlPositionen = (el.childNodes.length - 2) / 2;
+        		var arbeitsplanId = el.childNodes[0].childNodes[0].nodeValue;
+        		var arbeitsplanTyp = el.childNodes[1].childNodes[0].nodeValue;
+
+        		for (j=2;j<anzahlPositionen + 2;j++) {
+        			console.log(el.childNodes[j].childNodes[0].nodeValue + " = " + el.childNodes[j+anzahlPositionen].childNodes[0].nodeValue);	
+        			var positionTaetigkeit = el.childNodes[j].childNodes[0].nodeValue;
+        			var tateigkeitId = el.childNodes[j+anzahlPositionen].childNodes[0].nodeValue;
+        			obj.arbeitsplanId = arbeitsplanId;
+                    obj.arbeitsplanTyp = arbeitsplanTyp;
+        			obj.positionen.push(positionTaetigkeit);
+        			obj.taetigkeitsIds.push(tateigkeitId);
+        		}
+
+        		response['return'].push(obj);
+
+        	});
+
+		} else {
+		// old variant (pre TMP-1.1)
+	        $(xmlDoc).find('return').each( // for every result
+	            function(i, el) {
+	                var obj = {};
+	                $(el).find('[localName$="arbeitsplanId"]').each(
+	                    function(i, el) {
+	                        obj.arbeitsplanId = $(el).text();
+	                    }
+	                );
+	                $(el).find('[localName$="arbeitsplanTyp"]').each(
+	                    function(i, el) {
+	                        obj.arbeitsplanTyp = $(el).text();
+	                    }
+	                );
+	                obj.positionen = [];
+	                $(el).find('[localName$="positionTaetigkeit"]').each(
+	                    function(i, el) {
+	                        obj.positionen.push($(el).text());
+	                    }
+	                );
+	                obj.taetigkeitsIds = [];
+	                $(el).find('[localName$="tateigkeitId"]').each(
+	                    function(i, el) {
+	                        obj.taetigkeitsIds.push($(el).text());
+	                    }
+	                );
+	                response['return'].push(obj);
+	            }
+	        );
+	    }
+
+        return response;
+    }
+
+    /**
+     * Transforms the work plan xml manually to a JavaScript object.
+     *
+     * Traverses the documented with jQuery function find.
+     *
+     * @param {Document|Object} data The returned data of the server, prepared by jQuery.
+     * @return {Object|Null} The data (employees) as a JavaScript object underneath a "return" property as an array or null if no employees where sent.
+     */
+    , transformKolonneXmlToJson: function(data) {
+    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformKolonneXmlToJson: " + data);
+        
+        var response = {};
+        response['return'] = [];        
+        var xmlDoc = $.parseXML(data);
+        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log(xmlDoc);
+        
+        if ((YES) || ( $(xmlDoc).find('return').length !== xmlDoc.documentElement.childNodes.length )) {
+
+        	_.forEach(xmlDoc.documentElement.childNodes,function(el, i){
+        	
+				var obj = {};
+        		obj.mitarbeiterIds = [];
+        		obj.mitarbeiterName = [];
+
+        		var anzahlMitarbeiter = (el.childNodes.length -1) / 2;
+        		var kolonnenId = el.childNodes[0].childNodes[0].nodeValue;
+
+        		for (j=1;j<=anzahlMitarbeiter;j++) {
+        			console.log(el.childNodes[j].childNodes[0].nodeValue + " = " + el.childNodes[j+anzahlMitarbeiter].childNodes[0].nodeValue);	
+        			var mitarbeiterId = el.childNodes[j].childNodes[0].nodeValue;
+        			var mitarbeiterName = el.childNodes[j+anzahlMitarbeiter].childNodes[0].nodeValue;
+        			obj.kolonnenId = kolonnenId;
+        			obj.mitarbeiterIds.push(mitarbeiterId);
+        			obj.mitarbeiterName.push(mitarbeiterName);
+        		}
+
+        		response['return'] = obj;
+
+        	});
+
+		} else {
+		// old variant (pre TMP-1.1)
+	        $(xmlDoc).find('return').each( // for every result
+	            function(i, el) {
+	                var obj = {};
+	                $(el).find('[nodeName$="kolonnenId"]').each(
+	                    function(i, el) {
+	                        obj.kolonnenId = $(el).text();
+	                    }
+	                );
+	                obj.mitarbeiterIds = [];
+	                $(el).find('[nodeName$="mitarbeiterId"]').each(
+	                    function(i, el) {
+	                        obj.mitarbeiterIds.push($(el).text());
+	                    }
+	                );
+	                obj.mitarbeiterName = [];
+	                $(el).find('[nodeName$="mitarbeiterName"]').each(
+	                    function(i, el) {
+	                        obj.mitarbeiterName.push($(el).text());
+	                    }
+	                );
+	                response['return'] = obj;
+	            }
+	        );
+	    }  
+
+        if(response['return'] && response['return'].mitarbeiterIds) {
+            var employees = [];
+
+            for(var i in response['return'].mitarbeiterIds) {
+                var id = response['return'].mitarbeiterIds[i];
+                employees.push({
+                    kolonnenId: response['return'].kolonnenId,
+                    id: id,
+                    name: response['return'].mitarbeiterName[i]
+                })
+            }
+
+            response['return'] = employees;
+            return response;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Displays a connection error alert.
+     */
+    , connectionError: function() {
+        //M.DialogView.alert({
+        DigiWebApp.ApplicationController.nativeAlertDialogView({
+            title: M.I18N.l('connectionError'),
+            message: M.I18N.l('connectionErrorMsg')
+        });
+    }
+});
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -2519,7 +3347,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
 DigiWebApp.NavigationController = M.Controller.extend({
 
-    toSplashViewPage: function() {
+      toSplashViewPage: function() {
 		DigiWebApp.NavigationController.switchToPage('splashView', M.TRANSITION.NONE, NO);
   	}
 
@@ -2665,16 +3493,16 @@ DigiWebApp.NavigationController = M.Controller.extend({
     	DigiWebApp.NavigationController.switchToPage('orderInfoPage', M.TRANSITION.SLIDEUP, NO);
     }
 
-    , toMediaPage: function() {
-    	DigiWebApp.NavigationController.switchToPage('mediaPage', M.TRANSITION.NONE, NO);
+    , toEditPicturePage: function() {
+    	DigiWebApp.NavigationController.switchToPage('editPicturePage', M.TRANSITION.NONE, NO);
     }
 
-    , toMediaPageTransition: function() {
-    	DigiWebApp.NavigationController.switchToPage('mediaPage', M.TRANSITION.SLIDEUP, NO);
+    , toEditPicturePageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('editPicturePage', M.TRANSITION.SLIDEUP, NO);
     }
 
-    , backToMediaPage: function() {
-    	DigiWebApp.NavigationController.switchToPage('mediaPage', M.TRANSITION.SLIDEUP, YES);
+    , backToEditPicturePage: function() {
+    	DigiWebApp.NavigationController.switchToPage('editPicturePage', M.TRANSITION.SLIDEUP, YES);
     }
 
     , toDemoMediaPage: function() { /* DEMO */
@@ -5259,1032 +6087,6 @@ DigiWebApp.BookingController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: RequestController
-// ==========================================================================
-
-DigiWebApp.RequestController = M.Controller.extend({
-
-	  GatewayServer: 'www.digi-gps.de'
-	, DatabaseServer: null
-	, handy2WebServicesUrl: '/Handy2WebServices/services/DatenTransfer'
-	
-    /**
-     * Object containing the success callback for the several calls
-     */
-    , successCallback: {}
-
-    /**
-     * Object containing the success callback for the several calls
-     */
-    , errorCallback: {}
-    
-    , softwareVersion: 2446
-
-
-    /**
-     * Method that performs the GET requests to the server.
-     *
-     * Shows a loader if flag is set in parameter object.
-     *
-     * Success callback:
-     * 1) Hiding the loader
-     * 2) Passing to handleSuccessCallback() with the return data of the request and flag for isWorkplan, isKolonne and the source (function that triggered the request) as string
-     *
-     * Error callback
-     * 1) Hiding the loader
-     * 2) Passing to handleErrorCallback with return data of the request and the source (function that triggered the request) as string
-     *
-     * @param {Object} obj The parameter object
-     */
-    , makeRequest: function(obj) {
-    
-        var that = this;
-        var req = M.Request.init({
-
-            url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/' + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
-
-            /* alternative way by asking if in native container or not => in getUrl() */
-            //url: this.getUrl() + obj.url + (obj.urlParams ? '?' + obj.urlParams : ''),
-
-            method: 'GET',
-            beforeSend: function(xhr) {
-                if(obj.loaderText) {
-                    DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
-                } else {
-                    DigiWebApp.ApplicationController.DigiLoaderView.show('Lade Daten');
-                }
-
-                xhr.setRequestHeader('Cache-Control', 'no-cache');
-            },
-            onSuccess: function(data, msg, xhr) {
-            	var leaveLoaderOpen = NO;
-            	if (typeof(obj.leaveLoaderOpen) !== "undefined") leaveLoaderOpen = obj.leaveLoaderOpen;
-                if (!leaveLoaderOpen) DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                var source = obj.source;
-                var workPlan = obj.isWorkPlanRequest;
-                var kolonne = obj.isKolonnenRequest;
-                this.bindToCaller(that, that.handleSuccessCallback, [data, msg, xhr, workPlan, kolonne, source])();
-            },
-            onError: function(xhr, err) {
-            	console.log("Error in makeRequest: " + err);
-                DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                this.bindToCaller(that, that.handleErrorCallback, [xhr, err, obj.source])();
-            }
-        });
-
-        req.send();
-    }
-
-    , getUrl: function() {
-        try {
-            if(device && device.uuid) {
-            	if (DigiWebApp.SettingsController.getSetting('debug')) console.log(device.uuid);
-                return 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/' ;
-            }
-        } catch(e) {
-            return '/Handy2WebServices/services/DatenTransfer/';
-        }
-
-    }
-
-    , getDatabaseServer: function(myFunc, obj) {
-    
-    	DigiWebApp.RequestController.DatabaseServer = "";
-    	
-        var firmenId = DigiWebApp.SettingsController.getSetting('company');
-
-    	var myGatewayServer = DigiWebApp.RequestController.GatewayServer;
-    	
-    	if (typeof(device) === "undefined") {
-    		myGatewayServer = location.host;
-    	}
-
-		console.log('using: http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
-		
-        var req = M.Request.init({
-        
-            url: 'http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf(),
-
-            method: 'GET',
-            beforeSend: function(xhr) {
-                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('empfangeUrlLoader'));
-                xhr.setRequestHeader('Cache-Control', 'no-cache');
-            },
-            onSuccess: function(xmldata, msg, xhr) {
-				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-            	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
-		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
-		    	if (data['return'] !== "") {
-		    		DigiWebApp.RequestController.DatabaseServer = data['return'];
-		    	} else {
-		    		console.log("FALLBACK: empty DatabaseServer --> falling back to GatewayServer"); 
-		    		DigiWebApp.RequestController.DatabaseServer = DigiWebApp.RequestController.GatewayServer
-		    	}
-		    	if (typeof(device) === "undefined") {
-		    		if ((location.host !== DigiWebApp.RequestController.DatabaseServer)) {
-	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	        		            title: M.I18N.l('wrongServer'),
-	        		            message: M.I18N.l('wrongServerMessage'),
-	        		            callbacks: {
-	        		                confirm: {
-	        		                    target: this,
-	        		                    action: function () {
-	        		                    	//alert(location.host);
-	        		                    	//alert('http://' + DigiWebApp.RequestController.DatabaseServer + location.pathname);
-							    			location.href = 'http://' + DigiWebApp.RequestController.DatabaseServer + location.pathname;
-	        		                    }
-	        		                }
-	        		            }
-	        		        });
-		    		} else {
-		    			//console.log(myFunc);
-						myFunc(obj);
-		    		}
-		    	} else {
-	    			//console.log(myFunc);
-					myFunc(obj);
-				}
-            },
-            onError: function(xhr, err) {
-            	console.log("Error in getDatabaseServer: " + err);
-                DigiWebApp.ApplicationController.DigiLoaderView.hide();
-        		DigiWebApp.ApplicationController.nativeAlertDialogView({
-        			title: M.I18N.l('empfangeUrlError'),
-        			message: M.I18N.l('empfangeUrlErrorMessage')
-        		});
-            }
-        });
-
-        req.send();
-    }
-    
-    /**
-     * Prepares the authenticate call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param obj
-     */
-    , authenticate: function(obj) {
-    
-    	DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.RequestController.authenticateWithDatabaseServer, obj);
-
-    }
-
-    , authenticateWithDatabaseServer: function(obj) {
-
-        DigiWebApp.RequestController.saveCallbacks(obj.success, obj.error, 'authenticate');
-
-        var firmenId = DigiWebApp.SettingsController.getSetting('company');
-        var kennwort = DigiWebApp.SettingsController.getSetting('password');
-        var geraeteId = DigiWebApp.SettingsController.getSetting('workerId'); //1; // 1: ein einzelner mitarbeiter, 2: kolonne
-        var geraeteTyp = 2; // fixed => 2 stands for app
-        //var softwareVersion = M.Application.getConfig('version');
-
-        var params = {
-            url: 'authentifizieren',
-            urlParams: 'firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' +
-                '&geraeteTyp=' + geraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('authenticateLoader'),
-            source: 'authenticate'
-        };
-
-        DigiWebApp.RequestController.makeRequest(_.extend(obj, params));
-    }
-
-    /**
-     * Prepares the endSession call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , endSession: function(obj) {
-        this.saveCallbacks(obj.success, obj.error, 'endSession');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'beendeSession',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('logout'),
-            source: 'endSession'
-        }));
-    }
-
-    /**
-     * Prepares the getActivities call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getActivities: function(obj) {
-        this.saveCallbacks(obj.success, obj.error, 'getActivities');
-
-        var modus = '1';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'empfangeTaetigkeiten',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getActivitiesLoader'),
-            source: 'getActivities',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    /**
-     * Prepares the getOrders call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getOrders: function(obj) {
-
-        this.saveCallbacks(obj.success, obj.error, 'getOrders');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'empfangeAuftraege',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getOrdersLoader'),
-            source: 'getOrders',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    /**
-     * Prepares the getFeatures call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getFeatures: function(obj) {
-
-        this.saveCallbacks(obj.success, obj.error, 'getFeatures');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'empfangeKonfiguration',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getFeaturesLoader'),
-            source: 'getFeatures',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    /**
-     * Prepares the getPositions call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getPositions: function(obj) {
-
-        this.saveCallbacks(obj.success, obj.error, 'getPositions');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'empfangePositionenInfo',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getPositionsLoader'),
-            source: 'getPositions',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-
-    /**
-     * Prepares the getWorkPlans call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getWorkPlans: function(obj) {
-        this.saveCallbacks(obj.success, obj.error, 'getWorkPlans');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            isWorkPlanRequest: YES,
-            url: 'empfangeArbeitsplanNeu',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getWorkPlansLoader'),
-            source: 'getWorkPlans',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    /**
-     * Prepares the getHandOrders call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getHandOrders: function(obj) {
-        this.saveCallbacks(obj.success, obj.error, 'getHandOrders');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            url: 'empfangeHandauftraege',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getHandOrdersLoader'),
-            source: 'getHandOrders',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    /**
-     * Prepares the getKolonne call and calls makeRequest with the corresponding params.
-     *
-     * Saves callbacks first.
-     *
-     * @param {Object} obj The parameter object
-     */
-    , getKolonne: function(obj) {
-        this.saveCallbacks(obj.success, obj.error, 'getKolonne');
-
-        var modus = '0';
-
-        this.makeRequest(_.extend(obj, {
-            isKolonnenRequest: YES,
-            url: 'empfangeKolonne',
-            urlParams: 'modus=' + modus + '&requestTimestamp=' + M.Date.now().date.valueOf(),
-            loaderText: M.I18N.l('getKolonne'),
-            source: 'getKolonne',
-            leaveLoaderOpen: YES
-        }));
-    }
-
-    , sendConfiguration: function(obj) {
-    	// all callbacks lead to DigiWebApp.ApplicationController.authenticate()
-    	
-        // call authenticate
-        this.authenticate({
-            success: {  // send configuration in success callback
-                target: this,
-                action: function() {
-                    var that = this;
-                    this.saveCallbacks(obj.success, obj.error, 'sendConfiguration');
-
-                    var soapHeader= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
-                        'xmlns:tran="http://transfer.webservice.handy2.digi.de" xmlns:xsd="http://transferClasses.data.handy2.digi.de/xsd">' +
-                        '<soapenv:Header/>' +
-                        '<soapenv:Body>' +
-                        '<tran:sendeKonfiguration>';
-                    var soapFooter = '   <tran:modus>0</tran:modus>' +
-                        '</tran:sendeKonfiguration>' +
-                        '</soapenv:Body>' +
-                        '</soapenv:Envelope>';
-
-                    var data = soapHeader;
-                    data += this.buildDataBodyConfiguration(obj.settings);
-                    data += soapFooter;
-
-                    // send configuration has its own request functionality, not by calling makeRequest()
-                    M.Request.init({
-                        url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '.DatenTransferHttpSoap11Endpoint/',
-                        method: 'POST',
-                        data: data,
-                        timeout: 15000,
-                        contentType: 'text/xml; charset=UTF-8',
-                        dataType: 'xml',
-                        beforeSend: function(xhr) {
-                            if(obj.loaderText) {
-                                DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
-                            } else {
-                                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('sendConfigurationMsg'));
-                            }
-                            xhr.setRequestHeader(
-                                "SOAPAction",
-                                "urn:sendeKonfiguration"
-                            );
-                            xhr.setRequestHeader(
-                                "Content-Type",
-                                "text/xml;charset=UTF-8"
-                            );
-                        },
-                        onSuccess: function(data, msg, xhr) { // success callback of sendConfiguration
-                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of sendConfiguration");
-                            that.endSession({
-                                success: {// success callback of endSession
-                                    target: that,
-                                    action: function() {
-			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of endSession");
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendConfiguration'])();
-                                        DigiWebApp.ApplicationController.authenticate();
-                                    }
-                                },
-                                error: { // error callback of endSession
-                                    target: that,
-                                    action: function() {
-			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of endSession " + err);
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendConfiguration'])();
-                                        DigiWebApp.ApplicationController.authenticate();
-                                    }
-                                }
-                            });
-                        },
-                        onError: function(xhr, err) {// error callback of sendConfiguration
-                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of sendConfiguration " + err);
-                            that.endSession({
-                                success: {// success callback of endSession
-                                    target: that,
-                                    action: function() { // call errorcallback of sendConfiguration
-			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onSuccess of endSession");
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendConfiguration'])();
-                                        DigiWebApp.ApplicationController.authenticate();
-                                    }
-                                },
-                                error: { // error callback of endSession
-                                    target: that,
-                                    action: function() {
-			                        	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("@@@ onError of endSession " + err);
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendConfiguration'])();
-                                        DigiWebApp.ApplicationController.authenticate();
-                                    }
-                                }
-                            });
-
-                        }
-                    }).send();
-                }
-            },
-            error: {
-                target: this,
-                action: function() {
-                    //this.connectionError();
-                    DigiWebApp.ApplicationController.authenticate();
-                    console.log("ConnectionError while sendConfiguration");
-                }
-            }
-        });
-    }
-
-    /**
-     * Sends the data.
-     *
-     * Process:
-     * -----------------------------------------------------
-     * (1) Authenticate => (2) Send Data => (3) End Session 
-     * -----------------------------------------------------
-     * (1) Calls authenticate
-     *
-     * Success Callback of (1):
-     * 1) saves callbacks for sendData
-     * 2) prepares SOAP XML (Envelope, Header, Data, Footer)
-     * 3) Makes SOAP POST Request to SOAP 1.1 Endpoint with data (SOAP XML) in POST body => (2) Send Data
-     * Error Callback of (2):
-     * 1) If it is called in closingDay context, reset employee selection
-     *
-     * Success Callback of (2):
-     * 1) Calls endSession() of this controller
-     * Error Callback of (2):
-     * 1) calls endSession => (3) End Session
-     *
-     * Success Callback of (3)
-     * 1.1) if endSession after sendData success: the success callback passed at the very beginning to sendData (in BookingController.sendData) is called because the call chain completes
-     * 1.2) call DigiWebApp.ApplicationController.init() with parameter true to load all data again
-     *
-     * 2.1) if endSession after sendData error: the error callback passed at the very beginning to sendData (in BookingController.sendData)
-     * is called because the sendData call didn't succeed, even though endSession did
-     *
-     * Error Callback of (3)
-     * 1.1) if endSession after sendData success: the success callback passed at the very beginning to sendData (in BookingController.sendData) is called because the call chain completes
-     * 1.2) call DigiWebApp.ApplicationController.init() with parameter true to load all data again
-     *
-     * 2.1) if endSession after sendData error: the error callback passed at the very beginning to sendData (in BookingController.sendData)
-     * is called because the sendData call didn't succeed, as well as the endSession did not
-     *
-     *
-     * @param obj
-     * @param isClosingDay
-     */
-    , sendData: function(obj, isClosingDay, doSync) {
-        // call authenticate
-        this.authenticate({
-            success: {  // send data in success callback
-                target: this,
-                action: function() {
-                    var that = this;
-                    this.saveCallbacks(obj.success, obj.error, 'sendData');
-
-                    var soapHeader= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
-                        'xmlns:tran="http://transfer.webservice.handy2.digi.de" xmlns:xsd="http://transferClasses.data.handy2.digi.de/xsd">' +
-                        '<soapenv:Header/>' +
-                        '<soapenv:Body>' +
-                        '<tran:sendeDaten>';
-                    var soapFooter = '   <tran:modus>0</tran:modus>' +
-                        '</tran:sendeDaten>' +
-                        '</soapenv:Body>' +
-                        '</soapenv:Envelope>';
-
-                    var data = soapHeader;
-                    data += this.buildDataBodyBookings(obj.bookings);
-                    var eb = this.buildEmployeeBody();
-                    data += eb;
-                    data += soapFooter;
-
-                    // send data has its own request functionality, not by calling makeRequest()
-                    M.Request.init({
-                        url: 'http://' + DigiWebApp.RequestController.DatabaseServer + DigiWebApp.RequestController.handy2WebServicesUrl + '.DatenTransferHttpSoap11Endpoint/',
-                        method: 'POST',
-                        data: data,
-                        timeout: 15000,
-                        contentType: 'text/xml; charset=UTF-8',
-                        dataType: 'xml',
-                        beforeSend: function(xhr) {
-                            if(obj.loaderText) {
-                                DigiWebApp.ApplicationController.DigiLoaderView.show(obj.loaderText);
-                            } else {
-                                DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('sendDataMsg'));
-                            }
-                            xhr.setRequestHeader(
-                                "SOAPAction",
-                                "urn:sendeDaten"
-                            );
-                            xhr.setRequestHeader(
-                                "Content-Type",
-                                "text/xml;charset=UTF-8"
-                            );
-                        },
-                        onSuccess: function(data, msg, xhr) { // success callback of sendData
-                            that.endSession({
-                                success: {// success callback of endSession
-                                    target: that,
-                                    action: function() {
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
-
-                                        // now call startsync again
-                                        if (DigiWebApp.SettingsController.getSetting('autoSyncAfterBookTime') || doSync === true) {
-                                        	DigiWebApp.ApplicationController.startsync(YES);
-                                        }
-                                    }
-                                },
-                                error: { // error callback of endSession
-                                    target: that,
-                                    action: function() {
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        this.bindToCaller(this, this.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
-
-                                        // now call init again
-                                        DigiWebApp.ApplicationController.init(YES);
-                                    }
-                                }
-                            });
-                        },
-                        onError: function(xhr, err) {// error callback of sendData
-                            that.endSession({
-                                success: {// success callback of endSession
-                                    target: that,
-                                    action: function() { // call errorcallback of sendData
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
-                                    }
-                                },
-                                error: { // error callback of endSession
-                                    target: that,
-                                    action: function() {
-                                        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                                        that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
-                                    }
-                                }
-                            });
-
-                        }
-                    }).send();
-                }
-            },
-            error: {
-                target: this,
-                action: function() {
-                    if(isClosingDay) {
-                        if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
-                            DigiWebApp.EmployeeController.setEmployeeState(1);
-                        }
-                        // clear employee selection
-                        localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
-                        localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
-                    }
-                    this.connectionError();
-                }
-            }
-        });
-
-
-    }
-
-
-    /**
-     * Constructs the SOAP data body for the bookings.
-     *
-     * Replaces the placeholder with their values of the actual booking
-     *
-     * @param {Array|Object} bookings The booking object(s) to be sent
-     */
-    , buildDataBodyBookings: function(bookings) {
-        var dataStr = '';
-        var soapDataBooking = '';
-        soapDataBooking = soapDataBooking + '   <tran:zeitdatenHandy>\n';
-		soapDataBooking = soapDataBooking + '       <xsd:auftragsId><orderId></xsd:auftragsId>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:von><timeStampStart></xsd:von>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:bis><timeStampEnd></xsd:bis>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:gpsBreite><latitude></xsd:gpsBreite>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:gpsLaenge><longitude></xsd:gpsLaenge>\n';
-        //soapDataBooking = soapDataBooking + '       <xsd:gpsBreite_bis><latitude_bis></xsd:gpsBreite_bis>\n';
-        //soapDataBooking = soapDataBooking + '       <xsd:gpsLaenge_bis><longitude_bis></xsd:gpsLaenge_bis>\n';
-        //soapDataBooking = soapDataBooking + '       <xsd:signature><signature></xsd:signature>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:handauftrag><handOrderName></xsd:handauftrag>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:handauftragsId><handOrderId></xsd:handauftragsId>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:positonsId><positionId></xsd:positonsId>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:taetigkeitsId><activityId></xsd:taetigkeitsId>\n';
-        soapDataBooking = soapDataBooking + '       <xsd:bemerkungsfeld><remark></xsd:bemerkungsfeld>\n';
-        soapDataBooking = soapDataBooking + '   </tran:zeitdatenHandy>\n';
-
-        if(typeof(bookings) === 'object' && !_.isArray(bookings)) {
-            bookings = [bookings];  // if an object was passed, push it into an array, to have one behaviour
-        }
-
-        if(_.isArray(bookings)) {
-        
-            for(var i in bookings) {
-                var booking = bookings[i];
-                var s = soapDataBooking;
-                for(var prop in booking.record) {
-                    if(prop === '_createdAt' || prop === '_updatedAt') { continue; }
-                    if(prop === 'handOrderName') {
-                        s = s.replace(new RegExp('<' + prop + '>'), booking.get(prop) === '0' ? '' : booking.get(prop));
-                    } else if(prop === 'orderId') {
-                        s = s.replace(new RegExp('<' + prop + '>'), (booking.get(prop) === booking.get('handOrderName') || booking.get('handOrderName') !== '') ? '0' : booking.get(prop));
-                    } else if(prop === 'handOrderId') {
-                        s = s.replace(new RegExp('<' + prop + '>'), (booking.get(prop) === booking.get('handOrderName')) ? '' : booking.get(prop));
-                    } else if(prop === 'fileName') {
-                        s = s.replace(new RegExp('<signature>'), typeof(booking.signature) === 'undefined' ? '' : booking.signature);
-                    } else {
-                        s = s.replace(new RegExp('<' + prop + '>'), booking.get(prop));
-                    }
-                }
-                
-                dataStr += s;
-                
-            }
-        }
-
-        // handle left-over properties (maybe the webapp has been updated while there were old bookings in localstorage?)
-        while (dataStr.match(new RegExp('><.*</xsd:')) !== null ) {
-                dataStr = dataStr.replace(new RegExp('><.*</xsd:'), '></xsd:');
-        }
-        
-        //dataStr += '\n';
-        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log('soapDataBooking: ' + dataStr);
-        return dataStr;
-    }
-
-    /**
-     * Constructs the SOAP data body for the settings.
-     * 
-     * as of 12.03.2012 --> working
-     *
-     * Replaces the placeholder with their values of the actual settings
-     *
-     * @param {Array|Object} settings: The settings to be sent
-     */
-    , buildDataBodyConfiguration: function(settings) {
-        var dataStr = '';
-        var soapData = '   <tran:konfigurationHandy>\n' +
-            '       <xsd:keyId><keyId></xsd:keyId>\n' +
-            '       <xsd:value><value></xsd:value>\n' +
-            '       <xsd:valueType><valueType></xsd:valueType>\n' +
-            '       <xsd:mitarbeiter><mitarbeiter></xsd:mitarbeiter>\n' +
-            '       <xsd:timestamp><timestamp></xsd:timestamp>\n' +
-            '   </tran:konfigurationHandy>\n';
-    
-        if(typeof(settings) === 'object' && !_.isArray(settings)) {
-            settings = [settings];  // if an object was passed, push it into an array, to have one behaviour
-        }
-
-        var now_as_timestamp = +new Date();
-        if(_.isArray(settings)) {
-            for(var i in settings) {
-                var setting = settings[i];
-                for(var prop in setting.record) {
-	                var s = soapData;
-                    if(prop === '_createdAt' || prop === '_updatedAt') { continue; }
-                    s = s.replace(new RegExp('<keyId>'), prop);
-                    s = s.replace(new RegExp('<value>'), setting.get(prop));
-                    s = s.replace(new RegExp('<valueType>'), 'SettingRemote_WebApp');
-                    s = s.replace(new RegExp('<mitarbeiter>'), DigiWebApp.SettingsController.getSetting('workerId'));
-                    s = s.replace(new RegExp('<timestamp>'), now_as_timestamp);
-	                dataStr += s;
-                }
-            }
-        }
-
-        // handle left-over properties (just in case)
-        while (dataStr.match(new RegExp('><.*</xsd:')) !== null ) {
-                dataStr = dataStr.replace(new RegExp('><.*</xsd:'), '></xsd:');
-        }
-        
-        //dataStr += '\n';
-        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log('soapDataBooking: ' + dataStr);
-        return dataStr;
-    }
-
-    /**
-     * Constructs the SOAP data body for the employees.
-     *
-     * Replaces the placeholder with the values of the employee selection.
-     */
-    , buildEmployeeBody: function() {
-        var empStr = '';
-        var soapDataEmployees = '   <tran:mitarbeiterIds><mitarbeiterIds></tran:mitarbeiterIds>\n';
-        var employeeIds = localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKey) || localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
-        if(employeeIds) {
-            employeeIds = employeeIds.split(',');
-        }
-        if(employeeIds && employeeIds != 'null' && _.isArray(employeeIds) && employeeIds.length > 0) {
-            _.each(employeeIds, function(em) {
-                empStr += soapDataEmployees.replace(/<mitarbeiterIds>/, em);
-            });
-            return empStr;
-        } else {
-            return '<tran:mitarbeiterIds>0</tran:mitarbeiterIds>\n';
-        }
-    }
-
-    /**
-     *
-     * Is a proxy for the success callback and prepares the data returned from the server.
-     *
-     * Transforms it from XML to JSON, either through transformResultToJson() or special functions
-     * for work plans and kolonne, because they cannot be transformed automatically.
-     *
-     * Calls the success callback of the source call afterwards.
-     *
-     * @param {Document|Object} data The returned data of the server as a jQuery Document
-     * @param {Object} msg
-     * @param {Object} xhr The XMLHTTPRequest object.
-     * @param {Boolean} workPlanTransform F
-     * @param {Boolean} kolonneTransform
-     * @param {String} source The name of the method to identify the source of the call
-     */
-    , handleSuccessCallback: function(data, msg, xhr, workPlanTransform, kolonneTransform, source) {
-        var d = null;
-        if(!workPlanTransform && !kolonneTransform) {
-            d = this.transformResultToJson(data);
-        } else {
-            if(workPlanTransform) {
-                d = this.transformWorkPlanXmlToJson(data);
-            } else if(kolonneTransform) {
-                d = this.transformKolonneXmlToJson(data);
-            }
-        }
-        M.EventDispatcher.checkHandler(this.successCallback[source]);
-        this.successCallback[source].target = this.successCallback[source].target || this;
-        this.bindToCaller(this.successCallback[source].target, this.successCallback[source].action, [d, msg, xhr])();
-    }
-
-
-    /**
-     *
-     * Calls the error callback of the source call
-     *
-     * @param {Object} xhr The XMLHTTPRequest object.
-     * @param {String} err The text status, e.g. "parseerror" or "timeout"
-     * @param {String} source The name of the method to identify the source of the call
-     */
-    , handleErrorCallback: function(xhr, err, source) {
-        M.EventDispatcher.checkHandler(this.errorCallback[source]);
-        this.errorCallback[source].target = this.errorCallback[source].target || this;
-        this.bindToCaller(this.errorCallback[source].target, this.errorCallback[source].action, [xhr, err])();
-    }
-
-    /**
-     * Saves the callback objects in the corresponding controller properties:
-     * - successCallback
-     * - errorCallback
-     * with their source as key.
-     *
-     * @param {Object} success The success callback object.
-     * @param {Object} error The error callback object.
-     * @param source
-     */
-    , saveCallbacks: function(success, error, source) {
-        if(success) {
-            this.successCallback[source] = success;
-        }
-        if(error) {
-            this.errorCallback[source] = error;
-        }
-    }
-
-    /**
-     * Automatically transforms the returned XML to JSON.
-     * Uses Xml2Json lib/plugin for jQuery.
-     *
-     * @param {Document|Object} data The returned data of the server, prepared by jQuery
-     * @return {Object} The data in JSON format (=> JavaScript object).
-     */
-    , transformResultToJson: function(data) {
-    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformResultToJson: " + data);
-        return $.xml2json(data);
-    }
-
-
-    /**
-     *
-     * Transforms the work plan xml manually to a JavaScript object.
-     *
-     * Traverses the documented with jQuery function find.
-     *
-     * @param {Document|Object} data The returned data of the server, prepared by jQuery
-     * @return {Object} The data as a JavaScript object underneath a "return" property as an array.
-     */
-    , transformWorkPlanXmlToJson: function(data) {
-    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformWorkPlanXmlToJson: " + data);
-
-        var response = {}; 
-        response['return'] = [];        
-        var xmlDoc = $.parseXML(data);
-        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log(xmlDoc);
-        
-        if ((YES) || ( $(xmlDoc).find('return').length !== xmlDoc.documentElement.childNodes.length )) {
-
-        	_.forEach(xmlDoc.documentElement.childNodes,function(el, i){
-        	
-				var obj = {};
-        		obj.positionen = [];
-        		obj.taetigkeitsIds = [];
-
-        		var anzahlPositionen = (el.childNodes.length - 2) / 2;
-        		var arbeitsplanId = el.childNodes[0].childNodes[0].nodeValue;
-        		var arbeitsplanTyp = el.childNodes[1].childNodes[0].nodeValue;
-
-        		for (j=2;j<anzahlPositionen + 2;j++) {
-        			console.log(el.childNodes[j].childNodes[0].nodeValue + " = " + el.childNodes[j+anzahlPositionen].childNodes[0].nodeValue);	
-        			var positionTaetigkeit = el.childNodes[j].childNodes[0].nodeValue;
-        			var tateigkeitId = el.childNodes[j+anzahlPositionen].childNodes[0].nodeValue;
-        			obj.arbeitsplanId = arbeitsplanId;
-                    obj.arbeitsplanTyp = arbeitsplanTyp;
-        			obj.positionen.push(positionTaetigkeit);
-        			obj.taetigkeitsIds.push(tateigkeitId);
-        		}
-
-        		response['return'].push(obj);
-
-        	});
-
-		} else {
-		// old variant (pre TMP-1.1)
-	        $(xmlDoc).find('return').each( // for every result
-	            function(i, el) {
-	                var obj = {};
-	                $(el).find('[localName$="arbeitsplanId"]').each(
-	                    function(i, el) {
-	                        obj.arbeitsplanId = $(el).text();
-	                    }
-	                );
-	                $(el).find('[localName$="arbeitsplanTyp"]').each(
-	                    function(i, el) {
-	                        obj.arbeitsplanTyp = $(el).text();
-	                    }
-	                );
-	                obj.positionen = [];
-	                $(el).find('[localName$="positionTaetigkeit"]').each(
-	                    function(i, el) {
-	                        obj.positionen.push($(el).text());
-	                    }
-	                );
-	                obj.taetigkeitsIds = [];
-	                $(el).find('[localName$="tateigkeitId"]').each(
-	                    function(i, el) {
-	                        obj.taetigkeitsIds.push($(el).text());
-	                    }
-	                );
-	                response['return'].push(obj);
-	            }
-	        );
-	    }
-
-        return response;
-    }
-
-    /**
-     * Transforms the work plan xml manually to a JavaScript object.
-     *
-     * Traverses the documented with jQuery function find.
-     *
-     * @param {Document|Object} data The returned data of the server, prepared by jQuery.
-     * @return {Object|Null} The data (employees) as a JavaScript object underneath a "return" property as an array or null if no employees where sent.
-     */
-    , transformKolonneXmlToJson: function(data) {
-    	//if (DigiWebApp.SettingsController.getSetting('debug')) console.log("transformKolonneXmlToJson: " + data);
-        
-        var response = {};
-        response['return'] = [];        
-        var xmlDoc = $.parseXML(data);
-        //if (DigiWebApp.SettingsController.getSetting('debug')) console.log(xmlDoc);
-        
-        if ((YES) || ( $(xmlDoc).find('return').length !== xmlDoc.documentElement.childNodes.length )) {
-
-        	_.forEach(xmlDoc.documentElement.childNodes,function(el, i){
-        	
-				var obj = {};
-        		obj.mitarbeiterIds = [];
-        		obj.mitarbeiterName = [];
-
-        		var anzahlMitarbeiter = (el.childNodes.length -1) / 2;
-        		var kolonnenId = el.childNodes[0].childNodes[0].nodeValue;
-
-        		for (j=1;j<=anzahlMitarbeiter;j++) {
-        			console.log(el.childNodes[j].childNodes[0].nodeValue + " = " + el.childNodes[j+anzahlMitarbeiter].childNodes[0].nodeValue);	
-        			var mitarbeiterId = el.childNodes[j].childNodes[0].nodeValue;
-        			var mitarbeiterName = el.childNodes[j+anzahlMitarbeiter].childNodes[0].nodeValue;
-        			obj.kolonnenId = kolonnenId;
-        			obj.mitarbeiterIds.push(mitarbeiterId);
-        			obj.mitarbeiterName.push(mitarbeiterName);
-        		}
-
-        		response['return'] = obj;
-
-        	});
-
-		} else {
-		// old variant (pre TMP-1.1)
-	        $(xmlDoc).find('return').each( // for every result
-	            function(i, el) {
-	                var obj = {};
-	                $(el).find('[nodeName$="kolonnenId"]').each(
-	                    function(i, el) {
-	                        obj.kolonnenId = $(el).text();
-	                    }
-	                );
-	                obj.mitarbeiterIds = [];
-	                $(el).find('[nodeName$="mitarbeiterId"]').each(
-	                    function(i, el) {
-	                        obj.mitarbeiterIds.push($(el).text());
-	                    }
-	                );
-	                obj.mitarbeiterName = [];
-	                $(el).find('[nodeName$="mitarbeiterName"]').each(
-	                    function(i, el) {
-	                        obj.mitarbeiterName.push($(el).text());
-	                    }
-	                );
-	                response['return'] = obj;
-	            }
-	        );
-	    }  
-
-        if(response['return'] && response['return'].mitarbeiterIds) {
-            var employees = [];
-
-            for(var i in response['return'].mitarbeiterIds) {
-                var id = response['return'].mitarbeiterIds[i];
-                employees.push({
-                    kolonnenId: response['return'].kolonnenId,
-                    id: id,
-                    name: response['return'].mitarbeiterName[i]
-                })
-            }
-
-            response['return'] = employees;
-            return response;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Displays a connection error alert.
-     */
-    , connectionError: function() {
-        //M.DialogView.alert({
-        DigiWebApp.ApplicationController.nativeAlertDialogView({
-            title: M.I18N.l('connectionError'),
-            message: M.I18N.l('connectionErrorMsg')
-        });
-    }
-});
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: ApplicationController
 // ==========================================================================
 
@@ -7304,7 +7106,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
                 this.setCallbackStatus('features', 'local', NO);
                 DigiWebApp.ApplicationController.triggerUpdate = YES;
                 DigiWebApp.DashboardController.init(YES);
-                DigiWebApp.MediaPageController.init(YES);
+                DigiWebApp.MediaListController.init(YES);
         		this.getFeaturesFromRemote();        		
                 DigiWebApp.ApplicationController.enforceChefToolOnly();
         		break;
@@ -8715,7 +8517,7 @@ DigiWebApp.WipeController = M.Controller.extend({
 			 && ( M.ViewManager.currentPage.id !== DigiWebApp.EditTimeDataPage.id )
 			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.SettingsPage.id )
 			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.CameraPage.id )
-			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaPage.id )
+			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.EditPicturePage.id )
 			 &&	( M.ViewManager.currentPage.id !== DigiWebApp.MediaListPage.id )
 		){
 			try {
@@ -9555,6 +9357,645 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: EditPicturePageController
+// ==========================================================================
+
+DigiWebApp.EditPicturePageController = M.Controller.extend({
+
+  // MediaFile das bearbeitet werden soll
+	myMediaFile: null 
+	
+  // arrays for selection lists
+  , orders: null
+  , positions: null
+  , activities: null
+
+  , selections: {
+      order: null,
+      position: null,
+      activity: null
+  }
+
+  , init: function(isFirstLoad) {
+	  var that = this;
+		
+      if(isFirstLoad) {
+          /* do something here, when page is loaded the first time. */
+      }
+
+      var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+      image.src = '';
+      DigiWebApp.EditPicturePageController.myImageObj = new Image();
+      that.myMediaFile.readFromFile(function(fileContent){
+			if (fileContent && (fileContent !== "")) {
+			      var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+			      image.src = fileContent;
+			}
+	  });
+
+      /* do something, for any other load. */
+      
+      $('#' + DigiWebApp.EditPicturePage.content.savePictureGrid.id).show();
+      DigiWebApp.EditPicturePageController.setSelectionByMediaFile();
+  }
+
+  , setSelectionByMediaFile: function() {
+	  var that = this;
+      
+      // get all items from local storage
+      var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
+      var positions = DigiWebApp.Position.findSorted();
+      var activities = DigiWebApp.EditPicturePageController.getActivities();
+
+      // get the ids from the current MediaFile
+      var orderId = (that.myMediaFile.get('orderId') == "0" ? 0 : that.myMediaFile.get('orderId')) || that.myMediaFile.get('handOrderId'); // we need to check handOrders also
+      var positionId = that.myMediaFile.get('positionId');
+      var activityId = that.myMediaFile.get('activityId');
+
+      
+      /**
+       * ORDERS
+       */
+      var orderArray = _.map(orders, function(order) {
+          if(order.get('id') == orderId) {
+              return { label: order.get('name'), value: order.get('id'), isSelected: YES };
+          } else {
+              return { label: order.get('name'), value: order.get('id') };
+          }
+      });
+      orderArray = _.compact(orderArray);
+      // push "Bitte wählen Option"
+      orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+
+      
+      /**
+       * POSITIONS
+       */
+      var positionArray = _.map(positions, function(pos) {
+          if(pos.get('orderId') === orderId) {
+          	var obj = null;
+              if(pos.get('id') === positionId) {
+                  obj = { label: pos.get('name'), value: pos.get('id'), isSelected: YES };
+              } else {
+                  obj = { label: pos.get('name'), value: pos.get('id') };
+              }
+              return obj;
+          }
+          return null;
+      });
+      positionArray = _.compact(positionArray);
+      // push "Bitte wählen Option"
+      positionArray.push({label: M.I18N.l('selectSomething'), value: '0'});
+
+
+      /**
+       * ACTIVITIES
+       */
+      var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+          return wp.get('id') == positionId;
+      });
+
+      var itemSelected = NO;
+
+      /* if a workplan exists, only use those activities that are in the workplan */
+      if(workPlans.length > 0) {
+          activities = this.getActivitiesFromWorkplan(workPlans[0]);
+      } else {
+          activities = DigiWebApp.EditPicturePageController.getActivities();
+      }
+
+      var activityArray = _.map(activities, function(act) {
+      	if ( typeof(act) === "undefined" ) {
+      		console.log("UNDEFINED ACTIVITY");
+      		return null;
+      	} else {
+      		var obj = null;
+      		if(act.get('id') == activityId) {
+      			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+      			//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setSelectionByMediaFile isSelected");
+      			itemSelected = YES;
+      		} else {
+      			obj = { label: act.get('name'), value: act.get('id') };
+      			//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setSelectionByMediaFile");
+      		}
+      		return obj;
+      	}
+      });
+      activityArray = _.compact(activityArray);
+      activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+
+      this.resetSelection();
+      // set selection arrays to start content binding process
+      this.set('orders', orderArray);
+      this.set('positions', positionArray);
+      this.set('activities', activityArray);
+  }
+
+  , setPositions: function() {
+      var orderId = M.ViewManager.getView('EditPicturePage', 'order').getSelection(YES).value;
+      if(!orderId) {
+          return;
+      }
+//      M.ViewManager.getView('EditPicturePage', 'position').removeSelection(); /* to avoid bug of not setting selected... */
+      var positions = DigiWebApp.Position.findSorted();
+
+      var i = 0;
+      positions = _.map(positions, function(pos) {
+          if(pos.get('orderId') === orderId) {
+              var obj = { label: pos.get('name'), value: pos.get('id') };
+              if(i === 0) {
+                  obj.isSelected = YES;
+              }
+              i += 1;
+              return obj;
+          }
+          return null;
+      });
+      positions = _.compact(positions);/* remove falsy values from positions with _.compact() */
+
+      if(positions.length < 1) {
+          positions.push({label: M.I18N.l('noData'), value: '0'});
+      }
+
+
+      M.ViewManager.getView('editPicturePage', 'position').resetSelection();
+      this.set('positions', positions);
+      this.setActivities(YES);
+
+      this.saveSelection();
+  }
+
+  /* only set those activities that are related to the chosen position */
+  , setActivities: function(checkForWorkPlan) {
+      var posId = null;
+
+      if(checkForWorkPlan) {
+          var posObj = M.ViewManager.getView('editPicturePage', 'position').getSelection(YES);
+          if(posObj) {
+              posId = posObj.value;
+          }
+      }
+
+      var activities = [];
+      //var workPlans = DigiWebApp.WorkPlan.find({query: 'id=' + posId}); // pre TMP-1.0
+		//console.log("posId " + posId);
+      var workPlans = DigiWebApp.WorkPlan.find({ query: { 
+          identifier: 'id', 
+          operator: '=', 
+          value: posId 
+      }});
+      var i = 0;
+
+      /* if a workplan exists, only use those activities that are in the workplan */
+		//console.log("posId " + posId + ", workPlans.length " + workPlans.length);
+      if (workPlans.length === 1) {
+          activities = this.getActivitiesFromWorkplan(workPlans[0]);
+      } else {
+          activities = DigiWebApp.EditPicturePageController.getActivities();
+      }
+
+      var currentBookingActivityId = -1;
+//      if ( typeof(DigiWebApp.BookingController.currentBooking) !== "undefined" && DigiWebApp.BookingController.currentBooking !== null ) { 
+//      	currentBookingActivityId = DigiWebApp.BookingController.currentBooking.get('activityId');
+//      }
+		var currentBookingActivitySelectable = false;
+		_.each(activities, function(act) {
+      	if ( typeof(act) === "undefined" ) {
+      		console.log("UNDEFINED ACTIVITY");
+      		return null;
+      	} else {
+				if ( act.get('id') === currentBookingActivityId ) { currentBookingActivitySelectable = true; }
+			}
+		});
+		
+      activities = _.map(activities, function(act) {
+      	if ( typeof(act) === "undefined" ) {
+      		console.log("UNDEFINED ACTIVITY");
+      		return null;
+      	} else {
+      		var obj = null;
+      		if (currentBookingActivitySelectable) {
+      			obj = { label: act.get('name'), value: act.get('id'), isSelected: act.get('id') === currentBookingActivityId ? YES : NO };
+      		} else {
+      			obj = { label: act.get('name'), value: act.get('id'), isSelected: i === 0 ? YES : NO };
+      		}
+      		//console.log("ACTIVITY " + i + " = " + act.get('name') + " in setActivities");
+              i += 1;
+              return obj;
+      	}
+      });
+
+      activities = _.compact(activities);
+
+      // new to show this when closing day is pressed (corresponds to a reset)
+      if(activities.length > 0) {
+          activities.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:NO});
+      } else {
+          activities.push({label: M.I18N.l('noData'), value: '0'});
+      }
+
+
+      M.ViewManager.getView('editPicturePage', 'activity').resetSelection();
+      this.set('activities', activities);
+
+      this.saveSelection();
+  }
+
+  , initSelection: function() {
+     var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
+     var positions = DigiWebApp.Position.findSorted();
+     var activities = DigiWebApp.EditPicturePageController.getActivities();
+
+     /**
+      * ORDERS
+      */
+
+     // create order selection
+     var orderArray = [];
+     if(orders){
+         orderArray = _.map(orders, function(order) {
+             return { label: order.get('name'), value: order.get('id') };
+         });
+     }
+     // push "Bitte wählen Option"
+     orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+
+     /**
+      * POSITIONS
+      */
+
+     // create position selection
+     var positionArray = [];
+     if(positions){
+         positionArray = _.map(positions, function(pos) {
+             return { label: pos.get('name'), value: pos.get('id') };
+         });
+     }
+     // push "Bitte wählen Option"
+     positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+
+     /**
+      * ACTIVITIES
+      */
+     var activityArray = [];
+     if(activities){
+          activityArray = _.map(activities, function(act) {
+          	if ( typeof(act) === "undefined" ) {
+          		console.log("UNDEFINED ACTIVITY");
+          		return null;
+          	} else {
+          		return obj = { label: act.get('name'), value: act.get('id') };
+          	}
+         });
+     }
+     // push "Bitte wählen Option"
+     activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
+
+
+      this.resetSelection();
+      // set selection arrays to start content binding process
+      this.set('orders', orderArray);
+      this.set('positions', positionArray);
+      this.set('activities', activityArray);
+      M.ViewManager.getView('editPicturePage', 'order').setSelection('0');
+      M.ViewManager.getView('editPicturePage', 'position').setSelection('0');
+      M.ViewManager.getView('editPicturePage', 'activity').setSelection('0');
+  }
+  
+  , resetSelection: function() {
+      M.ViewManager.getView('editPicturePage', 'order').resetSelection();
+      M.ViewManager.getView('editPicturePage', 'position').resetSelection();
+      M.ViewManager.getView('editPicturePage', 'activity').resetSelection();
+  }
+
+  , isPositionSelected: function() {
+      // implemented adjustment to M.SeletionListView to return null if no item is available
+      var posObj = M.ViewManager.getView('editPicturePage', 'position').getSelection(YES);
+      if(posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+          return YES;
+      } else {
+          return NO;
+      }
+  }
+
+  , isActivitySelected: function() {
+      var actObj = M.ViewManager.getView('editPicturePage', 'activity').getSelection(YES);
+      if(actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+          return YES;
+      } else {
+          return NO;
+      }
+  }
+
+  , saveSelection: function() {
+      var orderValue = M.ViewManager.getView('editPicturePage', 'order').getSelection();
+      var positionValue = M.ViewManager.getView('editPicturePage', 'position').getSelection();
+      var activityValue = M.ViewManager.getView('editPicturePage', 'activity').getSelection();
+
+      this.selections.order = orderValue;
+      this.selections.position = positionValue;
+      this.selections.activity = activityValue;
+
+      this.useSelections = YES;
+  }
+  
+  , getActivities: function(queryobj) {
+  	var activities;
+  	if (queryobj) {
+  		activities = DigiWebApp.Activity.find(queryobj);
+  	} else {
+  		activities = DigiWebApp.Activity.findSorted();
+  	}
+  	activities = _.map(activities, function(acti) {
+	    	if(acti.get("positionId") === "1") {
+	            // normale Tätigkeit
+	            return acti;
+	         } else {
+	            // Tätigkeit nur bei Arbeitsplan
+	            return null;
+	         }
+  	});
+  	activities = _.compact(activities);
+  	return activities;
+  }
+
+  , getActivitiesFromWorkplan: function(workplan) {
+      var actIds = workplan.get('activityIds').split(',');
+      var activities = [];
+      if(actIds && actIds.length > 0) {
+          for(var i = 0; i < actIds.length; i++) {
+              activities.push(_.first(DigiWebApp.Activity.find({ query: {
+                  identifier: 'id', 
+                  operator: '=', 
+                  value: actIds[i] 
+              }})));
+          }
+
+      }
+      if (workplan.get("workplanType") === "1") {
+      	// only those activities which are bound to employee
+          activities = _.map(activities, function(act) {
+          	if ( typeof(act) === "undefined" ) {
+          		console.log("UNDEFINED ACTIVITY");
+          		return null;
+          	} else {
+      			var zugeordnet = NO;
+          		var allActivities = DigiWebApp.Activity.findSorted();
+          		_.each(allActivities, function(acti) {
+          			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
+          			if (acti.get("positionId") === "1") {
+          				zugeordnet = YES;
+          			}
+          		});
+      			if (zugeordnet) {
+      				return act;
+      			} else {
+      				return null;	
+      			}
+          	}
+          });
+      };
+      activities = _.compact(activities);
+      return activities;
+  }
+
+  , savePicture: function() {
+  	var that = this;
+  	
+  	that.saveSelection();
+  	
+		var orderId = M.ViewManager.getView('editPicturePage', 'order').getSelection();
+		
+		var posObj = M.ViewManager.getView('editPicturePage', 'position').getSelection(YES);
+		var posId = posObj ? posObj.value : null;
+	
+		var actObj = M.ViewManager.getView('editPicturePage', 'activity').getSelection(YES);
+		var actId = actObj ? actObj.value : null;
+
+	    var handOrderId = null;
+	    var handOrderName = null;
+	    if(DigiWebApp.BookingController.isHandOrder(orderId)) {
+			handOrderId = orderId;
+			handOrderName = _.select(DigiWebApp.HandOrder.find(), function(ord) {
+			    return ord.get('id') === orderId || ord.get('name') === orderId;
+			})[0].get('name');
+			orderId = null;
+	
+			// a hand order has no position
+			posId = null;
+	    }
+
+	    var lat = '0';
+	    var lon = '0';
+	    if(location) {
+			if (location.latitude) {
+			    lat = location.latitude;
+			}
+			if(location.longitude) {
+			    lon = location.longitude;
+			}
+	    }
+
+//	    var myMediaFile = that.newMediaFile({
+//			oId: orderId,
+//			hoId: handOrderId,
+//			hoName: handOrderName,
+//			lat: lat,
+//			lon: lon,
+//			pId: posId,
+//			aId: actId
+//	    });
+	    
+	    myMediaFile.setRemark(M.ViewManager.getView('editPicturePage', 'remarkInput').value);
+	    
+	    var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+
+	    myMediaFile.set('fileType', 'image/jpeg;base64');
+	    myMediaFile.save();
+	    myMediaFile.saveToFile(image.src, DigiWebApp.NavigationController.backToMediaListPageTransition);
+
+  }
+
+//  , paintMoveEvent: null
+//  
+//  , paintOnCanvasStopPaint: function(ev) {
+//  	//console.log("paintOnCanvasStopPaint");    	
+//  	ev.preventDefault();
+//  	
+//  	//context = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).getContext("2d");
+//  	//context.stroke();
+//
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);    	
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);    	
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//  }
+//  
+//  , paintOnCanvasStartMove: function(ev) {
+//  	console.log("paintOnCanvasStartMove");
+//  	ev.preventDefault();
+//  	//ev.stopPropagation();
+//  	
+//  	var canvas = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id);
+//
+//  	if (canvas.getContext) {
+//  		DigiWebApp.EditPicturePageController.myImageTouchPos = DigiWebApp.EditPicturePageController.getCoordinates(ev);
+//	
+//  		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);    	
+//  		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);    	
+//  		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//  		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//	    	$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//  	}
+//  }
+//  
+//  , paintOnCanvasStopMove: function(ev) {
+//  	console.log("paintOnCanvasStopMove");    	
+//  	ev.preventDefault();
+//  	//ev.stopPropagation();
+//		DigiWebApp.EditPicturePageController.myImageTouchPos = [0, 0];
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);    	
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasMove);    	
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//		$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopMove);
+//  }
+//  
+//  , myImageTouchPos: [0, 0]
+//  , myImageTopLeft: [0, 0]
+//  , myImageBottomRight: [0, 0]
+//  , myImageScaleFactor: 2
+//  , paintOnCanvasMove: function(ev) {
+//  	console.log("paintOnCanvasMove");    	
+//  	ev.preventDefault();
+//  	//ev.stopPropagation();
+//
+//  	var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+//      var canvas = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id);
+//
+//  	if (canvas.getContext) {
+//  		var coord = DigiWebApp.EditPicturePageController.getCoordinates(ev);
+//			var x = coord[0];
+//			var y = coord[1];
+//			var dx = DigiWebApp.EditPicturePageController.myImageTouchPos[0] - coord[0];
+//			var dy = DigiWebApp.EditPicturePageController.myImageTouchPos[1] - coord[1];
+//			//console.log(dx + ", " + dy);
+//			DigiWebApp.EditPicturePageController.myImageTouchPos[0] = coord[0];
+//			DigiWebApp.EditPicturePageController.myImageTouchPos[1] = coord[1];
+//			//console.log("DigiWebApp.EditPicturePageController.myImageTouchPos " + DigiWebApp.EditPicturePageController.myImageTouchPos[0] + ", " + DigiWebApp.EditPicturePageController.myImageTouchPos[1]);
+//			var context = canvas.getContext("2d");
+//			if ((DigiWebApp.EditPicturePageController.myImageTopLeft[0] + dx) > 0 && (DigiWebApp.EditPicturePageController.myImageTopLeft[0] + dx) < image.width) {
+//	    		DigiWebApp.EditPicturePageController.myImageTopLeft[0] = DigiWebApp.EditPicturePageController.myImageTopLeft[0] + dx;
+//	    		//DigiWebApp.EditPicturePageController.myImageBottomRight[0] = DigiWebApp.EditPicturePageController.myImageBottomRight[0] + dx;
+//			}
+//			if ((DigiWebApp.EditPicturePageController.myImageTopLeft[1] + dy) > 0 && (DigiWebApp.EditPicturePageController.myImageTopLeft[1] + dy) < image.height) {
+//	    		DigiWebApp.EditPicturePageController.myImageTopLeft[1] = DigiWebApp.EditPicturePageController.myImageTopLeft[1] + dy;
+//	    		//DigiWebApp.EditPicturePageController.myImageBottomRight[1] = DigiWebApp.EditPicturePageController.myImageBottomRight[1] + dy;
+//			}
+//  				
+//  		context.drawImage(image,DigiWebApp.EditPicturePageController.myImageTopLeft[0],DigiWebApp.EditPicturePageController.myImageTopLeft[1],canvas.width * DigiWebApp.EditPicturePageController.myImageScaleFactor,canvas.height * DigiWebApp.EditPicturePageController.myImageScaleFactor,0,0,canvas.width,canvas.height);
+//  	}
+//  }
+//  
+//  , paintOnCanvasStartPaint: function(ev) {
+//  	//console.log("paintOnCanvasStartPaint");    	
+//  	ev.preventDefault();
+//  	//ev.stopPropagation();
+//  	
+//  	var canvas = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id);
+//
+//  	if (canvas.getContext) {
+//  		var coord = DigiWebApp.EditPicturePageController.getCoordinates(ev);
+//			var x = coord[0];
+//			var y = coord[1];
+//	
+//	    	var context = canvas.getContext("2d");
+//			context.beginPath();
+//			context.strokeStyle = "#f00";
+//			context.lineWidth = 5;
+//			context.lineCap = "round";
+//			context.lineJoin = "round";
+//			context.moveTo(x, y);
+//	
+//	    	$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).unbind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//	    	$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('touchmove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('mousemove', DigiWebApp.EditPicturePageController.paintOnCanvasPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('touchstop', DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//			$('#' + DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).bind('mouseup',   DigiWebApp.EditPicturePageController.paintOnCanvasStopPaint);
+//  	}
+//  }
+//  
+//  , getCoordinates: function(ev) {
+//  	var x = 0;
+//  	var y = 0;
+//		// Get the mouse position relative to the canvas element.
+//      if (typeof(ev.touches) !== "undefined") {
+//      	//console.log("touchstart: using ev.touches[0]");
+//      	x = ev.touches[0].pageX - ev.touches[0].target.offsetLeft;
+//      	y = ev.touches[0].pageY - ev.touches[0].target.offsetTop;
+//      } else if (typeof(ev.originalEvent) !== "undefined") {
+//  		if (typeof(ev.originalEvent.touches) !== "undefined") {
+//      		x = ev.originalEvent.touches[0].pageX - ev.originalEvent.touches[0].target.offsetLeft;
+//      		y = ev.originalEvent.touches[0].pageY - ev.originalEvent.touches[0].target.offsetTop;
+//      		//console.log(x + ", " + y);
+//  		}
+//  	} else {
+//  		x = ev.offsetX;
+//  		y = ev.offsetY;
+//  	}
+//      return [x, y];
+//  }
+//  
+//  , paintOnCanvasPaint: function(ev) {
+//  	//console.log("paintOnCanvasPaint");
+//  	ev.preventDefault();
+//  	//ev.stopPropagation();
+//  	
+//  	// save event for easier debugging
+//  	DigiWebApp.EditPicturePageController.paintMoveEvent = ev;
+//
+//  	var coord = DigiWebApp.EditPicturePageController.getCoordinates(ev);
+//		var x = coord[0];
+//		var y = coord[1];
+//
+//  	var context = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id).getContext("2d");
+//		
+//		// The event handler works like a drawing pencil which tracks the mouse 
+//		// movements. We start drawing a path made up of lines.
+//		context.lineTo(x, y);
+//		//context.stroke();
+//  }
+//  
+//  , paintOnCanvasTouchMove: function(ev) {
+//  	//console.log("paintOnCanvasTouchMove");
+//  }
+//  
+//  , fillCanvasFromImage_var: null
+//  , fillCanvasFromImage: function() {
+//  	console.log("fillCanvasFromImage");
+//		if (DigiWebApp.EditPicturePageController.fillCanvasFromImage_var !== null) clearTimeout(DigiWebApp.EditPicturePageController.fillCanvasFromImage_var);
+//		$('#' + DigiWebApp.EditPicturePage.content.image.id).hide();
+//      var canvas = document.getElementById(DigiWebApp.EditPicturePage.content.imageContainer.imageCanvas.id);
+//      var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+//      DigiWebApp.EditPicturePageController.myImageScaleFactor = image.width / canvas.width;
+//		var context = canvas.getContext("2d");
+//		console.log("drawing image to canvas with file");
+//		context.drawImage(image,0,0,canvas.width * DigiWebApp.EditPicturePageController.myImageScaleFactor,canvas.height * DigiWebApp.EditPicturePageController.myImageScaleFactor,0,0,canvas.width,canvas.height);
+//		DigiWebApp.EditPicturePageController.myImageTopLeft = [0, 0];
+//  }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: DashboardTemplateView
 // ==========================================================================
 
@@ -10117,7 +10558,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2446',
+            value: 'Build: 2447',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -10867,7 +11308,7 @@ DigiWebApp.AudioPage = M.PageView.design({
             events: {
                 tap: {
                     target: DigiWebApp.NavigationController,
-                    action: 'backToMediaPage'
+                    action: 'backToMediaListPageTransition'
                 }
             }
         }),
@@ -13048,7 +13489,7 @@ DigiWebApp.DemoAudioPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: MediaPageTemplateView
+// View: DemoMediaPageTemplateView
 // ==========================================================================
 
 DigiWebApp.DemoMediaPageTemplateView = M.ListItemView.design({
@@ -13084,7 +13525,7 @@ DigiWebApp.DemoMediaPageTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: MediaPage
+// View: DemoMediaPage
 // ==========================================================================
 
 m_require('app/views/DemoMediaPageTemplateView.js');
@@ -14060,6 +14501,219 @@ DigiWebApp.MediaListPage = M.PageView.design({
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
 //
+// Project: DigiWebApp
+// View: EditPicturePage
+// ==========================================================================
+
+DigiWebApp.EditPicturePage = M.PageView.design({
+
+	  childViews: 'header content'
+	
+	, cssClass: 'editPicturePage'
+	
+	, events: {
+		pagebeforeshow: {
+	        target: DigiWebApp.EditPicturePageController,
+	        action: 'init'
+	    }
+ 	}
+
+    , savePicture: function() {
+	  	if (M.ViewManager.getView('editPicturePage', 'remarkInput').value.length > 255) {
+		      DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			  DigiWebApp.ApplicationController.nativeAlertDialogView({
+					title: M.I18N.l('remarkTooLong'),
+					message: M.I18N.l('remarkTooLongMessage')
+			  });
+		} else {
+		      //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('editPicturePage', 'remarkInput').value)) {
+		      if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('editPicturePage', 'remarkInput').value)) {
+		          DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		          DigiWebApp.ApplicationController.nativeAlertDialogView({
+		              	  title: M.I18N.l('specialCharProblem')
+		              	, message: M.I18N.l('specialCharProblemMsg')
+		              });
+	          } else {
+		          	DigiWebApp.CameraController.savePicture();
+	          }
+		}
+	}
+	
+	, header: M.ToolbarView.design({
+	      childViews: 'backButton title deleteButton'
+	    , cssClass: 'header'
+	    , isFixed: YES
+	    , backButton: M.ButtonView.design({
+	    	  value: M.I18N.l('back')
+	    	, icon: 'arrow-l'
+	    	, anchorLocation: M.LEFT
+	    	, events: {
+	          	tap: {
+	              	target: DigiWebApp.NavigationController,
+	              	action: 'backToMediaListPageTransition'
+	          	}
+	      	  }
+	    })
+	    , deleteButton: M.ButtonView.design({
+	    	  value: M.I18N.l('delete')
+	    	, icon: 'delete'
+	    	, anchorLocation: M.RIGHT
+	    	, events: {
+	          	tap: {
+	              	//target: DigiWebApp.NavigationController,
+	              	//action: 'backToMediaListPageTransition'
+	    			action: function() {
+	    				var itemToDelete;
+	    				DigiWebApp.NavigationController.backToMediaListPageTransition();
+	    			}
+	          	}
+	      	  }
+	    })
+
+	  , title: M.LabelView.design({
+	            value: M.I18N.l('editPicture')
+	          , anchorLocation: M.CENTER
+	        })
+	      , anchorLocation: M.TOP
+	  })
+	
+	  , content: M.ScrollView.design({
+	  	
+	        	childViews: 'image spacer order position activity remarkInput savePictureGrid'
+	
+			  , image: M.ImageView.design({
+			  		value: '',
+			  		cssClass: 'photo'
+			  })
+			  
+			  , spacer: M.LabelView.design({
+			  		value: ' '
+			  })
+			
+			  , order: M.SelectionListView.design({
+			      selectionMode: M.SINGLE_SELECTION_DIALOG,
+			      initialText: M.I18N.l('noData'),
+			      label: M.I18N.l('order'),
+			      //cssClass: 'unselectable',
+			      applyTheme: NO,
+			      contentBinding: {
+			          target: DigiWebApp.EditPicturePageController,
+			          property: 'orders'
+			      },
+			      events: {
+			          change: {
+			              target: DigiWebApp.EditPicturePageController,
+			              action: function() {
+			                  this.setPositions();
+			              }
+			          }
+			      }
+			  })
+	  
+		    , position: M.SelectionListView.design({
+		        selectionMode: M.SINGLE_SELECTION_DIALOG,
+		        label: M.I18N.l('position'),
+		        initialText: M.I18N.l('noData'),
+		        //cssClass: 'unselectable',
+		        applyTheme: NO,
+		        contentBinding: {
+		            target: DigiWebApp.EditPicturePageController,
+		            property: 'positions'
+		        },
+		        events: {
+		            change: {
+		                target: DigiWebApp.EditPicturePageController,
+		                action: function() {
+		                    this.setActivities(YES);
+		                }
+		            }
+		        }
+		    })
+		
+		    , activity: M.SelectionListView.design({
+		        selectionMode: M.SINGLE_SELECTION_DIALOG,
+		        label: M.I18N.l('activity'),
+		        initialText: M.I18N.l('noData'),
+		        //cssClass: 'unselectable',
+		        applyTheme: NO,
+		        contentBinding: {
+		            target: DigiWebApp.EditPicturePageController,
+		            property: 'activities'
+		        },
+		        events: {
+		            change: {
+		                target: DigiWebApp.EditPicturePageController,
+		                action: function() {
+		                    //this.saveSelection();
+		                }
+		            }
+		        }
+		    })
+		  	        
+		  , remarkInput: M.TextFieldView.design({
+		      label: M.I18N.l('remark'),
+		      cssClass: 'remarkInput',
+		      hasMultipleLines: YES,
+		      numberOfChars: 255
+		  })
+	
+	//      , imageContainer: M.ContainerView.design({
+	//      	childViews: 'imageCanvas',
+	//          cssClass: 'imageContainer marginTop20 marginBottom20',
+	//
+	//      	imageCanvas: M.CanvasView.design({
+	//              cssClass: 'imageCanvas',
+	//              canvasWidth: 300,
+	//              canvasHeight: 450,
+	//              render: function() {
+	//					this.html += '<canvas id="' + this.id + '" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" class="' + this.cssClass + '"></canvas>';
+	//	            	return this.html;
+	//      		}
+	//	        })
+	//	        
+	//      })
+	
+		  , savePictureGrid: M.GridView.design({
+		
+			  	  childViews: 'button icon'
+			
+			  	, layout: {
+			      	cssClass: 'marginTop40 digiButton',
+			      	columns: {
+			          	0: 'button',
+			          	1: 'icon'
+			      	}
+			  	}
+			  
+			  	, button: M.ButtonView.design({
+			  		value: M.I18N.l('assume'),
+			  		cssClass: 'digiButton',
+			  		anchorLocation: M.RIGHT,
+			  		events: {
+			          	tap: {
+			  				//target: DigiWebApp.CameraPage,
+			  				//action: 'savePicture'
+			  				action: function() {
+			  					DigiWebApp.EditPicturePage.savePicture();
+			  				}
+			          	}
+			      	}
+			  	})
+			  
+			  	, icon: M.ImageView.design({
+			  		value: 'theme/images/icon_bookTime.png'
+			      	})
+			      })
+		      
+		  })
+	  
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
 // Project: DigiWebApp 
 // ==========================================================================
 
@@ -14237,7 +14891,7 @@ DigiWebAppOrdinaryDesign = {
 
     , infoPage: DigiWebApp.InfoPage
 
-    , mediaPage: DigiWebApp.MediaPage
+    , editPicturePage: DigiWebApp.EditPicturePage
 
     , demomediaPage: DigiWebApp.DemoMediaPage 
 
