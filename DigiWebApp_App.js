@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2463
+    , softwareVersion: 2464
 
 
     /**
@@ -10132,7 +10132,12 @@ DigiWebApp.CameraPage = M.PageView.design({
 
     , savePicture: function() {
     	
-		if (M.ViewManager.getView('cameraPage', 'remarkInput').value.length > 255) {
+    	var myRemark = '';
+    	if ((M.ViewManager.getView('cameraPage', 'remarkInput').value !== null) && (typeof(M.ViewManager.getView('cameraPage', 'remarkInput').value) !== "undefined")) {
+    		myRemark = M.ViewManager.getView('cameraPage', 'remarkInput').value;
+    	}
+    			
+		if (myRemark.length > 255) {
 	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
     		DigiWebApp.ApplicationController.nativeAlertDialogView({
     			title: M.I18N.l('remarkTooLong'),
@@ -10141,7 +10146,7 @@ DigiWebApp.CameraPage = M.PageView.design({
 		} else {
 			
             //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
-            if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('cameraPage', 'remarkInput').value)) {
+            if (DigiWebApp.ApplicationController.sonderzeichenCheck(myRemark)) {
     	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
                 DigiWebApp.ApplicationController.nativeAlertDialogView({
                     title: M.I18N.l('specialCharProblem'),
@@ -10565,7 +10570,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2463',
+            value: 'Build: 2464',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -14543,7 +14548,12 @@ DigiWebApp.EditPicturePage = M.PageView.design({
  	}
 
     , savePicture: function() {
-	  	if (M.ViewManager.getView('editPicturePage', 'remarkInput').value.length > 255) {
+    	var myRemark = '';
+    	if ((M.ViewManager.getView('editPicturePage', 'remarkInput').value !== null) && (typeof(M.ViewManager.getView('editPicturePage', 'remarkInput').value) !== "undefined")) {
+    		myRemark = M.ViewManager.getView('editPicturePage', 'remarkInput').value;
+    	}
+
+    	if (myRemark.length > 255) {
 		      DigiWebApp.ApplicationController.DigiLoaderView.hide();
 			  DigiWebApp.ApplicationController.nativeAlertDialogView({
 					title: M.I18N.l('remarkTooLong'),
@@ -14551,7 +14561,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 			  });
 		} else {
 		      //if (/[[^a-zA-Z0-9_-äöüÄÖÜ,. !?;:/\\@€=]]+/.test(M.ViewManager.getView('editPicturePage', 'remarkInput').value)) {
-		      if (DigiWebApp.ApplicationController.sonderzeichenCheck(M.ViewManager.getView('editPicturePage', 'remarkInput').value)) {
+		      if (DigiWebApp.ApplicationController.sonderzeichenCheck(myRemark)) {
 		          DigiWebApp.ApplicationController.DigiLoaderView.hide();
 		          DigiWebApp.ApplicationController.nativeAlertDialogView({
 		              	  title: M.I18N.l('specialCharProblem')
