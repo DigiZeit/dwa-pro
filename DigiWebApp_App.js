@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2468
+    , softwareVersion: 2469
 
 
     /**
@@ -9454,10 +9454,10 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       if (orderFound === NO) {
 	      var orderTemp2Array = _.map(orderTempArray, function(order) {
 	       	  var obj = null;
-	          if(order.get('value') == orderId) {
-	              obj = { label: order.get('label'), value: order.get('value'), isSelected: YES };
+	          if(order.value == orderId) {
+	              obj = { label: order.label, value: order.value, isSelected: YES };
 	          } else {
-	        	  obj = { label: order.get('label'), value: order.get('value') };
+	        	  obj = { label: order.label, value: order.value };
 	          }
 	          return obj;
 	      });
@@ -10591,7 +10591,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2468',
+            value: 'Build: 2469',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
