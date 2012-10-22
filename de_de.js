@@ -451,5 +451,7 @@ M.I18N.de_de = {
     , editPicture: 'Bild bearbeiten'
     	
     , delete: 'Löschen'
+    	
+    , errorWhileDeletingMediaFile: 'Die Mediendatei konnte nicht gelöscht werden!'
 
 };

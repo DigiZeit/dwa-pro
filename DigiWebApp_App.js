@@ -1957,7 +1957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2448
+    , softwareVersion: 2449
 
 
     /**
@@ -9376,6 +9376,12 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       activity: null
   }
 
+  , deleteMediaFileFromLocalStorage: function() {
+	  var that = this;
+	  that.myMediaFile.del();
+	  DigiWebApp.NavigationController.backToMediaListPageTransition();
+  }
+
   , init: function(isFirstLoad) {
 	  var that = this;
 		
@@ -10558,7 +10564,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2448',
+            value: 'Build: 2449',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -14575,8 +14581,15 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	              	//target: DigiWebApp.NavigationController,
 	              	//action: 'backToMediaListPageTransition'
 	    			action: function() {
-	    				var itemToDelete;
-	    				DigiWebApp.NavigationController.backToMediaListPageTransition();
+	    				DigiWebApp.EditPictureController.myMediaFile.deleteFile(
+	    						  DigiWebApp.EditPictureController.deleteMediaFileFromLocalStorage
+	    						, function() {
+	    							  DigiWebApp.ApplicationController.nativeAlertDialogView({
+	    									title: M.I18N.l('error'),
+	    									message: M.I18N.l('errorWhileDeletingMediaFile')
+	    							  });
+	    						  }
+	    				);
 	    			}
 	          	}
 	      	  }
