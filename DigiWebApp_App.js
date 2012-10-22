@@ -1957,7 +1957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2453
+    , softwareVersion: 2454
 
 
     /**
@@ -10554,7 +10554,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2453',
+            value: 'Build: 2454',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -14542,7 +14542,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 		              	, message: M.I18N.l('specialCharProblemMsg')
 		              });
 	          } else {
-		          	DigiWebApp.CameraController.savePicture();
+		          	DigiWebApp.EditPicturePageController.savePicture();
 	          }
 		}
 	}
@@ -14578,6 +14578,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	    									title: M.I18N.l('error'),
 	    									message: M.I18N.l('errorWhileDeletingMediaFile')
 	    							  });
+		    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage();
 	    						  }
 	    				);
 	    			}
