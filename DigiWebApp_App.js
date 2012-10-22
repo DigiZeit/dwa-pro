@@ -1959,7 +1959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2461
+    , softwareVersion: 2462
 
 
     /**
@@ -9383,6 +9383,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 	  try {
 		  that.myMediaFile.del();
 	  } catch(e) {}
+	  DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	  DigiWebApp.NavigationController.backToMediaListPageTransition();
   }
 
@@ -9412,7 +9413,8 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       
       $('#' + DigiWebApp.EditPicturePage.content.savePictureGrid.id).show();
       DigiWebApp.EditPicturePageController.setSelectionByMediaFile();
-  }
+	  DigiWebApp.ApplicationController.DigiLoaderView.hide();
+}
 
   , setSelectionByMediaFile: function() {
 	  var that = this;
@@ -9812,7 +9814,10 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
 	    myMediaFile.set('fileType', 'image/jpeg;base64');
 	    myMediaFile.save();
-	    myMediaFile.saveToFile(image.src, DigiWebApp.NavigationController.backToMediaListPageTransition);
+	    myMediaFile.saveToFile(image.src, function() {
+		      DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		      DigiWebApp.NavigationController.backToMediaListPageTransition();
+	    });
 
   }
 
@@ -10558,7 +10563,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         }),
 
         buildLabel: M.LabelView.design({
-            value: 'Build: 2461',
+            value: 'Build: 2462',
             cssClass: 'infoLabel marginBottom25 unselectable'
         }),
 
@@ -12345,6 +12350,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
+					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFile'));
 					var doShow = NO;
 				    var view = M.ViewManager.getViewById(id);
 				    var mediaFile_modelId = view.modelId;
@@ -12356,7 +12362,11 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 							//}
 						}
 					});
-					if (doShow === YES) DigiWebApp.NavigationController.toEditPicturePageTransition();
+					if (doShow === YES) {
+						DigiWebApp.NavigationController.toEditPicturePageTransition();
+					} else {
+						DigiWebApp.ApplicationController.DigiLoaderView.hide();
+					}
 			}
         }
     }
@@ -14575,6 +14585,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	              	//target: DigiWebApp.NavigationController,
 	              	//action: 'backToMediaListPageTransition'
 	    			action: function() {
+	    				DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('deleteMediaFile'));
 	    				DigiWebApp.EditPicturePageController.myMediaFile.deleteFile(
 	    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage
 	    						, function() {
@@ -14714,6 +14725,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 			  				//target: DigiWebApp.CameraPage,
 			  				//action: 'savePicture'
 			  				action: function() {
+			  					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('saveMediaFile'));
 			  					DigiWebApp.EditPicturePage.savePicture();
 			  				}
 			          	}

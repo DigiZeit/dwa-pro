@@ -453,5 +453,11 @@ M.I18N.de_de = {
     , delete: 'Löschen'
     	
     , errorWhileDeletingMediaFile: 'Die Mediendatei konnte nicht gelöscht werden!'
+    
+    , loadMediaFile: 'lade Mediendatei'
+
+    , saveMediaFile: 'speichere Mediendatei'
+
+    , deleteMediaFile: 'lösche Mediendatei'
 
 };
