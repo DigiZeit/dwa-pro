@@ -349,6 +349,8 @@ M.I18N.de_de = {
     , continueInstall: 'Installation fortsetzen'
     
     , takePicture: 'neues Foto'
+    	
+    , takePictureDemo: 'neues Foto (DEMO)'
     
     , mediaList: 'Medienliste'
     
@@ -439,5 +441,23 @@ M.I18N.de_de = {
     , wrongServer: 'Falscher Server'
 
     , wrongServerMessage: 'Sie haben die WebApp auf dem falschen Server gestartet! Sie werden nun auf den zuständigen Server weitergeleitet.'
+    
+    , notDefined: 'nicht definiert'
+
+    , unknown: 'nicht angegeben'
+
+    , uploadMediaFiles: 'Medien übertragen'
+    	
+    , editPicture: 'Bild bearbeiten'
+    	
+    , deleteLabel: 'Löschen'
+    	
+    , errorWhileDeletingMediaFile: 'Die Mediendatei konnte nicht gelöscht werden!'
+    
+    , loadMediaFile: 'lade Mediendatei'
+
+    , saveMediaFile: 'speichere Mediendatei'
+
+    , deleteMediaFile: 'lösche Mediendatei'
 
 };
