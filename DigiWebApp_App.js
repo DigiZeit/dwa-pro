@@ -2614,7 +2614,11 @@ DigiWebApp.DashboardController = M.Controller.extend({
 				localStorage.setItem("reloadAppOneMoreTime", "true");
 			}
 			if (typeof(navigator.app) !== "undefined") {
-				navigator.app.loadUrl(location.origin + location.pathname);
+				if (typeof(location.origin) !== "undefined") {
+					navigator.app.loadUrl(location.origin + location.pathname);					
+				} else {
+					navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+				}
 			} else {
 				window.location.reload();
 			}
@@ -3216,7 +3220,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2789
+    , softwareVersion: 2790
 
 
     /**
@@ -3353,7 +3357,11 @@ DigiWebApp.RequestController = M.Controller.extend({
 			                    		, action: function() {
 		                        					DigiWebApp.ApplicationController.deleteAllData(); 
 					    							if (typeof(navigator.app) !== "undefined") {
-														navigator.app.loadUrl(location.origin + location.pathname);
+														if (typeof(location.origin) !== "undefined") {
+															navigator.app.loadUrl(location.origin + location.pathname);					
+														} else {
+															navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+														}
 					    							} else {
 					    								window.location.reload();
 					    							}
@@ -8958,7 +8966,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
                         	//, action: 'proceedWithLocalData'
     						action: function() {
     							if (typeof(navigator.app) !== "undefined") {
-    								navigator.app.loadUrl(location.origin + location.pathname);
+    								if (typeof(location.origin) !== "undefined") {
+    									navigator.app.loadUrl(location.origin + location.pathname);					
+    								} else {
+    									navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+    								}
     							} else {
     								window.location.reload();
     							}
@@ -9148,7 +9160,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
                             	//, action: 'proceedWithLocalData'
         						action: function() {
 									if (typeof(navigator.app) !== "undefined") {
-										navigator.app.loadUrl(location.origin + location.pathname);
+										if (typeof(location.origin) !== "undefined") {
+											navigator.app.loadUrl(location.origin + location.pathname);					
+										} else {
+											navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+										}
 									} else {
 										window.location.reload();
 									}
@@ -12052,7 +12068,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2789'
+              value: 'Build: 2790'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16829,7 +16845,11 @@ if (typeof(localStorage) !== "undefined") {
 			}
 		}
 		if (typeof(navigator.app) !== "undefined") {
-			navigator.app.loadUrl(location.origin + location.pathname);
+			if (typeof(location.origin) !== "undefined") {
+				navigator.app.loadUrl(location.origin + location.pathname);					
+			} else {
+				navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+			}
 		} else {
 			window.location.reload();
 		}
@@ -16850,7 +16870,11 @@ $(window).bind('load', function(e) {
 						localStorage.setItem("reloadAppOneMoreTime", "true");
 					}
 					if (typeof(navigator.app) !== "undefined") {
-						navigator.app.loadUrl(location.origin + location.pathname);
+						if (typeof(location.origin) !== "undefined") {
+							navigator.app.loadUrl(location.origin + location.pathname);					
+						} else {
+							navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+						}
 					} else {
 						window.location.reload();
 					}
