@@ -2614,9 +2614,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 				localStorage.setItem("reloadAppOneMoreTime", "true");
 			}
 			if (typeof(navigator.app) !== "undefined") {
-				var hashpos = location.href.indexOf("#");
-				if (hashpos === -1) hashpos = location.href.length;
-				navigator.app.loadUrl(location.href.substring(0,hashpos));
+				navigator.app.loadUrl(location.origin + location.pathname);
 			} else {
 				window.location.reload();
 			}
@@ -3218,7 +3216,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2786
+    , softwareVersion: 2787
 
 
     /**
@@ -3355,9 +3353,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 			                    		, action: function() {
 		                        					DigiWebApp.ApplicationController.deleteAllData(); 
 					    							if (typeof(navigator.app) !== "undefined") {
-						    							var hashpos = location.href.indexOf("#");
-						    							if (hashpos === -1) hashpos = location.href.length;
-						    							navigator.app.loadUrl(location.href.substring(0,hashpos));
+														navigator.app.loadUrl(location.origin + location.pathname);
 					    							} else {
 					    								window.location.reload();
 					    							}
@@ -8962,9 +8958,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
                         	//, action: 'proceedWithLocalData'
     						action: function() {
     							if (typeof(navigator.app) !== "undefined") {
-	    							var hashpos = location.href.indexOf("#");
-	    							if (hashpos === -1) hashpos = location.href.length;
-	    							navigator.app.loadUrl(location.href.substring(0,hashpos));
+    								navigator.app.loadUrl(location.origin + location.pathname);
     							} else {
     								window.location.reload();
     							}
@@ -9154,9 +9148,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
                             	//, action: 'proceedWithLocalData'
         						action: function() {
 									if (typeof(navigator.app) !== "undefined") {
-										var hashpos = location.href.indexOf("#");
-										if (hashpos === -1) hashpos = location.href.length;
-										navigator.app.loadUrl(location.href.substring(0,hashpos));
+										navigator.app.loadUrl(location.origin + location.pathname);
 									} else {
 										window.location.reload();
 									}
@@ -12060,7 +12052,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2786'
+              value: 'Build: 2787'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16837,9 +16829,7 @@ if (typeof(localStorage) !== "undefined") {
 			}
 		}
 		if (typeof(navigator.app) !== "undefined") {
-			var hashpos = location.href.indexOf("#");
-			if (hashpos === -1) hashpos = location.href.length;
-			navigator.app.loadUrl(location.href.substring(0,hashpos));
+			navigator.app.loadUrl(location.origin + location.pathname);
 		} else {
 			window.location.reload();
 		}
@@ -16860,9 +16850,7 @@ $(window).bind('load', function(e) {
 						localStorage.setItem("reloadAppOneMoreTime", "true");
 					}
 					if (typeof(navigator.app) !== "undefined") {
-						var hashpos = location.href.indexOf("#");
-						if (hashpos === -1) hashpos = location.href.length;
-						navigator.app.loadUrl(location.href.substring(0,hashpos));
+						navigator.app.loadUrl(location.origin + location.pathname);
 					} else {
 						window.location.reload();
 					}
