@@ -1911,7 +1911,7 @@ DigiWebApp.CameraController = M.Controller.extend({
          * ACTIVITIES
          */
         var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-            return wp.get('id') == positionId;
+            if (wp) return wp.get('id') == positionId;
         });
 
         var itemSelected = NO;
@@ -2073,7 +2073,7 @@ DigiWebApp.CameraController = M.Controller.extend({
        var orderArray = [];
        if(orders){
            orderArray = _.map(orders, function(order) {
-               return { label: order.get('name'), value: order.get('id') };
+               if (order) return { label: order.get('name'), value: order.get('id') };
            });
        }
        // push "Bitte wählen Option"
@@ -2087,7 +2087,7 @@ DigiWebApp.CameraController = M.Controller.extend({
        var positionArray = [];
        if(positions){
            positionArray = _.map(positions, function(pos) {
-               return { label: pos.get('name'), value: pos.get('id') };
+        	   if (pos) return { label: pos.get('name'), value: pos.get('id') };
            });
        }
        // push "Bitte wählen Option"
@@ -2256,7 +2256,7 @@ DigiWebApp.CameraController = M.Controller.extend({
 	    if(DigiWebApp.BookingController.isHandOrder(orderId)) {
 			handOrderId = orderId;
 			handOrderName = _.select(DigiWebApp.HandOrder.findSorted(), function(ord) {
-			    return ord.get('id') === orderId || ord.get('name') === orderId;
+			    if (ord) return ord.get('id') === orderId || ord.get('name') === orderId;
 			})[0].get('name');
 			orderId = null;
 	
@@ -2853,6 +2853,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
         var itemSelected = NO;
 
         var orderArray = _.map(orders, function(order) {
+        	if (!(order)) return;
             var obj =  { label: order.get('name'), value: order.get('id') };
             if ( DigiWebApp.BookingController.currentBooking !== null ) {
             	if (    (obj.value === DigiWebApp.BookingController.currentBooking.get('orderId'))
@@ -2872,6 +2873,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
         
         itemSelected = NO;
         var positionArray = _.map(positions, function(pos) {
+        	if (!(pos)) return;
         	if (DigiWebApp.OrderInfoController.activeOrder !== null) {
         		if (pos.get('orderId') !== DigiWebApp.OrderInfoController.activeOrder[0].get('id')) {
         			return null;
@@ -2959,6 +2961,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 
         var i = 0;
         positions = _.map(positions, function(pos) {
+        	if (!(pos)) return;
             if(pos.get('orderId') === orderId) {
                 var obj = { label: pos.get('name'), value: pos.get('id') };
                 if(i === 0) {
@@ -3209,7 +3212,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2783
+    , softwareVersion: 2784
 
 
     /**
@@ -4365,7 +4368,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 
         if(bookings.length > 0) {
             openBookings = _.select(bookings, function(b) {
-                return b.get('isCurrent') === true;
+                if (b) return b.get('isCurrent') === true;
             });
         }
 
@@ -4635,7 +4638,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    if(that.isHandOrder(orderId)) {
 			handOrderId = orderId;
 			handOrderName = _.select(DigiWebApp.HandOrder.findSorted(), function(ord) {
-			    return ord.get('id') === orderId || ord.get('name') === orderId;
+				if (ord) return ord.get('id') === orderId || ord.get('name') === orderId;
 			})[0].get('name');
 			orderId = null;
 	
@@ -4713,7 +4716,7 @@ DigiWebApp.BookingController = M.Controller.extend({
      */
     , isHandOrder: function(orderId) {
         var handOrder = _.select(DigiWebApp.HandOrder.findSorted(), function(ho) {
-            return ho.get('id') == orderId || ho.get('name') == orderId;
+        	if (ho) return ho.get('id') == orderId || ho.get('name') == orderId;
         });
         return handOrder.length > 0 ? YES : NO;
     }
@@ -4740,10 +4743,12 @@ DigiWebApp.BookingController = M.Controller.extend({
 			var myHO_id = obj.hoId;
     		if (myO_id !== null || myHO_id != null) {
         		var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-            		//var myOID = obj.oId;
-            		//var myHOID = obj.hoId;
-        			var myGetO_id = o.get('id');
-                    return myO_id == myGetO_id || myHO_id == myGetO_id; // || get('name') is for checking handOrders also
+        			if (o) {
+                		//var myOID = obj.oId;
+                		//var myHOID = obj.hoId;
+        				var myGetO_id = o.get('id');
+        				return myO_id == myGetO_id || myHO_id == myGetO_id; // || get('name') is for checking handOrders also
+        			}
                 });
                 if(order && order.length > 0) {
                     order = order[0];
@@ -4795,8 +4800,10 @@ DigiWebApp.BookingController = M.Controller.extend({
     			var myHO_id = obj.get('handOrderId');
         		if (myO_id !== 0 || myHO_id !== 0) {
             		var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-            			var myGetO_id = o.get('id');
-                        return myO_id == myGetO_id || myHO_id == myGetO_id;
+            			if (o) {
+            				var myGetO_id = o.get('id');
+            				return myO_id == myGetO_id || myHO_id == myGetO_id;
+            			}
                     });
                     if(order && order.length > 0) {
                         order = order[0];
@@ -4863,9 +4870,11 @@ DigiWebApp.BookingController = M.Controller.extend({
     			var myHO_id = obj.get('handOrderId');
         		if (myO_id !== 0 || myHO_id !== 0) {
             		var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-            			var myGetO_id = o.get('id');
-                        return myO_id == myGetO_id || myHO_id == myGetO_id;
-                    });
+            			if (o) {
+            				var myGetO_id = o.get('id');
+            				return myO_id == myGetO_id || myHO_id == myGetO_id;
+            			}
+            		});
                     if(order && order.length > 0) {
                         order = order[0];
                         myOrderName = order.get('name');
@@ -5457,13 +5466,15 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       var orderFound = NO;
       var orderArray = null;
       var orderTempArray = _.map(orders, function(order) {
-       	  var obj = null;
-          if(order.get('id') == orderId) {
-              obj = { label: order.get('name'), value: order.get('id'), isSelected: YES };
-              orderFound = YES;
-          } else {
-        	  obj = { label: order.get('name'), value: order.get('id') };
-          }
+   		  var obj = null;
+       	  if (order) {
+	          if(order.get('id') == orderId) {
+	              obj = { label: order.get('name'), value: order.get('id'), isSelected: YES };
+	              orderFound = YES;
+	          } else {
+	        	  obj = { label: order.get('name'), value: order.get('id') };
+	          }
+       	  }
           return obj;
       });
       orderTempArray = _.compact(orderTempArray);
@@ -5473,11 +5484,13 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
       if (orderFound === NO) {
 	      var orderTemp2Array = _.map(orderTempArray, function(order) {
 	       	  var obj = null;
-	          if(order.value == orderId) {
-	              obj = { label: order.label, value: order.value, isSelected: YES };
-	          } else {
-	        	  obj = { label: order.label, value: order.value };
-	          }
+	       	  if (order) {
+		          if(order.value == orderId) {
+		              obj = { label: order.label, value: order.value, isSelected: YES };
+		          } else {
+		        	  obj = { label: order.label, value: order.value };
+		          }
+	       	  }
 	          return obj;
 	      });
 	      orderArray = orderTemp2Array;
@@ -5491,6 +5504,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
        * POSITIONS
        */
       var positionArray = _.map(positions, function(pos) {
+    	if (pos) {
           if(pos.get('orderId') === orderId) {
           	var obj = null;
               if(pos.get('id') === positionId) {
@@ -5499,8 +5513,9 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
                   obj = { label: pos.get('name'), value: pos.get('id') };
               }
               return obj;
-          }
+            }
           return null;
+        }
       });
       positionArray = _.compact(positionArray);
       // push "Bitte wählen Option"
@@ -5511,7 +5526,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
        * ACTIVITIES
        */
       var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-          return wp.get('id') == positionId;
+          if (wp) return wp.get('id') == positionId;
       });
 
       var itemSelected = NO;
@@ -5560,15 +5575,17 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 
       var i = 0;
       positions = _.map(positions, function(pos) {
-          if(pos.get('orderId') === orderId) {
-              var obj = { label: pos.get('name'), value: pos.get('id') };
-              if(i === 0) {
-                  obj.isSelected = YES;
-              }
-              i += 1;
-              return obj;
-          }
-          return null;
+    	  if (pos) {
+	          if(pos.get('orderId') === orderId) {
+	              var obj = { label: pos.get('name'), value: pos.get('id') };
+	              if(i === 0) {
+	                  obj.isSelected = YES;
+	              }
+	              i += 1;
+	              return obj;
+	          }
+	          return null;
+    	  }
       });
       positions = _.compact(positions);/* remove falsy values from positions with _.compact() */
 
@@ -5673,7 +5690,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
      var orderArray = [];
      if(orders){
          orderArray = _.map(orders, function(order) {
-             return { label: order.get('name'), value: order.get('id') };
+             if (order) return { label: order.get('name'), value: order.get('id') };
          });
      }
      // push "Bitte wählen Option"
@@ -5687,7 +5704,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
      var positionArray = [];
      if(positions){
          positionArray = _.map(positions, function(pos) {
-             return { label: pos.get('name'), value: pos.get('id') };
+             if (pos) return { label: pos.get('name'), value: pos.get('id') };
          });
      }
      // push "Bitte wählen Option"
@@ -5836,7 +5853,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 	    if(DigiWebApp.BookingController.isHandOrder(orderId)) {
 			handOrderId = orderId;
 			handOrderName = _.select(DigiWebApp.HandOrder.findSorted(), function(ord) {
-			    return ord.get('id') === orderId || ord.get('name') === orderId;
+			    if (ord) return ord.get('id') === orderId || ord.get('name') === orderId;
 			})[0].get('name');
 			orderId = null;
 	
@@ -6836,7 +6853,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
          * ACTIVITIES
          */
         var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-            return wp.get('id') == positionId;
+            if (wp) return wp.get('id') == positionId;
         });
 
         var itemSelected = NO;
@@ -8743,7 +8760,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 
             // get locally saved hand orders and push them into mId array
             var locals = _.select(DigiWebApp.HandOrder.findSorted(), function(ho) {
-                return ho.get('isLocalOnly') === YES;
+                if (ho) return ho.get('isLocalOnly') === YES;
             });
             
             _.each(locals, function(el) {
@@ -10615,7 +10632,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 		}
 	
 		var FeatureSetting = _.select(DigiWebApp.Features.find(), function(f) {
-		    return f.get('id') === featureId;
+		    if (f) return f.get('id') === featureId;
 		})[0];
 	
 		if (typeof(FeatureSetting) === "undefined") {
@@ -10791,7 +10808,7 @@ DigiWebApp.EmployeeController = M.Controller.extend({
             var employees = DigiWebApp.Employee.findSorted();
             if(employees.length > 0) {
                 employees = _.map(employees, function(em) {
-                    return { label: em.get('name'), value: em.get('id') };
+                    if (em) return { label: em.get('name'), value: em.get('id') };
                 });
                 this.set('employees', employees);
             }
@@ -10815,7 +10832,7 @@ DigiWebApp.EmployeeController = M.Controller.extend({
         if(selection.length > 0) {
             _.each(selection, function(sel) { // sel is employee id
                 var employee = _.select(DigiWebApp.Employee.find(), function(e) {
-                    return e.get('id') === sel;
+                    if (e) return e.get('id') === sel;
                 });
                 employee = _.isArray(employee) ? employee[0] : employee;
                 if(employee) {
@@ -10872,7 +10889,7 @@ DigiWebApp.EmployeeController = M.Controller.extend({
         var employees = DigiWebApp.Employee.find();
         if(employees.length > 0) {
             var selectedEmployees = _.select(employees, function(e) {
-                return e.get('isSelected') === true;
+                if (e) return e.get('isSelected') === true;
             });
             return selectedEmployees;
         }
@@ -10950,7 +10967,7 @@ DigiWebApp.HandOrderController = M.Controller.extend({
 
         if(orderName) {
             var sameHandOrders = _.select(DigiWebApp.HandOrder.findSorted(), function(ho) {
-                return ho.get('name') === orderName;
+                if (ho) return ho.get('name') === orderName;
             });
 
 
@@ -12019,7 +12036,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2783'
+              value: 'Build: 2784'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -12782,7 +12799,7 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
               valuePattern: '<%= orderId %>'
             , operation: function(v) {
                 var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-                    return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
+                    if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
                 });
                 if(order && order.length > 0) {
                     order = order[0];
@@ -12805,7 +12822,7 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var position = _.select(DigiWebApp.Position.findSorted(), function(p) {
-                        return v == p.get('id');
+                        if (p) return v == p.get('id');
                     });
                     if(position && position.length > 0) {
                         position = position[0];
@@ -12828,7 +12845,7 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var activity = _.select(DigiWebApp.Activity.findSorted(), function(a) {
-                        return v == a.get('id');
+                        if (a) return v == a.get('id');
                     });
                     if(activity && activity.length > 0) {
                         activity = activity[0];
@@ -15636,7 +15653,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
               valuePattern: '<%= orderId %>'
             , operation: function(v) {
                 var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-                    return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
+                	if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
                 });
                 if(order && order.length > 0) {
                     order = order[0];
@@ -15659,7 +15676,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var position = _.select(DigiWebApp.Position.findSorted(), function(p) {
-                        return v == p.get('id');
+                    	if (p) return v == p.get('id');
                     });
                     if(position && position.length > 0) {
                         position = position[0];
@@ -15682,7 +15699,7 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var activity = _.select(DigiWebApp.Activity.findSorted(), function(a) {
-                        return v == a.get('id');
+                    	if (a) return v == a.get('id');
                     });
                     if(activity && activity.length > 0) {
                         activity = activity[0];
@@ -15945,7 +15962,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
               valuePattern: '<%= orderId %>'
             , operation: function(v) {
                 var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-                    return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
+                    if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
                 });
                 if(order && order.length > 0) {
                     order = order[0];
@@ -15968,7 +15985,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var position = _.select(DigiWebApp.Position.findSorted(), function(p) {
-                        return v == p.get('id');
+                        if (p) return v == p.get('id');
                     });
                     if(position && position.length > 0) {
                         position = position[0];
@@ -15991,7 +16008,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
             , operation: function(v) {
                 if(v) {
                     var activity = _.select(DigiWebApp.Activity.findSorted(), function(a) {
-                        return v == a.get('id');
+                        if (a) return v == a.get('id');
                     });
                     if(activity && activity.length > 0) {
                         activity = activity[0];
