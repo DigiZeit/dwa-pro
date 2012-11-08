@@ -264,7 +264,7 @@ M.I18N.de_de = {
 
     , inputError: 'Eingabefehler'
 
-    , inputErrorOnlyNumbers: 'Bitte geben Sie nur Zahlen ein.'
+    , inputErrorOnlyNumbers: 'Bitte geben Sie in folgendem Feld nur Zahlen ein'
 
     , offlineWork: 'Offline'
 
@@ -280,7 +280,7 @@ M.I18N.de_de = {
 
     , secretQuestion: 'Alle Daten löschen?'
 
-    , secretQuestionMsg: 'ACHTUNG: Die App wird mit "Ja" komplett zurückgesetzt!'
+    , secretQuestionMsg: 'ACHTUNG: Die DIGI-WebApp wird mit "Ja" komplett zurückgesetzt!'
     
     , quitQuestion: 'DIGI-WebApp beenden?'
 
@@ -376,17 +376,17 @@ M.I18N.de_de = {
     
     , showCoordinatesInMap: 'in Karte'
     
-    , showInMapOSMAlert: 'Wir leiten Sie nun weiter zu OpenStreetMap!'
+    , showInMapOSMAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nOpenStreetMap'
     
-    , showInMapGoogleAlert: 'Wir leiten Sie nun weiter zu Google-Maps!'
+    , showInMapGoogleAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nGoogle-Maps'
     
-    , showInMapBingAlert: 'Wir leiten Sie nun weiter zu Bing-Maps!'
+    , showInMapBingAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nBing-Maps'
     
     , updateApplication: 'Update DIGI-WebApp'
     
     , applicationUpdateAvailable: 'Update verfügbar'
     
-    , applicationUpdateAvailableMsg: 'DIGI-WebApp wurde aktualisiert. DIGI-WebApp in der neuen Version starten?\n\nSie können dies auch später mit dem Update-Button im Hauptmenü anstoßen.'
+    , applicationUpdateAvailableMsg: 'DIGI-WebApp wurde aktualisiert. Möchten Sie jetzt die neue Version verwenden?\n\nSie können dies auch später mit dem Update-Button im Hauptmenü anstoßen.'
     
     , noApplicationUpdateAvailable: 'Kein Update verfügbar'
     
@@ -426,11 +426,15 @@ M.I18N.de_de = {
 
 	, Zeitbuchungen: 'Zeitbuchungen'
         	
+	, Zeitbuchung: 'Zeitbuchung'
+        	
     , ZeitbuchungenKonntenNichtGeladenWerden: 'Die Zeitbuchungen konnten nicht geladen werden!'
         	
     , ZeitbuchungenLaden: 'Empfange Zeitbuchungen'
 
     , since: 'seit'
+
+    , bookingSince: 'aktuelle Buchung seit'
 
     , empfangeUrlLoader: 'empfange Datenbankserver'
 
@@ -440,7 +444,7 @@ M.I18N.de_de = {
 
     , wrongServer: 'Falscher Server'
 
-    , wrongServerMessage: 'Sie haben die WebApp auf dem falschen Server gestartet! Sie werden nun auf den zuständigen Server weitergeleitet.'
+    , wrongServerMessage: 'Sie haben die WebApp auf dem falschen Server gestartet! Sie werden nun weitergeleitet. Denken Sie daran, danach die Einstellungen zu prüfen!'
     
     , notDefined: 'nicht definiert'
 
@@ -459,5 +463,60 @@ M.I18N.de_de = {
     , saveMediaFile: 'speichere Mediendatei'
 
     , deleteMediaFile: 'lösche Mediendatei'
+    
+    , profilingTook: 'Dieser Datenabgleich dauerte'
+    	
+    , geozoneTrafficlight: 'Geozonenampel'
 
+    , showBookingCoordinatesInMap: 'Buchung in Karte zeigen'
+
+	, showPositionCoordinatesInMap: 'Auftrag in Karte zeigen'
+		
+	, booking: 'Buchung'
+		
+	, positionLaden: 'Positionsinfo laden'
+	
+	, positionKonnteNichtGeladenWerden: 'Daten konnten nicht geladen werden!'
+		
+	, dauer: 'Dauer'
+		
+	, forward: 'vor'
+		
+	, backward: 'zurück'
+		
+	, lastWorkday: 'letzter Arbeitstag'		
+
+	, buchungskoordinaten: 'Buchungskoordinaten'		
+
+	, auftragskoordinaten: 'Auftraggskoordinaten'
+		
+	, Monday: 'Montag'
+	, Tuesday: 'Dienstag'
+	, Wednesday: 'Mittwoch'
+	, Thursday: 'Donnerstag'
+	, Friday: 'Freitag'
+	, Saturday: 'Samstag'
+	, Sunday: 'Sonntag'
+
+	, bookingRunningSince: 'Diese Buchung läuft seit'
+		
+	, daysToHoldBookingsOnDeviceNaN: 'Die gespeicherte Tagesanzahl war keine Zahl! Es werden daher nur die Buchungen für einen Tag vorgehalten.'
+	
+	, daysToHoldBookingsOnDeviceLabel: 'vorzuhaltende Tage'
+		
+	, archivedTimeDataOf: 'archivierte Buchungen vom'
+		
+	, archivedTimeData: 'archivierte Buchungen'
+		
+	, errorWhileArchivingBookings: 'Fehler in der Buchungsarchivierung!'
+		
+	, errorWhileBackingUpBookings: 'Fehler beim Zwischenspeichern der gesendeten Buchungen!'
+		
+	, fehlzeit: 'Fehlzeit'
+		
+	, newFeatureActive: 'Neue Konfiguration'
+	, newFeatureActiveMsg: 'Es wurde eine Konfigurationsänderung empfangen. Die DIGI-WebApp startet sich neu um diese anzuwenden.'
+		
+	, appZuruecksetzen: 'reset'
+	
 };
