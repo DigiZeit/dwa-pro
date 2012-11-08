@@ -3218,7 +3218,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2785
+    , softwareVersion: 2786
 
 
     /**
@@ -12060,7 +12060,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2785'
+              value: 'Build: 2786'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16836,7 +16836,13 @@ if (typeof(localStorage) !== "undefined") {
 				window.applicationCache.swapCache();
 			}
 		}
-		window.location.reload();
+		if (typeof(navigator.app) !== "undefined") {
+			var hashpos = location.href.indexOf("#");
+			if (hashpos === -1) hashpos = location.href.length;
+			navigator.app.loadUrl(location.href.substring(0,hashpos));
+		} else {
+			window.location.reload();
+		}
 	}
 }
 
@@ -16853,7 +16859,13 @@ $(window).bind('load', function(e) {
 					if (typeof(localStorage) !== "undefined") {
 						localStorage.setItem("reloadAppOneMoreTime", "true");
 					}
-					window.location.reload();
+					if (typeof(navigator.app) !== "undefined") {
+						var hashpos = location.href.indexOf("#");
+						if (hashpos === -1) hashpos = location.href.length;
+						navigator.app.loadUrl(location.href.substring(0,hashpos));
+					} else {
+						window.location.reload();
+					}
 				} else {
 					DigiWebApp.NavigationController.toSplashViewPageTransition();
 					DigiWebApp.NavigationController.toDashboardPage();
