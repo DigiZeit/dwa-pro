@@ -397,7 +397,9 @@ label.ui-input-text, .ui-controlgroup-label {
     width: 100%;
 }
 
-.infoLabel {
+  .infoLabel 
+, .infoPage label.ui-select 
+{
     font-size: 1.1em;
     color: #ffffff;
 }
@@ -617,6 +619,18 @@ label.ui-input-text, .ui-controlgroup-label {
 
 .settingsPage .ui-content .lastSelectBox_container, 
 .settingsPasswordPage .ui-content .lastSelectBox_container {
+    margin-bottom: 10px;
+}
+
+.settingsPage .daysToHoldBookingsOnDeviceLabel {
+    font-size: 14px;
+    padding-top: 10px;
+    color: #FFFFFF;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.settingsPage .daysToHoldBookingsOnDeviceSlider {
     margin-bottom: 10px;
 }
 

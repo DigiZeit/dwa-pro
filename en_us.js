@@ -2,521 +2,270 @@
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
 //
-// Project: DigiMobile
-// I18N: de_de
+// Project: DIGI-WebApp
+// I18N: en_us
 // ==========================================================================
 
-M.I18N.de_de = {
-
-      mainMenu: 'Hauptmenü'
-
-    , menu: 'Menü'
-
-    , bookTime: 'Zeiten buchen'
-
-    , timeRegistration: 'Zeiterfassung'
-
-    , book: 'Buchen'
-
-    , book2: 'buchen...'
-
-    , closingTime: 'Feierabend'
-
-    , handApplications: 'Handauftrag'
-    
-    , dataTransfer: 'Daten&shy;übertragung'
-
-    , info: 'Info'
-
-    , settings: 'Einstellungen'
-
-    , timeData: 'Zeitdaten'
-
-    , back: 'zurück'
-
-    , save: 'speichern'
-
-    , Save: 'Speichern'
-
-    , order: 'Auftrag'
-
-    , position: 'Position'
-
-    , activity: 'Tätigkeit'
-
-    , employees: 'Mitarbeiter'
-
-    , orderInfo: 'Auftragsinfo'
-
-    , orderName: 'Auftragsname'
-
-    , orderNumber: 'Auftrags-Nr.'
-
-    , orderDescription: 'Auftragsbeschreibung'
-
-    , positionInfo: 'Positionsinfo'
-
-    , positionNumber: 'Positions-Nr.'
-
-    , positionDescription: 'Positionsbeschreibung'
-
-    , doBooking: 'Buchung wird durchgeführt...'
-
-    , bookingDone: 'Die Buchung wurde erfolgreich durchgeführt.'
-
-    , handApplication: 'Handauftrag'
-
-    , hint: 'Hinweis'
-
-    , error: 'Fehler'
-
-    , doClosingTime: 'Feierabend wird durchgeführt...'
-
-    , confirmClosingTimeMessage: 'Sind Sie sicher, dass Sie die Feierabendbuchung durchführen möchten?'
-
-    , openBookingsOverwriteBySettingsUpdate : 'Es existieren offene bzw. nicht übertragene Buchungen. Möchten Sie die Einstellungen trotzdem ändern? Alle bestehenden Buchungen gehen verloren!'
-
-    , yes: 'Ja'
-
-    , no: 'Nein'
-
-    , assume: 'übernehmen'
-
-    , apply: 'übernehmen'
-
-    , noOpenBookings: 'Es kann keine Feierabendbuchung durchgeführt werden, da keine offenen Buchungen vorliegen.'
-
-    , connectionError: 'Verbindungsfehler'
-
-    , connectionErrorMsg: 'Bei der Verbindung mit dem Service ist ein Fehler aufgetreten.'
-
-    , closingTimeDone: 'Buchung erfolgt'
-
-    , closingTimeDoneMessage: 'Die Feierabendbuchung wurde erfolgreich durchgeführt.'
-
-    , doDataTransfer: 'Datenübertragung wird durchgeführt...'
-
-    , confirmDataTransferMessage: 'Soll die Datenübertragung gestartet werden?'
-
-    , noDataToTransfer: 'Es kann keine Datenübertragung durchgeführt werden, da keine neuen Zeitdaten vorliegen.'
-
-    , dataTransferDone: 'Übertragung erfolgt'
-
-    , dataTransferDoneMessage: 'Die Datenübertragung wurde erfolgreich durchgeführt.'
-
-    , company: 'Firma'
-
-    , password: 'Kennwort'
-
-    , connectionCode: 'Verbindungscode'
-
-    , workerId: 'Mitarbeiterkennung'
-
-    , autoSyncAfterBookTimeCheck: 'Auto-Stammdatenübertragung'
-
-    , autoTransferAfterBookTimeCheck: 'Auto-Buchungsübertragung nach Buchung'
-
-    , autoTransferAfterClosingDayCheck: 'Auto-Buchungsübertragung nach Feierabend'
-
-    , autoSaveGPSData: 'GPS-Daten beim Buchen speichern'
-
-    , listOfTimeData: 'Liste aller beguchten Zeitdaten'
-
-    , selectSomething: 'Bitte wählen...'
-
-    , noData: 'Keine Daten...'
-
-    , hintSelectApplication: 'Die Auftragsdetails können nicht angezeigt werden, da Sie keinen Auftrag ausgewählt haben.'
-
-    , hintSelectPosition: 'Die Positionsdetails können nicht angezeigt werden, da Sie keine Position ausgewählt haben.'
-
-    , confirmSaveOfSettings: 'Sollen die Einstellungen gespeichert und die bisherigen Werte überschrieben werden?'
-
-    , settingsSaveDone: 'Die Einstellungen wurden erfolgreich gespeichert.'
-
-    , settingsSaveDoneReloadApp: 'Die Einstellungen wurden erfolgreich gespeichert. Die Anwendung initialisiert sich nun neu.'
-
-    , settingsUpdateCanceled: 'Die Aktualisierung der Einstellungen wurde abgebrochen.'
-
-    , settingsSaveError: 'Die Einstellungen konnten nicht gespeichert werden. Bitte versuchen Sie es später erneut.' 
-
-    , getPositionsLoader: 'Empfange Positionen'
-
-    , getFeaturesLoader: 'Empfange Konfiguration'
-
-    , getOrdersLoader: 'Empfange Aufträge'
-
-    , getActivitiesLoader: 'Empfange Tätigkeiten'
-
-    , authenticateLoader: 'Authentifizieren'
-
-    , selectEmployee: 'Auswahl Mitarbeiter'
-
-    , getWorkPlansLoader: 'Empfange Arbeitspläne'
-
-    , getHandOrdersLoader: 'Empfange Handaufträge'
-
-    , getKolonne: 'Empfange Kolonne'
-
-    , authenticated: 'Authentifizierung erfolgreich.'
-
-    , authenticationError: 'Authentifizierung fehlgeschlagen'
-
-    , authenticationErrorMsg: 'Sie konnten nicht authentifiziert werden. Bitte prüfen Sie Ihre Daten.'
-
-    , authenticationError2: 'Authentifizierung fehlgeschlagen'
-
-    , authenticationErrorMsg2: 'Die Geräte-ID ist ungültig.'
-
-    , authenticationError3: 'Authentifizierung fehlgeschlagen'
-
-    , authenticationErrorMsg3: 'Die Firmen-ID und/oder das Kennwort sind ungültig.'
-
-    , ordersReceived: 'Aufträge empfangen'
-
-    , handOrdersReceived: 'Handaufträge empfangen'
-
-    , positionsReceived: 'Positionen empfangen'
-
-    , activitiesReceived: 'Tätigkeiten empfangen'
-
-    , workPlansReceived: 'Arbeitspläne empfangen'
-
-    , kolonneReceived: 'Kolonne empfangen'
-
-    , noOrderSelected: 'Kein Auftrag ausgewählt'
-
-    , noOrderSelectedMsg: 'Bitte wählen Sie einen Auftrag aus.'
-
-    , noPosSelected: 'Keine Position ausgewählt'
-
-    , noPosSelectedMsg: 'Bitte wählen Sie eine Position aus.'
-
-    , noActSelected: 'Keine Tätigkeit ausgewählt'
-
-    , noActSelectedMsg: 'Bitte wählen Sie eine Tätigkeit aus.'
-
-    , doubleBooking: 'Hinweis'
-
-    , doubleBookingMsg: 'Es wurde keine Buchung durchgeführt, da die Daten der noch offenen Zeitbuchung entsprechen.'
-
-    , sendConfigurationMsg: 'Sende Einstellungen'
-
-    , sendConfigurationFail: 'Sendefehler'
-
-    , sendConfigurationFailMsg: 'Die Einstellungen konnten nicht übertragen werden. Überprüfen Sie Ihre Datenverbindung und versuchen sie es erneut.'
-
-    , sendDataMsg: 'Sende Daten'
-
-    , sendDataFail: 'Sendefehler'
-
-    , sendDataFailMsg: 'Die Buchungen konnten nicht übertragen werden. Überprüfen Sie Ihre Datenverbindung und versuchen sie es erneut.'
-
-    , noHandOrderNameEntered: 'Name fehlt'
-
-    , noHandOrderNameEnteredMsg: 'Bitte geben Sie einen Namen für den Handauftrag ein.'
-
-    , specialCharProblem: 'Sonderzeichenfehler'
-
-    , specialCharProblemMsg: 'Sie haben unerlaubte Sonderzeichen eingegeben! Erlaubt sind: a-Z, 0-9, ä-Ü sowie: .,!?;:/"()+-=_$§%@€'
-
-    , handOrderTooLong: 'Eingabe zu lang'
-
-    , handOrderTooLongMsg: 'Der Name des Handauftrags darf max. 16 Zeichen lang sein.'
-
-    , handOrderExists: 'Bereits vorhanden'
-
-    , handOrderExistsMsg: 'Ein Handauftrag mit dem gleichen Namen existiert bereits.'
-
-    , handOrderSaveSuccess: 'Auftrag angelegt'
-
-    , handOrderSaveSuccessMsg: 'Der Handauftrag wurde erfolgreich angelegt.'
-
-    , handOrderSaveError: 'Auftrag nicht angelegt.'
-    
-    , handOrderSaveErrorMsg: 'Der Handauftrag konnte nicht gespeichert werden.'
-
-    , employeeSelection: 'Mitarbeiter auswählen'
-
-    , employeeSelectionMsg: 'Sie müssen mindestens einen Mitarbeiter ihrer Kolonne auswählen.'
-
-    , employeeSelectionSuccess: 'Auswahl erfolgreich'
-
-    , employeeSelectionSuccessMsg: 'Ihre Auswahl wurde erfolgreich übernommen.'
-
-    , noCredentials: 'Keine Zugangsdaten'
-
-    , noCredentialsMsg: 'Bitte geben Sie Ihre Zugangsdaten ein und führen Sie eine Datenübertragung durch.'
-
-    , currentBookingSendSuccess: 'Übertragung erfolgreich'
-
-    , currentBookingSendSuccessMsg: 'Die aktuellen Buchungen wurden erfolgreich übertragen.'
-
-    , bookingSaved: 'Buchung gespeichert'
-
-    , bookingSavedMsg: 'Die Buchung wurde gespeichert.'
-
-    , closingDaySuccess: 'Feierabend gebucht'
-
-    , closingDaySuccessMsg: 'Der Tag wurde erfolgreich abgeschlossen und übertragen.'
-
-    , closingDaySuccessWithoutMsg: 'Der Tag wurde erfolgreich abgeschlossen.'
-
-    , inputError: 'Eingabefehler'
-
-    , inputErrorOnlyNumbers: 'Bitte geben Sie in folgendem Feld nur Zahlen ein'
-
-    , offlineWork: 'Offline'
-
-    , offlineWorkMsg: 'Es konnte keine Verbindung hergestellt werden. Sie arbeiten nun offline mit den lokal zur Verfügung stehenden Daten.'
-
-    , offlineWorkNotPossible: 'Keine Verbindung'
-
-    , offlineWorkNotPossibleMsg: 'Sie können nicht offline arbeiten, da die erforderlichen Daten nicht vollständig geladen wurden.'
-    
-    , noOrdersAvailable: 'Fehler'
-    
-    , noOrdersAvailableMsg: 'Diesem Mitarbeiter sind keine Aufträge zugeordnet!'
-
-    , secretQuestion: 'Alle Daten löschen?'
-
-    , secretQuestionMsg: 'ACHTUNG: Die DIGI-WebApp wird mit "Ja" komplett zurückgesetzt!'
-    
-    , quitQuestion: 'DIGI-WebApp beenden?'
-
-    , quitQuestionMsg: 'Möchten Sie die DIGI-WebApp beenden?'
-    
-    , latitude: 'Breitengrad'
-    
-    , longitude: 'Längengrad'
-    
-    , GPSError: 'GPS-Fehler'
-
-    , GPSnotactive: 'GPS-Funktion nicht aktiv'
-    
-    , getGPSPositionMsg: 'Ermittle Position'
-    
-    , wrongPasswordMsg: 'Das eingegebene Kennwort war falsch!'
-    
-    , wrongPasswordTitle: 'Falsches Kennwort'
-
-	, GPSunavailable: 'Der GPS-Sensor ist deaktiviert! Es kann keine Position ermittelt werden!'
-	
-	, GPStimeout: 'Es konnte keine GPS-Position ermittelt werden!'
-	
-	, GPSmissingPermission: 'Die DIGI-WebApp hat keine Berechtigung um GPS-Positionen zu ermitteln!'
-	
-	, GPSunknownError: 'Unbekannter GPS-Fehler: '
-
-    , ERROR: 'Fehler'
-
-    , media: 'Medien'
-    
-    , remark: 'Bemerkung'
-    
-    , remarkIsMandatory: 'Bemerkung ist Pflichtfeld'
-    
-    , remarkIsMandatoryMessage: 'Sie müssen eine Bemerkung eingeben!'
-    
-    , EditTimeDataPageTitle: 'Bearbeiten'
-    
-    , remarkTooLong: 'Bemerkung zu lang'
-    
-    , remarkTooLongMessage: 'Die Bemerkung ist auf maximal 255 Zeichen begrenzt!'
-    
-    , open: 'offen'
-    
-    , now: 'jetzt'
-    
-    , oclock: 'Uhr'
-    
-    , closeBooking: 'Buchung abschliessen'
-    
-    , logout: 'abmelden'
-    
-    , exitWebApp: 'DIGI-WebApp beenden'
-    
-    , noSettingsiOSHeader: 'kein Einstellungen gefunden (iOS>=5.1)'
-
-    , noSettingsiOSLabel: 'Herzlich Willkommen in der DIGI-WebApp!'
-
-    , noSettingsiOSDisclamier: 'Dieses Meldung wurde aufgrund einer Änderung Apples in iOS 5.1 notwendig.'
-    
-    , noSettingsiOSMessage: 'Sie sehen diesen Text, da keine Einstellungen geladen werden konnten.<br/><br/>Wenn Sie die DIGI-WebApp bereits eingerichtet hatten: beenden Sie bitte DIGI-WebApp und starten Sie DIGI-WebApp neu. Es werden dann die richtigen Einstellungen geladen und DIGI-WebApp kann wie gehabt benutzt werden.<br/><br/>Die Apple-Richtlinien untersagen es leider, an dieser Stelle einen Button einzublenden, der die App beendet. Sie müssen dies leider manuell tun:<ol><li>1 x Homebutton drücken</li><li>2 x Homebutton drücken</li><li>lange auf das Symbol von DIGI-WebApp drücken bis die Symbole zu wackeln beginnen</li><li>DIGI-WebApp mit dem roten Minus-Symbol schließen</li></ol>Danach die DIGI-WebApp erneut starten.<br/><br/><strong>Bitte starten Sie auch nach einer Erstinstallation die DIGI-WebApp einmal neu, bevor Sie die Zugangsdaten eingeben und speichern, damit sichergestellt ist, dass die Daten auch bem nächsten App-Start geladen werden können.</strong>'
-    
-    , continueInstallMessage: 'Wenn Sie DIGI-WebApp noch nie eingerichtet hatten und nach einer Erstinstallation DIGI-WebApp bereits einmal neu gestartet hatten <strong>(und nur dann)</strong> fahren Sie bitte mit dem folgenden Button mit der Einrichtung fort!'
-    
-    , continueInstall: 'Installation fortsetzen'
-    
-    , takePicture: 'neues Foto'
-    	
-    , takePictureDemo: 'neues Foto (DEMO)'
-    
-    , mediaList: 'Medienliste'
-    
-    , saveAsContact: 'als Kontakt'
-    
-    , saveAsContactSuccess: 'Kontakt erfolgreich gespeichert'
-    
-    , saveAsContactError: 'Speichern fehlgeschlagen'
-    
-    , noContactsAvailable: 'Kontakte nicht verfügbar'
-    
-    , contactExistsMultiple: 'Der Kontakt für diesen Auftrag existiert mehrfach!'
-    
-    , saveAsContactChangeQuestionTitle: 'Kontakt ändern?'
-
-    , saveAsContactChangeQuestionMsg: 'Es wurde ein passender Kontakt gefunden. Möchten Sie diesen ändern?'
-    
-    , saveAsContactChangeErrorMsg: 'Fehler beim Ändern des Kontakts'
-    
-    , contactLastChange: 'Kontakt zuletzt geändert'
-    
-    , showAddressInMap: 'Adresse suchen'
-    
-    , showCoordinatesInMap: 'in Karte'
-    
-    , showInMapOSMAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nOpenStreetMap'
-    
-    , showInMapGoogleAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nGoogle-Maps'
-    
-    , showInMapBingAlert: 'Wir leiten Sie nun zum gewählten Kartendienst weiter:\n\nBing-Maps'
-    
-    , updateApplication: 'Update DIGI-WebApp'
-    
-    , applicationUpdateAvailable: 'Update verfügbar'
-    
-    , applicationUpdateAvailableMsg: 'DIGI-WebApp wurde aktualisiert. Möchten Sie jetzt die neue Version verwenden?\n\nSie können dies auch später mit dem Update-Button im Hauptmenü anstoßen.'
-    
-    , noApplicationUpdateAvailable: 'Kein Update verfügbar'
-    
-    , noApplicationUpdateAvailableMsg: 'DIGI-WebApp ist bereits auf dem aktuellen Stand'
-
-    , useTransitionsSetting: 'Animationen'
-    
-    , waitingForDevice: 'Bitte Warten ...'
-            
-    , recordAudio: 'Sprachaufzeichnung&shy; (DEMO)'
-    
-    , signature: 'Unterschrift'
-
-    , materialPickUp: 'Materialerfassung&shy; (DEMO)'
-
-    , dailyChecklist: 'Tagescheckliste&shy; (DEMO)'
-    
-    , loadSignatures: 'Lade Unterschriften ...'
-    
-    , phone: 'Telefon'
-    	
-    , fax: 'Fax'
-    
-    , email: 'eMail'
-    	
-    , ansprechpartner: 'Ansprechpartner'
-    	
-    , kundenname: 'Kundenname'
-    
-    , GPSDataIsMandatory: 'GPS-Erfassung ist Pflicht'
-    	
-    , Anwesenheitsliste: 'Anwesenheitsliste'
-    	
-    , AnwesenheitslisteKonnteNichtGeladenWerden: 'Die Anwesenheitsliste konnte nicht geladen werden!'
-    	
-    , AnwesenheitslisteLaden: 'Empfange Anwesenheitsliste'
-
-	, Zeitbuchungen: 'Zeitbuchungen'
-        	
-	, Zeitbuchung: 'Zeitbuchung'
-        	
-    , ZeitbuchungenKonntenNichtGeladenWerden: 'Die Zeitbuchungen konnten nicht geladen werden!'
-        	
-    , ZeitbuchungenLaden: 'Empfange Zeitbuchungen'
-
-    , since: 'seit'
-
-    , bookingSince: 'aktuelle Buchung seit'
-
-    , empfangeUrlLoader: 'empfange Datenbankserver'
-
-    , empfangeUrlError: 'unbekannter Datenbankserver'
-
-    , empfangeUrlErrorMessage: 'Der zuständige Datenbankserver konnte nicht ermittelt werden!'
-
-    , wrongServer: 'Falscher Server'
-
-    , wrongServerMessage: 'Sie haben die WebApp auf dem falschen Server gestartet! Sie werden nun weitergeleitet. Denken Sie daran, danach die Einstellungen zu prüfen!'
-    
-    , notDefined: 'nicht definiert'
-
-    , unknown: 'nicht angegeben'
-
-    , uploadMediaFiles: 'Medien übertragen'
-    	
-    , editPicture: 'Bild bearbeiten'
-    	
-    , deleteLabel: 'Löschen'
-    	
-    , errorWhileDeletingMediaFile: 'Die Mediendatei konnte nicht gelöscht werden!'
-    
-    , loadMediaFile: 'lade Mediendatei'
-
-    , saveMediaFile: 'speichere Mediendatei'
-
-    , deleteMediaFile: 'lösche Mediendatei'
-    
-    , profilingTook: 'Dieser Datenabgleich dauerte'
-    	
-    , geozoneTrafficlight: 'Geozonenampel'
-
-    , showBookingCoordinatesInMap: 'Buchung in Karte zeigen'
-
-	, showPositionCoordinatesInMap: 'Auftrag in Karte zeigen'
-		
-	, booking: 'Buchung'
-		
-	, positionLaden: 'Positionsinfo laden'
-	
-	, positionKonnteNichtGeladenWerden: 'Daten konnten nicht geladen werden!'
-		
-	, dauer: 'Dauer'
-		
-	, forward: 'vor'
-		
-	, backward: 'zurück'
-		
-	, lastWorkday: 'letzter Arbeitstag'		
-
-	, buchungskoordinaten: 'Buchungskoordinaten'		
-
-	, auftragskoordinaten: 'Auftraggskoordinaten'
-		
-	, Monday: 'Montag'
-	, Tuesday: 'Dienstag'
-	, Wednesday: 'Mittwoch'
-	, Thursday: 'Donnerstag'
-	, Friday: 'Freitag'
-	, Saturday: 'Samstag'
-	, Sunday: 'Sonntag'
-
-	, bookingRunningSince: 'Diese Buchung läuft seit'
-		
-	, daysToHoldBookingsOnDeviceNaN: 'Die gespeicherte Tagesanzahl war keine Zahl! Es werden daher nur die Buchungen für einen Tag vorgehalten.'
-	
-	, daysToHoldBookingsOnDeviceLabel: 'vorzuhaltende Tage'
-		
-	, archivedTimeDataOf: 'archivierte Buchungen vom'
-		
-	, archivedTimeData: 'archivierte Buchungen'
-		
-	, errorWhileArchivingBookings: 'Fehler in der Buchungsarchivierung!'
-		
-	, errorWhileBackingUpBookings: 'Fehler beim Zwischenspeichern der gesendeten Buchungen!'
-		
-	, fehlzeit: 'Fehlzeit'
-		
-	, newFeatureActive: 'Neue Konfiguration'
-	, newFeatureActiveMsg: 'Es wurde eine Konfigurationsänderung empfangen. Die DIGI-WebApp startet sich neu um diese anzuwenden.'
-		
-	, appZuruecksetzen: 'reset'
-	
+M.I18N.en_us = {
+	  mainMenu: "Mainmenu"
+	, menu: "Menu"
+	, bookTime: "book times"
+	, timeRegistration: "Timetracking"
+	, book: "Book"
+	, book2: "book..."
+	, closingTime: "Closing time"
+	, handApplications: "Handorder"
+	, dataTransfer: "Data&shy;transfer"
+	, info: "Info and Language"
+	, settings: "Settings"
+	, timeData: "Timedata"
+	, back: "back"
+	, save: "save"
+	, Save: "Save"
+	, order: "Order"
+	, position: "Position"
+	, activity: "Activity"
+	, employees: "Employee"
+	, configuredUser: "User"
+	, orderInfo: "Orderinfo"
+	, orderName: "Ordername"
+	, orderNumber: "Order-No."
+	, orderDescription: "Orderdescription"
+	, positionInfo: "Positioninfo"
+	, positionNumber: "Position-No."
+	, positionDescription: "Positiondescription"
+	, doBooking: "Booking takes place..."
+	, bookingDone: "The booking has been saved"
+	, handApplication: "Handorder"
+	, hint: "Hint"
+	, error: "Error"
+	, doClosingTime: "Closing time takes place..."
+	, confirmClosingTimeMessage: "Are you sure, you want to book closing time?"
+	, openBookingsOverwriteBySettingsUpdate : "There are open or not sent bookings. Do you indeed want to change the settings? All current bookings will be lost!"
+	, yes: "Yes"
+	, no: "No"
+	, assume: "accept"
+	, apply: "accept"
+	, noOpenBookings: "Closing time cannot be booked as there is no open booking!"
+	, connectionError: "Connectionerror"
+	, connectionErrorMsg: "There was an error while connecting to the service!"
+	, closingTimeDone: "Booking saved"
+	, closingTimeDoneMessage: "Closing time has been successfully booked."
+	, doDataTransfer: "Transfering data..."
+	, confirmDataTransferMessage: "Should the datatransfer get startet?"
+	, noDataToTransfer: "Datatransfer impossible as there are no new bookings to transfer."
+	, dataTransferDone: "Datatransfer done"
+	, dataTransferDoneMessage: "The data has successfully been transfered."
+	, company: "Company"
+	, password: "Password"
+	, connectionCode: "Connectioncode"
+	, workerId: "User-Id"
+	, autoSyncAfterBookTimeCheck: "Auto-Transfer of master data"
+	, autoTransferAfterBookTimeCheck: "Auto-Transfer after new booking"
+	, autoTransferAfterClosingDayCheck: "Auto-Transfer after closing time"
+	, autoSaveGPSData: "Save GPS-Data in bookings"
+	, listOfTimeData: "List of all bookings"
+	, selectSomething: "Select something ..."
+	, noData: "No Data ..."
+	, hintSelectApplication: "Cannot show orderdetails as no order has been chosen."
+	, hintSelectPosition: "Cannot show positiondetails as no position has been chosen."
+	, confirmSaveOfSettings: "Do you want to save the settings overwriting the former values?"
+	, settingsSaveDone: "The settings have been saved."
+	, settingsSaveDoneReloadApp: "The settings have been saved. The application will reload now."
+	, settingsUpdateCanceled: "The saving of the settings has been canceled."
+	, settingsSaveError: "The settings could not be saved. Try again later." 
+	, getPositionsLoader: "Receiving positions"
+	, getFeaturesLoader: "Receiving configuration"
+	, getOrdersLoader: "Receiving orders"
+	, getActivitiesLoader: "Receiving activities"
+	, authenticateLoader: "Authenticate"
+	, selectEmployee: "Select employee"
+	, getWorkPlansLoader: "Receiving workplans"
+	, getHandOrdersLoader: "Receiving handorders"
+	, getKolonne: "Receiving crew"
+	, authenticated: "Authentification successful."
+	, authenticationError: "Authentification error"
+	, authenticationErrorMsg: "You could not get authenticated. Please check settings."
+	, authenticationError2: "Authentification error"
+	, authenticationErrorMsg2: "Wrong User-Id"
+	, authenticationError3: "Authentification error"
+	, authenticationErrorMsg3: "Company and/or password were invalid"
+	, ordersReceived: "Orders received"
+	, handOrdersReceived: "Handorders received"
+	, positionsReceived: "Positions received"
+	, activitiesReceived: "Activities received"
+	, workPlansReceived: "Workplans received"
+	, kolonneReceived: "Crew received"
+	, noOrderSelected: "No order selected"
+	, noOrderSelectedMsg: "Please choose an order"
+	, noPosSelected: "No Position selected"
+	, noPosSelectedMsg: "Please choose a position"
+	, noActSelected: "No activity selected"
+	, noActSelectedMsg: "Please choose an activity"
+	, doubleBooking: "Hint"
+	, doubleBookingMsg: "No new booking as the selected data is the same as the current booking."
+	, sendConfigurationMsg: "Send configuration"
+	, sendConfigurationFail: "Transmission error"
+	, sendConfigurationFailMsg: "The settings could not be transmitted. Check your internet connection and try again later."
+	, sendDataMsg: "Sending Data"
+	, sendDataFail: "Transmission error"
+	, sendDataFailMsg: "The bookings could not be transmitted. Check your internet connection and try again later."
+	, noHandOrderNameEntered: "Name missing"
+	, noHandOrderNameEnteredMsg: "Please choose a name for this handorder."
+	, specialCharProblem: "special character error"
+	, specialCharProblemMsg: "Unsupported special characters! Use only: a-Z, 0-9, ä-Ü as well as: .,!?;:/'()+-=_$§%@€"
+	, handOrderTooLong: "Name too long"
+	, handOrderTooLongMsg: "The name of the handorder can have at most 16 characters."
+	, handOrderExists: "Exists already"
+	, handOrderExistsMsg: "There already exists a handorder with that name."
+	, handOrderSaveSuccess: "Handorder saved"
+	, handOrderSaveSuccessMsg: "The handorder has been saved."
+	, handOrderSaveError: "Handorder not saved"
+	, handOrderSaveErrorMsg: "The handorder could not be saved."
+	, employeeSelection: "Select employees"
+	, employeeSelectionMsg: "You have to select at least one employee for the crew."
+	, employeeSelectionSuccess: "Selection successful"
+	, employeeSelectionSuccessMsg: "Selection has been saved."
+	, noCredentials: "No credentials"
+	, noCredentialsMsg: "Please enter your credentials."
+	, currentBookingSendSuccess: "Transmission successful"
+	, currentBookingSendSuccessMsg: "All bookings successfully transmitted."
+	, bookingSaved: "Booking saved"
+	, bookingSavedMsg: "The booking has been saved."
+	, closingDaySuccess: "Closing time booked"
+	, closingDaySuccessMsg: "This work day has successfully been closed and transmitted."
+	, closingDaySuccessWithoutMsg: "This work day has successfully been closed."
+	, inputError: "Input error"
+	, inputErrorOnlyNumbers: "Enter only numbers in this field."
+	, offlineWork: "Offline"
+	, offlineWorkMsg: "No connection could be established. You now work offline with the locally available data."
+	, offlineWorkNotPossible: "No connection"
+	, offlineWorkNotPossibleMsg: "Impossible to work offline as not all of the necessary data is available."
+	, noOrdersAvailable: "Error"
+	, noOrdersAvailableMsg: "There are no orders available for this User-Id!"
+	, secretQuestion: "Delete all data?"
+	, secretQuestionMsg: "ATTENTION: 'Yes' will reset DIGI-WebApp entirely!"
+	, quitQuestion: "Exit DIGI-WebApp?"
+	, quitQuestionMsg: "Do you want to exit DIGI-WebApp?"
+	, latitude: "Latitude"
+	, longitude: "Longitude"
+	, GPSError: "GPS-Error"
+	, GPSnotactive: "GPS-Reciever not enabled"
+	, getGPSPositionMsg: "Receiving geolocation"
+	, wrongPasswordMsg: "The given password was invalid!"
+	, wrongPasswordTitle: "Invalid password"
+	, GPSunavailable: "The GPS-Reciever is not enabled! No geolocation will be recorded!"
+	, GPStimeout: "The current geoposition could not be determined!"
+	, GPSmissingPermission: "DIGI-WebApp is missing the permission to determine a geoposition!"
+	, GPSunknownError: "Unkown GPS-Error: "
+	, ERROR: "Error"
+	, media: "Media"
+	, remark: "Remark"
+	, remarkIsMandatory: "Remark is mandatory"
+	, remarkIsMandatoryMessage: "You have to enter a remark!"
+	, EditTimeDataPageTitle: "Edit"
+	, remarkTooLong: "Remark too long"
+	, remarkTooLongMessage: "The remark may be at most 255 characters long!"
+	, open: "open"
+	, now: "now"
+	, oclock: ""
+	, closeBooking: "Close booking"
+	, logout: "logging out"
+	, exitWebApp: "Exit DIGI-WebApp"
+	, takePicture: "New photo"
+	, takePictureDemo: "New photo (DEMO)"
+	, mediaList: "Medialist"
+	, saveAsContact: "as contact"
+	, saveAsContactSuccess: "Contact successfully saved"
+	, saveAsContactError: "Saving failed"
+	, noContactsAvailable: "Contacts not available"
+	, contactExistsMultiple: "The contact for this order exists multiple times!"
+	, saveAsContactChangeQuestionTitle: "Change contact?"
+	, saveAsContactChangeQuestionMsg: "A matching contact was found. Do you want to change that contact?"
+	, saveAsContactChangeErrorMsg: "Error while saving contact"
+	, contactLastChange: "Contact last changed"
+	, showAddressInMap: "Search address in map"
+	, showCoordinatesInMap: "Show in map"
+	, showInMapOSMAlert: "We will now forward you to the chosen mapservices:\n\nOpenStreetMap"
+	, showInMapGoogleAlert: "We will now forward you to the chosen mapservices:\n\nGoogle-Maps"
+	, showInMapBingAlert: "We will now forward you to the chosen mapservices:\n\nBing-Maps"
+	, updateApplication: "Update DIGI-WebApp"
+	, applicationUpdateAvailable: "Update available"
+	, applicationUpdateAvailableMsg: "DIGI-WebApp has been updated. Do you now want to switch to the newer version now?\n\nYou can as well update later with the update-button in the main menu."
+	, noApplicationUpdateAvailable: "No update available"
+	, noApplicationUpdateAvailableMsg: "DIGI-WebApp is already up to date"
+	, useTransitionsSetting: "Transitions"
+	, waitingForDevice: "Please wait ..."
+	, recordAudio: "Audiorecording&shy; (DEMO)"
+	, signature: "Signature"
+	, materialPickUp: "Material pick up&shy; (DEMO)"
+	, dailyChecklist: "Daily checklist&shy; (DEMO)"
+	, loadSignatures: "Loading signatures ..."
+	, phone: "Phone"
+	, fax: "Fax"
+	, email: "eMail"
+	, ansprechpartner: "Contact person"
+	, kundenname: "Customer name"
+	, GPSDataIsMandatory: "Use of GPS-Data is mandatory"
+	, Anwesenheitsliste: "Attendance list"
+	, AnwesenheitslisteKonnteNichtGeladenWerden: "The attendance list could not be loaded!"
+	, AnwesenheitslisteLaden: "Receiving attendance list"
+	, Zeitbuchungen: "Bookings"
+	, Zeitbuchung: "Booking"
+	, ZeitbuchungenKonntenNichtGeladenWerden: "The bookings could not be loaded!"
+	, ZeitbuchungenLaden: "Receiving bookings"
+	, since: "since"
+	, bookingSince: "current booking since"
+	, empfangeUrlLoader: "Receiving databaseserver"
+	, empfangeUrlError: "Unknown databaseserver"
+	, empfangeUrlErrorMessage: "The appropriate databaseserver could not be determined!"
+	, wrongServer: "Wrong server"
+	, wrongServerMessage: "You started DIGI-WebApp on the wrong server! You will now be forwarded. Please check settings afterwards!"
+	, notDefined: "not defined"
+	, unknown: "unknown"
+	, uploadMediaFiles: "Transmit media"
+	, editPicture: "Edit Photo"
+	, deleteLabel: "Delete"
+	, errorWhileDeletingMediaFile: "Error while deleting mediafile!"
+	, loadMediaFile: "loading mediafile"
+	, saveMediaFile: "saving mediafile"
+	, deleteMediaFile: "deleting mediafile"
+	, profilingTook: "This transmission took"
+	, geozoneTrafficlight: "Geozone traffic light"
+	, showBookingCoordinatesInMap: "Show booking in map"
+	, showPositionCoordinatesInMap: "Show order in map"
+	, booking: "Booking"
+	, positionLaden: "Loading positioninfo"
+	, positionKonnteNichtGeladenWerden: "Could not load data!"
+	, dauer: "Duration"
+	, forward: "forward"
+	, backward: "backward"
+	, lastWorkday: "last work day"		
+	, buchungskoordinaten: "Booking coordinates"		
+	, auftragskoordinaten: "Order coordinates"
+	, Monday: "Monday"
+	, Tuesday: "Tuesday"
+	, Wednesday: "Wednesday"
+	, Thursday: "Thursday"
+	, Friday: "Friday"
+	, Saturday: "Saturday"
+	, Sunday: "Sunday"
+	, bookingRunningSince: "This booking is running since"
+	, daysToHoldBookingsOnDeviceNaN: "The saved daycount was no number! Therefore only bookings for one day will be held available."
+	, daysToHoldBookingsOnDeviceLabel: "Days to hold bookings available"
+	, archivedTimeDataOf: "archived bookings of"
+	, archivedTimeData: "archived bookings"
+	, errorWhileArchivingBookings: "Error while archiving bookings!"
+	, errorWhileBackingUpBookings: "Error while backing up bookings!"
+	, fehlzeit: "Absence"
+	, newFeatureActive: "New configuration"
+	, newFeatureActiveMsg: "A new configuration was received. DIGI-WebApp will restart now to apply the new configuration."
+	, appZuruecksetzen: "reset"
+	, applicationLanguage: "Application language"
+	, language_de_de: "Deutsch"
+	, language_en_us: "English"
+	, language_fr_fr: "Français"
+	, language_es_es: "Español"
+	, language_nl_nl: "Nederlands"
+	, refresh: "refresh"
 };

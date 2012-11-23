@@ -3,10 +3,10 @@
 // Generated with: Espresso 
 //
 // Project: DIGI-WebApp
-// I18N: de_de
+// I18N: es_es
 // ==========================================================================
 
-M.I18N.de_de = {
+M.I18N.es_es = {
 	  mainMenu: "Hauptmenü"
 	, menu: "Menü"
 	, bookTime: "Zeiten buchen"
@@ -16,7 +16,7 @@ M.I18N.de_de = {
 	, closingTime: "Feierabend"
 	, handApplications: "Handauftrag"
 	, dataTransfer: "Daten&shy;übertragung"
-	, info: "Info und Sprache"
+	, info: "Info y Lengua"
 	, settings: "Einstellungen"
 	, timeData: "Zeitdaten"
 	, back: "zurück"

@@ -3,10 +3,10 @@
 // Generated with: Espresso 
 //
 // Project: DIGI-WebApp
-// I18N: de_de
+// I18N: nl_nl
 // ==========================================================================
 
-M.I18N.de_de = {
+M.I18N.nl_nl = {
 	  mainMenu: "Hauptmenü"
 	, menu: "Menü"
 	, bookTime: "Zeiten buchen"
@@ -267,5 +267,5 @@ M.I18N.de_de = {
 	, language_fr_fr: "Français"
 	, language_es_es: "Español"
 	, language_nl_nl: "Nederlands"
-	, refresh: "akt."
+	, refresh: 'fris op'
 };
