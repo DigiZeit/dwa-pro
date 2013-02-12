@@ -3236,7 +3236,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2847
+    , softwareVersion: 2848
 
 
     /**
@@ -12218,7 +12218,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2847'
+              value: 'Build: 2848'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17213,11 +17213,11 @@ if ( !(searchForFeature(410)) && !(searchForFeature(409)) ) { // Menüeintrag "H
 	DigiWebAppOrdinaryDesign.handOrderPage = DigiWebApp.HandOrderPage
 }
 
-if ((searchForFeature(411) && !(searchForFeature(409)) ) { // Buchungen X Tage vorhalten
+if ( (searchForFeature(411)) && !(searchForFeature(409)) ) { // Buchungen X Tage vorhalten
 	DigiWebAppOrdinaryDesign.timeDataArchivePage = DigiWebApp.TimeDataArchivePage
 }
 	
-if ((searchForFeature(412) && !(searchForFeature(409)) ) { // Bautagebuch
+if ( (searchForFeature(412)) && !(searchForFeature(409)) ) { // Bautagebuch
 	DigiWebAppOrdinaryDesign.bautageberichtePage = DigiWebApp.BautageberichtePage
 	// TODO: weitere Views definieren
 }
