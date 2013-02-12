@@ -268,4 +268,10 @@ M.I18N.en_us = {
 	, language_es_es: "Español"
 	, language_nl_nl: "Nederlands"
 	, refresh: "refresh"
+		
+	// Start::Bautagebuch
+	, Bautagebuch: "Builder's Diary"
+	, Bautageberichte: "Construction Records"
+	, addBautagebericht: "new"
+    // Ende::Bautagebuch
 };
