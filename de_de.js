@@ -272,6 +272,7 @@ M.I18N.de_de = {
 	// Start::Bautagebuch
 	, Bautagebuch: "Bautagebuch"
 	, Bautageberichte: "Bautageberichte"
+	, addBautagebericht: "neu"
     // Ende::Bautagebuch
 	
 };
