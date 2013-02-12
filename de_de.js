@@ -268,4 +268,10 @@ M.I18N.de_de = {
 	, language_es_es: "Español"
 	, language_nl_nl: "Nederlands"
 	, refresh: "akt."
+		
+	// Start::Bautagebuch
+	, Bautagebuch: "Bautagebuch"
+	, Bautageberichte: "Bautageberichte"
+    // Ende::Bautagebuch
+	
 };
