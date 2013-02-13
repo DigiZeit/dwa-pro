@@ -4610,7 +4610,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2879
+    , softwareVersion: 2880
 
 
     /**
@@ -13873,7 +13873,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2879'
+              value: 'Build: 2880'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15125,7 +15125,7 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
         , icon: 'gear'
         , switchPage: function() {
 			DigiWebApp.BautagebuchEinstellungenController.lastPage = M.ViewManager.getCurrentPage();
-			DigiWebApp.NavigationController.toBautagebuchEinstellungenPage();
+			DigiWebApp.NavigationController.toBautagebuchEinstellungenPageTransition();
     	}
     })
 
