@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2862
+    , softwareVersion: 2864
 
 
     /**
@@ -13831,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2862'
+              value: 'Build: 2864'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19281,7 +19281,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'materialienButton zeitenButton notizenButton medienButton speichernActionSheet'
+    	  childViews: 'materialienButton zeitenButton notizenButton medienButton speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -19333,29 +19333,6 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	          }
 	    })
 	    
-	    , speichernActionSheet: M.DialogView.actionSheet({
-
-	        title: 'Actionsheet dialog 2',
-
-	        message: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-
-	        buttons: {
-
-	    		  speichernButton: {
-
-	                title: M.I18N.l('save')
-
-	            }
-
-	            , abschliessenButton: {
-
-	                title: M.I18N.l('BautagebuchBautageberichtAbschliessen')
-
-	            }
-	            
-	        }
-
-	    })
 
 	    , speichernButton: M.ButtonView.design({
 	          value: M.I18N.l('save')
@@ -19363,8 +19340,33 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	        //, anchorLocation: M.CENTER
 	        , events: {
 	            tap: {
-	                target: DigiWebApp.BautagebuchBautageberichtDetailsController,
-	                action: 'save'
+	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
+	                //action: 'save'
+	    			action: function() {
+				    	M.DialogView.actionSheet({
+			
+					          title: 'Actionsheet dialog 2'
+			
+					        , message: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+			
+					        , buttons: {
+			
+					    		  speichernButton: {
+			
+					                title: M.I18N.l('save')
+			
+					            }
+			
+					            , abschliessenButton: {
+			
+					                title: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+			
+					            }
+					            
+					        }
+			
+					    });
+		    		}
 	            }
 	          }
 	    })
