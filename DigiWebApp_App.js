@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2871
+    , softwareVersion: 2872
 
 
     /**
@@ -13835,7 +13835,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2871'
+              value: 'Build: 2872'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19383,15 +19383,23 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					          title: M.I18N.l('BautagebuchSaveOrClose')
 					        , cancelButtonValue: M.I18N.l('cancel')
 					        , otherButtonValues: [M.I18N.l('BautagebuchBautageberichtAbschliessen')]
+					        , otherButtonTags: ["finish"]
 					        , destructiveButtonValue: M.I18N.l('save')
 					        , callbacks: {
 				    			  destruction: {action: function() {
 		    						that.controller.save();
 		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
 				    			}}
-				    			, other: {action: function() {
-				    				that.controller.finish();
-		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+				    			, other: {action: function(buttonTag) {
+				    			    switch(buttonTag) {
+					    		        case 'finish':
+						    				that.controller.finish();
+				    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+					    		            break;
+					    		        default:
+					    		            console.log("unknonw ButtonTag");
+					    		            break;
+				    			    }
 				    			}}
 				    			, cancel: {action: function() {
 				    				//console.log(M.I18N.l('cancel'));
