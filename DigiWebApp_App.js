@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2888
+    , softwareVersion: 2889
 
 
     /**
@@ -11608,7 +11608,7 @@ DigiWebApp.NavigationController = M.Controller.extend({
 DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 
 	  settings: {
-		startUhrzeit: ""
+		startUhrzeit: "08:00"
 	}
 
 	, init: function(isFirstLoad) {
@@ -13919,7 +13919,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2888'
+              value: 'Build: 2889'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19841,7 +19841,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	          })
 	          , changeButton: M.ButtonView.design({
 		              isIconOnly: YES
-		            , icon: 'edit'
+		            , icon: 'search'
 			        , events: {
 				            tap: {
 			        		  	action: function(id, event) {
