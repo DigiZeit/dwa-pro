@@ -268,6 +268,7 @@ M.I18N.de_de = {
 	, language_es_es: "Español"
 	, language_nl_nl: "Nederlands"
 	, refresh: "akt."
+	, cancel: "abbrechen"
 		
 	// Start::Bautagebuch
 	, Bautagebuch: "Bautagebuch"
@@ -276,6 +277,7 @@ M.I18N.de_de = {
 	, BautagebuchAdd: "neu"
 	, BautagebuchDelete: "löschen"
 	, BautagebuchBautageberichtAbschliessen: "diesen Bautagebericht abschließen"
+	, BautagebuchSaveOrClose: "Speichern oder Abschließen"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Materialien"
 	, BautagebuchZeiten: "Zeiten"
@@ -284,6 +286,7 @@ M.I18N.de_de = {
 	, BautagebuchNotiz: "Notiz"
 	, BautagebuchMedien: "Medien"
 	, BautagebuchMedium: "Medium"
+	, 
     // Ende::Bautagebuch
 	
 };

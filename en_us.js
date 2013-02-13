@@ -268,7 +268,8 @@ M.I18N.en_us = {
 	, language_es_es: "Español"
 	, language_nl_nl: "Nederlands"
 	, refresh: "refresh"
-		
+	, cancel: "cancel"
+
 	// Start::Bautagebuch
 	, Bautagebuch: "Builder's Diary"
 	, BautagebuchBautageberichte: "Construction Records"
@@ -276,6 +277,7 @@ M.I18N.en_us = {
 	, BautagebuchAdd: "new"
 	, BautagebuchDelete: "delete"
 	, BautagebuchBautageberichtAbschliessen: "finish this Construction Record"
+	, BautagebuchSaveOrClose: "save or finish"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Material"
 	, BautagebuchZeiten: "Bookings"
