@@ -271,7 +271,18 @@ M.I18N.en_us = {
 		
 	// Start::Bautagebuch
 	, Bautagebuch: "Builder's Diary"
-	, Bautageberichte: "Construction Records"
-	, addBautagebericht: "new"
+	, BautagebuchBautageberichte: "Construction Records"
+	, BautagebuchBautagebericht: "Construction Record"
+	, BautagebuchAdd: "new"
+	, BautagebuchDelete: "delete"
+	, BautagebuchMaterial: "Material"
+	, BautagebuchMaterialien: "Material"
+	, BautagebuchZeiten: "Bookings"
+	// "Zeitbuchungen" wird auch hier verwendet
+	, BautagebuchNotizen: "Notes"
+	, BautagebuchNotiz: "Note"
+	, BautagebuchMedien: "Media"
+	, BautagebuchMedium: "Media"
     // Ende::Bautagebuch
+
 };

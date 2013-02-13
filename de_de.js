@@ -271,8 +271,18 @@ M.I18N.de_de = {
 		
 	// Start::Bautagebuch
 	, Bautagebuch: "Bautagebuch"
-	, Bautageberichte: "Bautageberichte"
-	, addBautagebericht: "neu"
+	, BautagebuchBautageberichte: "Bautageberichte"
+	, BautagebuchBautagebericht: "Bautagebericht"
+	, BautagebuchAdd: "neu"
+	, BautagebuchDelete: "löschen"
+	, BautagebuchMaterial: "Material"
+	, BautagebuchMaterialien: "Materialien"
+	, BautagebuchZeiten: "Zeiten"
+	// "Zeitbuchungen" wird auch hier verwendet
+	, BautagebuchNotizen: "Notizen"
+	, BautagebuchNotiz: "Notiz"
+	, BautagebuchMedien: "Medien"
+	, BautagebuchMedium: "Medium"
     // Ende::Bautagebuch
 	
 };
