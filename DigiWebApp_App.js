@@ -4610,7 +4610,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2873
+    , softwareVersion: 2874
 
 
     /**
@@ -5659,15 +5659,18 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 
 	, save: function() {
 		var that = this;
+		console.log("save");
 		that.item.saveSorted();
 	}
 	
 	, delete: function() {
 		var that = this;
+		console.log("delete");
 	}
 
 	, finish: function() {
 		var that = this;
+		console.log("finish");
 		that.save();
 	}
 
@@ -13565,7 +13568,6 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchMedienDetailsController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -13860,7 +13862,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2873'
+              value: 'Build: 2874'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15097,8 +15099,6 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
 
     , name: 'bautagebuchtabbar'
     	
-    , that: this
-
     , tabItemLinks: M.TabBarItemView.design({
           value: M.I18N.l('backward')
         , page: 'zeitbuchungenPage'
@@ -15304,7 +15304,6 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchMaterialienDetailsController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -15530,7 +15529,6 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchNotizenListeController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -15609,7 +15607,6 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchZeitenDetailsController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -16390,7 +16387,6 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchMedienListeController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -18803,7 +18799,6 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchBautageberichteListeController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -18951,7 +18946,6 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchZeitenListeController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -19286,7 +19280,6 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchMaterialienListeController
 	, navigationController: DigiWebApp.NavigationController
 
@@ -19365,7 +19358,6 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchBautageberichtDetailsController
 	, navigationController: DigiWebApp.NavigationController
 
@@ -19470,6 +19462,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
 	                //action: 'save'
 	    			action: function() {
+	    				var that = this;
 				    	M.DialogView.actionSheet({
 					          title: M.I18N.l('BautagebuchSaveOrClose')
 					        , cancelButtonValue: M.I18N.l('cancel')
@@ -19641,7 +19634,6 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchNotizenDetailsController
 	, navigationController: DigiWebApp.NavigationController
 	
@@ -19728,7 +19720,6 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
         }
     }
 
-	, that: this
 	, controller: DigiWebApp.BautagebuchEinstellungenController
 	, navigationController: DigiWebApp.NavigationController
 
@@ -19770,7 +19761,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
 	              contentBinding: {
-	                    target: that.controller
+	                    target: this.controller
 	                  , property: 'settings.startUhrzeit'
 	              }
 	          	  , events: {
