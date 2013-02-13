@@ -275,6 +275,7 @@ M.I18N.en_us = {
 	, BautagebuchBautagebericht: "Construction Record"
 	, BautagebuchAdd: "new"
 	, BautagebuchDelete: "delete"
+	, BautagebuchBautageberichtAbschliessen: "finish this Construction Record"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Material"
 	, BautagebuchZeiten: "Bookings"

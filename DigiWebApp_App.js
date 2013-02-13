@@ -277,12 +277,260 @@ DigiWebApp.BautagebuchBautagebericht = M.Model.create({
     , projektleiter: M.Model.attr('String', {
         isRequired: YES
     })
+    
+    , verfuegbareMitarbeiter: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
 
-    , isSelected: M.Model.attr('Boolean', {
+    , selektierteMitarbeiter: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
+
+    , orderId: M.Model.attr('String',{
         isRequired: NO
     })
 
-    , deleteAll: function() {
+    , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , zeiten: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
+
+    , materialien: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
+
+    , notizen: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
+
+    , medien: M.Model.attr('String', {
+        isRequired: NO
+        // list of ids
+    })
+
+    , startUhrzeit: M.Model.attr('String', {
+        isRequired: YES
+    })
+
+    , fileName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fileType: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+	, hasFileName: function() {
+    	var that = this;
+		if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+			return NO;
+		} else {
+			return YES;
+		}
+    	
+    }
+    
+    , saveToFile: function(myWriteContent, successCallback, errorCallback) {		
+		var that = this;
+		var writeContent = new String(myWriteContent);
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
+			that.save();
+	    }
+	
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("saveToFileError: successCallback is not a function");
+	        return;
+	    }
+	
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("saveToFileError: errorCallback is not a function");
+	        return;
+	    } else {
+	    	errorCallback = function(evt) {
+	            //console.log("saveToFileError: " + evt.target.error.code);
+	    		console.error("saveToFileError", evt);
+	    	}
+	    }
+		
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("saveToFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+
+		try {
+		    // open filesystem
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    	
+		    	// get dataDirectory from filesystem (create if not exists)
+		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		
+			    	// get fileEntry from filesystem (create if not exists)
+			    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+		
+			    		fileEntry.createWriter(function(writer) {
+			    				
+			    			writer.onerror = function(evt) {
+			    				console.error("writeError", evt);
+			    				errorCallback(evt);
+			    			};
+			    			
+			    			writer.onwriteend = function(evt) {
+				    			writer.onwriteend = function(ev) {
+			    					successCallback(ev);
+				    			};
+			    				writer.truncate(writeContent.length);
+			    	        };
+			    	        
+		    	        	writer.write(writeContent.toString());
+		
+			    		}, errorCallback); // fileEntry.createWriter
+			   		}, errorCallback);     // dataDirectory.getFile
+			   	}, errorCallback);         // fileSystem.root.getDirectory
+		    }, errorCallback);             // window.requestFileSystem
+		} catch(e) {
+			errorCallback();
+		}
+
+    }
+	
+	, readFromFile: function(successCallback, errorCallback) {
+		var that = this;
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("readFromFileError: no fileName given");
+	        return;
+	    };
+	
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("readFromFileError: successCallback is not a function");
+	        return;
+	    };
+		
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("readFromFileError: errorCallback is not a function");
+	        return;
+	    } else {
+	    	var errorCallback = function(evt) {
+	            //console.log("readFromFileError: " + evt.target.error.code);
+	    		console.error("readFromFileError", evt);
+	    	};
+	    };
+	    
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("readFromFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+		
+		try {
+		    // open filesystem
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		
+		    	// get dataDirectory from filesystem (create if not exists)
+		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			    			
+			    	// get fileEntry from filesystem
+			    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+			    		
+			    		// get file from fileEntry
+			    		fileEntry.file(function(file) {
+			    			
+			    			// read from file
+			    			var reader = new FileReader();
+			    			reader.onloadend = function(evt) {
+			    		    	
+			    		    	// return content via successCallback
+			    				successCallback(evt.target.result);
+			    				
+			    	        };
+			    			reader.readAsText(file);
+			    	        
+			        	}, errorCallback); // fileEntry.file
+			    	}, errorCallback);     // dataDirectory.getFile
+			    }, errorCallback);         // fileSystem.root.getDirectory
+		    }, errorCallback);             // window.requestFileSystem
+		} catch(e) {
+			errorCallback();
+		}
+	}
+	
+	, deleteFile: function(successCallback, errorCallback) {
+		var that = this;
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("deleteFileError: no fileName given");
+	        return;
+	    };
+	
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("deleteFileError: successCallback is not a function");
+	        return;
+	    };
+		
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("deleteFileError: errorCallback is not a function");
+	        return;
+	    } else {
+	    	var errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
+	    		console.error("deleteFileError", evt);
+	    	};
+	    };
+	    
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("deleteFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+
+		try {
+		    // open filesystem
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		
+		    	// get dataDirectory from filesystem (create if not exists)
+		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			    			
+			    	// get fileEntry from filesystem
+			    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+			    		
+			    		// remove fileEntry
+			    		fileEntry.remove(successCallback, errorCallback);
+			    		
+			    	}, errorCallback);     // dataDirectory.getFile
+			    }, errorCallback);         // fileSystem.root.getDirectory
+		    }, errorCallback);             // window.requestFileSystem
+		} catch(e) {
+			errorCallback();
+		}
+	}
+
+	, deleteAll: function() {
         _.each(this.find(), function(el) {
             el.del();
         });
@@ -854,6 +1102,94 @@ DigiWebApp.Settings = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchMaterial
+// 
+// zu bestücken mittels WebService
+// ==========================================================================
+
+DigiWebApp.BautagebuchMaterial = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMaterial'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , bezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+        if(keys){
+            _.each(keys, function(k) {
+            	if (k.m_id !== that.m_id) {
+            		newKeys.push(k);
+            	}
+            });
+    	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+        }
+
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+        var that = this;
+        that.save();
+
+        // add m_id to Key-Stringlist
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+        }
+        keys.push(that.m_id);
+        localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: SentBookingArchived
 // ==========================================================================
 
@@ -994,6 +1330,448 @@ DigiWebApp.SentBookingArchived = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchMaterialBuchung
+// ==========================================================================
+
+DigiWebApp.BautagebuchMaterialBuchung = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMaterialBuchung'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , materialbezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , stueck: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , einheit: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+        if(keys){
+            _.each(keys, function(k) {
+            	if (k.m_id !== that.m_id) {
+            		newKeys.push(k);
+            	}
+            });
+    	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+        }
+
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+        var that = this;
+        that.save();
+
+        // add m_id to Key-Stringlist
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+        }
+        keys.push(that.m_id);
+        localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchZeitbuchung
+// ==========================================================================
+
+DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchZeitbuchung'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , von: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , dauer: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude_bis: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+	    if(keys){
+	        _.each(keys, function(k) {
+	        	if (k.m_id !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    that.save();
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+	    }
+	    keys.push(that.m_id);
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".findSorted: " + e);
+	    }
+	
+	    var records = [];
+	
+	    if(keys){
+	        _.each(keys, function(k) {
+	            records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchNotiz
+// ==========================================================================
+
+DigiWebApp.BautagebuchNotiz = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchNotiz'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , inhalt: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+, deleteSorted: function() {
+    var that = this;
+
+    // remove m_id from Key-Stringlist
+    var keys = [];
+    var newKeys = [];
+    try {
+        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+    } catch(e) {
+    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+    }
+    if(keys){
+        _.each(keys, function(k) {
+        	if (k.m_id !== that.m_id) {
+        		newKeys.push(k);
+        	}
+        });
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+    }
+
+    that.del();
+}
+
+, saveSorted: function() {
+    var that = this;
+    that.save();
+
+    // add m_id to Key-Stringlist
+    var keys = [];
+    try {
+        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+    } catch(e) {
+    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+    }
+    keys.push(that.m_id);
+    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+}
+
+, findSorted: function() {
+    var that = this;
+    var keys = [];
+    try {
+        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+    } catch(e) {
+    	console.error("ERROR in " + that.name + ".findSorted: " + e);
+    }
+
+    var records = [];
+
+    if(keys){
+        _.each(keys, function(k) {
+            records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+        });
+    }
+    return records;
+}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchProjektleiter
+// 
+// zu bestücken mittels WebService (alle Gruppenführer)
+==========================================================================
+
+DigiWebApp.BautagebuchProjektleiter = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchProjektleiter'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vollername: function() {
+        return this.vorname + " " + this.nachname;
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+        if(keys){
+            _.each(keys, function(k) {
+            	if (k.m_id !== that.m_id) {
+            		newKeys.push(k);
+            	}
+            });
+    	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+        }
+
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+        var that = this;
+        that.save();
+
+        // add m_id to Key-Stringlist
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+        }
+        keys.push(that.m_id);
+        localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: HandOrder
 // ==========================================================================
 
@@ -1066,6 +1844,102 @@ DigiWebApp.HandOrder = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchMitarbeiter
+// 
+// zu bestücken mittels WebService
+==========================================================================
+
+DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMitarbeiter'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vollername: function() {
+        return this.vorname + " " + this.nachname;
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+        if(keys){
+            _.each(keys, function(k) {
+            	if (k.m_id !== that.m_id) {
+            		newKeys.push(k);
+            	}
+            });
+    	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+        }
+
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+        var that = this;
+        that.save();
+
+        // add m_id to Key-Stringlist
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+        }
+        keys.push(that.m_id);
+        localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Booking
 // ==========================================================================
 
@@ -1118,11 +1992,11 @@ DigiWebApp.Booking = M.Model.create({
         isRequired: NO
     })
 
-    , handOrderName: M.Model.attr('String', {
+    , handOrderId: M.Model.attr('String', {
         isRequired: NO
     })
 
-    , handOrderId: M.Model.attr('String', {
+    , handOrderName: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -1860,6 +2734,347 @@ DigiWebApp.Features = M.Model.create({
         _.each(this.find(), function(el) {
             el.del();
         });
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchMediaFile
+// ==========================================================================
+
+DigiWebApp.BautagebuchMediaFile = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMediaFile'
+
+    , name: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , fileName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fileType: M.Model.attr('String', {
+        isRequired: YES
+    })
+
+    , timeStamp: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , date: M.Model.attr('String', { // is aggregated by the timestamp value above
+
+    })
+
+    , icon: M.Model.attr('String',{
+        isRequired: NO
+    })
+    
+    , latitude: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , remark: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , setRemark: function(v) {
+        this.set('remark', v);
+    }
+
+    , writeError: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+    
+    , deleteAll: function() {
+		var that = this;
+	    _.each(that.find(), function(el) {
+			if (el.hasFileName()) {
+		    	// delete mediafile from device
+		    	el.deleteFile(function(n){
+			    	// delete record from localStorage only if file
+		    		// was deleted successfully from device
+			        el.del();	    		
+		    	});
+	    	} else {
+	    		// there is no file to delete, so delete the record
+	    		el.del();
+	    	}
+	    });
+	}
+		
+	, hasFileName: function() {
+    	var that = this;
+		if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+			return NO;
+		} else {
+			return YES;
+		}
+    	
+    }
+    
+	, saveToFile: function(myWriteContent, successCallback, errorCallback) {
+		
+		var that = this;
+		var writeContent = new String(myWriteContent);
+		
+		// check if fileName is already set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			that.set('fileName', 'MediaFile_' + D8.now().getTimestamp());
+			that.save();
+	    }
+
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("saveToFileError: successCallback is not a function");
+	        return;
+	    }
+
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("saveToFileError: errorCallback is not a function");
+	        return;
+	    } else {
+	    	errorCallback = function(evt) {
+	            //console.log("saveToFileError: " + evt.target.error.code);
+	    		console.error("saveToFileError", evt);
+	    	}
+	    }
+		
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("saveToFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+
+	    // open filesystem
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    	
+	    	// get dataDirectory from filesystem (create if not exists)
+	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+
+		    	// get fileEntry from filesystem (create if not exists)
+		    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+	
+		    		fileEntry.createWriter(function(writer) {
+		    				
+		    			writer.onerror = function(evt) {
+		    				console.error("writeError", evt);
+		    				errorCallback(evt);
+		    			};
+		    			
+		    			writer.onwriteend = function(evt) {
+			    			writer.onwriteend = function(ev) {
+		    					successCallback(ev);
+			    			};
+		    				writer.truncate(writeContent.length);
+		    	        };
+		    	        
+	    	        	writer.write(writeContent.toString());
+
+		    		}, errorCallback); // fileEntry.createWriter
+		   		}, errorCallback);     // dataDirectory.getFile
+		   	}, errorCallback);         // fileSystem.root.getDirectory
+	    }, errorCallback);             // window.requestFileSystem
+	}
+	
+	, readFromFile: function(successCallback, errorCallback) {
+		var that = this;
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("readFromFileError: no fileName given");
+	        return;
+	    };
+
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("readFromFileError: successCallback is not a function");
+	        return;
+	    };
+		
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("readFromFileError: errorCallback is not a function");
+	        return;
+	    } else {
+	    	var errorCallback = function(evt) {
+	            //console.log("readFromFileError: " + evt.target.error.code);
+	    		console.error("readFromFileError", evt);
+	    	};
+	    };
+	    
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("readFromFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+
+	    // open filesystem
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+
+	    	// get dataDirectory from filesystem (create if not exists)
+	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		    			
+		    	// get fileEntry from filesystem
+		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+		    		
+		    		// get file from fileEntry
+		    		fileEntry.file(function(file) {
+		    			
+		    			// read from file
+		    			var reader = new FileReader();
+		    			reader.onloadend = function(evt) {
+		    		    	
+		    		    	// return content via successCallback
+		    				successCallback(evt.target.result);
+		    				
+		    	        };
+		    			reader.readAsText(file);
+		    	        
+		        	}, errorCallback); // fileEntry.file
+		    	}, errorCallback);     // dataDirectory.getFile
+		    }, errorCallback);         // fileSystem.root.getDirectory
+	    }, errorCallback);             // window.requestFileSystem
+	}
+	
+	, deleteFile: function(successCallback, errorCallback) {
+		var that = this;
+
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("deleteFileError: no fileName given");
+	        return;
+	    };
+
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("deleteFileError: successCallback is not a function");
+	        return;
+	    };
+		
+		// check for errorCallback is a function (optional)
+	    if (errorCallback && (typeof errorCallback !== "function")) {
+			console.error("deleteFileError: errorCallback is not a function");
+	    	errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
+	    		console.error("deleteFileError", evt);
+	    	}
+	    };
+	    
+		// check if LocalFileSystem is defined
+		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+			console.error("deleteFileError: no LocalFileSystem available");
+			successCallback("");
+	        return;
+	    }
+
+	    // open filesystem
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+
+	    	// get dataDirectory from filesystem (create if not exists)
+	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		    			
+		    	// get fileEntry from filesystem
+		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+		    		
+		    		// remove fileEntry
+					try {
+						fileEntry.remove(successCallback, errorCallback);
+					} catch(e) {
+						errorCallback();
+					}
+		    		
+		    	}, errorCallback);     // dataDirectory.getFile
+		    }, errorCallback);         // fileSystem.root.getDirectory
+	    }, errorCallback);             // window.requestFileSystem
+	}
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	        keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+	    } catch(e) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e);
+	    }
+        if(keys){
+            _.each(keys, function(k) {
+            	if (k.m_id !== that.m_id) {
+            		newKeys.push(k);
+            	}
+            });
+    	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+        }
+
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+        var that = this;
+        that.save();
+
+        // add m_id to Key-Stringlist
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".saveSorted: " + e);
+        }
+        keys.push(that.m_id);
+        localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + that.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+            });
+        }
+        return records;
     }
 
 }, M.DataProviderLocalStorage);
@@ -2936,15 +4151,15 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 	  item: null
 	
 	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchZeitenDetailsController;
+		var that = this;
 	}
 
 	, save: function() {
-		var that = DigiWebApp.BautagebuchZeitenDetailsController;
+		var that = this;
 	}
 	
 	, delete: function() {
-		var that = DigiWebApp.BautagebuchZeitenDetailsController;
+		var that = this;
 	}
 	
 });
@@ -2962,15 +4177,15 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 	  item: null
 	
 	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchNotizenDetailsController;
+		var that = this;
 	}
 
 	, save: function() {
-		var that = DigiWebApp.BautagebuchNotizenDetailsController;
+		var that = this;
 	}
 	
 	, delete: function() {
-		var that = DigiWebApp.BautagebuchNotizenDetailsController;
+		var that = this;
 	}
 	
 });
@@ -3400,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2857
+    , softwareVersion: 2858
 
 
     /**
@@ -4444,17 +5659,21 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	  item: null
 	
 	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchBautageberichtDetailsController;
+		var that = this;
 	}
 
 	, save: function() {
-		var that = DigiWebApp.BautagebuchBautageberichtDetailsController;
+		var that = this;
 	}
 	
 	, delete: function() {
-		var that = DigiWebApp.BautagebuchBautageberichtDetailsController;
+		var that = this;
 	}
-	
+
+	, finish: function() {
+		var that = this;
+	}
+
 });
 
 // ==========================================================================
@@ -9496,15 +10715,15 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 	  item: null
 	
 	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchMedienDetailsController;
+		var that = this;
 	}
 
 	, save: function() {
-		var that = DigiWebApp.BautagebuchMedienDetailsController;
+		var that = this;
 	}
 	
 	, delete: function() {
-		var that = DigiWebApp.BautagebuchMedienDetailsController;
+		var that = this;
 	}
 	
 });
@@ -11565,15 +12784,15 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 	  item: null
 	
 	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchMaterialienDetailsController;
+		var that = this;
 	}
 
 	, save: function() {
-		var that = DigiWebApp.BautagebuchMaterialienDetailsController;
+		var that = this;
 	}
 	
 	, delete: function() {
-		var that = DigiWebApp.BautagebuchMaterialienDetailsController;
+		var that = this;
 	}
 	
 });
@@ -12612,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2857'
+              value: 'Build: 2858'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18062,7 +19281,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'materialienButton zeitenButton notizenButton medienButton speichernButton'
+    	  childViews: 'materialienButton zeitenButton notizenButton medienButton abschliessenButton speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -18122,6 +19341,18 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	            tap: {
 	                target: DigiWebApp.BautagebuchBautageberichtDetailsController,
 	                action: 'save'
+	            }
+	          }
+	    })
+
+	    , abschliessenButton: M.ButtonView.design({
+	          value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                target: DigiWebApp.BautagebuchBautageberichtDetailsController,
+	                action: 'finish'
 	            }
 	          }
 	    })

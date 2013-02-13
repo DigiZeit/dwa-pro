@@ -275,6 +275,7 @@ M.I18N.de_de = {
 	, BautagebuchBautagebericht: "Bautagebericht"
 	, BautagebuchAdd: "neu"
 	, BautagebuchDelete: "löschen"
+	, BautagebuchBautageberichtAbschliessen: "diesen Bautagebericht abschließen"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Materialien"
 	, BautagebuchZeiten: "Zeiten"
