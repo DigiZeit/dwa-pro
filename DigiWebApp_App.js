@@ -4610,7 +4610,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2876
+    , softwareVersion: 2877
 
 
     /**
@@ -11560,7 +11560,7 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 	  settings: {
 		startUhrzeit: ""
 	}
-	
+
 	, init: function(isFirstLoad) {
 		var that = this;
 		
@@ -13864,7 +13864,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2876'
+              value: 'Build: 2877'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19763,7 +19763,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
 	              contentBinding: {
-	                    target: DigiWebApp.BautagebuchEinstellungenPage.controller
+	                    target: DigiWebApp.BautagebuchEinstellungenController
 	                  , property: 'settings.startUhrzeit'
 	              }
 	          	  , events: {
