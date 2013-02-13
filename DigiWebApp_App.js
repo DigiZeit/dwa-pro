@@ -264,7 +264,7 @@ DigiWebApp.OnlinePosition = M.Model.create({
 DigiWebApp.BautagebuchBautagebericht = M.Model.create({
     
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'Employee'
+    __name__: 'BautagebuchBautagebericht'
 
     , id: M.Model.attr('String', {
         isRequired: NO
@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2860
+    , softwareVersion: 2861
 
 
     /**
@@ -13831,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2860'
+              value: 'Build: 2861'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
