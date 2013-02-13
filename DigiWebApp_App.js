@@ -4610,7 +4610,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2874
+    , softwareVersion: 2875
 
 
     /**
@@ -11557,7 +11557,9 @@ DigiWebApp.NavigationController = M.Controller.extend({
 
 DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 
-	  settings: null
+	  settings: {
+		startUhrzeit: ""
+	}
 	
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -13862,7 +13864,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2874'
+              value: 'Build: 2875'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
