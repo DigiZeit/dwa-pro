@@ -286,7 +286,7 @@ M.I18N.de_de = {
 	, BautagebuchNotiz: "Notiz"
 	, BautagebuchMedien: "Medien"
 	, BautagebuchMedium: "Medium"
-	, 
+	, BautagebuchStartUhrzeit: "tägliche Startzeit"
     // Ende::Bautagebuch
 	
 };

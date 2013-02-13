@@ -286,6 +286,7 @@ M.I18N.en_us = {
 	, BautagebuchNotiz: "Note"
 	, BautagebuchMedien: "Media"
 	, BautagebuchMedium: "Media"
+	, BautagebuchStartUhrzeit: "daily start time"
     // Ende::Bautagebuch
 
 };
