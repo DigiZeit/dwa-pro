@@ -4610,7 +4610,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2877
+    , softwareVersion: 2878
 
 
     /**
@@ -11543,6 +11543,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     	DigiWebApp.NavigationController.switchToPage('bautagebuchMedienDetailsPage', M.TRANSITION.SLIDEUP, YES);
     }
 
+    , toBautagebuchEinstellungenPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.SLIDEUP, NO);
+    }
+    , backToBautagebuchEinstellungenPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.SLIDEUP, YES);
+    }
     // Ende::Bautagebuch
 
 });
@@ -11567,8 +11573,11 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		
 	}
 
+	, lastPage: null
+	
 	, save: function() {
-
+		var that = this;
+		M.ViewManager.setCurrentPage(that.lastPage)
 	}
 
 });
@@ -13864,7 +13873,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2877'
+              value: 'Build: 2878'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15111,9 +15120,13 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
     })
 
     , tabItemMitte: M.TabBarItemView.design({
-          value: ''
-        , page: 'zeitbuchungenPage'
-        , icon: 'gear'
+          value: M.I18N.l('settings')
+        , page: 'bautagebuchEinstellungenPage'
+        , icon: 'gears'
+        , switchPage: function() {
+			DigiWebApp.BautagebuchEinstellungenController.lastPage = M.ViewManager.getCurrentPage();
+			DigiWebApp.NavigationController.toBautagebuchEinstellungenPage();
+    	}
     })
 
     , tabItemRechts: M.TabBarItemView.design({
