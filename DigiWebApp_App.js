@@ -1847,7 +1847,7 @@ DigiWebApp.HandOrder = M.Model.create({
 // Model: BautagebuchMitarbeiter
 // 
 // zu bestücken mittels WebService
-==========================================================================
+// ==========================================================================
 
 DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
     
@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2859
+    , softwareVersion: 2860
 
 
     /**
@@ -13831,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2859'
+              value: 'Build: 2860'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
