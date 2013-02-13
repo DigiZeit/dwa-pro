@@ -1869,6 +1869,34 @@ DigiWebApp.Features = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchMedienListeController
+// ==========================================================================
+
+DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		
+		
+		
+	}
+
+	, neu: function() {
+		var that = this;
+		
+		DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+	
+	}
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: CameraController
 // ==========================================================================
 
@@ -2952,6 +2980,34 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchZeitenListeController
+// ==========================================================================
+
+DigiWebApp.BautagebuchZeitenListeController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		
+		
+		
+	}
+
+	, neu: function() {
+		var that = this;
+		
+		DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
+
+	}
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: OrderInfoController
 // ==========================================================================
 
@@ -3344,7 +3400,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2855
+    , softwareVersion: 2856
 
 
     /**
@@ -6445,6 +6501,33 @@ DigiWebApp.OrderDetailsController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchBautageberichteListeController
+// ==========================================================================
+
+DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		
+		
+	}
+
+	, neu: function() {
+		var that = this;
+		
+		DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
+	
+	}
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: WipeController
 // ==========================================================================
 
@@ -9377,6 +9460,34 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchMaterialienListeController
+// ==========================================================================
+
+DigiWebApp.BautagebuchMaterialienListeController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		
+		
+		
+	}
+
+	, neu: function() {
+		var that = this;
+		
+		DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
+	
+	}
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: BautagebuchMedienDetailsController
 // ==========================================================================
 
@@ -11170,6 +11281,34 @@ DigiWebApp.EmployeeController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchNotizenListeController
+// ==========================================================================
+
+DigiWebApp.BautagebuchNotizenListeController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		
+		
+		
+	}
+
+	, neu: function() {
+		var that = this;
+		
+		DigiWebApp.NavigationController.toBautagebuchNotizenDetailsPageTransition();
+	
+	}
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: HandOrderController
 // ==========================================================================
 
@@ -11267,27 +11406,6 @@ DigiWebApp.HandOrderController = M.Controller.extend({
         }
         
     }
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: BautagebuchBautageberichteController
-// ==========================================================================
-
-DigiWebApp.BautagebuchBautageberichteController = M.Controller.extend({
-
-	  items: null
-	
-	, init: function(isFirstLoad) {
-		var that = DigiWebApp.BautagebuchBautageberichteController;
-		
-		
-		
-	}
-
 });
 
 // ==========================================================================
@@ -12467,7 +12585,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2855'
+              value: 'Build: 2856'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -14065,7 +14183,7 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchBautageberichteController
+              target: DigiWebApp.BautagebuchNotizenListeController
             , action: 'init'
         }
     }
@@ -14100,7 +14218,7 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				
+						DigiWebApp.BautagebuchNotizenListeController.neu();
 					}
                 }
             }
@@ -14112,10 +14230,10 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchBautageberichteController
+                  target: DigiWebApp.BautagebuchNotizenListeController
                 , property: 'items'
             }
-            , listItemTemplateView: DigiWebApp.BautagebuchBautageberichtTemplateView
+            , listItemTemplateView: DigiWebApp.BautagebuchNotizenTemplateView
         })
     })
 
@@ -14917,7 +15035,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchBautageberichteController
+              target: DigiWebApp.BautagebuchMedienListeController
             , action: 'init'
         }
     }
@@ -14942,7 +15060,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
             }
         })
         , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchBautageberichte')
+              value: M.I18N.l('BautagebuchMedien')
             , anchorLocation: M.CENTER
         })
         , newButton: M.ButtonView.design({
@@ -14952,7 +15070,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				
+						DigiWebApp.BautagebuchMedienListeController.neu();
 					}
                 }
             }
@@ -14964,10 +15082,10 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchBautageberichteController
+                  target: DigiWebApp.BautagebuchMedienListeController
                 , property: 'items'
             }
-            , listItemTemplateView: DigiWebApp.BautagebuchBautageberichtTemplateView
+            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
         })
     })
 
@@ -17325,7 +17443,7 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchBautageberichteController
+              target: DigiWebApp.BautagebuchBautageberichteListeController
             , action: 'init'
         }
     }
@@ -17360,7 +17478,7 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
+        				DigiWebApp.BautagebuchBautageberichteListeController.neu();
 					}
                 }
             }
@@ -17372,7 +17490,7 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchBautageberichteController
+                  target: DigiWebApp.BautagebuchBautageberichteListeController
                 , property: 'items'
             }
             , listItemTemplateView: DigiWebApp.BautagebuchBautageberichtTemplateView
@@ -17467,7 +17585,7 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchBautageberichteController
+              target: DigiWebApp.BautagebuchZeitenListeController
             , action: 'init'
         }
     }
@@ -17502,7 +17620,7 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				
+        				DigiWebApp.BautagebuchZeitenListeController.neu();
 					}
                 }
             }
@@ -17514,10 +17632,10 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchBautageberichteController
+                  target: DigiWebApp.BautagebuchZeitenListeController
                 , property: 'items'
             }
-            , listItemTemplateView: DigiWebApp.BautagebuchBautageberichtTemplateView
+            , listItemTemplateView: DigiWebApp.BautagebuchZeitenTemplateView
         })
     })
 
@@ -17798,7 +17916,7 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchBautageberichteController
+              target: DigiWebApp.BautagebuchMaterialienListeController
             , action: 'init'
         }
     }
@@ -17833,7 +17951,7 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				
+        				DigiWebApp.BautagebuchMaterialienListeController.neu();
 					}
                 }
             }
@@ -17845,10 +17963,10 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchBautageberichteController
+                  target: DigiWebApp.BautagebuchMaterialienListeController
                 , property: 'items'
             }
-            , listItemTemplateView: DigiWebApp.BautagebuchBautageberichtTemplateView
+            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
         })
     })
 
