@@ -1679,7 +1679,7 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 // Model: BautagebuchProjektleiter
 // 
 // zu bestücken mittels WebService (alle Gruppenführer)
-==========================================================================
+// ==========================================================================
 
 DigiWebApp.BautagebuchProjektleiter = M.Model.create({
     
@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2858
+    , softwareVersion: 2859
 
 
     /**
@@ -13831,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2858'
+              value: 'Build: 2859'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
