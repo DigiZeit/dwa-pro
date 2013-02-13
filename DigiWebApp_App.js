@@ -3079,6 +3079,50 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchEinstellungen
+// ==========================================================================
+
+DigiWebApp.BautagebuchEinstellungen = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchEinstellungen'
+
+      startUhrzeit: M.Model.attr('String', {
+          isRequired: NO
+    })
+
+	, deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + this.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: BautagebuchMedienListeController
 // ==========================================================================
 
@@ -4610,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2880
+    , softwareVersion: 2881
 
 
     /**
@@ -13873,7 +13917,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2880'
+              value: 'Build: 2881'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19738,7 +19782,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	, controller: DigiWebApp.BautagebuchEinstellungenController
 	, navigationController: DigiWebApp.NavigationController
 
-    , cssClass: 'bautagebuchEinstellungenPage'
+    , cssClass: 'settingsPage'
 
     , childViews: 'header content'
 
@@ -19780,13 +19824,15 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	                  , property: 'settings.startUhrzeit'
 	              }
 	          	  , events: {
-	          		  focus: function(id, event) {
-			          		M.DatePickerView.show({
-			          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-			          		    , initialDate: D8.create('08:00')
-			          		    , showTimePicker: YES
-			          		    , showDatePicker: NO
-			          		});
+	          		  focus: {
+		          		  	action: function(id, event) {
+					          		M.DatePickerView.show({
+					          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
+					          		    , initialDate: D8.create('08:00')
+					          		    , showTimePicker: YES
+					          		    , showDatePicker: NO
+					          		});
+	          		  		}
 	          	  	  }
 	          	  }
 	          })
