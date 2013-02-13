@@ -3400,7 +3400,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2856
+    , softwareVersion: 2857
 
 
     /**
@@ -10272,11 +10272,25 @@ DigiWebApp.NavigationController = M.Controller.extend({
     	DigiWebApp.NavigationController.switchToPage('bautagebuchMaterialienListePage', M.TRANSITION.SLIDEUP, YES);
     }
 
+    , toBautagebuchMaterialienDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchMaterialienDetailsPage', M.TRANSITION.SLIDEUP, NO);
+    }
+    , backToBautagebuchMaterialienDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchMaterialienDetailsPage', M.TRANSITION.SLIDEUP, YES);
+    }
+
     , toBautagebuchZeitenListePageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('bautagebuchZeitenListePage', M.TRANSITION.SLIDEUP, NO);
     }
     , backToBautagebuchZeitenListePageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('bautagebuchZeitenListePage', M.TRANSITION.SLIDEUP, YES);
+    }
+
+    , toBautagebuchZeitenDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchZeitenDetailsPage', M.TRANSITION.SLIDEUP, NO);
+    }
+    , backToBautagebuchZeitenDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchZeitenDetailsPage', M.TRANSITION.SLIDEUP, YES);
     }
 
     , toBautagebuchNotizenListePageTransition: function() {
@@ -10286,11 +10300,24 @@ DigiWebApp.NavigationController = M.Controller.extend({
     	DigiWebApp.NavigationController.switchToPage('bautagebuchNotizenListePage', M.TRANSITION.SLIDEUP, YES);
     }
 
+    , toBautagebuchNotizenDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchNotizenDetailsPage', M.TRANSITION.SLIDEUP, NO);
+    }
+    , backToBautagebuchNotizenDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchNotizenDetailsPage', M.TRANSITION.SLIDEUP, YES);
+    }
+
     , toBautagebuchMedienListePageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('bautagebuchMedienListePage', M.TRANSITION.SLIDEUP, NO);
     }
     , backToBautagebuchMedienListePageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('bautagebuchMedienListePage', M.TRANSITION.SLIDEUP, YES);
+    }
+    , toBautagebuchMedienDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchMedienDetailsPage', M.TRANSITION.SLIDEUP, NO);
+    }
+    , backToBautagebuchMedienDetailsPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchMedienDetailsPage', M.TRANSITION.SLIDEUP, YES);
     }
 
     // Ende::Bautagebuch
@@ -12585,7 +12612,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2856'
+              value: 'Build: 2857'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18534,9 +18561,13 @@ if ( (searchForFeature(412)) && !(searchForFeature(409)) ) { // Bautagebuch
 	DigiWebAppOrdinaryDesign.bautagebuchBautageberichteListePage = DigiWebApp.BautagebuchBautageberichteListePage
 	DigiWebAppOrdinaryDesign.bautagebuchBautageberichtDetailsPage = DigiWebApp.BautagebuchBautageberichtDetailsPage
 	DigiWebAppOrdinaryDesign.bautagebuchMaterialienListePage = DigiWebApp.BautagebuchMaterialienListePage
+	DigiWebAppOrdinaryDesign.bautagebuchMaterialienDetailsPage = DigiWebApp.BautagebuchMaterialienDetailsPage
 	DigiWebAppOrdinaryDesign.bautagebuchMedienListePage = DigiWebApp.BautagebuchMedienListePage
+	DigiWebAppOrdinaryDesign.bautagebuchMedienDetailsPage = DigiWebApp.BautagebuchMedienDetailsPage
 	DigiWebAppOrdinaryDesign.bautagebuchNotizenListePage = DigiWebApp.BautagebuchNotizenListePage
+	DigiWebAppOrdinaryDesign.bautagebuchNotizenDetailsPage = DigiWebApp.BautagebuchNotizenDetailsPage
 	DigiWebAppOrdinaryDesign.bautagebuchZeitenListePage = DigiWebApp.BautagebuchZeitenListePage
+	DigiWebAppOrdinaryDesign.bautagebuchZeitenDetailsPage = DigiWebApp.BautagebuchZeitenDetailsPage
 }
 
 
