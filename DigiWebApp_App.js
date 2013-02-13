@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2869
+    , softwareVersion: 2870
 
 
     /**
@@ -13831,7 +13831,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2869'
+              value: 'Build: 2870'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19605,8 +19605,8 @@ function trackError(ex) {
 		exceptionAlert = exceptionAlert + " at " + ex.line;
 	}
 	exceptionAlert = exceptionAlert + "\n\n" + "Bitte melden Sie dies bei DIGI-Zeiterfassung GmbH, damit dieser Fehler behoben werden kann." + "\n\n" + "Herzlichen Dank!";
-	alert(exceptionAlert);
 	console.log(ex);
+	alert(exceptionAlert);
 	if (typeof(ex.stack) !== "undefined") {
 		console.log(ex.stack);
 	}
