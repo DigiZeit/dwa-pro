@@ -4615,7 +4615,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2870
+    , softwareVersion: 2871
 
 
     /**
@@ -13540,6 +13540,10 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchMedienDetailsController
+	, navigationController: DigiWebApp.NavigationController
+	
     , cssClass: 'bautagebuchMedienDetailsPage'
 
     , childViews: 'header content'
@@ -13831,7 +13835,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2870'
+              value: 'Build: 2871'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15212,6 +15216,10 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchMaterialienDetailsController
+	, navigationController: DigiWebApp.NavigationController
+	
     , cssClass: 'bautagebuchMaterialienDetailsPage'
 
     , childViews: 'header content'
@@ -15434,6 +15442,10 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchNotizenListeController
+	, navigationController: DigiWebApp.NavigationController
+	
     , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
@@ -15509,6 +15521,10 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchZeitenDetailsController
+	, navigationController: DigiWebApp.NavigationController
+	
     , cssClass: 'bautagebuchZeitenDetailsPage'
 
     , childViews: 'header content'
@@ -16286,6 +16302,10 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchMedienListeController
+	, navigationController: DigiWebApp.NavigationController
+	
     , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
@@ -18694,6 +18714,10 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchBautageberichteListeController
+	, navigationController: DigiWebApp.NavigationController
+	
     , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
@@ -18836,6 +18860,10 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchZeitenListeController
+	, navigationController: DigiWebApp.NavigationController
+	
     , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
@@ -19167,6 +19195,10 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchMaterialienListeController
+	, navigationController: DigiWebApp.NavigationController
+
     , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
@@ -19241,6 +19273,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
         	}
         }
     }
+
+	, that: this
+	, controller: DigiWebApp.BautagebuchBautageberichtDetailsController
+	, navigationController: DigiWebApp.NavigationController
 
     , cssClass: 'bautagebuchBautageberichtDetailsPage'
 
@@ -19350,13 +19386,15 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					        , destructiveButtonValue: M.I18N.l('save')
 					        , callbacks: {
 				    			  destruction: {action: function() {
-		    						console.log(M.I18N.l('save'));	
+		    						that.controller.save();
+		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
 				    			}}
 				    			, other: {action: function() {
-				    				console.log(M.I18N.l('BautagebuchBautageberichtAbschliessen'));	
+				    				that.controller.finish();
+		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
 				    			}}
 				    			, cancel: {action: function() {
-				    				console.log(M.I18N.l('cancel'));	
+				    				//console.log(M.I18N.l('cancel'));
 				    			}}
 				    		}
 					    });
@@ -19504,6 +19542,10 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
         }
     }
 
+	, that: this
+	, controller: DigiWebApp.BautagebuchNotizenDetailsController
+	, navigationController: DigiWebApp.NavigationController
+	
     , cssClass: 'bautagebuchNotizenDetailsPage'
 
     , childViews: 'header content'
