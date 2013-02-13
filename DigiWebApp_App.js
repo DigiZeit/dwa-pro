@@ -3087,7 +3087,7 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchEinstellungen'
 
-      startUhrzeit: M.Model.attr('String', {
+    , startUhrzeit: M.Model.attr('String', {
           isRequired: NO
     })
 
@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2881
+    , softwareVersion: 2882
 
 
     /**
@@ -13917,7 +13917,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2881'
+              value: 'Build: 2882'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
