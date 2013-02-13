@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2884
+    , softwareVersion: 2885
 
 
     /**
@@ -11619,6 +11619,8 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 
 	, lastPage: null
 	
+	, timePickerShown: NO
+	
 	, save: function() {
 		var that = this;
 		M.ViewManager.setCurrentPage(that.lastPage)
@@ -13917,7 +13919,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2884'
+              value: 'Build: 2885'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19813,8 +19815,8 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	        childViews: 'startUhrzeit'
 
   	      , startUhrzeit: M.GridView.design({
-	            childViews: 'startUhrzeitLabel startUhrzeitInput'
-	          , layout: M.TWO_COLUMNS
+	            childViews: 'startUhrzeitLabel startUhrzeitInput changeButton'
+	          , layout: M.THREE_COLUMNS
 	          , startUhrzeitLabel: M.LabelView.design({
 	              value: M.I18N.l('BautagebuchStartUhrzeit')
 	          })
@@ -19823,20 +19825,37 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	                    target: DigiWebApp.BautagebuchEinstellungenController
 	                  , property: 'settings.startUhrzeit'
 	              }
-	          	  , events: {
-	          		  enter: {
-		          		  	action: function(id, event) {
+//	          	  , events: {
+//	          		  focus: {
+//		          		  	action: function(id, event) {
+//					          		M.DatePickerView.show({
+//					          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
+//					          		    , initialDate: "08:00"
+//					          		    , showTimePicker: YES
+//					          		    , showDatePicker: NO
+//					          		    , timeFormat: "HH:ii"
+//					          		});
+//	          		  		}
+//	          	  	  }
+//	          	  }
+	          })
+	          , changeButton: M.ButtonView.design({
+		              isIconOnly: YES
+		            , icon: 'edit'
+			        , events: {
+			            tap: {
+		        		  	action: function(id, event) {
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
 					          		    , initialDate: "08:00"
 					          		    , showTimePicker: YES
 					          		    , showDatePicker: NO
 					          		    , timeFormat: "HH:ii"
+					          		    , showAmPm: NO
 					          		});
-	          		  		}
-	          	  	  }
-	          	  }
-	          })
+			            }
+			          }
+			    })
 	      })
 
 	        	
@@ -20034,18 +20053,22 @@ $(window).bind('load', function(e) {
 				window.newAppVersionAvailable = YES;
 				if (confirm(M.I18N.l('applicationUpdateAvailableMsg'))) { 
 					// Swap it in and reload the page to get the new hotness.
-					window.applicationCache.swapCache();
-					if (typeof(localStorage) !== "undefined") {
-						localStorage.setItem("reloadAppOneMoreTime", "true");
-					}
-					if (typeof(navigator.app) !== "undefined") {
-						if (typeof(location.origin) !== "undefined") {
-							navigator.app.loadUrl(location.origin + location.pathname);					
-						} else {
-							navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+					try {
+						window.applicationCache.swapCache();
+						if (typeof(localStorage) !== "undefined") {
+							localStorage.setItem("reloadAppOneMoreTime", "true");
 						}
-					} else {
-						window.location.reload();
+						if (typeof(navigator.app) !== "undefined") {
+							if (typeof(location.origin) !== "undefined") {
+								navigator.app.loadUrl(location.origin + location.pathname);					
+							} else {
+								navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+							}
+						} else {
+							window.location.reload();
+						}
+					} catch ex {
+						console.log(ex);
 					}
 				} else {
 					DigiWebApp.NavigationController.toSplashViewPageTransition();
