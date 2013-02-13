@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2887
+    , softwareVersion: 2888
 
 
     /**
@@ -13919,7 +13919,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2887'
+              value: 'Build: 2888'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19847,7 +19847,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 			        		  	action: function(id, event) {
 						          		M.DatePickerView.show({
 						          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-						          		    , initialDate: "08:00"
+						          		    , initialDate: D8.create('01.01.2000 08:00')
 						          		    , showTimePicker: YES
 						          		    , showDatePicker: NO
 						          		    , timeFormat: "HH:ii"
