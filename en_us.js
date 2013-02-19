@@ -298,6 +298,9 @@ M.I18N.en_us = {
 	, BautagebuchProjektleiter: "Projectleader"
 	, BautagebuchManuelleEingabe: "manual input"
 	, BautagebuchMenge: "Quantity"
+	, BautagebuchTemperatur: "Temperature"
+	, BautagebuchBewoelkung: "Cloudiness"
+	, BautagebuchRegen: "Rain"
     // Ende::Bautagebuch
 
 };

@@ -298,6 +298,9 @@ M.I18N.de_de = {
 	, BautagebuchProjektleiter: "Projektleiter"
 	, BautagebuchManuelleEingabe: "manuelle Eingabe"
 	, BautagebuchMenge: "Menge"
+	, BautagebuchTemperatur: "Temperatur"
+	, BautagebuchBewoelkung: "Bewölkung"
+	, BautagebuchRegen: "Regen"
     // Ende::Bautagebuch
 	
 };

@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2918
+    , softwareVersion: 2919
 
 
     /**
@@ -5966,6 +5966,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	  item: null
 	  
 	, mitarbeiter: null
+	
+	, wetter: {
+		  Temperatur: null
+		, Bewoelkung: null
+	    , Regen: null
+	}
 		
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -14399,7 +14405,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2918'
+              value: 'Build: 2919'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16964,11 +16970,56 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'speichernButton'
+    	  childViews: 'temperaturSliderContainer bewoelkungSliderContainer regenSliderContainer speichernButton'
         	  
         , cssClass: 'content'
     	
-	    , speichernButton: M.ButtonView.design({
+		, temperaturSliderContainer: M.ContainerView.design({
+			  childViews: 'temperaturSlider'
+		    , temperaturSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchTemperatur')
+		    	, min: -40
+		    	, max: 40
+		    	, highlightLeftPart: NO
+		    	, cssClass: 'temperaturSlider'
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Temperatur'
+			    }
+		    })
+		})
+
+		, bewoelkungSliderContainer: M.ContainerView.design({
+			  childViews: 'bewoelkungSlider'
+		    , bewoelkungSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchBewoelkung')
+		    	, min: 0
+		    	, max: 5
+		    	, highlightLeftPart: YES
+		    	, cssClass: 'bewoelkungSlider'
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Bewoelkung'
+			    }
+		    })
+		})
+
+		, regenSliderContainer: M.ContainerView.design({
+			  childViews: 'regenSlider'
+		    , regenSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchRegen')
+		    	, min: 0
+		    	, max: 10
+		    	, highlightLeftPart: YES
+		    	, cssClass: 'regenSlider'
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Regen'
+			    }
+		    })
+		})
+
+		, speichernButton: M.ButtonView.design({
 	          value: M.I18N.l('save')
 	        //, cssClass: 'digiButton'
 	        //, anchorLocation: M.CENTER
