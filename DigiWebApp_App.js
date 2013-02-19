@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2922
+    , softwareVersion: 2923
 
 
     /**
@@ -14405,7 +14405,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2922'
+              value: 'Build: 2923'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15955,9 +15955,9 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	                        /* executed in scope of DOMWindow because no target defined */
 			            	action: function(selectedValue, selectedItem) {
 				    			if (selectedValue === 0 || selectedValue === "0") {
-	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).show()
+	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).show()
 	                			} else {
-	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide()
+	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).hide()
 				    			}
 			            	}
 	                    }
