@@ -297,6 +297,7 @@ M.I18N.de_de = {
 	, BautagebuchStartUhrzeit: "tägliche Startzeit"
 	, BautagebuchProjektleiter: "Projektleiter"
 	, BautagebuchManuelleEingabe: "manuelle Eingabe"
+	, BautagebuchMenge: "Menge"
     // Ende::Bautagebuch
 	
 };

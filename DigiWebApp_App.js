@@ -4912,7 +4912,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2910
+    , softwareVersion: 2911
 
 
     /**
@@ -14379,7 +14379,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2910'
+              value: 'Build: 2911'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15867,7 +15867,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'materialComboBox materialInput mengeneinheitComboBox mengeneinheitInput speichernButton'
+    	  childViews: 'materialComboBox materialInput mengeneinheitComboBox mengeneinheitInput mengenInput speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -15928,7 +15928,11 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	        }
 	    })
 	
-        , megeneinheitInput: M.TextFieldView.design({
+        , mengeneinheitInput: M.TextFieldView.design({
+        })
+
+        , mengenInput: M.TextFieldView.design({
+	          label: M.I18N.l('BautagebuchMenge')
         })
 
         , speichernButton: M.ButtonView.design({

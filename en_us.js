@@ -297,6 +297,7 @@ M.I18N.en_us = {
 	, BautagebuchStartUhrzeit: "daily start time"
 	, BautagebuchProjektleiter: "Projectleader"
 	, BautagebuchManuelleEingabe: "manual input"
+	, BautagebuchMenge: "Quantity"
     // Ende::Bautagebuch
 
 };
