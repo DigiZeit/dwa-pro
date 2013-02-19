@@ -1777,7 +1777,7 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
     })
 
     , vollername: function() {
-        return this.vorname + " " + this.nachname;
+    return this.get("vorname") + " " + this.get("nachname");
     }
 
     , deleteAll: function() {
@@ -1954,7 +1954,7 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
     })
 
     , vollername: function() {
-        return this.vorname + " " + this.nachname;
+        return this.get("vorname") + " " + this.get("nachname");
     }
 
     , deleteAll: function() {
@@ -4811,7 +4811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2905
+    , softwareVersion: 2907
 
 
     /**
@@ -13134,8 +13134,6 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
             	}
             });
             mitarbeiterArray = _.compact(mitarbeiterArray);
-            // push "Bitte wählen Option"
-            mitarbeiterArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
             
             that.set('mitarbeiter', mitarbeiterArray);
 		}
@@ -13146,7 +13144,7 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
         	if ( typeof(o) === "undefined" ) {
         		console.log("UNDEFINED ORDER");
         	} else {        	
-        		var obj = { label: o.get('vollername'), value: o.get('id') };
+        		var obj = { label: o.get('name'), value: o.get('id') };
 //        		if(obj.value === that.selections.activity) {
 //        			obj.isSelected = YES;
 //        			itemSelected = YES;
@@ -14201,7 +14199,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2905'
+              value: 'Build: 2907'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19752,6 +19750,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             /* renders a selection view like check boxes */
               selectionMode: M.SINGLE_SELECTION_DIALOG
 
+            , initialText: M.I18N.l('noData')
+            
+            , label: M.I18N.l('BautagebuchProjektleiter')
+
+            , applyTheme: NO
+
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
                   target: DigiWebApp.BautagebuchMainController
@@ -19776,6 +19780,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             /* renders a selection view like check boxes */
               selectionMode: M.SINGLE_SELECTION_DIALOG
 
+            , initialText: M.I18N.l('noData')
+          
+            , label: M.I18N.l('orders')
+
+            , applyTheme: NO
+
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
                   target: DigiWebApp.BautagebuchMainController
@@ -19799,6 +19809,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
             /* renders a selection view like check boxes */
               selectionMode: M.MULTIPLE_SELECTION
+
+            , initialText: M.I18N.l('noData')
+            
+            , label: M.I18N.l('employees')
 
             , applyTheme: NO
 

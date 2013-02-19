@@ -292,6 +292,7 @@ M.I18N.de_de = {
 	, BautagebuchMedien: "Medien"
 	, BautagebuchMedium: "Medium"
 	, BautagebuchStartUhrzeit: "tägliche Startzeit"
+	, BautagebuchProjektleiter: "Projektleiter"
     // Ende::Bautagebuch
 	
 };
