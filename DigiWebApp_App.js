@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2917
+    , softwareVersion: 2918
 
 
     /**
@@ -14399,7 +14399,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2917'
+              value: 'Build: 2918'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15891,17 +15891,17 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
         	  
         , cssClass: 'content'
     	
-            , spacer1: M.LabelView.design({
-                value: '&nbsp;<br>'
-            })
+        , spacer1: M.LabelView.design({
+            value: '&nbsp;<br>'
+        })
 
-            , spacer2: M.LabelView.design({
-                value: '&nbsp;<br>'
-            })
+        , spacer2: M.LabelView.design({
+            value: '&nbsp;<br>'
+        })
 
-            , spacer3: M.LabelView.design({
-                value: '&nbsp;<br>'
-            })
+        , spacer3: M.LabelView.design({
+            value: '&nbsp;<br>'
+        })
 
         , materialComboBox: M.SelectionListView.design({
 
@@ -20090,10 +20090,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup materialienButton zeitenButton notizenButton medienButton wetterButton speichernButton'
+    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup materialienButton zeitenButton notizenButton medienButton wetterButton spacer1 speichernButton'
         	  
         , cssClass: 'content'
     	
+        , spacer1: M.LabelView.design({
+            value: '&nbsp;<br>'
+        })
+
         , projektleiterComboBox: M.SelectionListView.design({
 
             /* renders a selection view like check boxes */
