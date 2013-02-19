@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2921
+    , softwareVersion: 2922
 
 
     /**
@@ -14405,7 +14405,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2921'
+              value: 'Build: 2922'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15925,10 +15925,10 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
                     change: {
                     	/* executed in scope of DOMWindow because no target defined */
                     	action: function(selectedValue, selectedItem) {
-                			if (selectedValue === 0) {
-                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide()
-                			} else {
+                			if (selectedValue === 0 || selectedValue === "0") {
                 				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).show()
+                			} else {
+                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide()
                 			}
                     	}
                 	}
@@ -15954,10 +15954,10 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	                    change: {
 	                        /* executed in scope of DOMWindow because no target defined */
 			            	action: function(selectedValue, selectedItem) {
-				    			if (selectedValue === 0) {
-				    				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).hide()
-				    			} else {
-				    				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).show()
+				    			if (selectedValue === 0 || selectedValue === "0") {
+	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).show()
+	                			} else {
+	                				$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide()
 				    			}
 			            	}
 	                    }
