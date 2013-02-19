@@ -4811,7 +4811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2904
+    , softwareVersion: 2905
 
 
     /**
@@ -13095,15 +13095,71 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
 			DigiWebApp.BautagebuchMitarbeiter.createRecord({id: "15", vorname: "Keila", nachname: "Japia"}).saveSorted();
 		}
 		
+        var itemSelected = NO;
 		if (DigiWebApp.BautagebuchProjektleiter.findSorted().length !== 0) {
-        	that.projektleiter = DigiWebApp.BautagebuchProjektleiter.findSorted();
+            itemSelected = NO;
+    		var projektleiter = DigiWebApp.BautagebuchProjektleiter.findSorted();
+            var projektleiterArray = _.map(projektleiter, function(o) {
+            	if ( typeof(o) === "undefined" ) {
+            		console.log("UNDEFINED PROJEKTLEADER");
+            	} else {        	
+            		var obj = { label: o.get('vollername'), value: o.get('id') };
+//            		if(obj.value === that.selections.activity) {
+//            			obj.isSelected = YES;
+//            			itemSelected = YES;
+//            		}
+                    return obj;
+            	}
+            });
+            projektleiterArray = _.compact(projektleiterArray);
+            // push "Bitte wählen Option"
+            projektleiterArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+            
+            that.set('projektleiter', projektleiterArray);
 		}
 		
 		if (DigiWebApp.BautagebuchMitarbeiter.findSorted().length !== 0) {
-        	that.mitarbeiter = DigiWebApp.BautagebuchMitarbeiter.findSorted();
+            itemSelected = NO;
+    		var mitarbeiter = DigiWebApp.BautagebuchMitarbeiter.findSorted();
+            var mitarbeiterArray = _.map(mitarbeiter, function(o) {
+            	if ( typeof(o) === "undefined" ) {
+            		console.log("UNDEFINED WORKER");
+            	} else {        	
+            		var obj = { label: o.get('vollername'), value: o.get('id') };
+//            		if(obj.value === that.selections.activity) {
+//            			obj.isSelected = YES;
+//            			itemSelected = YES;
+//            		}
+                    return obj;
+            	}
+            });
+            mitarbeiterArray = _.compact(mitarbeiterArray);
+            // push "Bitte wählen Option"
+            mitarbeiterArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+            
+            that.set('mitarbeiter', mitarbeiterArray);
 		}
-		
-		that.auftraege = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
+		        
+        itemSelected = NO;
+		var auftraege = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
+        var auftraegeArray = _.map(auftraege, function(o) {
+        	if ( typeof(o) === "undefined" ) {
+        		console.log("UNDEFINED ORDER");
+        	} else {        	
+        		var obj = { label: o.get('vollername'), value: o.get('id') };
+//        		if(obj.value === that.selections.activity) {
+//        			obj.isSelected = YES;
+//        			itemSelected = YES;
+//        		}
+                return obj;
+        	}
+        });
+        auftraegeArray = _.compact(auftraegeArray);
+        // push "Bitte wählen Option"
+        auftraegeArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        
+        that.set('auftraege', auftraegeArray);
+
 	}
 
 });
@@ -14145,7 +14201,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2904'
+              value: 'Build: 2905'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19743,6 +19799,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
             /* renders a selection view like check boxes */
               selectionMode: M.MULTIPLE_SELECTION
+
+            , applyTheme: NO
 
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
