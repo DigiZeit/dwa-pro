@@ -283,6 +283,7 @@ M.I18N.en_us = {
 	, BautagebuchDelete: "delete"
 	, BautagebuchBautageberichtAbschliessen: "finish this Construction Record"
 	, BautagebuchSaveOrClose: "save or finish"
+	, BautagebuchWetter: "Weather"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Material"
 	, BautagebuchZeiten: "Bookings"

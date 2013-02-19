@@ -283,6 +283,7 @@ M.I18N.de_de = {
 	, BautagebuchDelete: "löschen"
 	, BautagebuchBautageberichtAbschliessen: "diesen Bautagebericht abschließen"
 	, BautagebuchSaveOrClose: "Speichern oder Abschließen"
+	, BautagebuchWetter: "Wetter"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Materialien"
 	, BautagebuchZeiten: "Zeiten"
