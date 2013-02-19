@@ -28,7 +28,7 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -628,7 +628,17 @@ DigiWebApp.BautagebuchBautagebericht = M.Model.create({
 
 	, deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+			if (el.hasFileName()) {
+		    	// delete mediafile from device
+		    	el.deleteFile(function(n){
+			    	// delete record from localStorage only if file
+		    		// was deleted successfully from device
+	        		el.deleteSorted();
+		    	});
+	    	} else {
+	    		// there is no file to delete, so delete the record
+        		el.deleteSorted();
+	    	}
         });
     }
 
@@ -1265,7 +1275,7 @@ DigiWebApp.BautagebuchMaterial = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -1524,7 +1534,7 @@ DigiWebApp.BautagebuchMaterialBuchung = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -1667,7 +1677,7 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -1778,7 +1788,7 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -1883,7 +1893,7 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -2060,7 +2070,7 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
 
     , deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -3304,7 +3314,7 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
 
 	, deleteAll: function() {
         _.each(this.find(), function(el) {
-            el.del();
+    		el.deleteSorted();
         });
     }
 
@@ -4912,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2915
+    , softwareVersion: 2916
 
 
     /**
@@ -14389,7 +14399,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2915'
+              value: 'Build: 2916'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15908,13 +15918,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
                 , events: {
                     change: {
                     	/* executed in scope of DOMWindow because no target defined */
-                    	action: function(itemValues, items) {
-							console.log(itemValues);
-							console.log(items);
-//                        	/* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
-//                        	for(var i = 0; i < itemValues.length; i++) {
-//                            	console.log(itemValues[i] + ' selected.');
-//                        	}
+                    	action: function(selectedValue, selectedItem) {
                     	}
                 	}
                 }
@@ -15938,14 +15942,8 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	        , events: {
 	                    change: {
 	                        /* executed in scope of DOMWindow because no target defined */
-	                        action: function(itemValues, items) {
-								console.log(itemValues);
-								console.log(items);
-//	                            /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
-//	                            for(var i = 0; i < itemValues.length; i++) {
-//	                                console.log(itemValues[i] + ' selected.');
-//	                            }
-	                        }
+			            	action: function(selectedValue, selectedItem) {
+			            	}
 	                    }
 	        }
 	    })
