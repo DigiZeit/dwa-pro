@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2895
+    , softwareVersion: 2896
 
 
     /**
@@ -9079,8 +9079,8 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 					}
 					break;
 				default:
-					if (this.sizeMode !== "w1536") {
-						this.sizeMode = "w1536";
+					if (this.sizeMode !== "w5000") {
+						this.sizeMode = "w5000";
 						return true;
 					} else {
 						return false;
@@ -9101,7 +9101,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 		        _.each(DigiWebApp.app.pages, function(myPage) {
 		        	if ($('#' + myPage.id).get("0").classList) {
 	    				if (!$('#' + myPage.id).get("0").classList.contains(DigiWebApp.ApplicationController.sizeMode)) {
-	    					$('#' + myPage.id).removeClass("w320").removeClass("w480").removeClass("w640").removeClass("w1024").removeClass("w1536");
+	    					$('#' + myPage.id).removeClass("w320").removeClass("w480").removeClass("w640").removeClass("w1024").removeClass("w1536").removeClass("w5000");
 	        				$('#' + myPage.id).addClass(DigiWebApp.ApplicationController.sizeMode);	        					
 	    				}
 		        	}
@@ -13933,7 +13933,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2895'
+              value: 'Build: 2896'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
