@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2899
+    , softwareVersion: 2901
 
 
     /**
@@ -11610,7 +11610,7 @@ DigiWebApp.NavigationController = M.Controller.extend({
 DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 
 	  settings: {
-		// Vorgabewerte
+		// Vorgabewerte (werden zur Laufzeit überschrieben)
 		startUhrzeit: "08:00"
 	}
 
@@ -11639,7 +11639,7 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		var that = this;
 		
 		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-		rec.startUhrzeit = that.settings.startUhrzeit;
+		rec.set("startUhrzeit", that.settings.startUhrzeit);
 		rec.save();
 		
 		M.ViewManager.setCurrentPage(that.lastPage)
@@ -13938,7 +13938,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2899'
+              value: 'Build: 2901'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
