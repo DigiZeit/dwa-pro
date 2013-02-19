@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2897
+    , softwareVersion: 2898
 
 
     /**
@@ -11630,13 +11630,18 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 			});
 			rec.save();
 		} else {
-			var s = DigiWebApp.BautagebuchEinstellungen.find()[0];
-			that.settings.startUhrzeit = s.get("startUhrzeit");
+			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+			that.settings.startUhrzeit = rec.get("startUhrzeit");
 		}
 	}
 	
 	, save: function() {
 		var that = this;
+		
+		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+		rec.startUhrzeit = that.settings.startUhrzeit;
+		rec.save();
+		
 		M.ViewManager.setCurrentPage(that.lastPage)
 	}
 
@@ -13933,7 +13938,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2897'
+              value: 'Build: 2898'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19788,6 +19793,12 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 				DigiWebApp.BautagebuchEinstellungenController.load();
 				DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
 			}
+        }
+        , pagebeforehide: {
+            action: function() {
+    		DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit = DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.getValue();
+    		DigiWebApp.BautagebuchEinstellungenController.save();
+        	}
         }
     }
 
