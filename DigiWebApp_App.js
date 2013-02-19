@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2901
+    , softwareVersion: 2903
 
 
     /**
@@ -11590,10 +11590,10 @@ DigiWebApp.NavigationController = M.Controller.extend({
     }
 
     , toBautagebuchEinstellungenPageTransition: function() {
-    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.SLIDEUP, NO);
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.POP, NO);
     }
     , backToBautagebuchEinstellungenPageTransition: function() {
-    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.SLIDEUP, YES);
+    	DigiWebApp.NavigationController.switchToPage('bautagebuchEinstellungenPage', M.TRANSITION.POP, YES);
     }
     // Ende::Bautagebuch
 
@@ -13938,7 +13938,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2901'
+              value: 'Build: 2903'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15185,7 +15185,7 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
     })
 
     , tabItemMitte: M.TabBarItemView.design({
-          value: M.I18N.l('settings')
+          value: M.I18N.l('Bautagebuch') + " " + M.I18N.l('settings')
         , page: 'bautagebuchEinstellungenPage'
         , icon: 'gear'
         , switchPage: function() {
@@ -15216,6 +15216,187 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
 //		DigiWebApp.ZeitbuchungenController.set('datum', D8.create(DigiWebApp.ZeitbuchungenController.datum).addHours(25).format("dd.mm.yyyy"));
 //		DigiWebApp.ZeitbuchungenController.init(YES);
 	}
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchBautageberichtDetailsPage
+// ==========================================================================
+
+m_require('app/views/BautagebuchTabBar.js');
+
+DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
+
+      events: {
+		  pagebeforeshow: {
+            action: function() {
+
+			}
+        }
+        , pagehide: {
+            action: function() {
+
+        	}
+        }
+    }
+
+	, controller: DigiWebApp.BautagebuchBautageberichtDetailsController
+	, navigationController: DigiWebApp.NavigationController
+
+    , cssClass: 'bautagebuchBautageberichtDetailsPage'
+
+    , childViews: 'header content tabBar'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title delButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: 'backToBautagebuchBautageberichteListePageTransition'
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchBautagebericht')
+            , anchorLocation: M.CENTER
+        })
+        , delButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchDelete')
+            , icon: 'delete'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+                      target: DigiWebApp.BautagebuchBautageberichtDetailsController
+                    , action: 'delete'
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+
+    	  childViews: 'materialienButton zeitenButton notizenButton medienButton speichernButton'
+        	  
+        , cssClass: 'content'
+    	
+	    , materialienButton: M.ButtonView.design({
+  	          value: M.I18N.l('BautagebuchMaterialien')
+  	        //, cssClass: 'digiButton'
+  	        //, anchorLocation: M.CENTER
+  	        , events: {
+  	            tap: {
+  	                target: DigiWebApp.NavigationController,
+  	                action: 'toBautagebuchMaterialienListePageTransition'
+  	            }
+  	          }
+  	    })
+  	
+	    , zeitenButton: M.ButtonView.design({
+	          value: M.I18N.l('BautagebuchZeiten')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                target: DigiWebApp.NavigationController,
+	                action: 'toBautagebuchZeitenListePageTransition'
+	            }
+	          }
+	    })
+	
+	    , notizenButton: M.ButtonView.design({
+	          value: M.I18N.l('BautagebuchNotizen')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                target: DigiWebApp.NavigationController,
+	                action: 'toBautagebuchNotizenListePageTransition'
+	            }
+	          }
+	    })
+	
+	    , medienButton: M.ButtonView.design({
+	          value: M.I18N.l('BautagebuchMedien')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                target: DigiWebApp.NavigationController,
+	                action: 'toBautagebuchMedienListePageTransition'
+	            }
+	          }
+	    })
+	    
+
+	    , speichernButton: M.ButtonView.design({
+	          value: M.I18N.l('save')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
+	                //action: 'save'
+	    			action: function() {
+	    				var that = this;
+				    	M.DialogView.actionSheet({
+					          title: M.I18N.l('BautagebuchSaveOrClose')
+					        , cancelButtonValue: M.I18N.l('cancel')
+					        , otherButtonValues: [M.I18N.l('BautagebuchBautageberichtAbschliessen')]
+					        , otherButtonTags: ["finish"]
+					        , destructiveButtonValue: M.I18N.l('save')
+					        , callbacks: {
+				    			  destruction: {action: function() {
+		    						that.controller.save();
+		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+				    			}}
+				    			, other: {action: function(buttonTag) {
+				    			    switch(buttonTag) {
+					    		        case 'finish':
+						    				that.controller.finish();
+				    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+					    		            break;
+					    		        default:
+					    		            console.log("unknonw ButtonTag");
+					    		            break;
+				    			    }
+				    			}}
+				    			, cancel: {action: function() {
+				    				//console.log(M.I18N.l('cancel'));
+				    			}}
+				    		}
+					    });
+		    		}
+	            }
+	          }
+	    })
+
+	    , abschliessenButton: M.ButtonView.design({
+	          value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+	        //, cssClass: 'digiButton'
+	        //, anchorLocation: M.CENTER
+	        , events: {
+	            tap: {
+	                target: DigiWebApp.BautagebuchBautageberichtDetailsController,
+	                action: 'finish'
+	            }
+	          }
+	    })
+
+    })
+
+    , tabBar: DigiWebApp.BautagebuchTabBar
 
 });
 
@@ -19410,183 +19591,6 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
             }
             , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
         })
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: BautagebuchBautageberichtDetailsPage
-// ==========================================================================
-
-DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
-
-      events: {
-		  pagebeforeshow: {
-            action: function() {
-
-			}
-        }
-        , pagehide: {
-            action: function() {
-
-        	}
-        }
-    }
-
-	, controller: DigiWebApp.BautagebuchBautageberichtDetailsController
-	, navigationController: DigiWebApp.NavigationController
-
-    , cssClass: 'bautagebuchBautageberichtDetailsPage'
-
-    , childViews: 'header content'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title delButton'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchBautageberichteListePageTransition'
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchBautagebericht')
-            , anchorLocation: M.CENTER
-        })
-        , delButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchDelete')
-            , icon: 'delete'
-            , anchorLocation: M.RIGHT
-            , events: {
-                tap: {
-                      target: DigiWebApp.BautagebuchBautageberichtDetailsController
-                    , action: 'delete'
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-
-    	  childViews: 'materialienButton zeitenButton notizenButton medienButton speichernButton'
-        	  
-        , cssClass: 'content'
-    	
-	    , materialienButton: M.ButtonView.design({
-  	          value: M.I18N.l('BautagebuchMaterialien')
-  	        //, cssClass: 'digiButton'
-  	        //, anchorLocation: M.CENTER
-  	        , events: {
-  	            tap: {
-  	                target: DigiWebApp.NavigationController,
-  	                action: 'toBautagebuchMaterialienListePageTransition'
-  	            }
-  	          }
-  	    })
-  	
-	    , zeitenButton: M.ButtonView.design({
-	          value: M.I18N.l('BautagebuchZeiten')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
-	        , events: {
-	            tap: {
-	                target: DigiWebApp.NavigationController,
-	                action: 'toBautagebuchZeitenListePageTransition'
-	            }
-	          }
-	    })
-	
-	    , notizenButton: M.ButtonView.design({
-	          value: M.I18N.l('BautagebuchNotizen')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
-	        , events: {
-	            tap: {
-	                target: DigiWebApp.NavigationController,
-	                action: 'toBautagebuchNotizenListePageTransition'
-	            }
-	          }
-	    })
-	
-	    , medienButton: M.ButtonView.design({
-	          value: M.I18N.l('BautagebuchMedien')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
-	        , events: {
-	            tap: {
-	                target: DigiWebApp.NavigationController,
-	                action: 'toBautagebuchMedienListePageTransition'
-	            }
-	          }
-	    })
-	    
-
-	    , speichernButton: M.ButtonView.design({
-	          value: M.I18N.l('save')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
-	        , events: {
-	            tap: {
-	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
-	                //action: 'save'
-	    			action: function() {
-	    				var that = this;
-				    	M.DialogView.actionSheet({
-					          title: M.I18N.l('BautagebuchSaveOrClose')
-					        , cancelButtonValue: M.I18N.l('cancel')
-					        , otherButtonValues: [M.I18N.l('BautagebuchBautageberichtAbschliessen')]
-					        , otherButtonTags: ["finish"]
-					        , destructiveButtonValue: M.I18N.l('save')
-					        , callbacks: {
-				    			  destruction: {action: function() {
-		    						that.controller.save();
-		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
-				    			}}
-				    			, other: {action: function(buttonTag) {
-				    			    switch(buttonTag) {
-					    		        case 'finish':
-						    				that.controller.finish();
-				    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
-					    		            break;
-					    		        default:
-					    		            console.log("unknonw ButtonTag");
-					    		            break;
-				    			    }
-				    			}}
-				    			, cancel: {action: function() {
-				    				//console.log(M.I18N.l('cancel'));
-				    			}}
-				    		}
-					    });
-		    		}
-	            }
-	          }
-	    })
-
-	    , abschliessenButton: M.ButtonView.design({
-	          value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
-	        , events: {
-	            tap: {
-	                target: DigiWebApp.BautagebuchBautageberichtDetailsController,
-	                action: 'finish'
-	            }
-	          }
-	    })
-
     })
 
 });
