@@ -269,6 +269,11 @@ M.I18N.en_us = {
 	, language_nl_nl: "Nederlands"
 	, refresh: "refresh"
 	, cancel: "cancel"
+		
+	, hour: "Hour"
+	, hours: "Hours"
+	, minute: "Minute"
+	, minutes: "Minutes"
 
 	// Start::Bautagebuch
 	, Bautagebuch: "Builder's Diary"

@@ -270,6 +270,11 @@ M.I18N.de_de = {
 	, refresh: "akt."
 	, cancel: "abbrechen"
 		
+	, hour: "Stunde"
+	, hours: "Stunden"
+	, minute: "Minute"
+	, minutes: "Minuten"
+
 	// Start::Bautagebuch
 	, Bautagebuch: "Bautagebuch"
 	, BautagebuchBautageberichte: "Bautageberichte"

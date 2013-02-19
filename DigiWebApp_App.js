@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2894
+    , softwareVersion: 2895
 
 
     /**
@@ -11610,21 +11610,29 @@ DigiWebApp.NavigationController = M.Controller.extend({
 DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 
 	  settings: {
+		// Vorgabewerte
 		startUhrzeit: "08:00"
 	}
 
 	, init: function(isFirstLoad) {
 		var that = this;
-		
-		
+		that.load();
 	}
 
 	, lastPage: null
 	
-	, timePickerShown: NO
-	
 	, load: function() {
-		
+		var that = this;
+		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
+			// erstelle Record mit Vorgabewerten
+			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
+				startUhrzeit: that.settings.startUhrzeit
+			});
+			rec.save();
+		} else {
+			var s = DigiWebApp.BautagebuchEinstellungen.find()[0];
+			that.settings.startUhrzeit = s.get("startUhrzeit");
+		}
 	}
 	
 	, save: function() {
@@ -13925,7 +13933,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2894'
+              value: 'Build: 2895'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19777,6 +19785,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
       events: {
 		  pagebeforeshow: {
             action: function() {
+				DigiWebApp.BautagebuchEinstellungenController.load();
 				DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
 			}
         }
@@ -19842,36 +19851,19 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	          		  				$(DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput).blur();
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-					          		    , initialDate: D8.create("01.01.1900 " + DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit)
+					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit)
 					          		    , showTimePicker: YES
 					          		    , showDatePicker: NO
 					          		    , showAmPm: NO
 					          		    , timeFormat: "HH:ii"
+					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , minutesLabel: M.I18N.l('minute')
 					          		});
 	          		  		}
 	          	  	  }
 	          	  }
 	          })
-//	          , changeButton: M.ButtonView.design({
-//		              isIconOnly: YES
-//		            , icon: 'search'
-//			        , events: {
-//				            tap: {
-//			        		  	action: function(id, event) {
-//						          		M.DatePickerView.show({
-//						          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-//						          		    , initialDate: D8.create('01.01.2000 08:00')
-//						          		    , showTimePicker: YES
-//						          		    , showDatePicker: NO
-//						          		    , timeFormat: "HH:ii"
-//						          		    , showAmPm: NO
-//						          		});
-//		          				}
-//				            }
-//			          }
-//			    })
 	      })
-
 	        	
 //	      , sliderContainer: M.ContainerView.design({
 //	    	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
