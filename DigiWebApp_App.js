@@ -4654,7 +4654,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2891
+    , softwareVersion: 2892
 
 
     /**
@@ -11613,6 +11613,8 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		startUhrzeit: "08:00"
 	}
 
+	, startUhrzeit: "08:00"
+
 	, init: function(isFirstLoad) {
 		var that = this;
 		
@@ -13925,7 +13927,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2891'
+              value: 'Build: 2892'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19822,26 +19824,26 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	        childViews: 'startUhrzeit'
 
   	      , startUhrzeit: M.GridView.design({
-	            childViews: 'startUhrzeitLabel startUhrzeitInput changeButton'
-	          , layout: M.THREE_COLUMNS
+	            childViews: 'startUhrzeitLabel startUhrzeitInput'
+	          , layout: M.TWO_COLUMNS
 	          , startUhrzeitLabel: M.LabelView.design({
 	              value: M.I18N.l('BautagebuchStartUhrzeit')
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
 	        	    contentBindingReverse: {
 	                    target: DigiWebApp.BautagebuchEinstellungenController
-	                  , property: 'settings.startUhrzeit'
+	                  , property: 'startUhrzeit'
 	              }
 	              , contentBinding: {
 	                    target: DigiWebApp.BautagebuchEinstellungenController
-	                  , property: 'settings.startUhrzeit'
+	                  , property: 'startUhrzeit'
 	              }
 	          	  , events: {
 	          		  tap: {
 		          		  	action: function(id, event) {
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-					          		    , initialDate: DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit
+					          		    , initialDate: DigiWebApp.BautagebuchEinstellungenController.startUhrzeit
 					          		    , showTimePicker: YES
 					          		    , showDatePicker: NO
 					          		    , timeFormat: "HH:ii"
@@ -19850,24 +19852,24 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	          	  	  }
 	          	  }
 	          })
-	          , changeButton: M.ButtonView.design({
-		              isIconOnly: YES
-		            , icon: 'search'
-			        , events: {
-				            tap: {
-			        		  	action: function(id, event) {
-						          		M.DatePickerView.show({
-						          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
-						          		    , initialDate: D8.create('01.01.2000 08:00')
-						          		    , showTimePicker: YES
-						          		    , showDatePicker: NO
-						          		    , timeFormat: "HH:ii"
-						          		    , showAmPm: NO
-						          		});
-		          				}
-				            }
-			          }
-			    })
+//	          , changeButton: M.ButtonView.design({
+//		              isIconOnly: YES
+//		            , icon: 'search'
+//			        , events: {
+//				            tap: {
+//			        		  	action: function(id, event) {
+//						          		M.DatePickerView.show({
+//						          		      source: M.ViewManager.getView('bautagebuchEinstellungenPage', 'startUhrzeitInput')
+//						          		    , initialDate: D8.create('01.01.2000 08:00')
+//						          		    , showTimePicker: YES
+//						          		    , showDatePicker: NO
+//						          		    , timeFormat: "HH:ii"
+//						          		    , showAmPm: NO
+//						          		});
+//		          				}
+//				            }
+//			          }
+//			    })
 	      })
 
 	        	
