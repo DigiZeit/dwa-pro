@@ -286,6 +286,8 @@ M.I18N.en_us = {
 	, BautagebuchWetter: "Weather"
 	, BautagebuchMaterial: "Material"
 	, BautagebuchMaterialien: "Material"
+	, BautagebuchMengeneinheit: "Quantity unit"
+	, BautagebuchMengeneinheiten: "Quantity units"
 	, BautagebuchZeiten: "Bookings"
 	// "Zeitbuchungen" wird auch hier verwendet
 	, BautagebuchNotizen: "Notes"
@@ -294,6 +296,7 @@ M.I18N.en_us = {
 	, BautagebuchMedium: "Media"
 	, BautagebuchStartUhrzeit: "daily start time"
 	, BautagebuchProjektleiter: "Projectleader"
+	, BautagebuchManuelleEingabe: "manual input"
     // Ende::Bautagebuch
 
 };
