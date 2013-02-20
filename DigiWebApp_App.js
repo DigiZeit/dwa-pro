@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2941
+    , softwareVersion: 2942
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2941'
+              value: 'Build: 2942'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16983,9 +16983,13 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'temperaturSliderContainer luftfeuchteSliderContainer bewoelkungSliderContainer niederschlagSliderContainer windSliderContainer speichernButton'
+    	  childViews: 'temperaturView luftfeuchteSliderContainer bewoelkungSliderContainer niederschlagSliderContainer windSliderContainer speichernButton'
         	  
         , cssClass: 'content'
+        	
+        , spacer1: M.LabelView.design({
+        	value: '&nbsp;'
+        })
     	
         , wechselhaftCheck: M.SelectionListView.design({
 	          selectionMode: M.MULTIPLE_SELECTION
@@ -17001,51 +17005,53 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			}
       	})
           
-//		, temperaturSliderContainer: M.ContainerView.design({
-		, temperaturSliderContainer: M.GridView.design({
-			  childViews: 'TextValue mySlider'
-		    , layout: M.TWO_COLUMNS
-		    , label: M.I18N.l('BautagebuchTemperatur')
-		    , mySlider: M.SliderView.design({
-		    	//  label: M.I18N.l('BautagebuchTemperatur')
-		    	  min: -50
-		    	, max: 50
-		    	, isSliderOnly: YES
-		    	, highlightLeftPart: NO
-		    	, cssClass: 'temperaturSlider'
-		        , contentBinding: {
-		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		            , property: 'wetter.Temperatur'
-			    }
-			    , events: {
-		    		change: {
-		    			action: function(myValue, m_id) {
-			    			var mySliderContainer = DigiWebApp.BautagebuchWetterPage.content.temperaturSliderContainer;
-			    			if (mySliderContainer.mySlider.id !== m_id) {
-			    				return true;
-			    			} else { 
-			    				mySliderContainer.TextValue.computedValue.value = parseInt(myValue);
-			    				mySliderContainer.TextValue.computeValue();
-			    				mySliderContainer.TextValue.renderUpdate();
-		    				}
-		    			}
-		    		}
-				}
-		    })
-		    , TextValue: M.LabelView.design({
-		    	  cssClass: 'whiteText'
-		    	, computedValue: {
-			          contentBinding: {
+		, temperaturView: M.ContainerView.design({
+			  childViews: 'myLabel temperaturSliderGrid'
+		    , mylabel: M.LabelView.design({
+	        	  value: M.I18N.l('BautagebuchTemperatur')
+	        )}
+			, temperaturSliderGrid: M.GridView.design({
+				  childViews: 'mySlider TextValue'
+			    , layout: M.TWO_COLUMNS
+			    , mySlider: M.SliderView.design({
+			    	  min: -50
+			    	, max: 50
+			    	, isSliderOnly: YES
+			    	, highlightLeftPart: NO
+			    	, cssClass: 'temperaturSlider'
+			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Temperatur'
-			        }
-		    		, value: 0
-			        , operation: function(v) {
-		    			return v;
-			        }
-			    }
-		    })
-		})
+				    }
+				    , events: {
+			    		change: {
+			    			action: function(myValue, m_id) {
+				    			var mySliderContainer = DigiWebApp.BautagebuchWetterPage.content.temperaturView.temperaturSliderGrid;
+				    			if (mySliderContainer.mySlider.id !== m_id) {
+				    				return true;
+				    			} else { 
+				    				mySliderContainer.TextValue.computedValue.value = parseInt(myValue);
+				    				mySliderContainer.TextValue.computeValue();
+				    				mySliderContainer.TextValue.renderUpdate();
+			    				}
+			    			}
+			    		}
+					}
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+				            , property: 'wetter.Temperatur'
+				        }
+			    		, value: 0
+				        , operation: function(v) {
+			    			return v;
+				        }
+				    }
+			    })
+			})
 
 		, luftfeuchteSliderContainer: M.ContainerView.design({
 			  childViews: 'TextValue mySlider'
