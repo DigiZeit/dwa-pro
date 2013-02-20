@@ -643,18 +643,22 @@ label.ui-input-text, .ui-controlgroup-label {
     text-align: center;
 }
 
+.bautagebuchWetterPage .marginBottom5px {
+    margin-bottom: 5px;
+}
+
   .bautagebuchWetterPage .temperaturView
 , .bautagebuchWetterPage .luftfeuchteView
 , .bautagebuchWetterPage .bewoelkungView
 , .bautagebuchWetterPage .niederschlagView
 , .bautagebuchWetterPage .windView
 {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
-.bautagebuchWetterPage .windView
+.bautagebuchWetterPage .speichernButton
 {
-    margin-bottom: 20px;
+    margin-top: 40px;
 }
 
   .bautagebuchWetterPage .temperaturView .u-grid-a

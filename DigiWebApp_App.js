@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2951
+    , softwareVersion: 2953
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2951'
+              value: 'Build: 2953'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16983,7 +16983,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView speichernButton'
+    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView wechselhaftCheckbox speichernButton'
         	  
         , cssClass: 'content'
         	
@@ -16991,25 +16991,31 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
         	value: '&nbsp;'
         })
     	
-        , wechselhaftCheck: M.SelectionListView.design({
+        , wechselhaftCheckbox: M.SelectionListView.design({
 	          selectionMode: M.MULTIPLE_SELECTION
-	        , contentBinding: {
-		            target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		          , property: 'wetter.wechselhaft'
-	        }
-		    , events: {
-		    		change: {
-		    			action: function(myValue, m_id) {
-						}
-		    		}
-			}
+	        , childViews: 'wechselhaftItem'
+	        , wechselhaftItem: M.SelectionListItemView.design({
+	                value: 'NO'
+	              , label: M.I18N.l('BautagebuchWechselhaft')
+	              , isSelected: NO
+	        })
+//	        , contentBinding: {
+//		            target: DigiWebApp.BautagebuchBautageberichtDetailsController
+//		          , property: 'wetter.wechselhaft'
+//	        }
+//		    , events: {
+//		    		change: {
+//		    			action: function(myValue, m_id) {
+//						}
+//		    		}
+//			}
       	})
           
 		, temperaturView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
 	    	, cssClass: 'temperaturView'
 		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText'
+		    	  cssClass: 'whiteText marginBottom5px'
 	        	, value: M.I18N.l('BautagebuchTemperatur')
 	        })
 			, mySliderGrid: M.GridView.design({
@@ -17059,7 +17065,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			  childViews: 'myLabel mySliderGrid'
 	    	, cssClass: 'luftfeuchteView'
 		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText'
+		    	  cssClass: 'whiteText marginBottom5px'
 	        	, value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
 	        })
 			, mySliderGrid: M.GridView.design({
@@ -17109,7 +17115,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			  childViews: 'myLabel mySliderGrid'
 	    	, cssClass: 'bewoelkungView'
 		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText'
+		    	  cssClass: 'whiteText marginBottom5px'
 	        	, value: M.I18N.l('BautagebuchBewoelkung')
 	        })
 			, mySliderGrid: M.GridView.design({
@@ -17174,7 +17180,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			  childViews: 'myLabel mySliderGrid'
 	    	, cssClass: 'niederschlagView'
 		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText'
+		    	  cssClass: 'whiteText marginBottom5px'
 	        	, value: M.I18N.l('BautagebuchNiederschlag')
 	        })
 			, mySliderGrid: M.GridView.design({
@@ -17245,7 +17251,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			  childViews: 'myLabel mySliderGrid'
 	    	, cssClass: 'windView'
 		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText'
+		    	  cssClass: 'whiteText marginBottom5px'
 	        	, value: M.I18N.l('BautagebuchWind')
 	        })
 			, mySliderGrid: M.GridView.design({
@@ -17308,7 +17314,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, speichernButton: M.ButtonView.design({
 	          value: M.I18N.l('save')
-	        //, cssClass: 'digiButton'
+	        , cssClass: 'speichernButton'
 	        //, anchorLocation: M.CENTER
 	        , events: {
 	            tap: {
