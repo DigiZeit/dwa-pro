@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2936
+    , softwareVersion: 2937
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2936'
+              value: 'Build: 2937'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17179,7 +17179,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		    			action: function(myValue, m_id) {
 			    			if (DigiWebApp.BautagebuchWetterPage.content.windSliderContainer.windSlider.id !== m_id) {
 			    				return true;
-			    			} else {
+			    			} else if (myValue !== DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.Wind) {
 			    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Wind", myValue);
 			    			}
 		    			}
