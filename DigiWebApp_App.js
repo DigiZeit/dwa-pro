@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2948
+    , softwareVersion: 2949
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2948'
+              value: 'Build: 2949'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17015,12 +17015,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			, mySliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
+		    	, cssClass: 'temperaturSlider'
 			    , mySlider: M.SliderView.design({
 			    	  min: -50
 			    	, max: 50
 			    	, isSliderOnly: YES
 			    	, highlightLeftPart: NO
-			    	, cssClass: 'temperaturSlider'
 			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Temperatur'
@@ -17066,12 +17066,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			, mySliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
+		    	, cssClass: 'luftfeuchteSlider'
 			    , mySlider: M.SliderView.design({
 			    	  min: 0
 			    	, max: 100
 			    	, isSliderOnly: YES
 			    	, highlightLeftPart: NO
-			    	, cssClass: 'luftfeuchteSlider'
 			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Luftfeuchte'
@@ -17117,12 +17117,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			, mySliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
+		    	, cssClass: 'bewoelkungSlider'
 			    , mySlider: M.SliderView.design({
 			    	  min: 0
 			    	, max: 3
 			    	, isSliderOnly: YES
 			    	, highlightLeftPart: NO
-			    	, cssClass: 'bewoelkungSlider'
 			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Bewoelkung'
@@ -17183,12 +17183,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			, mySliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
+		    	, cssClass: 'niederschlagSlider'
 			    , mySlider: M.SliderView.design({
 			    	  min: 0
 			    	, max: 5
 			    	, isSliderOnly: YES
 			    	, highlightLeftPart: NO
-			    	, cssClass: 'niederschlagSlider'
 			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Niederschlag'
@@ -17255,12 +17255,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			, mySliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
+		    	, cssClass: 'windSlider'
 			    , mySlider: M.SliderView.design({
 			    	  min: 0
 			    	, max: 3
 			    	, isSliderOnly: YES
 			    	, highlightLeftPart: NO
-			    	, cssClass: 'windSlider'
 			        , contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Wind'
