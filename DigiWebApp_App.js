@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2927
+    , softwareVersion: 2928
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2927'
+              value: 'Build: 2928'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16988,11 +16988,18 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
         , cssClass: 'content'
     	
         , wechselhaftCheck: M.SelectionListView.design({
-	            selectionMode: M.MULTIPLE_SELECTION
-	          , contentBinding: {
-	                target: DigiWebApp.BautagebuchBautageberichtDetailsController
-	              , property: 'wetter.wechselhaft'
-	          }
+	          selectionMode: M.MULTIPLE_SELECTION
+	        , contentBinding: {
+		            target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		          , property: 'wetter.wechselhaft'
+	        }
+		    , events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.wechselhaft", value);
+		    			}
+		    		}
+			}
       	})
           
 		, temperaturSliderContainer: M.ContainerView.design({
@@ -17008,6 +17015,13 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Temperatur'
 			    }
+			    , events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Temperatur", value);
+		    			}
+		    		}
+				}
 		    })
 		})
 
@@ -17024,6 +17038,13 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Luftfeuchte'
 			    }
+			    , events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Luftfeuchte", value);
+		    			}
+		    		}
+				}
 		    })
 		})
 
@@ -17040,20 +17061,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Bewoelkung'
 			    }
-		        , contentBindingReverse: {
-		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		            , property: 'wetter.Bewoelkung'
-			    }
-//		    	, events: {
-//		    		change: {
-//		    			action: function() {
-//		    				
-//		    			}
-//		    		}
-//		    	}
+		    	, events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Bewoelkung", value);
+		    			}
+		    		}
+		    	}
 		    })
 		    , TextValue: M.LabelView.design({
-		    	computedValue: {
+		    	  isInline: YES
+		    	, computedValue: {
 			          contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Bewoelkung'
@@ -17094,9 +17112,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Niederschlag'
 			    }
+			    , events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Niederschlag", value);
+		    			}
+		    		}
+				}
 		    })
 		    , TextValue: M.LabelView.design({
-		    	computedValue: {
+		    	  isInline: YES
+		    	, computedValue: {
 			          contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Niederschlag'
@@ -17143,20 +17169,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Wind'
 			    }
-		        , contentBindingReverse: {
-		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		            , property: 'wetter.Wind'
-			    }
-	//	    	, events: {
-	//	    		change: {
-	//	    			action: function() {
-	//	    				
-	//	    			}
-	//	    		}
-	//	    	}
+			    , events: {
+		    		change: {
+		    			action: function(value) {
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Wind", value);
+		    			}
+		    		}
+				}
 		    })
 		    , TextValue: M.LabelView.design({
-		    	computedValue: {
+		    	  isInline: YES
+		    	, computedValue: {
 			          contentBinding: {
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Wind'

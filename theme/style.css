@@ -635,6 +635,13 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-bottom: 10px;
 }
 
+.bautagebuchWetterPage .ui-content .ui-block-a{
+    font-size: 14px;
+    padding-top: 10px;
+    color: #FFFFFF;
+    margin-top: 0px;
+}
+
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
     border-color: #0d0d0d;
