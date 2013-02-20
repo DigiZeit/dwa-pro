@@ -657,11 +657,7 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-bottom: 10px;
 }
 
-  .bautagebuchWetterPage .temperaturSlider
-, .bautagebuchWetterPage .luftfeuchteSlider
-, .bautagebuchWetterPage .bewoelkungSlider
-, .bautagebuchWetterPage .niederschlagSlider
-, .bautagebuchWetterPage .windSlider
+  .bautagebuchWetterPage .u-grid-a
 {
     margin-right: 10px;
     margin-top: 5px;
