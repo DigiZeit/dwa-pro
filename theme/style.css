@@ -654,12 +654,15 @@ label.ui-input-text, .ui-controlgroup-label {
 
 .bautagebuchWetterPage .windView
 {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-  .bautagebuchWetterPage .u-grid-a
+  .bautagebuchWetterPage .temperaturView .u-grid-a
+, .bautagebuchWetterPage .luftfeuchteView .u-grid-a
+, .bautagebuchWetterPage .bewoelkungView .u-grid-a
+, .bautagebuchWetterPage .niederschlagView .u-grid-a
+, .bautagebuchWetterPage .windView .u-grid-a
 {
-    margin-right: 10px;
     margin-top: 5px;
 }
 
