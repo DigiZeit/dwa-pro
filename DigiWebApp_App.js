@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2942
+    , softwareVersion: 2943
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2942'
+              value: 'Build: 2943'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17009,7 +17009,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			  childViews: 'myLabel temperaturSliderGrid'
 		    , mylabel: M.LabelView.design({
 	        	  value: M.I18N.l('BautagebuchTemperatur')
-	        )}
+	        })
 			, temperaturSliderGrid: M.GridView.design({
 				  childViews: 'mySlider TextValue'
 			    , layout: M.TWO_COLUMNS
