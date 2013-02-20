@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2928
+    , softwareVersion: 2929
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2928'
+              value: 'Build: 2929'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16995,7 +16995,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 	        }
 		    , events: {
 		    		change: {
-		    			action: function(value) {
+		    			action: function() {
 		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.wechselhaft", value);
 		    			}
 		    		}
@@ -17040,7 +17040,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			    }
 			    , events: {
 		    		change: {
-		    			action: function(value) {
+		    			action: function() {
 		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Luftfeuchte", value);
 		    			}
 		    		}
@@ -17057,14 +17057,16 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		    	, isSliderOnly: YES
 		    	, highlightLeftPart: YES
 		    	, cssClass: 'bewoelkungSlider'
-		        , contentBinding: {
-		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		            , property: 'wetter.Bewoelkung'
-			    }
+		    	, initialValue: DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.Bewoelkung
+//		        , contentBinding: {
+//		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+//		            , property: 'wetter.Bewoelkung'
+//			    }
 		    	, events: {
 		    		change: {
-		    			action: function(value) {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Bewoelkung", value);
+		    			action: function() {
+    						var that = this;
+		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Bewoelkung", this.value);
 		    			}
 		    		}
 		    	}
