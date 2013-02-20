@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2926
+    , softwareVersion: 2927
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2926'
+              value: 'Build: 2927'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17040,13 +17040,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Bewoelkung'
 			    }
-		    	, events: {
-		    		change: {
-		    			action: function() {
-		    				
-		    			}
-		    		}
-		    	}
+		        , contentBindingReverse: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Bewoelkung'
+			    }
+//		    	, events: {
+//		    		change: {
+//		    			action: function() {
+//		    				
+//		    			}
+//		    		}
+//		    	}
 		    })
 		    , TextValue: M.LabelView.design({
 		    	computedValue: {
@@ -17139,6 +17143,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Wind'
 			    }
+		        , contentBindingReverse: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Wind'
+			    }
+	//	    	, events: {
+	//	    		change: {
+	//	    			action: function() {
+	//	    				
+	//	    			}
+	//	    		}
+	//	    	}
 		    })
 		    , TextValue: M.LabelView.design({
 		    	computedValue: {
