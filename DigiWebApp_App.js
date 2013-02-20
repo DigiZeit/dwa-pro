@@ -209,156 +209,6 @@ DigiWebApp.Employee = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: OnlinePosition
-// ==========================================================================
-
-DigiWebApp.OnlinePosition = M.Model.create({
-
-    __name__: 'OnlinePosition'
-
-    , positionsId: M.Model.attr('String',{
-    	isRequired: NO
-    })
-
-    , auftragsBezeichnung: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionsBezeichnung: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , strasse: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , hausnummer: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , plz: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ort: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , land: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , countrycode: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , telefon: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fax: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , email: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ansprechpartner: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , kundenname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , description: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-}, M.DataConsumer.configure({
-
-      appendRecords: NO
-
-    , responsePath: 'positionen'
-
-    , url: function(datum, mitarbeiterID) {
-		var positionsId = DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsId");
-		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/positionen?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&positionsId=' + positionsId + '&requestTimestamp=' + M.Date.now().date.valueOf();
-        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
-        	console.log('Positionen: using ' + myURL);
-        }
-		return myURL;
-    }
-
-    /* map needs to return record obj which can be handled by createRecord */
-    , map: function(obj) {
-    	//console.log(obj);
-        return {
-//            , id: M.Model.attr('String',{
-        	positionsId: obj.positionsId
-//            , name: M.Model.attr('String', {
-    	  , positionsBezeichnung: obj.positionsBezeichnung
-//            , strasse: M.Model.attr('String', {
-    	  , strasse: obj.strasse
-//            , hausnummer: M.Model.attr('String', {
-    	  , hausnummer: obj.hausnummer
-//            , plz: M.Model.attr('String', {
-    	  , plz: obj.plz
-//            , ort: M.Model.attr('String', {
-    	  , ort: obj.ort
-//            , land: M.Model.attr('String', {
-    	  , land: obj.land
-//            , countrycode: M.Model.attr('String', {
-    	  , countrycode: obj.countrycode
-//            , telefon: M.Model.attr('String', {
-    	  , telefon: obj.telefon
-//            , fax: M.Model.attr('String', {
-    	  , fax: obj.fax
-//            , email: M.Model.attr('String', {
-    	  , email: obj.email
-//            , ansprechpartner: M.Model.attr('String', {
-    	  , ansprechpartner: obj.ansprechpartner
-//            , kundenname: M.Model.attr('String', {
-    	  , kundenname: obj.kundenname
-//            , longitude: M.Model.attr('String', {
-    	  , longitude: obj.longitude
-//            , latitude: M.Model.attr('String', {
-    	  , latitude: obj.latitude
-//            , description: M.Model.attr('String', {
-    	  , description: obj.description
-//            , orderId: M.Model.attr('String', {
-    	  , orderId: obj.orderId
-    	  
-    	  , auftragsBezeichnung: obj.auftragsBezeichnung
-
-        };
-    }
-
-}));
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Model: BautagebuchBautagebericht
 // ==========================================================================
 
@@ -3300,6 +3150,156 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: OnlinePosition
+// ==========================================================================
+
+DigiWebApp.OnlinePosition = M.Model.create({
+
+    __name__: 'OnlinePosition'
+
+    , positionsId: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
+    , auftragsBezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionsBezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , strasse: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , hausnummer: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , plz: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ort: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , land: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , countrycode: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , telefon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fax: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , email: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ansprechpartner: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , kundenname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , description: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+}, M.DataConsumer.configure({
+
+      appendRecords: NO
+
+    , responsePath: 'positionen'
+
+    , url: function(datum, mitarbeiterID) {
+		var positionsId = DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsId");
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/positionen?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&positionsId=' + positionsId + '&requestTimestamp=' + M.Date.now().date.valueOf();
+        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
+        	console.log('Positionen: using ' + myURL);
+        }
+		return myURL;
+    }
+
+    /* map needs to return record obj which can be handled by createRecord */
+    , map: function(obj) {
+    	//console.log(obj);
+        return {
+//            , id: M.Model.attr('String',{
+        	positionsId: obj.positionsId
+//            , name: M.Model.attr('String', {
+    	  , positionsBezeichnung: obj.positionsBezeichnung
+//            , strasse: M.Model.attr('String', {
+    	  , strasse: obj.strasse
+//            , hausnummer: M.Model.attr('String', {
+    	  , hausnummer: obj.hausnummer
+//            , plz: M.Model.attr('String', {
+    	  , plz: obj.plz
+//            , ort: M.Model.attr('String', {
+    	  , ort: obj.ort
+//            , land: M.Model.attr('String', {
+    	  , land: obj.land
+//            , countrycode: M.Model.attr('String', {
+    	  , countrycode: obj.countrycode
+//            , telefon: M.Model.attr('String', {
+    	  , telefon: obj.telefon
+//            , fax: M.Model.attr('String', {
+    	  , fax: obj.fax
+//            , email: M.Model.attr('String', {
+    	  , email: obj.email
+//            , ansprechpartner: M.Model.attr('String', {
+    	  , ansprechpartner: obj.ansprechpartner
+//            , kundenname: M.Model.attr('String', {
+    	  , kundenname: obj.kundenname
+//            , longitude: M.Model.attr('String', {
+    	  , longitude: obj.longitude
+//            , latitude: M.Model.attr('String', {
+    	  , latitude: obj.latitude
+//            , description: M.Model.attr('String', {
+    	  , description: obj.description
+//            , orderId: M.Model.attr('String', {
+    	  , orderId: obj.orderId
+    	  
+    	  , auftragsBezeichnung: obj.auftragsBezeichnung
+
+        };
+    }
+
+}));
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: BautagebuchEinstellungen
 // ==========================================================================
 
@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2923
+    , softwareVersion: 2924
 
 
     /**
@@ -5968,9 +5968,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, mitarbeiter: null
 	
 	, wetter: {
-		  Temperatur: 0
-		, Bewoelkung: 0
-	    , Regen: 0
+		  Temperatur: 0   // -50 bis +50
+		, Luftfeuchte: 0  // 0% - 100%
+		, Bewoelkung: 0   // 0=klar , 1=mäßig , 2=bedeckt, 4=neblig
+	    , Niederschlag: 0 // 0=kein , 1=Niesel, 2=Regen  , 3=Graupel  , 4=Schnee, 5=Hagel
+	    , Wind: 0         // 0=still, 1=mäßig , 2=böig   , 3=stürmisch
+	    , wechselhaft: NO // Ja/Nein
 	}
 		
 	, init: function(isFirstLoad) {
@@ -14405,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2923'
+              value: 'Build: 2924'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16980,16 +16983,25 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'temperaturSliderContainer bewoelkungSliderContainer regenSliderContainer speichernButton'
+    	  childViews: 'temperaturSliderContainer luftfeuchteSliderContainer bewoelkungSliderContainer niederschlagSliderContainer windSliderContainer wechselhaftCheck speichernButton'
         	  
         , cssClass: 'content'
     	
+        , wechselhaftCheck: M.SelectionListView.design({
+	            selectionMode: M.MULTIPLE_SELECTION
+	          , contentBinding: {
+	                target: DigiWebApp.BautagebuchBautageberichtDetailsController
+	              , property: 'wetter.wechselhaft'
+	          }
+      	})
+          
 		, temperaturSliderContainer: M.ContainerView.design({
 			  childViews: 'temperaturSlider'
 		    , temperaturSlider: M.SliderView.design({
 		    	  label: M.I18N.l('BautagebuchTemperatur')
-		    	, min: -40
-		    	, max: 40
+		    	, min: -50
+		    	, max: 50
+		    	, isSliderOnly: NO
 		    	, highlightLeftPart: NO
 		    	, cssClass: 'temperaturSlider'
 		        , contentBinding: {
@@ -16999,32 +17011,160 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		    })
 		})
 
+		, luftfeuchteSliderContainer: M.ContainerView.design({
+			  childViews: 'luftfeuchteSlider'
+		    , luftfeuchteSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchLuftfeuchtigkeit')
+		    	, min: 0
+		    	, max: 100
+		    	, isSliderOnly: NO
+		    	, highlightLeftPart: YES
+		    	, cssClass: 'luftfeuchteSlider'
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Luftfeuchte'
+			    }
+		    })
+		})
+
 		, bewoelkungSliderContainer: M.ContainerView.design({
-			  childViews: 'bewoelkungSlider'
+			  childViews: 'bewoelkungSlider TextValue'
 		    , bewoelkungSlider: M.SliderView.design({
 		    	  label: M.I18N.l('BautagebuchBewoelkung')
 		    	, min: 0
-		    	, max: 5
+		    	, max: 4
+		    	, isSliderOnly: YES
 		    	, highlightLeftPart: YES
 		    	, cssClass: 'bewoelkungSlider'
 		        , contentBinding: {
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 		            , property: 'wetter.Bewoelkung'
 			    }
+		    	, events: {
+		    		change: {
+		    			action: function() {
+		    				
+		    			}
+		    		}
+		    	}
+		    })
+		    , TextValue: M.LabelView.design({
+		    	computedValue: {
+			          contentBinding: {
+			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+			            , property: 'wetter.Bewoelkung'
+			        }
+			        , value: 0,
+			        , operation: function(v) {
+			    		switch(v) {
+			    			case 0:
+			    				return M.I18N.l('BautagebuchBewoelkungKlar');
+			    				break;
+				    		case 1:
+			    				return M.I18N.l('BautagebuchBewoelkungMaessig');
+				    			break;
+				    		case 2:
+			    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
+					    		break;
+				    		case 3:
+			    				return M.I18N.l('BautagebuchBewoelkungNeblig');
+				    			break;
+				    		default:
+				    		  return "";
+			    		}
+			        }
+			    }
 		    })
 		})
 
-		, regenSliderContainer: M.ContainerView.design({
-			  childViews: 'regenSlider'
-		    , regenSlider: M.SliderView.design({
-		    	  label: M.I18N.l('BautagebuchRegen')
+		, niederschlagSliderContainer: M.ContainerView.design({
+			  childViews: 'niederschlagSlider TextValue'
+		    , niederschlagSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchNiederschlag')
 		    	, min: 0
-		    	, max: 10
+		    	, max: 5
+		    	, isSliderOnly: YES
 		    	, highlightLeftPart: YES
-		    	, cssClass: 'regenSlider'
+		    	, cssClass: 'niederschlagSlider'
 		        , contentBinding: {
 		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-		            , property: 'wetter.Regen'
+		            , property: 'wetter.Niederschlag'
+			    }
+		    })
+		    , TextValue: M.LabelView.design({
+		    	computedValue: {
+			          contentBinding: {
+			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+			            , property: 'wetter.Niederschlag'
+			        }
+			        , value: 0
+			        , operation: function(v) {
+			    		switch(v) {
+			    			case 0:
+			    				return M.I18N.l('BautagebuchNiederschlagKein');
+			    				break;
+				    		case 1:
+			    				return M.I18N.l('BautagebuchNiederschlagNiesel');
+				    			break;
+				    		case 2:
+			    				return M.I18N.l('BautagebuchNiederschlagRegen');
+					    		break;
+				    		case 3:
+			    				return M.I18N.l('BautagebuchNiederschlagGraupel');
+				    			break;
+				    		case 4:
+			    				return M.I18N.l('BautagebuchNiederschlagSchnee');
+				    			break;
+				    		case 5:
+			    				return M.I18N.l('BautagebuchNiederschlagHagel');
+				    			break;
+				    		default:
+				    			return "";
+			    		}
+			        }
+			    }
+		    })
+		})
+
+		, windSliderContainer: M.ContainerView.design({
+			  childViews: 'windSlider TextValue'
+		    , windSlider: M.SliderView.design({
+		    	  label: M.I18N.l('BautagebuchWind')
+		    	, min: 0
+		    	, max: 3
+		    	, isSliderOnly: YES
+		    	, highlightLeftPart: YES
+		    	, cssClass: 'windSlider'
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Wind'
+			    }
+		    })
+		    , TextValue: M.LabelView.design({
+		    	computedValue: {
+			          contentBinding: {
+			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+			            , property: 'wetter.Wind'
+			        }
+			        , value: 0
+			        , operation: function(v) {
+			    		switch(v) {
+			    			case 0:
+			    				return M.I18N.l('BautagebuchWindStill');
+			    				break;
+				    		case 1:
+			    				return M.I18N.l('BautagebuchWindMaessig');
+				    			break;
+				    		case 2:
+			    				return M.I18N.l('BautagebuchWindBoeig');
+					    		break;
+				    		case 3:
+			    				return M.I18N.l('BautagebuchWindStuermisch');
+				    			break;
+				    		default:
+				    			return "";
+			    		}
+			        }
 			    }
 		    })
 		})
