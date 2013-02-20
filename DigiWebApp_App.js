@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2929
+    , softwareVersion: 2930
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2929'
+              value: 'Build: 2930'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16995,8 +16995,9 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 	        }
 		    , events: {
 		    		change: {
-		    			action: function() {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.wechselhaft", value);
+		    	target: DigiWebApp.BautagebuchWetterPage
+    			, action: function() {
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.wechselhaft", value);
 		    			}
 		    		}
 			}
@@ -17017,8 +17018,9 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			    }
 			    , events: {
 		    		change: {
-		    			action: function(value) {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Temperatur", value);
+			    	target: DigiWebApp.BautagebuchWetterPage
+	    			, action: function() {
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Temperatur", value);
 		    			}
 		    		}
 				}
@@ -17040,8 +17042,9 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			    }
 			    , events: {
 		    		change: {
-		    			action: function() {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Luftfeuchte", value);
+			    	target: DigiWebApp.BautagebuchWetterPage
+	    			, action: function() {
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Luftfeuchte", value);
 		    			}
 		    		}
 				}
@@ -17057,16 +17060,17 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		    	, isSliderOnly: YES
 		    	, highlightLeftPart: YES
 		    	, cssClass: 'bewoelkungSlider'
-		    	, initialValue: DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.Bewoelkung
-//		        , contentBinding: {
-//		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
-//		            , property: 'wetter.Bewoelkung'
-//			    }
+//		    	, initialValue: DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.Bewoelkung
+		        , contentBinding: {
+		              target: DigiWebApp.BautagebuchBautageberichtDetailsController
+		            , property: 'wetter.Bewoelkung'
+			    }
 		    	, events: {
 		    		change: {
-		    			action: function() {
-    						var that = this;
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Bewoelkung", this.value);
+		    		target: DigiWebApp.BautagebuchWetterPage
+	    			, action: function() {
+//    						var that = this;
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Bewoelkung", this.value);
 		    			}
 		    		}
 		    	}
@@ -17078,7 +17082,6 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			              target: DigiWebApp.BautagebuchBautageberichtDetailsController
 			            , property: 'wetter.Bewoelkung'
 			        }
-			        , value: 0
 			        , operation: function(v) {
 			    		switch(v) {
 			    			case 0:
@@ -17116,8 +17119,9 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			    }
 			    , events: {
 		    		change: {
-		    			action: function(value) {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Niederschlag", value);
+			    	target: DigiWebApp.BautagebuchWetterPage
+	    			, action: function() {
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Niederschlag", value);
 		    			}
 		    		}
 				}
@@ -17173,8 +17177,12 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 			    }
 			    , events: {
 		    		change: {
-		    			action: function(value) {
-		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Wind", value);
+			    		target: DigiWebApp.BautagebuchWetterPage
+		    			, action: function() {
+			    				var that = this;
+			    				console.log(that.value);
+			    				return true;
+//		    				DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter.Wind", value);
 		    			}
 		    		}
 				}
