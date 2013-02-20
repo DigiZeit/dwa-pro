@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2946
+    , softwareVersion: 2948
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2946'
+              value: 'Build: 2948'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17007,6 +17007,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
           
 		, temperaturView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
+	    	, cssClass: 'temperaturView'
 		    , myLabel: M.LabelView.design({
 		    	  cssClass: 'whiteText'
 	        	, value: M.I18N.l('BautagebuchTemperatur')
@@ -17040,7 +17041,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 					}
 			    })
 			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText'
+			    	  cssClass: 'whiteText centerText'
 			    	, computedValue: {
 				          contentBinding: {
 				              target: DigiWebApp.BautagebuchBautageberichtDetailsController
@@ -17057,6 +17058,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, luftfeuchteView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
+	    	, cssClass: 'luftfeuchteView'
 		    , myLabel: M.LabelView.design({
 		    	  cssClass: 'whiteText'
 	        	, value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
@@ -17090,7 +17092,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 					}
 			    })
 			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText'
+			    	  cssClass: 'whiteText centerText'
 			    	, computedValue: {
 				          contentBinding: {
 				              target: DigiWebApp.BautagebuchBautageberichtDetailsController
@@ -17107,6 +17109,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, bewoelkungView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
+	    	, cssClass: 'bewoelkungView'
 		    , myLabel: M.LabelView.design({
 		    	  cssClass: 'whiteText'
 	        	, value: M.I18N.l('BautagebuchBewoelkung')
@@ -17140,7 +17143,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 					}
 			    })
 			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText'
+			    	  cssClass: 'whiteText centerText'
 			    	, computedValue: {
 				          contentBinding: {
 				              target: DigiWebApp.BautagebuchBautageberichtDetailsController
@@ -17172,6 +17175,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, niederschlagView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
+	    	, cssClass: 'niederschlagView'
 		    , myLabel: M.LabelView.design({
 		    	  cssClass: 'whiteText'
 	        	, value: M.I18N.l('BautagebuchNiederschlag')
@@ -17205,7 +17209,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 					}
 			    })
 			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText'
+			    	  cssClass: 'whiteText centerText'
 			    	, computedValue: {
 				          contentBinding: {
 				              target: DigiWebApp.BautagebuchBautageberichtDetailsController
@@ -17243,6 +17247,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, windView: M.ContainerView.design({
 			  childViews: 'myLabel mySliderGrid'
+	    	, cssClass: 'windView'
 		    , myLabel: M.LabelView.design({
 		    	  cssClass: 'whiteText'
 	        	, value: M.I18N.l('BautagebuchWind')
@@ -17276,7 +17281,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 					}
 			    })
 			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText'
+			    	  cssClass: 'whiteText centerText'
 			    	, computedValue: {
 				          contentBinding: {
 				              target: DigiWebApp.BautagebuchBautageberichtDetailsController

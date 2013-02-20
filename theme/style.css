@@ -639,6 +639,34 @@ label.ui-input-text, .ui-controlgroup-label {
     color: #FFFFFF;
 }
 
+.bautagebuchWetterPage .centerText {
+    text-align: center;
+}
+
+  .bautagebuchWetterPage .temperaturView
+, .bautagebuchWetterPage .luftfeuchteView
+, .bautagebuchWetterPage .bewoelkungView
+, .bautagebuchWetterPage .niederschlagView
+, .bautagebuchWetterPage .windView
+{
+    margin-top: 10px;
+}
+
+.bautagebuchWetterPage .windView
+{
+    margin-bottom: 10px;
+}
+
+  .bautagebuchWetterPage .temperaturSlider
+, .bautagebuchWetterPage .luftfeuchteSlider
+, .bautagebuchWetterPage .bewoelkungSlider
+, .bautagebuchWetterPage .niederschlagSlider
+, .bautagebuchWetterPage .windSlider
+{
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
     border-color: #0d0d0d;
