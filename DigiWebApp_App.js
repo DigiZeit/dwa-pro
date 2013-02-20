@@ -4922,7 +4922,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2954
+    , softwareVersion: 2955
 
 
     /**
@@ -14408,7 +14408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2954'
+              value: 'Build: 2955'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16994,6 +16994,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
         , wechselhaftCheckbox: M.SelectionListView.design({
 	          selectionMode: M.MULTIPLE_SELECTION
 	        , childViews: 'wechselhaftItem'
+            , cssClass: 'wechselhaftCheckbox'
 	        , wechselhaftItem: M.SelectionListItemView.design({
 	                value: 'NO'
 	              , label: M.I18N.l('BautagebuchWechselhaft')
@@ -17314,7 +17315,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 		, speichernButton: M.ButtonView.design({
 	          value: M.I18N.l('save')
-	        , cssClass: 'speichernButton'
+	        //, cssClass: 'speichernButton'
 	        //, anchorLocation: M.CENTER
 	        , events: {
 	            tap: {
