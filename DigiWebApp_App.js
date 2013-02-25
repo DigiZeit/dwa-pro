@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2998
+    , softwareVersion: 2999
 
 
     /**
@@ -5979,22 +5979,22 @@ DigiWebApp.RequestController = M.Controller.extend({
 
 DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 
-	  item: null
+	  item: null // model itself
 	
-	, projektleiterId: null
-	, projektleiterList: null
+	, projektleiterId: null // in model
+	, projektleiterList: null // runtime
 	  
-	, mitarbeiterIds: null
-	, mitarbeiterList: null
-	, mitarbeiterListSelected: null
+	, mitarbeiterIds: null // in model
+	, mitarbeiterList: null // runtime
+	, mitarbeiterListSelected: null // runtime
 	
-	, datum: null
+	, datum: null // in model
 	
-	, auftragsId: null
-	, auftragsName: null
-	, auftraegeList: null
+	, auftragsId: null // in model
+	, auftragsName: null // in model
+	, auftraegeList: null // runtime
 	
-	, wetter: DigiWebApp.BautagebuchMainController.wetterDefaults
+	, wetter: DigiWebApp.BautagebuchMainController.wetterDefaults // in model
 		
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -14567,7 +14567,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2998'
+              value: 'Build: 2999'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
