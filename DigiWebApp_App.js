@@ -2443,10 +2443,6 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         isRequired: YES
     })
 
-    , startUhrzeit: M.Model.attr('String', {
-        isRequired: YES
-    })
-
     , projektleiterId: M.Model.attr('String', {
         isRequired: NO
     })
@@ -4942,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2959
+    , softwareVersion: 2960
 
 
     /**
@@ -8082,8 +8078,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		var that = this;
 		
 		DigiWebApp.BautagebuchBautageberichtDetailsController.item = DigiWebApp.BautagebuchBautagesbericht.createRecord({
-			  bezeichnung: D8.now().format("dd.mm.yyyy") + ": "
-			, startUhrzeit: DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit
+			  datum: D8.now().format("dd.mm.yyyy")
 		});
 		
 		DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
@@ -14430,7 +14425,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2959'
+              value: 'Build: 2960'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17018,17 +17013,14 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 	        , childViews: 'wechselhaftItem'
             , cssClass: 'wechselhaftCheckbox'
 	        , wechselhaftItem: M.SelectionListItemView.design({
-	                value: 'NO'
+	                value: 'wechselhaft'
 	              , label: M.I18N.l('BautagebuchWechselhaft')
 	              , isSelected: NO
 	        })
 		    , events: {
 		    		change: {
 		    			action: function(itemValues, items) {
-        					console.log("change");
-				        	for(var i = 0; i < itemValues.length; i++) {
-				                console.log(itemValues[i] + ' selected.');
-				            }
+        					DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.wechselhaft = (itemValues.length === 1);
 						}
 		    		}
 			}
@@ -20957,17 +20949,14 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 		        , childViews: 'inStundenBuchenItem'
 	            , cssClass: 'inStundenBuchenCheckbox'
 		        , inStundenBuchenItem: M.SelectionListItemView.design({
-		                value: 'YES'
+		                value: 'inStundenBuchen'
 		              , label: M.I18N.l('BautagebuchInStundenBuchen')
 		              , isSelected: YES
 		        })
 			    , events: {
 		    		change: {
 		    			action: function(itemValues, items) {
-	    	  				console.log("change");
-				        	for(var i = 0; i < itemValues.length; i++) {
-				                console.log(itemValues[i] + ' selected.');
-				            }
+	    	  				DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen = (itemValues.length === 1);
 						}
 		    		}
 				}
