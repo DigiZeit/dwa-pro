@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2986
+    , softwareVersion: 2987
 
 
     /**
@@ -14535,7 +14535,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2986'
+              value: 'Build: 2987'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20572,7 +20572,17 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 			      				confirm: {
 			      					  target: this
 			      					, action: function(value, date) {
-//			      						DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", value);
+			      						DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", value);
+			      					}
+			      				}
+			      				, before: {
+			      					action: function() {
+			      					
+			      					}
+			      				}
+			      				, cancel: {
+			      					action: function() {
+			      					
 			      					}
 			      				}
 			      			}
