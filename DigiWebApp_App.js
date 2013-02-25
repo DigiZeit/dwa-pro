@@ -4942,7 +4942,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2958
+    , softwareVersion: 2959
 
 
     /**
@@ -8081,7 +8081,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 	, neu: function() {
 		var that = this;
 		
-		DigiWebApp.BautagebuchBautageberichtDetailsController.item = DigiWebApp.BautagebuchBautagebericht.createRecord({
+		DigiWebApp.BautagebuchBautageberichtDetailsController.item = DigiWebApp.BautagebuchBautagesbericht.createRecord({
 			  bezeichnung: D8.now().format("dd.mm.yyyy") + ": "
 			, startUhrzeit: DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit
 		});
@@ -14430,7 +14430,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2958'
+              value: 'Build: 2959'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
