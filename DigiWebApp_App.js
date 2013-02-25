@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3000
+    , softwareVersion: 3001
 
 
     /**
@@ -14567,7 +14567,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3000'
+              value: 'Build: 3001'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20734,7 +20734,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
-                  target: BautagebuchBautageberichtDetailsController
+                  target: DigiWebApp.BautagebuchBautageberichtDetailsController
                 , property: 'auftraegeList'
             }
 
