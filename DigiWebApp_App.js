@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2999
+    , softwareVersion: 3000
 
 
     /**
@@ -5994,7 +5994,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, auftragsName: null // in model
 	, auftraegeList: null // runtime
 	
-	, wetter: DigiWebApp.BautagebuchMainController.wetterDefaults // in model
+	, wetter: null // in model
 		
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -14567,7 +14567,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2999'
+              value: 'Build: 3000'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
