@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2978
+    , softwareVersion: 2979
 
 
     /**
@@ -14535,7 +14535,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2978'
+              value: 'Build: 2979'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20558,6 +20558,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 			    		    , showDatePicker: YES
 			    		    , dateOrder: 'ddmmyy'
 		          		    , dateFormat: "dd.mm.yy"
+		          		    , timeFormat: "HH:ii"
+		          		    , minutesLabel: M.I18N.l('minute')
+		          		    , hoursLabel: M.I18N.l('hour')
+		          		    , dayLabel: M.I18N.l('day')
 		          		    , monthLabel: M.I18N.l('month')
 		          		    , yearLabel: M.I18N.l('year')
 		          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
@@ -20565,6 +20569,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 		          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
 		          		    , monthNames: DigiWebApp.ApplicationController.monthNames
 			    		});
+			      		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", DigiWebApp.BautagebuchBautageberichtDetailsPage.header.title.value);
         			}
 	            }
 	        }
