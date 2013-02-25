@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2976
+    , softwareVersion: 2977
 
 
     /**
@@ -5983,6 +5983,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	  
 	, mitarbeiter: null
 	
+	, datum: null
+	
 	, wetter: {
 	      temperatur: 0   // -50 bis +50
 		, luftfeuchtigkeit: 0  // 0% - 100%
@@ -6025,6 +6027,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchWechselhaft')
 	      , isSelected: myItem.get("wechselhaft")
 		}]);		
+		that.set("datum", myItem.get("datum"));
 	}
 
 	, save: function() {
@@ -14483,7 +14486,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2976'
+              value: 'Build: 2977'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20490,8 +20493,24 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             }
         })
         , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchBautagebericht')
+              value: ''
             , anchorLocation: M.CENTER
+            , contentBinding: {
+        		  target: DigiWebApp.BautagebuchBautageberichtDetailsController
+        		, property: 'datum'
+        	}
+            , events: {
+	            tap: {
+	                action: function() {
+			      		M.DatePickerView.show({
+			    		      source: M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'title')
+			    		    , initialDate: D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.datum)
+			    		    , showTimePicker: NO
+			    		    , showDatePicker: YES
+			    		});
+        			}
+	            }
+	        }
         })
         , delButton: M.ButtonView.design({
               value: M.I18N.l('BautagebuchDelete')
