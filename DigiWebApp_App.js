@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2969
+    , softwareVersion: 2971
 
 
     /**
@@ -5990,10 +5990,25 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	    , Niederschlag: 0 // 0=kein , 1=Niesel, 2=Regen  , 3=Graupel  , 4=Schnee, 5=Hagel
 	    , Wind: 0         // 0=still, 1=mäßig , 2=böig   , 3=stürmisch
 	    , wechselhaft: NO // Ja/Nein
+		, wechselhaftItem: [{
+	        value: 'wechselhaft'
+	      , label: M.I18N.l('BautagebuchWechselhaft')
+	      , isSelected: NO
+		}]
 	}
 		
 	, init: function(isFirstLoad) {
 		var that = this;
+		//if (isFirstLoad) {
+			// setting defaults for contentBinding
+			that.set("wetter.Temperatur", that.wetter.Temperatur);
+			that.set("wetter.Luftfeuchte", that.wetter.Luftfeuchte);
+			that.set("wetter.Bewoelkung", that.wetter.Bewoelkung);
+			that.set("wetter.Niederschlag", that.wetter.Niederschlag);
+			that.set("wetter.Wind", that.wetter.Wind);
+			that.set("wetter.wechselhaft", that.wetter.wechselhaft);
+			that.set("wetter.wechselhaftItem", that.wetter.wechselhaftItem);
+		//}
 	}
 
 	, save: function() {
@@ -14445,7 +14460,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2969'
+              value: 'Build: 2971'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17030,17 +17045,16 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
     	
         , wechselhaftCheckbox: M.SelectionListView.design({
 	          selectionMode: M.MULTIPLE_SELECTION
-	        , childViews: 'wechselhaftItem'
-            , cssClass: 'wechselhaftCheckbox'
-	        , wechselhaftItem: M.SelectionListItemView.design({
-	                value: 'wechselhaft'
-	              , label: M.I18N.l('BautagebuchWechselhaft')
-	              , isSelected: NO
-	        })
+            , contentBinding: {
+                  target: DigiWebApp.BautagebuchBautageberichtDetailsController
+                , property: 'wetter.wechselhaftItem'
+            }
 		    , events: {
 		    		change: {
-		    			action: function(itemValues, items) {
-        					DigiWebApp.BautagebuchBautageberichtDetailsController.wetter.wechselhaft = (itemValues.length === 1);
+        				  target: DigiWebApp.BautagebuchBautageberichtDetailsController
+						, action: function(itemValues, items) {
+				  			this.wetter.wechselhaft = (itemValues.length === 1);
+				  			this.wetter.wechselhaftItem.isSelected = (itemValues.length === 1);
 						}
 		    		}
 			}
@@ -20971,11 +20985,6 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	                  target: DigiWebApp.BautagebuchEinstellungenController
 	                , property: 'settings.inStundenBuchenItem'
 	            }
-//		        , inStundenBuchenItem: M.SelectionListItemView.design({
-//		                value: 'inStundenBuchen'
-//		              , label: M.I18N.l('BautagebuchInStundenBuchen')
-//		              , isSelected: YES
-//		        })
 			    , events: {
 		    		change: {
 			    		  target: DigiWebApp.BautagebuchEinstellungenController
