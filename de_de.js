@@ -305,7 +305,7 @@ M.I18N.de_de = {
 	, BautagebuchBewoelkungBedeckt: "bedeckt"
 	, BautagebuchBewoelkungNeblig: "neblig"
 	, BautagebuchNiederschlag: "Niederschlag"
-	, BautagebuchNiederschlagKein: "Kein"
+	, BautagebuchNiederschlagKein: "kein"
 	, BautagebuchNiederschlagNiesel: "Niesel"
 	, BautagebuchNiederschlagRegen: "Regen"
 	, BautagebuchNiederschlagGraupel: "Graupel"
@@ -318,6 +318,7 @@ M.I18N.de_de = {
 	, BautagebuchWindBoeig: "böig"
 	, BautagebuchWindStuermisch: "stürmisch"
 	, BautagebuchWechselhaft: "wechselhaft"
+	, BautagebuchInStundenBuchen: "Erfassung in Stunden"
     // Ende::Bautagebuch
 	
 };

@@ -318,6 +318,7 @@ M.I18N.en_us = {
 	, BautagebuchWindBoeig: "squally"
 	, BautagebuchWindStuermisch: "stormy"
 	, BautagebuchWechselhaft: "unsettled"
+	, BautagebuchInStundenBuchen: "Recording of hours"
     // Ende::Bautagebuch
 
 };
