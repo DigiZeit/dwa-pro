@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2973
+    , softwareVersion: 2974
 
 
     /**
@@ -6009,6 +6009,22 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 			that.set("wetter.wechselhaft", that.wetter.wechselhaft);
 			that.set("wetter.wechselhaftItem", that.wetter.wechselhaftItem);
 		}
+	}
+	
+	, load: function(myItem) {
+		var that = this;
+		that.set("item", myItem); 
+		that.set("wetter.temperatur", myItem.get("temperatur"));
+		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
+		that.set("wetter.bewoelkung", myItem.get("bewoelkung"));
+		that.set("wetter.niederschlag", myItem.get("niederschlag"));
+		that.set("wetter.wind", myItem.get("wind"));
+		that.set("wetter.wechselhaft", myItem.get("wechselhaft"));
+		that.set("wetter.wechselhaftItem", [{
+	        value: 'wechselhaft'
+	      , label: M.I18N.l('BautagebuchWechselhaft')
+	      , isSelected: myItem.get("wechselhaft")
+		}]);		
 	}
 
 	, save: function() {
@@ -14467,7 +14483,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2973'
+              value: 'Build: 2974'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
