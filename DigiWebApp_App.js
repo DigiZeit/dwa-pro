@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2997
+    , softwareVersion: 2998
 
 
     /**
@@ -5991,25 +5991,16 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, datum: null
 	
 	, auftragsId: null
+	, auftragsName: null
+	, auftraegeList: null
 	
-	, wetter: {
-	      temperatur: 0   // -50 bis +50
-		, luftfeuchtigkeit: 0  // 0% - 100%
-		, bewoelkung: 0   // 0=klar , 1=mäßig , 2=bedeckt, 4=neblig
-	    , niederschlag: 0 // 0=kein , 1=Niesel, 2=Regen  , 3=Graupel  , 4=Schnee, 5=Hagel
-	    , wind: 0         // 0=still, 1=mäßig , 2=böig   , 3=stürmisch
-	    , wechselhaft: NO // Ja/Nein
-		, wechselhaftItem: [{
-	        value: 'wechselhaft'
-	      , label: M.I18N.l('BautagebuchWechselhaft')
-	      , isSelected: NO
-		}]
-	}
+	, wetter: DigiWebApp.BautagebuchMainController.wetterDefaults
 		
 	, init: function(isFirstLoad) {
 		var that = this;
 		if (isFirstLoad) {
 			// setting defaults for contentBinding
+			that.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
 			that.set("wetter.temperatur", that.wetter.temperatur);
 			that.set("wetter.luftfeuchtigkeit", that.wetter.luftfeuchtigkeit);
 			that.set("wetter.bewoelkung", that.wetter.bewoelkung);
@@ -6036,19 +6027,33 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		}]);		
 		that.set("datum", myItem.get("datum"));
 		that.set("projektleiterId", myItem.get("projektleiterId"));
-		that.set("projektleiterId", myItem.get("selektierteMitarbeiter"));
+		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
+		that.set("auftragsId", myItem.get("orderId"));
+		that.set("auftragsName", myItem.get("orderName"));
 	}
 
 	, save: function() {
 		var that = this;
 		console.log("save");
+		
+		that.item.set("datum", that.datum);
+		
+		that.item.set("projektleiterId", that.projektleiterId);
+		
+		that.item.set("orderId", that.auftragsId);
+		that.item.set("orderName", that.auftragsName);
+		
+		that.item.set("selektierteMitarbeiter", that.mitarbeiterIds);
+
 		that.item.set("temperatur", that.wetter.temperatur);
 		that.item.set("luftfeuchtigkeit", that.wetter.luftfeuchtigkeit);
 		that.item.set("bewoelkung", that.wetter.bewoelkung);
 		that.item.set("niederschlag", that.wetter.niederschlag);
 		that.item.set("wind", that.wetter.wind);
 		that.item.set("wechselhaft", that.wetter.wechselhaft);
+		
 		that.item.saveSorted();
+		
 	}
 	
 	, delete: function() {
@@ -8129,6 +8134,8 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchBautageberichtDetailsController.init(YES);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", D8.now().format("dd.mm.yyyy"));
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterId", null);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterIds", null);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("item", DigiWebApp.BautagebuchBautagesbericht.createRecord({
 			  datum: DigiWebApp.BautagebuchBautageberichtDetailsController.datum
 		}));
@@ -13344,6 +13351,21 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
 	
 	, mengeneinheiten: null
 
+
+	, wetterDefaults: {
+	      temperatur: 0   // -50 bis +50
+		, luftfeuchtigkeit: 0  // 0% - 100%
+		, bewoelkung: 0   // 0=klar , 1=mäßig , 2=bedeckt, 4=neblig
+	    , niederschlag: 0 // 0=kein , 1=Niesel, 2=Regen  , 3=Graupel  , 4=Schnee, 5=Hagel
+	    , wind: 0         // 0=still, 1=mäßig , 2=böig   , 3=stürmisch
+	    , wechselhaft: NO // Ja/Nein
+		, wechselhaftItem: [{
+	        value: 'wechselhaft'
+	      , label: M.I18N.l('BautagebuchWechselhaft')
+	      , isSelected: NO
+		}]
+	}
+
 	, init: function(isFirstLoad) {
 		var that = this;
 		
@@ -14545,7 +14567,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2997'
+              value: 'Build: 2998'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20537,6 +20559,20 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 		            projektleiterArray = _.compact(projektleiterArray);
 					DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterList", projektleiterArray)
 
+					// verfügbare Aufträge kopieren und ausgewählten selektieren
+		            var auftraegeArray = _.map(DigiWebApp.BautagebuchMainController.auftraege, function(o) {
+		            	if ( typeof(o) === "undefined" ) {
+		            		console.log("UNDEFINED ORDER");
+		            	} else {    
+		    				if (DigiWebApp.BautagebuchBautageberichtDetailsController.auftragsId) {
+		    					o.isSelected = (o.value === DigiWebApp.BautagebuchBautageberichtDetailsController.auftragsId);
+		    				}
+		                    return o;
+		            	}
+		            });
+					auftraegeArray = _.compact(auftraegeArray);
+					DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftraegeList", auftraegeArray)
+
 					// verfügbare Mitarbeiter kopieren und ausgewählte selektieren
                     var mitarbeiterIds = DigiWebApp.BautagebuchBautageberichtDetailsController.mitarbeiterIds; 
                     var mitarbeiterList = [];
@@ -20698,14 +20734,15 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
-                  target: DigiWebApp.BautagebuchMainController
-                , property: 'auftraege'
+                  target: BautagebuchBautageberichtDetailsController
+                , property: 'auftraegeList'
             }
 
 	        , events: {
 		            change: {
 		                action: function(itemValues, items) {
 		      				DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsId", M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'auftragComboBox').getSelection(YES).value);
+		      				DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsName", M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'auftragComboBox').getSelection(YES).label);
 		              }
 		          }
 		    }
@@ -20840,8 +20877,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					        , destructiveButtonValue: M.I18N.l('save')
 					        , callbacks: {
 				    			  destruction: {action: function() {
-		    						that.controller.save();
-		    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+				    				DigiWebApp.BautagebuchBautageberichtDetailsController.save();
+				    				DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 				    			}}
 				    			, other: {action: function(buttonTag) {
 				    			    switch(buttonTag) {
