@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2968
+    , softwareVersion: 2969
 
 
     /**
@@ -11952,7 +11952,7 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 			        value: 'inStundenBuchen'
 			      , label: M.I18N.l('BautagebuchInStundenBuchen')
 			      , isSelected: rec.get("inStundenBuchen")
-				}];
+				}]);
 			}
 		}
 	}
@@ -14445,7 +14445,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2968'
+              value: 'Build: 2969'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
