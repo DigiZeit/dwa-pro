@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2961
+    , softwareVersion: 2962
 
 
     /**
@@ -11914,6 +11914,11 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		// Vorgabewerte (werden zur Laufzeit überschrieben)
 		  startUhrzeit: "08:00"
 		, inStundenBuchen: YES
+		, inStundenBuchenItem: [{
+	        value: 'inStundenBuchen'
+	      , label: M.I18N.l('BautagebuchInStundenBuchen')
+	      , isSelected: YES
+		}]
 	}
 
 	, init: function(isFirstLoad) {
@@ -14427,7 +14432,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2961'
+              value: 'Build: 2962'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20868,6 +20873,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
             action: function() {
 				DigiWebApp.BautagebuchEinstellungenController.load();
 				DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
+				//DigiWebApp.BautagebuchEinstellungenPage.content.inStundenBuchenCheckbox.inStundenBuchenItem.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
 			}
         }
         , pagebeforehide: {
@@ -20950,15 +20956,20 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 		          selectionMode: M.MULTIPLE_SELECTION
 		        , childViews: 'inStundenBuchenItem'
 	            , cssClass: 'inStundenBuchenCheckbox'
-		        , inStundenBuchenItem: M.SelectionListItemView.design({
-		                value: 'inStundenBuchen'
-		              , label: M.I18N.l('BautagebuchInStundenBuchen')
-		              , isSelected: YES
-		        })
+	            	, contentBinding: {
+	                  target: DigiWebApp.BautagebuchEinstellungenController
+	                , property: 'settings.inStundenBuchenItem'
+	            }
+//		        , inStundenBuchenItem: M.SelectionListItemView.design({
+//		                value: 'inStundenBuchen'
+//		              , label: M.I18N.l('BautagebuchInStundenBuchen')
+//		              , isSelected: YES
+//		        })
 			    , events: {
 		    		change: {
 		    			action: function(itemValues, items) {
-	    	  				DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen = (itemValues.length === 1);
+			    			DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen = (itemValues.length === 1);
+	    	  				DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchenItem.isSelected = (itemValues.length === 1);
 						}
 		    		}
 				}
