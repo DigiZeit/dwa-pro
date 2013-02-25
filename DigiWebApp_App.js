@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2967
+    , softwareVersion: 2968
 
 
     /**
@@ -11930,6 +11930,12 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 	
 	, load: function() {
 		var that = this;
+
+		// set defaults for content-binding
+		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
+		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
+		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
+
 		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
 			// erstelle Record mit Vorgabewerten
 			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
@@ -14439,7 +14445,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2967'
+              value: 'Build: 2968'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
