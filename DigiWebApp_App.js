@@ -4942,7 +4942,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2956
+    , softwareVersion: 2958
 
 
     /**
@@ -14430,7 +14430,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2956'
+              value: 'Build: 2958'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17025,6 +17025,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 		    , events: {
 		    		change: {
 		    			action: function(itemValues, items) {
+        					console.log("change");
 				        	for(var i = 0; i < itemValues.length; i++) {
 				                console.log(itemValues[i] + ' selected.');
 				            }
@@ -20963,6 +20964,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 			    , events: {
 		    		change: {
 		    			action: function(itemValues, items) {
+	    	  				console.log("change");
 				        	for(var i = 0; i < itemValues.length; i++) {
 				                console.log(itemValues[i] + ' selected.');
 				            }
