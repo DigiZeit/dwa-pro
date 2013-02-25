@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2965
+    , softwareVersion: 2966
 
 
     /**
@@ -11939,7 +11939,7 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 			rec.save();
 		} else {
 			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-			if (typeof(rec.get("startUhrzeit")) !== "undefined") that.settings.startUhrzeit = rec.get("startUhrzeit");
+			that.settings.startUhrzeit = rec.get("startUhrzeit");
 			if (typeof(rec.get("inStundenBuchen")) !== "undefined") {
 				that.settings.inStundenBuchen = rec.get("inStundenBuchen");
 				that.settings.inStundenBuchenItem = [{
@@ -14439,7 +14439,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2965'
+              value: 'Build: 2966'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20961,7 +20961,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	        	          
 	      , inStundenBuchenCheckbox: M.SelectionListView.design({
 		          selectionMode: M.MULTIPLE_SELECTION
-		        , childViews: 'inStundenBuchenItem'
+		        //, childViews: 'inStundenBuchenItem'
 	            , cssClass: 'inStundenBuchenCheckbox'
 	            	, contentBinding: {
 	                  target: DigiWebApp.BautagebuchEinstellungenController
