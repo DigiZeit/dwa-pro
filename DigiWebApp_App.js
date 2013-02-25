@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2977
+    , softwareVersion: 2978
 
 
     /**
@@ -8118,8 +8118,9 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		var that = this;
 		
 		DigiWebApp.BautagebuchBautageberichtDetailsController.init(YES);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", D8.now().format("dd.mm.yyyy"));
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("item", DigiWebApp.BautagebuchBautagesbericht.createRecord({
-			  datum: D8.now().format("dd.mm.yyyy")
+			  datum: DigiWebApp.BautagebuchBautageberichtDetailsController.datum
 		}));
 		
 		DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
@@ -9037,7 +9038,55 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	// Namespace for XML-Results in IE
 	// gets reset in getOrdersFromRemoteSuccess
 	myns: "ax21"
-		
+
+    , dayNamesShort: [
+          M.I18N.l('Monday').substr(0,3)
+        , M.I18N.l('Tuesday').substr(0,3)
+        , M.I18N.l('Wednesday').substr(0,3)
+        , M.I18N.l('Thursday').substr(0,3)
+        , M.I18N.l('Friday').substr(0,3)
+        , M.I18N.l('Saturday').substr(0,3)
+        , M.I18N.l('Sunday').substr(0,3)
+    ]
+    , dayNames: [
+          M.I18N.l('Monday')
+        , M.I18N.l('Tuesday')
+        , M.I18N.l('Wednesday')
+        , M.I18N.l('Thursday')
+        , M.I18N.l('Friday')
+        , M.I18N.l('Saturday')
+        , M.I18N.l('Sunday')
+    ]
+
+    , monthNamesShort: [
+          M.I18N.l('january').substr(0,3)
+        , M.I18N.l('february').substr(0,3)
+        , M.I18N.l('march').substr(0,3)
+        , M.I18N.l('april').substr(0,3)
+        , M.I18N.l('may').substr(0,3)
+        , M.I18N.l('june').substr(0,3)
+        , M.I18N.l('july').substr(0,3)
+        , M.I18N.l('august').substr(0,3)
+        , M.I18N.l('september').substr(0,3)
+        , M.I18N.l('october').substr(0,3)
+        , M.I18N.l('november').substr(0,3)
+        , M.I18N.l('december').substr(0,3)
+    ]
+    , monthNames: [
+          M.I18N.l('january')
+        , M.I18N.l('february')
+        , M.I18N.l('march')
+        , M.I18N.l('april')
+        , M.I18N.l('may')
+        , M.I18N.l('june')
+        , M.I18N.l('july')
+        , M.I18N.l('august')
+        , M.I18N.l('september')
+        , M.I18N.l('october')
+        , M.I18N.l('november')
+        , M.I18N.l('december')
+    ]
+
 	, restartApp: NO
 	
 	, activeFeaturesBeforeTransfer: []
@@ -14486,7 +14535,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2977'
+              value: 'Build: 2978'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20507,6 +20556,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 			    		    , initialDate: D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.datum)
 			    		    , showTimePicker: NO
 			    		    , showDatePicker: YES
+			    		    , dateOrder: 'ddmmyy'
+		          		    , dateFormat: "dd.mm.yy"
+		          		    , monthLabel: M.I18N.l('month')
+		          		    , yearLabel: M.I18N.l('year')
+		          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
+		          		    , dayNames: DigiWebApp.ApplicationController.dayNames
+		          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
+		          		    , monthNames: DigiWebApp.ApplicationController.monthNames
 			    		});
         			}
 	            }
