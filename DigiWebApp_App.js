@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2984
+    , softwareVersion: 2985
 
 
     /**
@@ -14535,7 +14535,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2984'
+              value: 'Build: 2985'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20568,14 +20568,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 		          		    , dayNames: DigiWebApp.ApplicationController.dayNames
 		          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
 		          		    , monthNames: DigiWebApp.ApplicationController.monthNames
-//		          		    , callbacks: {
+		          		    , callbacks: {
 //			      				confirm: {
 //			      					  target: this
 //			      					, action: function(val, date) {
 //			      						DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", val);
 //			      					}
 //			      				}
-//			      			}
+			      			}
 			    		});
         			}
 	            }
