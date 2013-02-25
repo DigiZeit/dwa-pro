@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2990
+    , softwareVersion: 2991
 
 
     /**
@@ -14542,7 +14542,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2990'
+              value: 'Build: 2991'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20681,8 +20681,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 		      				DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsId", M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'auftragComboBox').getSelection(YES).value);
 		              }
 		          }
-		      }
-            }
+		    }
         })
         	
         , mitarbeiterGroup: M.SelectionListView.design({
