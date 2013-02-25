@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2975
+    , softwareVersion: 2976
 
 
     /**
@@ -6004,8 +6004,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 			that.set("wetter.temperatur", that.wetter.temperatur);
 			that.set("wetter.luftfeuchtigkeit", that.wetter.luftfeuchtigkeit);
 			that.set("wetter.bewoelkung", that.wetter.bewoelkung);
-			that.set("wetter.niederschlag", that.wetter.Niederschlag);
-			that.set("wetter.wind", that.wetter.Wind);
+			that.set("wetter.niederschlag", that.wetter.niederschlag);
+			that.set("wetter.wind", that.wetter.wind);
 			that.set("wetter.wechselhaft", that.wetter.wechselhaft);
 			that.set("wetter.wechselhaftItem", that.wetter.wechselhaftItem);
 		}
@@ -14483,7 +14483,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2975'
+              value: 'Build: 2976'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
