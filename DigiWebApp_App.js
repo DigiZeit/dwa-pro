@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2989
+    , softwareVersion: 2990
 
 
     /**
@@ -5988,6 +5988,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, mitarbeiterList: null
 	
 	, datum: null
+	
+	, auftragsId: null
 	
 	, wetter: {
 	      temperatur: 0   // -50 bis +50
@@ -8123,6 +8125,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		
 		DigiWebApp.BautagebuchBautageberichtDetailsController.init(YES);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", D8.now().format("dd.mm.yyyy"));
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterId", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("item", DigiWebApp.BautagebuchBautagesbericht.createRecord({
 			  datum: DigiWebApp.BautagebuchBautageberichtDetailsController.datum
 		}));
@@ -14539,7 +14542,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2989'
+              value: 'Build: 2990'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20672,16 +20675,13 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
                 , property: 'auftraege'
             }
 
-            , events: {
-//                change: {
-//                    /* executed in scope of DOMWindow because no target defined */
-//                    action: function(itemValues, items) {
-//                        /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
-//                        for(var i = 0; i < itemValues.length; i++) {
-//                            console.log(itemValues[i] + ' selected.');
-//                        }
-//                    }
-//                }
+	        , events: {
+		            change: {
+		                action: function(itemValues, items) {
+		      				DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsId", M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'auftragComboBox').getSelection(YES).value);
+		              }
+		          }
+		      }
             }
         })
         	
@@ -20706,11 +20706,32 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
                   change: {
                     /* executed in scope of DOMWindow because no target defined */
                       action: function(itemValues, items) {
-                        /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
-                        for(var i = 0; i < itemValues.length; i++) {
-                            console.log(itemValues[i] + ' selected.');
-                        }
-                    }
+	                        /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
+	            			var mitarbeiterIds = [];
+	                        for(var i = 0; i < itemValues.length; i++) {
+	                        	mitarbeiterIds.push(itemValues[i]);
+	                        }
+	                        DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterIds", mitarbeiterIds);
+	                        
+	                        var mitarbeiterList = [];
+	                        var mitarbeiterArray = mitarbeiterList;
+		    				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
+		    					mitarbeiterArray = _.map(DigiWebApp.BautagebuchMainController.mitarbeiter, function(o) {
+		    						var mitarbeiterSelected = NO;
+		    						_.each(mitarbeiterIds, function(m) {
+		    							if (m === o.value) {
+		    								mitarbeiterSelected = YES;
+		    							}
+		    						});
+		    						if (mitarbeiterSelected) {
+		    							o.isSelected = YES;
+		    							return o;
+		    						}
+	    		    			});
+    		            	}
+	    					DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterList", mitarbeiterArray);
+    		            }
+            		}
                 }
             }
         })
