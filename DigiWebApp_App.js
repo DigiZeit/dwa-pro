@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 2987
+    , softwareVersion: 2988
 
 
     /**
@@ -5980,8 +5980,12 @@ DigiWebApp.RequestController = M.Controller.extend({
 DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 
 	  item: null
+	
+	, projektleiterId: null
+	, projektleiterList: null
 	  
-	, mitarbeiter: null
+	, mitarbeiterIds: null
+	, mitarbeiterList: null
 	
 	, datum: null
 	
@@ -14535,7 +14539,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 2987'
+              value: 'Build: 2988'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17110,7 +17114,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView wechselhaftCheckbox speichernButton'
+    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView wechselhaftCheckbox'
         	  
         , cssClass: 'content'
         	
@@ -17446,10 +17450,13 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 	        //, cssClass: 'speichernButton'
 	        //, anchorLocation: M.CENTER
 	        , events: {
-	            tap: {
-	                target: DigiWebApp.BautagebuchMaterialienDetailsController
-	                , action: 'save'
-	            }
+		            tap: {
+		                target: DigiWebApp.NavigationController
+		                , action: 'backToBautagebuchMaterialienDetailsPageTransition'
+//						action: function() {
+//							
+//						}
+		            }
 	          }
 	    })
 
@@ -20509,7 +20516,16 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
       events: {
 		  pagebeforeshow: {
             action: function() {
-
+				var projektleiterList = DigiWebApp.BautagebuchMainController.projektleiter;
+	            var projektleiterArray = _.map(projektleiterList, function(o) {
+	            	if ( typeof(o) === "undefined" ) {
+	            		console.log("UNDEFINED PROJEKTLEADER");
+	            	} else {    
+	            		o.isSelected = (o.value === DigiWebApp.BautagebuchBautageberichtDetails.projektleiterId);
+	                    return o;
+	            	}
+	            });
+				DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterList", projektleiterArray)
 			}
         }
         , pagehide: {
@@ -20518,9 +20534,6 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
         	}
         }
     }
-
-	, controller: DigiWebApp.BautagebuchBautageberichtDetailsController
-	, navigationController: DigiWebApp.NavigationController
 
     , cssClass: 'bautagebuchBautageberichtDetailsPage'
 
@@ -20576,7 +20589,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 			      					}
 			      				}
 			      				, before: {
-			      					action: function() {
+			      					action: function(value, date) {
 			      					
 			      					}
 			      				}
@@ -20628,20 +20641,16 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
             /* this seleciton view has no static entries, instead it is filled via content binding. */
             , contentBinding: {
-                  target: DigiWebApp.BautagebuchMainController
-                , property: 'projektleiter'
+                  target: DigiWebApp.BautagebuchBautageberichtDetailsController
+                , property: 'projektleiterList'
             }
 
             , events: {
-//                  change: {
-//                    /* executed in scope of DOMWindow because no target defined */
-//                      action: function(itemValues, items) {
-//                        /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
-//                        for(var i = 0; i < itemValues.length; i++) {
-//                            console.log(itemValues[i] + ' selected.');
-//                        }
-//                    }
-//                }
+                  change: {
+                      action: function(itemValues, items) {
+            			DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterId", M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'projektleiterComboBox').getSelection(YES).value);
+                    }
+                }
             }
         })
         	
@@ -21024,12 +21033,10 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
             action: function() {
 				DigiWebApp.BautagebuchEinstellungenController.load();
 				DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
-				//DigiWebApp.BautagebuchEinstellungenPage.content.inStundenBuchenCheckbox.inStundenBuchenItem.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
 			}
         }
         , pagebeforehide: {
             action: function() {
-				DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit = DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.getValue();
 				DigiWebApp.BautagebuchEinstellungenController.save();
         	}
         }
@@ -21093,9 +21100,36 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 					          		    , showTimePicker: YES
 					          		    , showDatePicker: NO
 					          		    , showAmPm: NO
+						    		    , dateOrder: 'ddmmyy'
+					          		    , dateFormat: "dd.mm.yy"
 					          		    , timeFormat: "HH:ii"
-					          		    , hoursLabel: M.I18N.l('hour')
 					          		    , minutesLabel: M.I18N.l('minute')
+					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , dayLabel: M.I18N.l('day')
+					          		    , monthLabel: M.I18N.l('month')
+					          		    , yearLabel: M.I18N.l('year')
+					          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
+					          		    , dayNames: DigiWebApp.ApplicationController.dayNames
+					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
+					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
+					          		    , callbacks: {
+					      				confirm: {
+					      					  target: this
+					      					, action: function(value, date) {
+					      						DigiWebApp.BautagebuchEinstellungenController.set("settings.startUhrzeit", value);
+					      					}
+					      				}
+					      				, before: {
+					      					action: function(value, date) {
+					      					
+					      					}
+					      				}
+					      				, cancel: {
+					      					action: function() {
+					      					
+					      					}
+					      				}
+					      			}
 					          		});
 	          		  		}
 	          	  	  }
