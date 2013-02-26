@@ -2758,7 +2758,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         	console.error("ERROR in " + that.name + ".saveSorted: " + e);
         }
         var found = NO;
-        keys.forEach(function(k) {
+        _.each(keys, function(k) {
         	if (that.m_id === k) { found = YES; }
         });
         if (found === NO) { keys.push(that.m_id); }
@@ -4949,7 +4949,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3007
+    , softwareVersion: 3008
 
 
     /**
@@ -6070,7 +6070,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		that.item.set("wechselhaft", that.wetter.wechselhaft);
 		
 		that.item.saveSorted();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.)
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
 	
 	, delete: function() {
@@ -14622,7 +14622,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3007'
+              value: 'Build: 3008'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
