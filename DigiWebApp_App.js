@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3018
+    , softwareVersion: 3019
 
 
     /**
@@ -6041,6 +6041,17 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, auftraegeList: null // runtime
 	
 	, wetter: null // in model
+	, setWetter: function(wetterObject) {
+		var that = this;
+		that.set("wetter", wetterObject);
+		that.set("wetter.temperatur", wetterObject.temperatur);
+		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
+		that.set("wetter.bewoelkung", wetterObject.bewoelkung);
+		that.set("wetter.niederschlag", wetterObject.niederschlag);
+		that.set("wetter.wind", wetterObject.wind);
+		that.set("wetter.wechselhaft", wetterObject.wechselhaft);
+		that.set("wetter.wechselhaftItem", wetterObject.wechselhaftItem);
+	}
 	
 	, startUhrzeit: null
 		
@@ -8197,7 +8208,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsId", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsName", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterIds", null);
-		DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.setWetter(DigiWebApp.BautagebuchMainController.wetterDefaults);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("item", DigiWebApp.BautagebuchBautagesbericht.createRecord({
 			  datum: DigiWebApp.BautagebuchBautageberichtDetailsController.datum
 			, startUhrzeit: DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit
@@ -14663,7 +14674,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3018'
+              value: 'Build: 3019'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
