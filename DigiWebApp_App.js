@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3022
+    , softwareVersion: 3023
 
 
     /**
@@ -6043,14 +6043,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, wetter: null // in model
 	, setWetter: function(wetterObject) {
 		var that = this;
-		//that.set("wetter", {});
-		that.set("wetter.temperatur", wetterObject.temperatur);
-		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
-		that.set("wetter.bewoelkung", wetterObject.bewoelkung);
-		that.set("wetter.niederschlag", wetterObject.niederschlag);
-		that.set("wetter.wind", wetterObject.wind);
-		that.set("wetter.wechselhaft", wetterObject.wechselhaft);
-		that.set("wetter.wechselhaftItem", wetterObject.wechselhaftItem);
+		that.set("wetter", JSON.decode(JSON.encode(wetterObject)));
+//		that.set("wetter.temperatur", wetterObject.temperatur);
+//		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
+//		that.set("wetter.bewoelkung", wetterObject.bewoelkung);
+//		that.set("wetter.niederschlag", wetterObject.niederschlag);
+//		that.set("wetter.wind", wetterObject.wind);
+//		that.set("wetter.wechselhaft", wetterObject.wechselhaft);
+//		that.set("wetter.wechselhaftItem", wetterObject.wechselhaftItem);
 	}
 	
 	, startUhrzeit: null
@@ -6059,14 +6059,15 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		if (isFirstLoad) {
 			// setting defaults for contentBinding
-			//that.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
-			that.set("wetter.temperatur", DigiWebApp.BautagebuchMainController.wetterDefaults.temperatur);
-			that.set("wetter.luftfeuchtigkeit", DigiWebApp.BautagebuchMainController.wetterDefaults.luftfeuchtigkeit);
-			that.set("wetter.bewoelkung", DigiWebApp.BautagebuchMainController.wetterDefaults.bewoelkung);
-			that.set("wetter.niederschlag", DigiWebApp.BautagebuchMainController.wetterDefaults.niederschlag);
-			that.set("wetter.wind", DigiWebApp.BautagebuchMainController.wetterDefaults.wind);
-			that.set("wetter.wechselhaft", DigiWebApp.BautagebuchMainController.wetterDefaults.wechselhaft);
-			that.set("wetter.wechselhaftItem", DigiWebApp.BautagebuchMainController.wetterDefaults.wechselhaftItem);
+			that.setWetter(DigiWebApp.BautagebuchMainController.wetterDefaults);
+//			//that.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
+//			that.set("wetter.temperatur", DigiWebApp.BautagebuchMainController.wetterDefaults.temperatur);
+//			that.set("wetter.luftfeuchtigkeit", DigiWebApp.BautagebuchMainController.wetterDefaults.luftfeuchtigkeit);
+//			that.set("wetter.bewoelkung", DigiWebApp.BautagebuchMainController.wetterDefaults.bewoelkung);
+//			that.set("wetter.niederschlag", DigiWebApp.BautagebuchMainController.wetterDefaults.niederschlag);
+//			that.set("wetter.wind", DigiWebApp.BautagebuchMainController.wetterDefaults.wind);
+//			that.set("wetter.wechselhaft", DigiWebApp.BautagebuchMainController.wetterDefaults.wechselhaft);
+//			that.set("wetter.wechselhaftItem", DigiWebApp.BautagebuchMainController.wetterDefaults.wechselhaftItem);
 		}
 	}
 	
@@ -14674,7 +14675,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3022'
+              value: 'Build: 3023'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
