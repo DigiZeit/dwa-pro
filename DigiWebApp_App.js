@@ -5032,7 +5032,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3040
+    , softwareVersion: 3041
 
 
     /**
@@ -14824,7 +14824,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3040'
+              value: 'Build: 3041'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16429,7 +16429,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
             	
         , materialInput: M.TextFieldView.design({
 	         events: {
-	            change: {
+        		keyup: {
 	                /* executed in scope of DOMWindow because no target defined */
 	            	action: function(selectedValue, selectedItem) {
 	        				DigiWebApp.BautagebuchMaterialienDetailsController.set("artikel", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'materialInput').getValue());
@@ -16468,7 +16468,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	
         , mengeneinheitInput: M.TextFieldView.design({
 	         events: {
-                change: {
+        		keyup: {
                     /* executed in scope of DOMWindow because no target defined */
 	            	action: function(selectedValue, selectedItem) {
             				DigiWebApp.BautagebuchMaterialienDetailsController.set("einheit", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'mengeneinheitInput').getValue());
@@ -16480,7 +16480,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
         , mengenInput: M.TextFieldView.design({
 	          label: M.I18N.l('BautagebuchMenge')
 	        , events: {
-                change: {
+        		keyup: {
                     /* executed in scope of DOMWindow because no target defined */
 	            	action: function(selectedValue, selectedItem) {
             				DigiWebApp.BautagebuchMaterialienDetailsController.set("menge", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'mengenInput').getValue());
