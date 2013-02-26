@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3003
+    , softwareVersion: 3004
 
 
     /**
@@ -8125,7 +8125,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchMainController.init(isFirstLoad);
 		if (isFirstLoad) {
 		}
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagebericht.findSorted());
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
 
 	, neu: function() {
@@ -14566,7 +14566,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3003'
+              value: 'Build: 3004'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
