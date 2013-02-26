@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3042
+    , softwareVersion: 3043
 
 
     /**
@@ -14827,7 +14827,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3042'
+              value: 'Build: 3043'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20277,19 +20277,19 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'datum startUhrzeit orderName'
+    , childViews: 'positionName activityName menge einheit artikel'
 
     , events: {
         tap: {
 			action: function(id, m_id) {
 			    var view = M.ViewManager.getViewById(id);
 			    var view_modelId = view.modelId;
-			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
+			    _.each(DigiWebApp.BautagebuchMaterialienListeController.items, function(selectedItem) {
 					if (selectedItem.m_id === view_modelId) {
-						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
+						DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
 					}
 				});
-			    DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
+			    DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
 			}
         }
     }
@@ -20299,11 +20299,10 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	    , value: ' '
 	})
 	
-	, datum: M.LabelView.design({
+	, positionName: M.LabelView.design({
 	    cssClass: 'normal unselectable'
-	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= datum %>'
+	        valuePattern: '<%= positionName %>'
 	      , operation: function(v) {
 					if (v !== "") {
 						return v;
@@ -20314,36 +20313,63 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	  }
 	})
 	
-	, startUhrzeit: M.LabelView.design({
+	, activityName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= activityName %>'
+	      , operation: function(v) {
+					if (v !== "") {
+						return ", " + v + ":";
+					} else {
+						return ":";
+					}
+	          }
+	  }
+	})
+	
+	, menge: M.LabelView.design({
 	    cssClass: 'normal unselectable'
 	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= startUhrzeit %>'
+	        valuePattern: '<%= menge %>'
 	      , operation: function(v) {
 					if (v !== "") {
-						return ", " + M.I18N.l('BautagebuchStartingFrom') + " " + v;
+						return v;
 					} else {
 						return "";
 					}
 	          }
 	  }
 	})
-
-	, orderName: M.LabelView.design({
+	
+	, einheit: M.LabelView.design({
 	    cssClass: 'normal unselectable'
+	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= orderName %>'
+	        valuePattern: '<%= einheit %>'
 	      , operation: function(v) {
-				if (v !== "") {
-					return v;
-				} else {
-					return "";
-				}
+					if (v !== "") {
+						return " " + v;
+					} else {
+						return "";
+					}
 	          }
 	  }
 	})
-
-    
+	, artikel: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= artikel %>'
+	      , operation: function(v) {
+					if (v !== "") {
+						return " " + v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
 });
 
 
