@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3046
+    , softwareVersion: 3047
 
 
     /**
@@ -14827,7 +14827,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3046'
+              value: 'Build: 3047'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20854,7 +20854,7 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 		        valuePattern: '<%= einheit %>'
 		      , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return " " + v ".";
+							return " " + v + ".";
 						} else {
 							return "";
 						}
