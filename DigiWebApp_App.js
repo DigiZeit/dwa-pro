@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3014
+    , softwareVersion: 3015
 
 
     /**
@@ -14663,7 +14663,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3014'
+              value: 'Build: 3015'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20811,7 +20811,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup startUhrzeit zeitenButton materialienButton notizenButton medienButton wetterButton spacer1 speichernButton'
+    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup startUhrzeit spacer2 zeitenButton materialienButton notizenButton medienButton wetterButton spacer1 speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -20819,11 +20819,15 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             value: '&nbsp;<br>'
         })
 
-	    , startUhrzeit: M.GridView.design({
+        , spacer2: M.LabelView.design({
+            value: '&nbsp;<br>'
+        })
+
+        , startUhrzeit: M.GridView.design({
 	            childViews: 'startUhrzeitLabel startUhrzeitInput'
 	          , layout: M.TWO_COLUMNS
 	          , startUhrzeitLabel: M.LabelView.design({
-		    	    cssClass: 'whiteLabel'
+		    	    cssClass: 'whiteText'
 	              , value: M.I18N.l('BautagebuchStartUhrzeit')
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
@@ -21003,7 +21007,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
   	
 	    , zeitenButton: M.ButtonView.design({
 	          value: M.I18N.l('BautagebuchZeiten')
-	        , cssClass: 'marginTop12'
+	        //, cssClass: 'marginTop12'
 	        //, anchorLocation: M.CENTER
 	        , events: {
 	            tap: {
