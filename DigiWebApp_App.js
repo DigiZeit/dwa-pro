@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3034
+    , softwareVersion: 3035
 
 
     /**
@@ -8192,7 +8192,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		
 		DigiWebApp.BautagebuchBautageberichtDetailsController.init(YES);
 		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
-			DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", D8.now().format("HH:mm"));
+			DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", D8.now().format("HH:MM"));
 		} else {
 			DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
 		}
@@ -14667,7 +14667,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3034'
+              value: 'Build: 3035'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
