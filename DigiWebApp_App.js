@@ -4944,7 +4944,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3005
+    , softwareVersion: 3006
 
 
     /**
@@ -14613,7 +14613,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3005'
+              value: 'Build: 3006'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19974,20 +19974,14 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
-//				var doShow = NO;
-//			    var view = M.ViewManager.getViewById(id);
-//			    var view_modelId = view.modelId;
-//			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(selectedItem) {
-//					if (selectedItem.m_id === view_modelId) {
-//						if (selectedItem.get("datum") !== "-") {
-//							DigiWebApp.ZeitbuchungenController.set('datum', selectedItem.get("datum"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', selectedItem.get("mitarbeiterId"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', selectedItem.get("nameVorname"));
-//							doShow = YES;
-//						}
-//					}
-//				});
-//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
 			}
         }
     }
@@ -20666,9 +20660,9 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterList", mitarbeiterArray);
 					
 			  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
-						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput).disable();
+						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].disable();
 					} else {
-						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput).enable();
+						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].enable();
 					}
 			}
         }
@@ -21309,7 +21303,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 	            childViews: 'startUhrzeitLabel startUhrzeitInput'
 	          , layout: M.TWO_COLUMNS
 	          , startUhrzeitLabel: M.LabelView.design({
-	              value: M.I18N.l('BautagebuchStartUhrzeit')
+	              value: M.I18N.l('BautagebuchTaeglicheStartUhrzeit')
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
 	        	    contentBindingReverse: {
