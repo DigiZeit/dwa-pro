@@ -4938,7 +4938,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3001
+    , softwareVersion: 3003
 
 
     /**
@@ -8125,7 +8125,7 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchMainController.init(isFirstLoad);
 		if (isFirstLoad) {
 		}
-		
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagebericht.findSorted());
 	}
 
 	, neu: function() {
@@ -13351,7 +13351,6 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
 	
 	, mengeneinheiten: null
 
-
 	, wetterDefaults: {
 	      temperatur: 0   // -50 bis +50
 		, luftfeuchtigkeit: 0  // 0% - 100%
@@ -14567,7 +14566,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3001'
+              value: 'Build: 3003'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19916,7 +19915,7 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'bezeichnungLabel bezeichnung'
+    , childViews: 'datum orderName'
 
     , events: {
         tap: {
@@ -19944,22 +19943,20 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	    , value: ' '
 	})
 	
-	, bezeichnungLabel: M.LabelView.design({
+	, datum: M.LabelView.design({
 	    cssClass: 'normal unselectable'
-	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= bezeichnungLabel %>'
+	        valuePattern: '<%= datum %>'
 	      , operation: function(v) {
 					return v;
 	          }
 	  }
 	})
 	
-	, bezeichnung: M.LabelView.design({
+	, orderName: M.LabelView.design({
 	    cssClass: 'normal unselectable'
-	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= bezeichnung %>'
+	        valuePattern: '<%= orderName %>'
 	      , operation: function(v) {
 				if (v !== "-") {
 					return v;
