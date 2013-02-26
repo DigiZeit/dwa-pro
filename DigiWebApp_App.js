@@ -72,7 +72,11 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -965,7 +969,11 @@ DigiWebApp.BautagebuchMaterial = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -1228,7 +1236,11 @@ DigiWebApp.BautagebuchMaterialBuchung = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -1375,7 +1387,11 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -1486,7 +1502,11 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -1591,7 +1611,11 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -1772,7 +1796,11 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -2702,17 +2730,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 
 	, deleteAll: function() {
         _.each(this.find(), function(el) {
-			if (el.hasFileName()) {
-		    	// delete mediafile from device
-		    	el.deleteFile(function(n){
-			    	// delete record from localStorage only if file
-		    		// was deleted successfully from device
-	        		el.deleteSorted();
-		    	});
-	    	} else {
-	    		// there is no file to delete, so delete the record
-        		el.deleteSorted();
-	    	}
+			el.deleteSorted();
         });
     }
 
@@ -2739,7 +2757,17 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
         }
 
-	    that.del();
+        if (el.hasFileName()) {
+	    	// delete mediafile from device
+	    	el.deleteFile(function(n){
+		    	// delete record from localStorage only if file
+	    		// was deleted successfully from device
+	    		that.del();
+	    	});
+    	} else {
+    		// there is no file to delete, so delete the record
+    		that.del();
+    	}	    
 	}
 	
 	, saveSorted: function() {
@@ -2750,7 +2778,6 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         var keys = [];
         try {
 	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	console.log(keyString);
         	if ( keyString !== null) {
         		keys = JSON.parse(keyString);
         	}
@@ -3044,17 +3071,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
     , deleteAll: function() {
 		var that = this;
 	    _.each(that.find(), function(el) {
-			if (el.hasFileName()) {
-		    	// delete mediafile from device
-		    	el.deleteFile(function(n){
-			    	// delete record from localStorage only if file
-		    		// was deleted successfully from device
-			        el.del();	    		
-		    	});
-	    	} else {
-	    		// there is no file to delete, so delete the record
-	    		el.del();
-	    	}
+			el.deleteSorted();
 	    });
 	}
 		
@@ -3273,7 +3290,17 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
 	    }
 	
-	    that.del();
+        if (el.hasFileName()) {
+	    	// delete mediafile from device
+	    	el.deleteFile(function(n){
+		    	// delete record from localStorage only if file
+	    		// was deleted successfully from device
+	    		that.del();
+	    	});
+    	} else {
+    		// there is no file to delete, so delete the record
+    		that.del();
+    	}	    
 	}
 	
 	, saveSorted: function() {
@@ -3290,7 +3317,11 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -3385,7 +3416,11 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
 	    } catch(e) {
 	    	console.error("ERROR in " + that.name + ".saveSorted: " + e);
 	    }
-	    keys.push(that.m_id);
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
 	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
 	}
 	
@@ -4949,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3009
+    , softwareVersion: 3011
 
 
     /**
@@ -6042,6 +6077,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchWechselhaft')
 	      , isSelected: myItem.get("wechselhaft")
 		}]);		
+		that.set("startUhrzeit", myItem.get("startUhrzeit"));
 		that.set("datum", myItem.get("datum"));
 		that.set("projektleiterId", myItem.get("projektleiterId"));
 		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
@@ -6051,10 +6087,11 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 
 	, save: function() {
 		var that = this;
-		console.log("save");
 		
 		that.item.set("datum", that.datum);
 		
+		that.item.set("startUhrzeit", that.startUhrzeit);
+
 		that.item.set("projektleiterId", that.projektleiterId);
 		
 		that.item.set("orderId", that.auftragsId);
@@ -6075,13 +6112,15 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	
 	, delete: function() {
 		var that = this;
-		console.log("delete");
+		that.item.deleteSorted();
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
 
 	, finish: function() {
 		var that = this;
 		console.log("finish");
 		that.save();
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
 
 });
@@ -8156,10 +8195,13 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		}
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", D8.now().format("dd.mm.yyyy"));
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterId", null);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsId", null);
+		DigiWebApp.BautagebuchBautageberichtDetailsController.set("auftragsName", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterIds", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("item", DigiWebApp.BautagebuchBautagesbericht.createRecord({
 			  datum: DigiWebApp.BautagebuchBautageberichtDetailsController.datum
+			, startUhrzeit: DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit
 		}));
 		
 		DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
@@ -14622,7 +14664,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3009'
+              value: 'Build: 3011'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19978,7 +20020,7 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'datum orderName'
+    , childViews: 'datum startUhrzeit orderName'
 
     , events: {
         tap: {
