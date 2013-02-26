@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3049
+    , softwareVersion: 3050
 
 
     /**
@@ -6138,7 +6138,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchWechselhaft')
 	      , isSelected: myItem.get("wechselhaft")
 		}]);		
-		
+		that.setPositionen(myItem.get("orderId"));
 	}
 
 	, save: function() {
@@ -14825,7 +14825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3049'
+              value: 'Build: 3050'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
