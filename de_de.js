@@ -315,7 +315,7 @@ M.I18N.de_de = {
 	, BautagebuchNotiz: "Notiz"
 	, BautagebuchMedien: "Medien"
 	, BautagebuchMedium: "Medium"
-	, BautagebuchStartUhrzeit: "tägliche Startzeit"
+	, BautagebuchTaeglicheStartUhrzeit: "daily start time"
 	, BautagebuchProjektleiter: "Projektleiter"
 	, BautagebuchManuelleEingabe: "manuelle Eingabe"
 	, BautagebuchMenge: "Menge"
@@ -341,6 +341,7 @@ M.I18N.de_de = {
 	, BautagebuchWechselhaft: "wechselhaft"
 	, BautagebuchInStundenBuchen: "Erfassung in Stunden"
 	, BautagebuchStartingFrom: "ab"
+	, BautagebuchStartUhrzeit: "Startuhrzeit"
 	, bautagebuchLimit_autoStartUhrzeit: "automatische Startuhrzeit"
     // Ende::Bautagebuch
 	
