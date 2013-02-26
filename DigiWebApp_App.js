@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3019
+    , softwareVersion: 3020
 
 
     /**
@@ -14674,7 +14674,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3019'
+              value: 'Build: 3020'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21066,8 +21066,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
 	    , speichernButton: M.ButtonView.design({
 	          value: M.I18N.l('save')
-	        //, cssClass: 'digiButton'
-	        //, anchorLocation: M.CENTER
+	        , cssClass: 'digiButton'
+	        , anchorLocation: M.CENTER
 	        , events: {
 	            tap: {
 	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
