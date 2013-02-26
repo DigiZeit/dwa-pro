@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3023
+    , softwareVersion: 3024
 
 
     /**
@@ -6043,7 +6043,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, wetter: null // in model
 	, setWetter: function(wetterObject) {
 		var that = this;
-		that.set("wetter", JSON.decode(JSON.encode(wetterObject)));
+		that.set("wetter", JSON.parse(JSON.stringify(wetterObject)));
 //		that.set("wetter.temperatur", wetterObject.temperatur);
 //		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
 //		that.set("wetter.bewoelkung", wetterObject.bewoelkung);
@@ -6078,17 +6078,18 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		//that.set("wetter", DigiWebApp.BautagebuchMainController.wetterDefaults);
 
 		that.set("item", myItem); 
-		that.set("wetter.temperatur", myItem.get("temperatur"));
-		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
-		that.set("wetter.bewoelkung", myItem.get("bewoelkung"));
-		that.set("wetter.niederschlag", myItem.get("niederschlag"));
-		that.set("wetter.wind", myItem.get("wind"));
-		that.set("wetter.wechselhaft", myItem.get("wechselhaft"));
-		that.set("wetter.wechselhaftItem", [{
-	        value: 'wechselhaft'
-	      , label: M.I18N.l('BautagebuchWechselhaft')
-	      , isSelected: myItem.get("wechselhaft")
-		}]);		
+		that.setWetter(myItem.get("wetter"));
+//		that.set("wetter.temperatur", myItem.get("temperatur"));
+//		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
+//		that.set("wetter.bewoelkung", myItem.get("bewoelkung"));
+//		that.set("wetter.niederschlag", myItem.get("niederschlag"));
+//		that.set("wetter.wind", myItem.get("wind"));
+//		that.set("wetter.wechselhaft", myItem.get("wechselhaft"));
+//		that.set("wetter.wechselhaftItem", [{
+//	        value: 'wechselhaft'
+//	      , label: M.I18N.l('BautagebuchWechselhaft')
+//	      , isSelected: myItem.get("wechselhaft")
+//		}]);		
 		that.set("startUhrzeit", myItem.get("startUhrzeit"));
 		that.set("datum", myItem.get("datum"));
 		that.set("projektleiterId", myItem.get("projektleiterId"));
@@ -14675,7 +14676,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3023'
+              value: 'Build: 3024'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
