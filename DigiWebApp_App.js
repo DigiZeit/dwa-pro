@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3031
+    , softwareVersion: 3032
 
 
     /**
@@ -14667,7 +14667,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3031'
+              value: 'Build: 3032'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15119,7 +15119,7 @@ DigiWebApp.SettingsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
         //  childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory autoSaveGPSData GPSDataIsMandatory useTransitionsSetting grid'
-          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory autoSaveGPSData useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer grid'
+          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory autoSaveGPSData useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer bautagebuchLimit_autoStartUhrzeit grid'
         , daysToHoldBookingsOnDeviceSliderContainer: M.ContainerView.design({
       	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
 		        , daysToHoldBookingsOnDeviceSlider: M.SliderView.design({
