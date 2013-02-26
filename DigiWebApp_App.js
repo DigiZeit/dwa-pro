@@ -4554,14 +4554,14 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 	, save: function() {
 		var that = this;
 		that.item.saveSorted();
-		DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
 	}
 	
 	, delete: function() {
 		var that = this;
 		that.item.deleteSorted();
-		DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
 	}
 	
@@ -4591,14 +4591,14 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 	, save: function() {
 		var that = this;
 		that.item.saveSorted();
-		DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchNotizenListePageTransition();
 	}
 	
 	, delete: function() {
 		var that = this;
 		that.item.deleteSorted();
-		DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchNotizenListePageTransition();
 	}
 	
@@ -5032,7 +5032,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3036
+    , softwareVersion: 3037
 
 
     /**
@@ -11318,14 +11318,14 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 	, save: function() {
 		var that = this;
 		that.item.saveSorted();
-		DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
 	}
 	
 	, delete: function() {
 		var that = this;
 		that.item.deleteSorted();
-		DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id)));
+		DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
 	}
 	
@@ -14791,7 +14791,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3036'
+              value: 'Build: 3037'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
