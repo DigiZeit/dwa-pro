@@ -48,7 +48,7 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -945,7 +945,7 @@ DigiWebApp.BautagebuchMaterial = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -1212,7 +1212,7 @@ DigiWebApp.BautagebuchMaterialBuchung = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -1363,7 +1363,7 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -1478,7 +1478,7 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -1587,7 +1587,7 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -1772,7 +1772,7 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -2750,7 +2750,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    }
         if(keys){
             _.each(keys, function(k) {
-            	if (k.m_id !== that.m_id) {
+            	if (k !== that.m_id) {
             		newKeys.push(k);
             	}
             });
@@ -3283,7 +3283,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -3392,7 +3392,7 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
 	    }
 	    if(keys){
 	        _.each(keys, function(k) {
-	        	if (k.m_id !== that.m_id) {
+	        	if (k !== that.m_id) {
 	        		newKeys.push(k);
 	        	}
 	        });
@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3029
+    , softwareVersion: 3030
 
 
     /**
@@ -6065,6 +6065,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		
 		that.set("item", myItem); 
+		
+		that.set("datum", myItem.get("datum"));
+		that.set("projektleiterId", myItem.get("projektleiterId"));
+		that.set("auftragsId", myItem.get("orderId"));
+		that.set("auftragsName", myItem.get("orderName"));
+		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
+		that.set("startUhrzeit", myItem.get("startUhrzeit"));
+
 		that.setWetter(DigiWebApp.BautagebuchMainController.wetterDefaults);
 		that.set("wetter.temperatur", myItem.get("temperatur"));
 		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
@@ -6077,12 +6085,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchWechselhaft')
 	      , isSelected: myItem.get("wechselhaft")
 		}]);		
-		that.set("startUhrzeit", myItem.get("startUhrzeit"));
-		that.set("datum", myItem.get("datum"));
-		that.set("projektleiterId", myItem.get("projektleiterId"));
-		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
-		that.set("auftragsId", myItem.get("orderId"));
-		that.set("auftragsName", myItem.get("orderName"));
+		
 	}
 
 	, save: function() {
@@ -6114,6 +6117,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		that.item.deleteSorted();
 		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+		DigiWebApp.NaviagtionController.backToBautagebuchBautageberichteListePageTransition();
 	}
 
 	, finish: function() {
@@ -14663,7 +14667,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3029'
+              value: 'Build: 3030'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
