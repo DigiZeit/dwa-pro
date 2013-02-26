@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3052
+    , softwareVersion: 3053
 
 
     /**
@@ -14825,7 +14825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3052'
+              value: 'Build: 3053'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16282,7 +16282,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    positionenArray = _.compact(positionenArray);
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 
-					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionsId);
+					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
 
 					// verfügbare Materialien kopieren und ausgewähltes selektieren
 				    var materialienArray = _.map(DigiWebApp.BautagebuchMainController.materialien, function(o) {
