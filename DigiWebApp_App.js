@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3011
+    , softwareVersion: 3012
 
 
     /**
@@ -6118,7 +6118,6 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 
 	, finish: function() {
 		var that = this;
-		console.log("finish");
 		that.save();
 		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
@@ -14664,7 +14663,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3011'
+              value: 'Build: 3012'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20824,10 +20823,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	            childViews: 'startUhrzeitLabel startUhrzeitInput'
 	          , layout: M.TWO_COLUMNS
 	          , startUhrzeitLabel: M.LabelView.design({
-	              value: M.I18N.l('BautagebuchStartUhrzeit')
+		    	    cssClass: 'whiteText marginBottom5px'
+	              , value: M.I18N.l('BautagebuchStartUhrzeit')
 	          })
 	          , startUhrzeitInput: M.TextFieldView.design({
-	        	    contentBindingReverse: {
+		    	    cssClass: 'marginBottom5px'
+	        	  , contentBindingReverse: {
 	                    target: DigiWebApp.BautagebuchBautageberichtDetailsController
 	                  , property: 'startUhrzeit'
 	              }
