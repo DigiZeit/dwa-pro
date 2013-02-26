@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3050
+    , softwareVersion: 3051
 
 
     /**
@@ -6186,7 +6186,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		} else {
 			// verfügbare Positionen kopieren und ausgewähltes selektieren
 		    var positionenArray = _.map(DigiWebApp.Position.find(), function(pos) {
-		    	if ( typeof(o) === "undefined" ) {
+		    	if ( typeof(pos) === "undefined" ) {
 		    		console.log("UNDEFINED Position");
 		    	} else {
 		    		if (pos.get('orderId') === auftragsId) {
@@ -13573,7 +13573,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		if (typeof(positionId) !== "undefined") {
 			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
 		    var taetigkeitenArray = _.map(DigiWebApp.Activity.find(), function(act) {
-		    	if ( typeof(o) === "undefined" ) {
+		    	if ( typeof(act) === "undefined" ) {
 		    		console.log("UNDEFINED activity");
 		    	} else {
 		    		if (act.get('positionId') === positionId) {
@@ -14825,7 +14825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3050'
+              value: 'Build: 3051'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
