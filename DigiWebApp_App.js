@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3047
+    , softwareVersion: 3048
 
 
     /**
@@ -13570,9 +13570,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 
 	, setTaetigkeiten: function(positionId) {
 		var that = this;
-		if (typeof(positionId) === "undefined") {
-			return false;
-		} else {
+		if (typeof(positionId) !== "undefined") {
 			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
 		    var taetigkeitenArray = _.map(DigiWebApp.Activity.find(), function(act) {
 		    	if ( typeof(o) === "undefined" ) {
@@ -14827,7 +14825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3047'
+              value: 'Build: 3048'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16284,6 +16282,8 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    positionenArray = _.compact(positionenArray);
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 
+					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionsId);
+
 					// verfügbare Materialien kopieren und ausgewähltes selektieren
 				    var materialienArray = _.map(DigiWebApp.BautagebuchMainController.materialien, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
@@ -16330,9 +16330,6 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
         }
     }
 
-	, controller: DigiWebApp.BautagebuchMaterialienDetailsController
-	, navigationController: DigiWebApp.NavigationController
-	
     , cssClass: 'bautagebuchMaterialienDetailsPage'
 
     , childViews: 'header content'
@@ -16372,7 +16369,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'materialComboBox materialInput spacer1 mengeneinheitComboBox mengeneinheitInput spacer2 mengenInput spacer3 speichernButton'
+    	  childViews: 'positionComboBox activityComboBox materialComboBox materialInput spacer1 mengeneinheitComboBox mengeneinheitInput spacer2 mengenInput spacer3 speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -16407,6 +16404,29 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 		      				DigiWebApp.BautagebuchMaterialienDetailsController.set("positionId", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'positionComboBox').getSelection(YES).value);
 		      				DigiWebApp.BautagebuchMaterialienDetailsController.set("positionName", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'positionComboBox').getSelection(YES).label);
 		      				DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'positionComboBox').getSelection(YES).value);
+                    	}
+                	}
+                }
+        })
+            	
+        , activityComboBox: M.SelectionListView.design({
+
+                /* renders a selection view like check boxes */
+                  selectionMode: M.SINGLE_SELECTION_DIALOG
+                , initialText: M.I18N.l('noData')
+                , label: M.I18N.l('activity')
+                , applyTheme: NO
+                /* this seleciton view has no static entries, instead it is filled via content binding. */
+                , contentBinding: {
+                      target: DigiWebApp.BautagebuchMaterialienDetailsController
+                    , property: 'activityList'
+                }
+                , events: {
+                    change: {
+                    	/* executed in scope of DOMWindow because no target defined */
+                    	action: function(selectedValue, selectedItem) {
+		      				DigiWebApp.BautagebuchMaterialienDetailsController.set("activityId", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'activityComboBox').getSelection(YES).value);
+		      				DigiWebApp.BautagebuchMaterialienDetailsController.set("activityName", M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'activityComboBox').getSelection(YES).label);
                     	}
                 	}
                 }
