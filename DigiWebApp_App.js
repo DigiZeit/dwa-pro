@@ -5032,7 +5032,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3037
+    , softwareVersion: 3038
 
 
     /**
@@ -13536,12 +13536,12 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 	
 	, save: function() {
 		var that = this;
-		that.item,set("positionsId", that.positionsId);
+		that.item.set("positionsId", that.positionsId);
 		that.item.set("materialId", that.materialId);
 		that.item.set("mengeneinheitId", that.mengeneinheitId);
-		that.item,set("artikel", that.artikel);
-		that.item,set("einheit", that.einheit);
-		that.item,set("menge", that.menge);
+		that.item.set("artikel", that.artikel);
+		that.item.set("einheit", that.einheit);
+		that.item.set("menge", that.menge);
 		that.item.saveSorted();
 		DigiWebApp.BautagebuchMaterialienListeController.set("items", DigiWebApp.BautagebuchMaterialBuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchMaterialienListePageTransition();
@@ -14791,7 +14791,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3037'
+              value: 'Build: 3038'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
