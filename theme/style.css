@@ -642,9 +642,9 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 
-.bautagebuchBautageberichtDetailsPage .ui-block-a 
+.bautagebuchBautageberichtDetailsPage .ui-content .ui-block-a 
 {
-    vertical-align: middle;
+    padding-top: 10px;
 }
 
 .bautagebuchWetterPage .centerText {
