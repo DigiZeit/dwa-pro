@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3025
+    , softwareVersion: 3026
 
 
     /**
@@ -6043,6 +6043,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, wetter: null // in model
 	, setWetter: function(wetterObject) {
 		var that = this;
+		debugger;
 		that.set("wetter", JSON.parse(JSON.stringify(wetterObject)));
 //		that.set("wetter.temperatur", wetterObject.temperatur);
 //		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
@@ -14676,7 +14677,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3025'
+              value: 'Build: 3026'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20038,11 +20039,14 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
         tap: {
 			action: function(id, m_id) {
 			    var view = M.ViewManager.getViewById(id);
+			    console.log(view);
 			    var view_modelId = view.modelId;
+			    console.log(view_modelId);
 			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
-					if (selectedItem.m_id === view_modelId) {
-						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
-					}
+			    	console.log(selectedItem);
+					//if (selectedItem.m_id === view_modelId) {
+					//	DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
+					//}
 				});
 			    DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
 			}
