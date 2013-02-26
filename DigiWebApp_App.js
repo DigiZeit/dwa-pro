@@ -2757,9 +2757,9 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
         }
 
-        if (el.hasFileName()) {
+        if (that.hasFileName()) {
 	    	// delete mediafile from device
-	    	el.deleteFile(function(n){
+        	that.deleteFile(function(n){
 		    	// delete record from localStorage only if file
 	    		// was deleted successfully from device
 	    		that.del();
@@ -3290,9 +3290,9 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
 	    }
 	
-        if (el.hasFileName()) {
+        if (that.hasFileName()) {
 	    	// delete mediafile from device
-	    	el.deleteFile(function(n){
+        	that.deleteFile(function(n){
 		    	// delete record from localStorage only if file
 	    		// was deleted successfully from device
 	    		that.del();
@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3012
+    , softwareVersion: 3013
 
 
     /**
@@ -14663,7 +14663,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3012'
+              value: 'Build: 3013'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
