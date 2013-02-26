@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3048
+    , softwareVersion: 3049
 
 
     /**
@@ -13515,7 +13515,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 
 	, activityId: null // in model
 	, activityName: null // in model
-	, taetigkeitenList: null // runtime
+	, activityList: null // runtime
 	
 	, materialId: null // in model
 	, materialienList: null // runtime
@@ -13584,7 +13584,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
 		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
-			that.set("taetigkeitenList", taetigkeitenArray)
+			that.set("activityList", taetigkeitenArray)
 		}
 	}
 
@@ -14825,7 +14825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3048'
+              value: 'Build: 3049'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
