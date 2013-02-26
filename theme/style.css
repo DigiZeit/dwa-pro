@@ -641,6 +641,12 @@ label.ui-input-text, .ui-controlgroup-label {
     color: #FFFFFF;
 }
 
+
+.bautagebuchBautageberichtDetailsPage .ui-block-a 
+{
+    vertical-align: middle;
+}
+
 .bautagebuchWetterPage .centerText {
     text-align: center;
 }
