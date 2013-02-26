@@ -635,7 +635,9 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-bottom: 10px;
 }
 
-.bautagebuchWetterPage .whiteText {
+  .bautagebuchWetterPage .whiteText 
+, .bautagebuchBautageberichtDetailsPage .whiteText 
+{
     color: #FFFFFF;
 }
 
