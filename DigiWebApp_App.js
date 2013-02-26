@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3045
+    , softwareVersion: 3046
 
 
     /**
@@ -14827,7 +14827,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3045'
+              value: 'Build: 3046'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16291,6 +16291,10 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	} else {    
 							if (DigiWebApp.BautagebuchMaterialienDetailsController.materialId) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.materialId);
+	                			$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide();
+							} else {
+								$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).show();
+	                			M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'materialInput').setValue(DigiWebApp.BautagebuchMaterialienDetailsController.einheit);
 							}
 				            return o;
 				    	}
@@ -16304,13 +16308,19 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    		console.log("UNDEFINED mengeneinheit");
 				    	} else {    
 							if (DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId) {
-								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId);
+								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId);				    			
+	                			$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).hide();
+							} else {
+								$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).show();
+	                			M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'mengeneinheitInput').setValue(DigiWebApp.BautagebuchMaterialienDetailsController.einheit);
 							}
 				            return o;
 				    	}
 				    });
 					mengeneinheitenArray = _.compact(mengeneinheitenArray);
-					DigiWebApp.BautagebuchMaterialienDetailsController.set("mengeneinheitenList", mengeneinheitenArray)
+					DigiWebApp.BautagebuchMaterialienDetailsController.set("mengeneinheitenList", mengeneinheitenArray);
+					
+					M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'mengenInput').setValue(DigiWebApp.BautagebuchMaterialienDetailsController.menge);
 			}
         }
         , pagehide: {
@@ -20771,7 +20781,7 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-      , childViews: 'positionName activityName menge einheit artikel'
+      , childViews: 'positionName activityName spacer menge einheit artikel'
 
 	    , events: {
 	        tap: {
@@ -20789,17 +20799,16 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 	    }
 	
 		, spacer: M.LabelView.design({
-		      cssClass: 'unselectable marginBottom12'
-		    , value: ' '
+		      value: ''
 		})
-		
+
 		, positionName: M.LabelView.design({
 		    cssClass: 'normal unselectable'
 	  	  , isInline: YES
 		  , computedValue: {
 		        valuePattern: '<%= positionName %>'
 		      , operation: function(v) {
-						if (v !== "") {
+						if (v !== "" && v !== null) {
 							return v;
 						} else {
 							return "";
@@ -20810,10 +20819,11 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 		
 		, activityName: M.LabelView.design({
 		    cssClass: 'normal unselectable'
+	  	  , isInline: YES
 		  , computedValue: {
 		        valuePattern: '<%= activityName %>'
 		      , operation: function(v) {
-						if (v !== "") {
+						if (v !== "" && v !== null) {
 							return ", " + v + ":";
 						} else {
 							return ":";
@@ -20824,11 +20834,11 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 		
 		, menge: M.LabelView.design({
 		    cssClass: 'normal unselectable'
-		  , isInline: YES
+	  	  , isInline: YES
 		  , computedValue: {
 		        valuePattern: '<%= menge %>'
 		      , operation: function(v) {
-						if (v !== "") {
+						if (v !== "" && v !== null) {
 							return v;
 						} else {
 							return "";
@@ -20843,8 +20853,8 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 		  , computedValue: {
 		        valuePattern: '<%= einheit %>'
 		      , operation: function(v) {
-						if (v !== "") {
-							return " " + v;
+						if (v !== "" && v !== null) {
+							return " " + v ".";
 						} else {
 							return "";
 						}
@@ -20858,8 +20868,8 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 		  , computedValue: {
 		        valuePattern: '<%= artikel %>'
 		      , operation: function(v) {
-						if (v !== "") {
-							return " " + v;
+						if (v !== "" && v !== null) {
+							return " \"" + v + "\"";
 						} else {
 							return "";
 						}
