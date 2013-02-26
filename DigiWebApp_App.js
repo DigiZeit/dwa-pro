@@ -4949,7 +4949,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3008
+    , softwareVersion: 3009
 
 
     /**
@@ -6070,7 +6070,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		that.item.set("wechselhaft", that.wetter.wechselhaft);
 		
 		that.item.saveSorted();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 	}
 	
 	, delete: function() {
@@ -14622,7 +14622,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3008'
+              value: 'Build: 3009'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
