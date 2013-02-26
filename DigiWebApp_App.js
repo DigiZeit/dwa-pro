@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3033
+    , softwareVersion: 3034
 
 
     /**
@@ -14667,7 +14667,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3033'
+              value: 'Build: 3034'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20821,7 +20821,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup startUhrzeit spacer2 zeitenButton materialienButton notizenButton medienButton wetterButton spacer1 speichernButton'
+    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup startUhrzeit spacer2 zeitenButton materialienButton notizenButton medienButton wetterButton spacer1 grid'
         	  
         , cssClass: 'content'
     	
@@ -21105,7 +21105,62 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	          }
 	    })
 
-	    , abschliessenButton: M.ButtonView.design({
+        , grid: M.GridView.design({
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'digiButton'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('assume')
+                , cssClass: 'digiButton'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+		                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
+		                //action: 'save'
+		    			action: function() {
+		    				var that = this;
+					    	M.DialogView.actionSheet({
+						          title: M.I18N.l('BautagebuchSaveOrClose')
+						        , cancelButtonValue: M.I18N.l('cancel')
+						        , otherButtonValues: [M.I18N.l('BautagebuchBautageberichtAbschliessen')]
+						        , otherButtonTags: ["finish"]
+						        , destructiveButtonValue: M.I18N.l('save')
+						        , callbacks: {
+					    			  destruction: {action: function() {
+					    				DigiWebApp.BautagebuchBautageberichtDetailsController.save();
+					    				DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+					    			}}
+					    			, other: {action: function(buttonTag) {
+					    			    switch(buttonTag) {
+						    		        case 'finish':
+							    				that.controller.finish();
+					    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+						    		            break;
+						    		        default:
+						    		            console.log("unknonw ButtonTag");
+						    		            break;
+					    			    }
+					    			}}
+					    			, cancel: {action: function() {
+					    				//console.log(M.I18N.l('cancel'));
+					    			}}
+					    		}
+						    });
+			    		}
+                    }
+                }
+            })
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        })
+
+        , abschliessenButton: M.ButtonView.design({
 	          value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
 	        //, cssClass: 'digiButton'
 	        //, anchorLocation: M.CENTER
