@@ -295,7 +295,7 @@ M.I18N.de_de = {
 	, october: "Oktober"
 	, november: "November"
 	, december: "Dezember"
-
+		
 	// Start::Bautagebuch
 	, Bautagebuch: "Bautagebuch"
 	, BautagebuchBautageberichte: "Bautageberichte"
@@ -340,6 +340,8 @@ M.I18N.de_de = {
 	, BautagebuchWindStuermisch: "stürmisch"
 	, BautagebuchWechselhaft: "wechselhaft"
 	, BautagebuchInStundenBuchen: "Erfassung in Stunden"
+	, BautagebuchStartingFrom: "ab"
+	, bautagebuchLimit_autoStartUhrzeit: "automatische Startuhrzeit"
     // Ende::Bautagebuch
 	
 };

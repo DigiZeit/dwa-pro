@@ -340,6 +340,8 @@ M.I18N.en_us = {
 	, BautagebuchWindStuermisch: "stormy"
 	, BautagebuchWechselhaft: "unsettled"
 	, BautagebuchInStundenBuchen: "Recording of hours"
+	, BautagebuchStartingFrom: "starting from"
+	, bautagebuchLimit_autoStartUhrzeit: "auto daily start time"
     // Ende::Bautagebuch
 
 };

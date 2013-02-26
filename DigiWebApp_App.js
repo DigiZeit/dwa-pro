@@ -892,6 +892,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , daysToHoldBookingsOnDevice: M.Model.attr('String')
 
+    , bautagebuchLimit_autoStartUhrzeit: M.Model.attr('Boolean')
+
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -2440,6 +2442,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     __name__: 'BautagebuchBautagesbericht'
 
     , datum: M.Model.attr('String', {
+        isRequired: YES
+    })
+
+    , startUhrzeit: M.Model.attr('String', {
         isRequired: YES
     })
 
@@ -4122,7 +4128,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
             }
             // End::Anwesenheitsliste
 
-            // Start::Anwesenheitsliste (408)
+            // Start::Bautagebuch (412)
             var BautagebuchAvailable = DigiWebApp.SettingsController.featureAvailable('412');
             
             if (BautagebuchAvailable) {
@@ -4133,7 +4139,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
                     , id: 'bautagebuch'
                 });	
             }
-            // End::Anwesenheitsliste
+            // End::Bautagebuch
 
             // finish the Dashboard with the Settings-, Update- and the Info-Page
             items.push({
@@ -4938,7 +4944,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3004
+    , softwareVersion: 3005
 
 
     /**
@@ -5995,6 +6001,8 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, auftraegeList: null // runtime
 	
 	, wetter: null // in model
+	
+	, startUhrzeit: null
 		
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -8132,6 +8140,11 @@ DigiWebApp.BautagebuchBautageberichteListeController = M.Controller.extend({
 		var that = this;
 		
 		DigiWebApp.BautagebuchBautageberichtDetailsController.init(YES);
+		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
+			DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", D8.now().format("HH:ii"));
+		} else {
+			DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
+		}
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("datum", D8.now().format("dd.mm.yyyy"));
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("projektleiterId", null);
 		DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterIds", null);
@@ -12119,6 +12132,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , remarkIsMandatory: false
         , useTransitionsSetting: true
         , daysToHoldBookingsOnDevice: '10'
+        , bautagebuchLimit_autoStartUhrzeit: false
     }
 
     , defaultsettings: null
@@ -12180,6 +12194,15 @@ DigiWebApp.SettingsController = M.Controller.extend({
         }
         // End::Zeitbuchungen für X Tage vorhalten
         
+        // Start::Bautagebuch (412)
+        if (DigiWebApp.SettingsController.featureAvailable('412')) {
+        	$('#' + DigiWebApp.SettingsPage.content.bautagebuchLimit_autoStartUhrzeit.id).show();
+        } else {
+        	$('#' + DigiWebApp.SettingsPage.content.bautagebuchLimit_autoStartUhrzeit.id).hide();
+        }
+        // End::Bautagebuch
+
+        
         DigiWebApp.ApplicationController.enforceChefToolOnly();
         
         $('#' + DigiWebApp.SettingsPage.content.useTransitionsSetting.id).hide();
@@ -12209,7 +12232,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
             var GPSDataIsMandatory = record.get('GPSDataIsMandatory');
             if (!GPSDataIsMandatory) GPSDataIsMandatory = DigiWebApp.SettingsController.defaultsettings.get("GPSDataIsMandatory");
             
-        	settings = {
+            var bautagebuchLimit_autoStartUhrzeit = record.get('bautagebuchLimit_autoStartUhrzeit');
+            if (!bautagebuchLimit_autoStartUhrzeit) bautagebuchLimit_autoStartUhrzeit = DigiWebApp.SettingsController.defaultsettings.get("bautagebuchLimit_autoStartUhrzeit");
+
+            settings = {
             	  debug: [{
                       value: record.get('debug')
                     , label: 'debug'
@@ -12256,6 +12282,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
                     , label: M.I18N.l('autoSaveGPSData')
                     , isSelected: record.get('autoSaveGPSData')
                 }]
+                , bautagebuchLimit_autoStartUhrzeit: [{
+	                    value: bautagebuchLimit_autoStartUhrzeit
+	                  , label: M.I18N.l('bautagebuchLimit_autoStartUhrzeit')
+	                  , isSelected: bautagebuchLimit_autoStartUhrzeit
+	              }]
                 , GPSDataIsMandatory: [{
                       value: GPSDataIsMandatory
                     , label: M.I18N.l('GPSDataIsMandatory')
@@ -12315,6 +12346,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
                       value: DigiWebApp.SettingsController.defaultsettings.get("autoSaveGPSData")
                     , label: M.I18N.l('autoSaveGPSData')
                 }]
+                , bautagebuchLimit_autoStartUhrzeit: [{
+                      value: DigiWebApp.SettingsController.defaultsettings.get("bautagebuchLimit_autoStartUhrzeit")
+                    , label: M.I18N.l('bautagebuchLimit_autoStartUhrzeit')
+                }]
                 , GPSDataIsMandatory: [{
                       value: DigiWebApp.SettingsController.defaultsettings.get("GPSDataIsMandatory")
                     , label: M.I18N.l('GPSDataIsMandatory')
@@ -12370,15 +12405,22 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var autoTransferAfterBookTime   = $('#' + M.ViewManager.getView('settingsPage', 'autoTransferAfterBookTimeCheck').id   + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         var autoTransferAfterClosingDay = $('#' + M.ViewManager.getView('settingsPage', 'autoTransferAfterClosingDayCheck').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         var autoSaveGPSData             = $('#' + M.ViewManager.getView('settingsPage', 'autoSaveGPSData').id                  + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var remarkIsMandatory           = NO;
+        var useTransitionsSetting       = $('#' + M.ViewManager.getView('settingsPage', 'useTransitionsSetting').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+
+        var remarkIsMandatory = NO;
         if (M.ViewManager.getView('settingsPage', 'remarkIsMandatory') !== null) {
-        	remarkIsMandatory           = $('#' + M.ViewManager.getView('settingsPage', 'remarkIsMandatory').id                + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        	remarkIsMandatory = $('#' + M.ViewManager.getView('settingsPage', 'remarkIsMandatory').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
+
         var GPSDataIsMandatory = NO;
         if (M.ViewManager.getView('settingsPage', 'GPSDataIsMandatory') !== null) {
-        	remarkIsMandatory           = $('#' + M.ViewManager.getView('settingsPage', 'GPSDataIsMandatory').id                + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        	GPSDataIsMandatory = $('#' + M.ViewManager.getView('settingsPage', 'GPSDataIsMandatory').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
-        var useTransitionsSetting       = $('#' + M.ViewManager.getView('settingsPage', 'useTransitionsSetting').id                  + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+
+        var bautagebuchLimit_autoStartUhrzeit = NO;
+        if (M.ViewManager.getView('settingsPage', 'bautagebuchLimit_autoStartUhrzeit') !== null) {
+        	bautagebuchLimit_autoStartUhrzeit = $('#' + M.ViewManager.getView('settingsPage', 'bautagebuchLimit_autoStartUhrzeit').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        }
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -12463,6 +12505,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('autoTransferAfterBookTime', autoTransferAfterBookTime);
                                                     record.set('autoTransferAfterClosingDay', autoTransferAfterClosingDay);
                                                     record.set('autoSaveGPSData', autoSaveGPSData);
+                                                    record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                                     record.set('remarkIsMandatory', remarkIsMandatory);
                                                     record.set('useTransitionsSetting', useTransitionsSetting);
@@ -12513,6 +12556,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('autoTransferAfterBookTime', autoTransferAfterBookTime);
                                     record.set('autoTransferAfterClosingDay', autoTransferAfterClosingDay);
                                     record.set('autoSaveGPSData', autoSaveGPSData);
+                                    record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                     record.set('remarkIsMandatory', remarkIsMandatory);
                                     record.set('useTransitionsSetting', useTransitionsSetting);
@@ -12541,6 +12585,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('autoTransferAfterBookTime', autoTransferAfterBookTime);
                                 record.set('autoTransferAfterClosingDay', autoTransferAfterClosingDay);
                                 record.set('autoSaveGPSData', autoSaveGPSData);
+                                record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
@@ -12569,6 +12614,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('autoTransferAfterBookTime', autoTransferAfterBookTime);
                                 record.set('autoTransferAfterClosingDay', autoTransferAfterClosingDay);
                                 record.set('autoSaveGPSData', autoSaveGPSData);
+                                record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
@@ -12600,6 +12646,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , autoTransferAfterClosingDay: autoTransferAfterClosingDay
                                 , autoSaveGPSData: autoSaveGPSData
                                 , GPSDataIsMandatory: GPSDataIsMandatory
+                                , bautagebuchLimit_autoStartUhrzeit: bautagebuchLimit_autoStartUhrzeit
                                 , remarkIsMandatory: remarkIsMandatory
                                 , useTransitionsSetting: useTransitionsSetting
                             });
@@ -14566,7 +14613,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3004'
+              value: 'Build: 3005'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15128,6 +15175,13 @@ DigiWebApp.SettingsPage = M.PageView.design({
             , contentBinding: {
                   target: DigiWebApp.SettingsController
                 , property: 'settings.autoSaveGPSData'
+            }
+        })
+        , bautagebuchLimit_autoStartUhrzeit: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.bautagebuchLimit_autoStartUhrzeit'
             }
         })
         , GPSDataIsMandatory: M.SelectionListView.design({
@@ -19945,20 +19999,40 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	
 	, datum: M.LabelView.design({
 	    cssClass: 'normal unselectable'
+	  , isInline: YES
 	  , computedValue: {
 	        valuePattern: '<%= datum %>'
 	      , operation: function(v) {
-					return v;
+					if (v !== "") {
+						return v;
+					} else {
+						return "";
+					}
 	          }
 	  }
 	})
 	
+	, startUhrzeit: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= startUhrzeit %>'
+	      , operation: function(v) {
+					if (v !== "") {
+						return ", " + M.I18N.l('BautagebuchStartingFrom') + " " + v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+
 	, orderName: M.LabelView.design({
 	    cssClass: 'normal unselectable'
 	  , computedValue: {
 	        valuePattern: '<%= orderName %>'
 	      , operation: function(v) {
-				if (v !== "-") {
+				if (v !== "") {
 					return v;
 				} else {
 					return "";
@@ -20590,6 +20664,12 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	            	}
     				mitarbeiterArray = _.compact(mitarbeiterArray);
 					DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterList", mitarbeiterArray);
+					
+			  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
+						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput).disable();
+					} else {
+						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput).enable();
+					}
 			}
         }
         , pagehide: {
@@ -20628,6 +20708,9 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             , events: {
 	            tap: {
 	                action: function() {
+				  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
+								return;
+						}
 			      		M.DatePickerView.show({
 			    		      source: M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'title')
 			    		    , initialDate: D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.datum)
@@ -20684,7 +20767,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup materialienButton zeitenButton notizenButton medienButton wetterButton spacer1 speichernButton'
+    	  childViews: 'projektleiterComboBox auftragComboBox mitarbeiterGroup startUhrzeit zeitenButton materialienButton notizenButton medienButton wetterButton spacer1 speichernButton'
         	  
         , cssClass: 'content'
     	
@@ -20692,7 +20775,72 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             value: '&nbsp;<br>'
         })
 
-        , projektleiterComboBox: M.SelectionListView.design({
+	    , startUhrzeit: M.GridView.design({
+	            childViews: 'startUhrzeitLabel startUhrzeitInput'
+	          , layout: M.TWO_COLUMNS
+	          , startUhrzeitLabel: M.LabelView.design({
+	              value: M.I18N.l('BautagebuchStartUhrzeit')
+	          })
+	          , startUhrzeitInput: M.TextFieldView.design({
+	        	    contentBindingReverse: {
+	                    target: DigiWebApp.BautagebuchBautageberichtDetailsController
+	                  , property: 'startUhrzeit'
+	              }
+	              , contentBinding: {
+	                    target: DigiWebApp.BautagebuchBautageberichtDetailsController
+	                  , property: 'startUhrzeit'
+	              }
+	          	  , events: {
+	          		  tap: {
+		          		  	action: function(id, event) {
+					          		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
+	          		  					return;
+	          		  				}
+	          		  				$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput).blur();
+					          		M.DatePickerView.show({
+					          		      source: M.ViewManager.getView('bautagebuchBautageberichtDetailsPage', 'startUhrzeitInput')
+					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
+					          		    , showTimePicker: YES
+					          		    , showDatePicker: NO
+					          		    , showAmPm: NO
+						    		    , dateOrder: 'ddmmyy'
+					          		    , dateFormat: "dd.mm.yy"
+					          		    , timeFormat: "HH:ii"
+					          		    , minutesLabel: M.I18N.l('minute')
+					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , dayLabel: M.I18N.l('day')
+					          		    , monthLabel: M.I18N.l('month')
+					          		    , yearLabel: M.I18N.l('year')
+					          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
+					          		    , dayNames: DigiWebApp.ApplicationController.dayNames
+					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
+					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
+					          		    , callbacks: {
+					      				confirm: {
+					      					  target: this
+					      					, action: function(value, date) {
+					      						DigiWebApp.BautagebuchBautageberichtDetailsController.set("startUhrzeit", value);
+					      					}
+					      				}
+					      				, before: {
+					      					action: function(value, date) {
+					      					
+					      					}
+					      				}
+					      				, cancel: {
+					      					action: function() {
+					      					
+					      					}
+					      				}
+					      			}
+					          		});
+	          		  		}
+	          	  	  }
+	          	  }
+	          })
+	    })
+
+	    , projektleiterComboBox: M.SelectionListView.design({
 
             /* renders a selection view like check boxes */
               selectionMode: M.SINGLE_SELECTION_DIALOG
