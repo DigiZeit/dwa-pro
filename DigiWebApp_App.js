@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3027
+    , softwareVersion: 3028
 
 
     /**
@@ -14677,7 +14677,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3027'
+              value: 'Build: 3028'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20047,8 +20047,8 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
 			    	//console.log(selectedItem);
 					if (selectedItem.m_id === view_modelId) {
-						console.log(selectedItem);
-					//	DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
+						//console.log(selectedItem);
+						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
 					}
 				});
 			    DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
