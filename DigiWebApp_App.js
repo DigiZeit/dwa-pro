@@ -4984,7 +4984,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3021
+    , softwareVersion: 3022
 
 
     /**
@@ -6043,7 +6043,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, wetter: null // in model
 	, setWetter: function(wetterObject) {
 		var that = this;
-		that.set("wetter", {});
+		//that.set("wetter", {});
 		that.set("wetter.temperatur", wetterObject.temperatur);
 		that.set("wetter.luftfeuchtigkeit", wetterObject.luftfeuchtigkeit);
 		that.set("wetter.bewoelkung", wetterObject.bewoelkung);
@@ -14674,7 +14674,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3021'
+              value: 'Build: 3022'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
