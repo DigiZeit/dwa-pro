@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3063
+    , softwareVersion: 3064
 
 
     /**
@@ -14850,7 +14850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3063'
+              value: 'Build: 3064'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16296,7 +16296,11 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 					// verfügbare Positionen kopieren und ausgewählte selektieren
 					var itemSelected = NO;
 					_.each(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(p) {
-						p.isSelected = NO;
+						if (parseInt(p.value) !== 0) {
+							p.isSelected = NO;
+						} else {
+							p.isSelected = YES;
+						}
 					});
 				    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
@@ -16322,7 +16326,11 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 
 					// verfügbare Materialien kopieren und ausgewähltes selektieren
 					_.each(DigiWebApp.BautagebuchMainController.materialien, function(m) {
-						m.isSelected = NO;
+						if (parseInt(m.value) !== 0) {
+							m.isSelected = NO;
+						} else {
+							m.isSelected = YES;
+						}
 					});
 				    var materialienArray = _.map(DigiWebApp.BautagebuchMainController.materialien, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
@@ -16343,7 +16351,11 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 
 					// verfügbare Mengeneinheiten kopieren und ausgewählte selektieren
 					_.each(DigiWebApp.BautagebuchMainController.mengeneinheiten, function(m) {
-						m.isSelected = NO;
+						if (parseInt(m.value) !== 0) {
+							m.isSelected = NO;
+						} else {
+							m.isSelected = YES;
+						}
 					});
 				    var mengeneinheitenArray = _.map(DigiWebApp.BautagebuchMainController.mengeneinheiten, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
