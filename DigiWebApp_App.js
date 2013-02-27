@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3057
+    , softwareVersion: 3058
 
 
     /**
@@ -13593,12 +13593,13 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
 	    			if (that.activityId === act.value) {
 	    				obj.isSelected = YES;
+	    				itemSelected = YES;
 	    			}
 	    			return obj;
 		    	}
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 			that.set("activityList", taetigkeitenArray)
 		}
 	}
@@ -14840,7 +14841,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3057'
+              value: 'Build: 3058'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16291,13 +16292,13 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	} else {    
 							if (DigiWebApp.BautagebuchMaterialienDetailsController.positionId || DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length === 1) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
-								if (o.isSelected) {
+								if (o.isSelected) { itemSelected = YES }
 							}
 				            return o;
 				    	}
 				    });
 				    positionenArray = _.compact(positionenArray);
-				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length > 1) positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
+				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 					
 					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
