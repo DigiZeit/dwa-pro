@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3058
+    , softwareVersion: 3059
 
 
     /**
@@ -13591,7 +13591,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		    		console.log("UNDEFINED activity");
 		    	} else {
 	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
-	    			if (that.activityId === act.value) {
+	    			if (that.activityId === obj.value) {
 	    				obj.isSelected = YES;
 	    				itemSelected = YES;
 	    			}
@@ -14841,7 +14841,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3058'
+              value: 'Build: 3059'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
