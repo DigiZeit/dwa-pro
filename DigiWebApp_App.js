@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3061
+    , softwareVersion: 3062
 
 
     /**
@@ -14850,7 +14850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3061'
+              value: 'Build: 3062'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16311,6 +16311,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 				    } else {
 				    	DigiWebApp.BautagebuchMaterialienDetailsController.set("positionId", positionenArray[0].value)
+				    	DigiWebApp.BautagebuchMaterialienDetailsController.set("positionName", positionenArray[0].label)
 				    }
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 					
