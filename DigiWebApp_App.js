@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3060
+    , softwareVersion: 3061
 
 
     /**
@@ -14850,7 +14850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3060'
+              value: 'Build: 3061'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16299,7 +16299,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED position");
 				    	} else {    
-							if (DigiWebApp.BautagebuchMaterialienDetailsController.positionId || DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length === 1) {
+							if (DigiWebApp.BautagebuchMaterialienDetailsController.positionId) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
 								if (o.isSelected) { itemSelected = YES }
 							}
@@ -16307,7 +16307,11 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	}
 				    });
 				    positionenArray = _.compact(positionenArray);
-				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) {
+				    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+				    } else {
+				    	DigiWebApp.BautagebuchMaterialienDetailsController.set("positionId", positionenArray[0].value)
+				    }
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 					
 					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
