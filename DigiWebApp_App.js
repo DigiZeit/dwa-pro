@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3056
+    , softwareVersion: 3057
 
 
     /**
@@ -6196,7 +6196,6 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		    	}
 		    });
 		    positionenArray = _.compact(positionenArray);
-		    positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
 			DigiWebApp.BautagebuchBautageberichtDetailsController.set("positionenList", positionenArray)
 		}
 	}
@@ -13535,7 +13534,6 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		var that = this;
 		that.set("item", myItem);
 		that.set("positionId", myItem.get("positionId"));
-		that.setTaetigkeiten(myItem.get("positionId"));
 		that.set("positionName", myItem.get("positionName"));
 		that.set("activityId", myItem.get("activityId"));
 		that.set("activityName", myItem.get("activityName"));
@@ -13544,6 +13542,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		that.set("artikel", myItem.get("artikel"));
 		that.set("menge", myItem.get("menge"));
 		that.set("einheit", myItem.get("einheit"));
+		that.setTaetigkeiten(myItem.get("positionId"));
 	}
 	
 	, save: function() {
@@ -13592,6 +13591,9 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		    		console.log("UNDEFINED activity");
 		    	} else {
 	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
+	    			if (that.activityId === act.value) {
+	    				obj.isSelected = YES;
+	    			}
 	    			return obj;
 		    	}
 		    });
@@ -14838,7 +14840,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3056'
+              value: 'Build: 3057'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16282,17 +16284,20 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 		  pagebeforeshow: {
             action: function() {
 					// verfügbare Positionen kopieren und ausgewählte selektieren
+					var itemSelected = NO;
 				    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED position");
 				    	} else {    
-							if (DigiWebApp.BautagebuchMaterialienDetailsController.positionId) {
+							if (DigiWebApp.BautagebuchMaterialienDetailsController.positionId || DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length === 1) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
+								if (o.isSelected) {
 							}
 				            return o;
 				    	}
 				    });
 				    positionenArray = _.compact(positionenArray);
+				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length > 1) positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("positionenList", positionenArray)
 					
 					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
