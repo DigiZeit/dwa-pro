@@ -5035,7 +5035,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3053
+    , softwareVersion: 3054
 
 
     /**
@@ -8872,7 +8872,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
         /* if a workplan exists, only use those activities that are in the workplan */
         if(workPlans.length > 0) {
-            activities = this.getActivitiesFromWorkplan(workPlans[0]);
+            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
         } else {
             activities = DigiWebApp.SelectionController.getActivities();
         }
@@ -8965,7 +8965,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         /* if a workplan exists, only use those activities that are in the workplan */
 		//console.log("posId " + posId + ", workPlans.length " + workPlans.length);
         if (workPlans.length === 1) {
-            activities = this.getActivitiesFromWorkplan(workPlans[0]);
+            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
         } else {
             activities = DigiWebApp.SelectionController.getActivities();
         }
@@ -13571,8 +13571,22 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 	, setTaetigkeiten: function(positionId) {
 		var that = this;
 		if (typeof(positionId) !== "undefined") {
+
+			var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+	            if (wp) return wp.get('id') == positionId;
+	        });
+
+	        var itemSelected = NO;
+
+	        /* if a workplan exists, only use those activities that are in the workplan */
+	        if(workPlans.length > 0) {
+	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
+	        } else {
+	            activities = DigiWebApp.SelectionController.getActivities();
+	        }
+
 			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
-		    var taetigkeitenArray = _.map(DigiWebApp.Activity.find(), function(act) {
+		    var taetigkeitenArray = _.map(activities, function(act) {
 		    	if ( typeof(act) === "undefined" ) {
 		    		console.log("UNDEFINED activity");
 		    	} else {
@@ -14825,7 +14839,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3053'
+              value: 'Build: 3054'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
