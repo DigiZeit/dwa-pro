@@ -5155,7 +5155,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3068
+    , softwareVersion: 3069
 
 
     /**
@@ -14980,7 +14980,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3068'
+              value: 'Build: 3069'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16809,7 +16809,7 @@ DigiWebApp.BautagebuchNotizenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'bezeichnungLabel bezeichnung'
+    , childViews: 'positionName activityName spacer '
 
     , events: {
         tap: {
@@ -16833,34 +16833,37 @@ DigiWebApp.BautagebuchNotizenTemplateView = M.ListItemView.design({
     }
 
 	, spacer: M.LabelView.design({
-	      cssClass: 'unselectable marginBottom12'
-	    , value: ' '
+	    value: ''
 	})
 	
-	, bezeichnungLabel: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnungLabel %>'
-	      , operation: function(v) {
-					return v;
-	          }
-	  }
+	, positionName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= positionName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return v;
+						} else {
+							return "";
+						}
+		        }
+		}
 	})
 	
-	, bezeichnung: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnung %>'
-	      , operation: function(v) {
-				if (v !== "-") {
-					return v;
-				} else {
-					return "";
-				}
-	          }
-	  }
+	, activityName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= activityName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v + ":";
+						} else {
+							return ":";
+						}
+		        }
+		}
 	})
 
     
@@ -20737,7 +20740,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'bezeichnungLabel bezeichnung'
+    , childViews: 'positionName activityName spacer '
 
     , events: {
         tap: {
@@ -20758,40 +20761,43 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 //				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
 			}
         }
-    }
-
+	}
+	
 	, spacer: M.LabelView.design({
-	      cssClass: 'unselectable marginBottom12'
-	    , value: ' '
+	    value: ''
 	})
 	
-	, bezeichnungLabel: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnungLabel %>'
-	      , operation: function(v) {
-					return v;
-	          }
-	  }
+	, positionName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= positionName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return v;
+						} else {
+							return "";
+						}
+		        }
+		}
 	})
 	
-	, bezeichnung: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnung %>'
-	      , operation: function(v) {
-				if (v !== "-") {
-					return v;
-				} else {
-					return "";
-				}
-	          }
-	  }
+	, activityName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= activityName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v + ":";
+						} else {
+							return ":";
+						}
+		        }
+		}
 	})
 
-    
+
 });
 
 
