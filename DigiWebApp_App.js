@@ -1302,6 +1302,14 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
     , bautagesberichtId: M.Model.attr('String', {
         isRequired: NO
     })
+    
+    , mitarbeiterId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , mitarbeiterName: M.Model.attr('String', {
+        isRequired: NO
+    })
 
     , von: M.Model.attr('String', {
         isRequired: NO
@@ -5155,7 +5163,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3070
+    , softwareVersion: 3071
 
 
     /**
@@ -14980,7 +14988,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3070'
+              value: 'Build: 3071'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20734,7 +20742,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'positionName activityName spacer '
+    , childViews: 'mitarbeiterName positionName activityName spacer von bis dauer latitude longitude latitude_bis longitude_bis'
 
     , events: {
         tap: {
@@ -20754,8 +20762,8 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	, spacer: M.LabelView.design({
 	    value: ''
 	})
-	
-	, positionName: M.LabelView.design({
+
+	, mitarbeiterName: M.LabelView.design({
 	      cssClass: 'normal unselectable'
 		, isInline: YES
 		, computedValue: {
@@ -20769,7 +20777,22 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		        }
 		}
 	})
-	
+
+	, positionName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= positionName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
 	, activityName: M.LabelView.design({
 	      cssClass: 'normal unselectable'
 	    , isInline: YES
@@ -20785,6 +20808,114 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		}
 	})
 
+	, von: M.LabelView.design({
+	      cssClass: 'small unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= von %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return v;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+	
+	, bis: M.LabelView.design({
+	      cssClass: 'small unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= bis %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return " - " + v;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
+	, dauer: M.LabelView.design({
+	      cssClass: 'small unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= dauer %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return " (" + v/60 + "h)";
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
+	, latitude: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= latitude %>'
+          , operation: function(v) {
+              if(v > 0) {
+              	var str = new Number(v);
+             		return M.I18N.l('latitude') + ' Von: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('latitude') + ' Von: ' + M.I18N.l('GPSnotactive');
+              	return '';
+              }
+          }
+      }
+  })
+
+  , longitude: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= longitude %>'
+          , operation: function(v) {
+              if (v > 0) { 
+              	var str = new Number(v);
+             		return M.I18N.l('longitude') + ' Von: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('longitude') + ' Von: ' + M.I18N.l('GPSnotactive');
+                  return '';
+              }
+          }
+      }
+  })
+
+	, latitude_bis: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= latitude_bis %>'
+          , operation: function(v) {
+              if(v > 0) {
+              	var str = new Number(v);
+             		return M.I18N.l('latitude') + ' Bis: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('latitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
+              	return '';
+              }
+          }
+      }
+  })
+
+  , longitude_bis: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= longitude_bis %>'
+          , operation: function(v) {
+              if (v > 0) { 
+              	var str = new Number(v);
+             		return M.I18N.l('longitude') + ' Bis: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('longitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
+                  return '';
+              }
+          }
+      }
+  })
 
 });
 
