@@ -1457,7 +1457,7 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
         isRequired: NO
     })
 
-    , positionsId: M.Model.attr('String', {
+    , positionId: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -5155,7 +5155,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3067
+    , softwareVersion: 3068
 
 
     /**
@@ -14980,7 +14980,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3067'
+              value: 'Build: 3068'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
