@@ -5155,7 +5155,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3069
+    , softwareVersion: 3070
 
 
     /**
@@ -14980,7 +14980,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3069'
+              value: 'Build: 3070'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16814,20 +16814,14 @@ DigiWebApp.BautagebuchNotizenTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
-//				var doShow = NO;
-//			    var view = M.ViewManager.getViewById(id);
-//			    var view_modelId = view.modelId;
-//			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(selectedItem) {
-//					if (selectedItem.m_id === view_modelId) {
-//						if (selectedItem.get("datum") !== "-") {
-//							DigiWebApp.ZeitbuchungenController.set('datum', selectedItem.get("datum"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', selectedItem.get("mitarbeiterId"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', selectedItem.get("nameVorname"));
-//							doShow = YES;
-//						}
-//					}
-//				});
-//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchNotizenListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchNotizenDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchNotizenDetailsPageTransition();
 			}
         }
     }
@@ -20745,20 +20739,14 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
     , events: {
         tap: {
 			action: function(id, m_id) {
-//				var doShow = NO;
-//			    var view = M.ViewManager.getViewById(id);
-//			    var view_modelId = view.modelId;
-//			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(selectedItem) {
-//					if (selectedItem.m_id === view_modelId) {
-//						if (selectedItem.get("datum") !== "-") {
-//							DigiWebApp.ZeitbuchungenController.set('datum', selectedItem.get("datum"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', selectedItem.get("mitarbeiterId"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', selectedItem.get("nameVorname"));
-//							doShow = YES;
-//						}
-//					}
-//				});
-//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchZeitenListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchZeitenDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
 			}
         }
 	}
@@ -21077,101 +21065,101 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-      , childViews: 'positionName activityName spacer menge einheit artikel'
+    , childViews: 'positionName activityName spacer menge einheit artikel'
 
-	    , events: {
-	        tap: {
-				action: function(id, m_id) {
-				    var view = M.ViewManager.getViewById(id);
-				    var view_modelId = view.modelId;
-				    _.each(DigiWebApp.BautagebuchMaterialienListeController.items, function(selectedItem) {
-						if (selectedItem.m_id === view_modelId) {
-							DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
-						}
-					});
-				    DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
-				}
-	        }
-	    }
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchMaterialienListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
+			}
+        }
+    }
 	
-		, spacer: M.LabelView.design({
-		      value: ''
-		})
+	, spacer: M.LabelView.design({
+	      value: ''
+	})
 
-		, positionName: M.LabelView.design({
-		    cssClass: 'normal unselectable'
-	  	  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= positionName %>'
-		      , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return v;
-						} else {
-							return "";
-						}
-		          }
-		  }
-		})
-		
-		, activityName: M.LabelView.design({
-		    cssClass: 'normal unselectable'
-	  	  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= activityName %>'
-		      , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return ", " + v + ":";
-						} else {
-							return ":";
-						}
-		          }
-		  }
-		})
-		
-		, menge: M.LabelView.design({
-		    cssClass: 'normal unselectable'
-	  	  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= menge %>'
-		      , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return v;
-						} else {
-							return "";
-						}
-		          }
-		  }
-		})
-		
-		, einheit: M.LabelView.design({
-		    cssClass: 'normal unselectable'
-		  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= einheit %>'
-		      , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return " " + v + ".";
-						} else {
-							return "";
-						}
-		          }
-		  }
-		})
+	, positionName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= positionName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
 	
-		, artikel: M.LabelView.design({
-		    cssClass: 'normal unselectable'
-		  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= artikel %>'
-		      , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return " \"" + v + "\"";
-						} else {
-							return "";
-						}
-		          }
-		  }
-		})
+	, activityName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= activityName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return ", " + v + ":";
+					} else {
+						return ":";
+					}
+	          }
+	  }
+	})
+	
+	, menge: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= menge %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, einheit: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= einheit %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return " " + v + ".";
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+
+	, artikel: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= artikel %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return " \"" + v + "\"";
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
     
 });
 
