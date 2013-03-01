@@ -5155,7 +5155,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3066
+    , softwareVersion: 3067
 
 
     /**
@@ -14980,7 +14980,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3066'
+              value: 'Build: 3067'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16955,7 +16955,36 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
       events: {
 		  pagebeforeshow: {
             action: function() {
-
+				// verfügbare Positionen kopieren und ausgewählte selektieren
+				var itemSelected = NO;
+				_.each(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(p) {
+					if (parseInt(p.value) !== 0) {
+						p.isSelected = NO;
+					} else {
+						p.isSelected = YES;
+					}
+				});
+			    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
+			    	if ( typeof(o) === "undefined" ) {
+			    		console.log("UNDEFINED position");
+			    	} else {    
+						if (DigiWebApp.BautagebuchZeitenDetailsController.positionId) {
+							o.isSelected = (o.value === DigiWebApp.BautagebuchZeitenDetailsController.positionId);
+							if (o.isSelected) { itemSelected = YES }
+						}
+			            return o;
+			    	}
+			    });
+			    positionenArray = _.compact(positionenArray);
+			    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) {
+			    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+			    } else {
+			    	DigiWebApp.BautagebuchZeitenDetailsController.set("positionId", positionenArray[0].value)
+			    	DigiWebApp.BautagebuchZeitenDetailsController.set("positionName", positionenArray[0].label)
+			    }
+				DigiWebApp.BautagebuchZeitenDetailsController.set("positionenList", positionenArray)
+				
+				DigiWebApp.BautagebuchZeitenDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchZeitenDetailsController.positionId);
 			}
         }
         , pagehide: {
@@ -21850,7 +21879,36 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
       events: {
 		  pagebeforeshow: {
             action: function() {
-
+				// verfügbare Positionen kopieren und ausgewählte selektieren
+				var itemSelected = NO;
+				_.each(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(p) {
+					if (parseInt(p.value) !== 0) {
+						p.isSelected = NO;
+					} else {
+						p.isSelected = YES;
+					}
+				});
+			    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
+			    	if ( typeof(o) === "undefined" ) {
+			    		console.log("UNDEFINED position");
+			    	} else {    
+						if (DigiWebApp.BautagebuchNotizenDetailsController.positionId) {
+							o.isSelected = (o.value === DigiWebApp.BautagebuchNotizenDetailsController.positionId);
+							if (o.isSelected) { itemSelected = YES }
+						}
+			            return o;
+			    	}
+			    });
+			    positionenArray = _.compact(positionenArray);
+			    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) {
+			    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+			    } else {
+			    	DigiWebApp.BautagebuchNotizenDetailsController.set("positionId", positionenArray[0].value)
+			    	DigiWebApp.BautagebuchNotizenDetailsController.set("positionName", positionenArray[0].label)
+			    }
+				DigiWebApp.BautagebuchNotizenDetailsController.set("positionenList", positionenArray)
+				
+				DigiWebApp.BautagebuchNotizenDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchNotizenDetailsController.positionId);
 			}
         }
         , pagehide: {
