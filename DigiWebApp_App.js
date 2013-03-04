@@ -5258,7 +5258,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3107
+    , softwareVersion: 3108
 
 
     /**
@@ -6416,10 +6416,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		
 		if (that.item.saveSorted()) {		
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) "function") successcallback();
+			if (typeof(successcallback) === "function") successcallback();
 			return true;
 		} else {
-			if (typeof(errorcallback) "function") errorcallback();
+			if (typeof(errorcallback) === "function") errorcallback();
 			return false;
 		}
 	}
@@ -6428,10 +6428,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		if (that.item.deleteSorted()) {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) "function") successcallback();
+			if (typeof(successcallback) === "function") successcallback();
 			return true;
 		} else {
-			if (typeof(errorcallback) "function") errorcallback();
+			if (typeof(errorcallback) === "function") errorcallback();
 			return false;
 		}
 	}
@@ -6440,10 +6440,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		if (that.save()) {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) "function") successcallback();
+			if (typeof(successcallback) === "function") successcallback();
 			return true;
 		} else {
-			if (typeof(errorcallback) "function") errorcallback();
+			if (typeof(errorcallback) === "function") errorcallback();
 			return false;
 		}
 	}
@@ -15145,7 +15145,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3107'
+              value: 'Build: 3108'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
