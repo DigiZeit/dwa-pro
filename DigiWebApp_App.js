@@ -5267,7 +5267,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3110
+    , softwareVersion: 3111
 
 
     /**
@@ -15154,7 +15154,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3110'
+              value: 'Build: 3111'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17180,10 +17180,12 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 				
 				if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
 					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.GridVonBis.id  + ']').each(function() { $(this).hide(); });}catch(e){};
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).show(); });}catch(e){};
+					try{$('label[for=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerInput.id  + ']').each(function() { $(this).show(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerInput.id  + ']').each(function() { $(this).show(); });}catch(e){};
 				} else {
 					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.GridVonBis.id  + ']').each(function() { $(this).show(); });}catch(e){};
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+					try{$('label[for=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerInput.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerInput.id  + ']').each(function() { $(this).hide(); });}catch(e){};
 				}
 				
 //		  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
@@ -17358,7 +17360,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 	          	  , events: {
 	          		  tap: {
 		          		  	action: function(id, event) {
-	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.von.vonInput).blur();
+	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.vonInput).blur();
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'vonInput')
 					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
@@ -17414,7 +17416,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 	          	  , events: {
 	          		  tap: {
 		          		  	action: function(id, event) {
-	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.bisInput).blur();
+	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.bisInput).blur();
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'bisInput')
 					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)

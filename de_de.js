@@ -320,7 +320,7 @@ M.I18N.de_de = {
 	, BautagebuchNotiz: "Notiz"
 	, BautagebuchMedien: "Medien"
 	, BautagebuchMedium: "Medium"
-	, BautagebuchTaeglicheStartUhrzeit: "daily start time"
+	, BautagebuchTaeglicheStartUhrzeit: "tägliche Startuhrzeit"
 	, BautagebuchProjektleiter: "Projektleiter"
 	, BautagebuchManuelleEingabe: "manuelle Eingabe"
 	, BautagebuchMenge: "Menge"
