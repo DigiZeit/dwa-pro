@@ -666,6 +666,10 @@ label.ui-input-text, .ui-controlgroup-label {
   .bautagebuchZeitenDetailsPage .dauerInput
 {
 	text-align: center;
+}
+
+  .bautagebuchZeitenDetailsPage .dauerInput_container
+{
     padding-bottom: 20px;
 }
 

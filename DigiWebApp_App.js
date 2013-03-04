@@ -4651,7 +4651,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		    	}
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 			that.set("activityList", taetigkeitenArray)
 		}
 	}
@@ -5192,7 +5192,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3090
+    , softwareVersion: 3091
 
 
     /**
@@ -15020,7 +15020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3090'
+              value: 'Build: 3091'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
