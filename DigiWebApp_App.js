@@ -4624,7 +4624,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		    	}
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
 			that.set("activityList", taetigkeitenArray)
 		}
 	}
@@ -4724,7 +4724,7 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 		    	}
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
 			that.set("activityList", taetigkeitenArray)
 		}
 	}
@@ -5165,7 +5165,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3076
+    , softwareVersion: 3077
 
 
     /**
@@ -13748,7 +13748,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		    	}
 		    });
 		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
 			that.set("activityList", taetigkeitenArray)
 		}
 	}
@@ -14990,7 +14990,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3076'
+              value: 'Build: 3077'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

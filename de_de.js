@@ -270,6 +270,9 @@ M.I18N.de_de = {
 	, refresh: "akt."
 	, cancel: "abbrechen"
 		
+
+	, selectSomethingOptional: "Bitte wählen... (optional)"
+			
 	, second: "Sekunde"
 	, seconds: "Sekunden"
 	, minute: "Minute"
