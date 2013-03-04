@@ -5242,7 +5242,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3103
+    , softwareVersion: 3104
 
 
     /**
@@ -6398,23 +6398,35 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		that.item.set("wind", that.wetter.wind);
 		that.item.set("wechselhaft", that.wetter.wechselhaft);
 		
-		that.item.saveSorted();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-		DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+		if (that.item.saveSorted()) {		
+			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	, delete: function() {
 		var that = this;
-		that.item.deleteSorted();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-		DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+		if (that.item.deleteSorted()) {
+			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	, finish: function() {
 		var that = this;
-		that.save();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-		DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+		if (that.save()) {
+			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	, setPositionen: function(auftragsId) {
@@ -15098,7 +15110,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3103'
+              value: 'Build: 3104'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22248,15 +22260,13 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 						        , otherButtonTags: ["finish"]
 						        , destructiveButtonValue: M.I18N.l('save')
 						        , callbacks: {
-					    			  destruction: {action: function() {
+					    			  destruction: { action: function() {
 					    				DigiWebApp.BautagebuchBautageberichtDetailsController.save();
-					    				DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 					    			}}
 					    			, other: {action: function(buttonTag) {
 					    			    switch(buttonTag) {
 						    		        case 'finish':
-							    				that.controller.finish();
-					    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+						    		        	DigiWebApp.BautagebuchBautageberichtDetailsController.finish();
 						    		            break;
 						    		        default:
 						    		            console.log("unknonw ButtonTag");
