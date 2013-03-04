@@ -5281,7 +5281,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3118
+    , softwareVersion: 3119
 
 
     /**
@@ -12489,11 +12489,11 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchInStundenBuchen')
 	      , isSelected: YES
 		}]
-		, falscheZeitenIgnorieren: YES
+		, falscheZeitenIgnorieren: NO
 		, falscheZeitenIgnorierenItem: [{
 	        value: 'falscheZeitenIgnorieren'
 	      , label: M.I18N.l('falscheZeitenIgnorieren')
-	      , isSelected: YES
+	      , isSelected: NO
 		}]
 	}
 
@@ -15186,7 +15186,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3118'
+              value: 'Build: 3119'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
