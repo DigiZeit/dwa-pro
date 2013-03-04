@@ -2772,7 +2772,27 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 
 	, deleteSorted: function() {
 	    var that = this;
-	
+	    
+	    // alle zugehörigen Zeiten löschen
+	    _.each(DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: that.m_id}), function(el) {
+	    	el.deleteSorted();
+	    });
+	    
+	    // alle zugehörigen Materialbuchungen löschen
+	    _.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: that.m_id}), function(el) {
+	    	el.deleteSorted();
+	    });
+	    
+	    // alle zugehörigen Notizen löschen
+	    _.each(DigiWebApp.BautagebuchNotiz.find({bautagesberichtId: that.m_id}), function(el) {
+	    	el.deleteSorted();
+	    });
+
+	    // alle zugehörigen Medien löschen
+	    _.each(DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: that.m_id}), function(el) {
+	    	el.deleteSorted();
+	    });
+
 	    // remove m_id from Key-Stringlist
 	    var keys = [];
 	    var newKeys = [];
@@ -5219,7 +5239,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3094
+    , softwareVersion: 3095
 
 
     /**
@@ -15073,7 +15093,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3094'
+              value: 'Build: 3095'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17391,7 +17411,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 	      	  , events: {
 	      		  tap: {
 	          		  	action: function(id, event) {
-	      		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.dauerInput).blur();
+	      		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerInput).blur();
 				          		M.DatePickerView.show({
 				          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'dauerInput')
 				          		    , initialDate: D8.create("01.01.1993 00:00:00")
@@ -21199,7 +21219,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		      valuePattern: '<%= dauer %>'
 		    , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return " (" + v + " h)";
+							return v + " h";
 						} else {
 							return "";
 						}
