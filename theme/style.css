@@ -655,11 +655,6 @@ label.ui-input-text, .ui-controlgroup-label {
 {
     font-size: 12px;
 	color: #000000;
-}
-
-  .bautagebuchListePage .small .ui-li .ui-btn-text a.ui-link-inherit
-, .bautagebuchListePage .small .ui-btn-inner
-{
 	white-space: normal !important;
 }
 

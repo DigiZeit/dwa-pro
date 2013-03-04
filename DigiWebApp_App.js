@@ -5242,7 +5242,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3101
+    , softwareVersion: 3102
 
 
     /**
@@ -15096,7 +15096,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3101'
+              value: 'Build: 3102'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21143,8 +21143,10 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 							var mitarbeiterList = DigiWebApp.BautagebuchMitarbeiter.findSorted();
 							_.each(mitarbeiterList, function(el){
 								if (vAsArray.indexOf(el.get("id")) !== -1) {
-									if (outString !== "") outString += ", ";
-									outString += el.vollername();
+									if (outString !== "") {
+										outString += ", ";
+									}
+									outString += "<nobr>" + el.vollername() + "</nobr>";
 								}
 							})
 							return outString;
