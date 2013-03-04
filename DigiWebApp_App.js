@@ -5281,7 +5281,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3119
+    , softwareVersion: 3120
 
 
     /**
@@ -15186,7 +15186,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3119'
+              value: 'Build: 3120'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17420,7 +17420,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      							try {
 					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
 					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								if (myVon.getTimestamp() < myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+					      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
 					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
 					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
 					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
@@ -17489,7 +17489,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      							try {
 					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
 					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								if (myVon.getTimestamp() < myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+					      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
 					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
 					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
 					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
