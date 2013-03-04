@@ -5267,7 +5267,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3111
+    , softwareVersion: 3112
 
 
     /**
@@ -15154,7 +15154,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3111'
+              value: 'Build: 3112'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21253,7 +21253,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		, computedValue: {
 		      valuePattern: '<%= von %>'
 		    , operation: function(v) {
-						if (v !== "" && v !== null) {
+						if (v !== "" && v !== null && (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
 							return v;
 						} else {
 							return "";
@@ -21268,7 +21268,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		, computedValue: {
 		      valuePattern: '<%= bis %>'
 		    , operation: function(v) {
-						if (v !== "" && v !== null) {
+						if (v !== "" && v !== null && (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
 							return " - " + v;
 						} else {
 							return "";
@@ -21283,7 +21283,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		, computedValue: {
 		      valuePattern: '<%= dauer %>'
 		    , operation: function(v) {
-						if (v !== "" && v !== null) {
+						if (v !== "" && v !== null && (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
 							return M.I18N.l('bookingDuration') + ": " + v + " h";
 						} else {
 							return "";
