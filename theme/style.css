@@ -647,9 +647,20 @@ label.ui-input-text, .ui-controlgroup-label {
 
 
   .bautagebuchBautageberichtDetailsPage .ui-content .ui-block-a 
-, .bautagebuchZeitenDetailsPage .ui-content .ui-block-a 
 {
     padding-top: 10px;
+}
+
+  .bautagebuchZeitenDetailsPage .ui-content .ui-block-a 
+, .bautagebuchZeitenDetailsPage .ui-content .ui-block-b 
+{
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+  .bautagebuchZeitenDetailsPage ui-input-text
+{
+	text-align: center;
 }
 
   .bautagebuchWetterPage .centerText
