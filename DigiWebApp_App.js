@@ -5192,7 +5192,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3088
+    , softwareVersion: 3089
 
 
     /**
@@ -15020,7 +15020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3088'
+              value: 'Build: 3089'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17326,6 +17326,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
                 
         , dauerInput: M.TextFieldView.design({
 	    	    label: M.I18N.l('bookingDuration')
+	    	  , cssClass: 'dauerInput'
 	    	  , contentBindingReverse: {
 	                target: DigiWebApp.BautagebuchZeitenDetailsController
 	              , property: 'dauer'
