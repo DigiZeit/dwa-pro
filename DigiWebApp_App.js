@@ -3437,6 +3437,10 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
     , inStundenBuchen: M.Model.attr('String', {
           isRequired: NO
     })
+    
+    , falscheZeitenIgnorieren: M.Model.attr('String', {
+        isRequired: NO
+    })
 
 	, deleteAll: function() {
         _.each(this.find(), function(el) {
@@ -4655,7 +4659,17 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
             });
 			return false;
 		}
-
+		if (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen") && !DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+			var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+			var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+			if (myVon.getTimestamp() > myBis.getTimestamp()) {
+				DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                title: M.I18N.l('wrongTimes')
+	              , message: M.I18N.l('wrongTimesMsg')
+	            });
+				return false;
+			}
+		}
 		that.item.set("positionId", that.positionId);
 		that.item.set("positionName", that.positionName);
 		that.item.set("activityId", that.activityId);
@@ -5267,7 +5281,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3115
+    , softwareVersion: 3116
 
 
     /**
@@ -12475,6 +12489,12 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 	      , label: M.I18N.l('BautagebuchInStundenBuchen')
 	      , isSelected: YES
 		}]
+		, falscheZeitenIgnorieren: YES
+		, falscheZeitenIgnorierenItem: [{
+	        value: 'falscheZeitenIgnorieren'
+	      , label: M.I18N.l('falscheZeitenIgnorieren')
+	      , isSelected: YES
+		}]
 	}
 
 	, init: function(isFirstLoad) {
@@ -12491,12 +12511,15 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
 		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
 		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
+		that.set("settings.falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
+		that.set("settings.falscheZeitenIgnorierenItem", that.settings.falscheZeitenIgnorierenItem);
 
 		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
 			// erstelle Record mit Vorgabewerten
 			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
 				  startUhrzeit: that.settings.startUhrzeit
 				, inStundenBuchen: that.settings.inStundenBuchen
+				, falscheZeitenIgnorieren: that.settings.falscheZeitenIgnorieren
 			});
 			rec.save();
 		} else {
@@ -12510,6 +12533,14 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 			      , isSelected: rec.get("inStundenBuchen")
 				}]);
 			}
+			if (typeof(rec.get("falscheZeitenIgnorieren")) !== "undefined") {
+				that.set("settings.falscheZeitenIgnorieren", rec.get("falscheZeitenIgnorieren"));
+				that.set("settings.falscheZeitenIgnorierenItem", [{
+			        value: 'falscheZeitenIgnorieren'
+			      , label: M.I18N.l('falscheZeitenIgnorieren')
+			      , isSelected: rec.get("falscheZeitenIgnorieren")
+				}]);
+			}
 		}
 	}
 	
@@ -12519,6 +12550,7 @@ DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
 		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
 		rec.set("startUhrzeit", that.settings.startUhrzeit);
 		rec.set("inStundenBuchen", that.settings.inStundenBuchen);
+		rec.set("falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
 		rec.save();
 		
 		//M.ViewManager.setCurrentPage(that.lastPage)
@@ -15154,7 +15186,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3115'
+              value: 'Build: 3116'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17388,7 +17420,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      							try {
 					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
 					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								if (myVon.getTimestamp() < myBis.getTimestamp()) {
+					      								if (myVon.getTimestamp() < myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
 					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
 					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
 					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
@@ -17457,11 +17489,13 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      							try {
 					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
 					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
-					      								var myDauerStunden = parseInt(myDauerInMinuten / 60);
-					      								var myDauerMinuten = parseInt(myDauerInMinuten % 60);
-					      								var myDauer = D8.create("01.01.1993 " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
-					      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+					      								if (myVon.getTimestamp() < myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
+					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
+					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
+					      									var myDauer = D8.create("01.01.1993 " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
+						      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+					      								}
 					      							} catch(e){}
 					      						}
 					      					}
