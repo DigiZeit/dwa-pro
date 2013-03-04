@@ -4760,6 +4760,7 @@ DigiWebApp.BautagebuchZeitenListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchZeitenDetailsController.set("positionName", null);
 		DigiWebApp.BautagebuchZeitenDetailsController.set("activityId", null);
 		DigiWebApp.BautagebuchZeitenDetailsController.set("activityName", null);
+		DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterIds", null);
 
 		DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
 
@@ -5164,7 +5165,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3075
+    , softwareVersion: 3076
 
 
     /**
@@ -14989,7 +14990,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3075'
+              value: 'Build: 3076'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
