@@ -5242,7 +5242,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3098
+    , softwareVersion: 3099
 
 
     /**
@@ -15096,7 +15096,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3098'
+              value: 'Build: 3099'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21222,7 +21222,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		      valuePattern: '<%= dauer %>'
 		    , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return v + " h";
+							return M.I18N.l('bookingDuration') + ": " + v + " h";
 						} else {
 							return "";
 						}
