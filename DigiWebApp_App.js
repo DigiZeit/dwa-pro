@@ -5242,7 +5242,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3102
+    , softwareVersion: 3103
 
 
     /**
@@ -6400,6 +6400,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		
 		that.item.saveSorted();
 		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+		DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 	}
 	
 	, delete: function() {
@@ -6413,6 +6414,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		var that = this;
 		that.save();
 		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+		DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 	}
 
 	, setPositionen: function(auftragsId) {
@@ -15096,7 +15098,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3102'
+              value: 'Build: 3103'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22199,13 +22201,11 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					        , callbacks: {
 				    			  destruction: {action: function() {
 				    				DigiWebApp.BautagebuchBautageberichtDetailsController.save();
-				    				DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 				    			}}
 				    			, other: {action: function(buttonTag) {
 				    			    switch(buttonTag) {
 					    		        case 'finish':
-						    				that.controller.finish();
-				    						that.navigationController.backToBautagebuchBautageberichteListePageTransition();
+					    		        	DigiWebApp.BautagebuchBautageberichtDetailsController.finish();
 					    		            break;
 					    		        default:
 					    		            console.log("unknonw ButtonTag");
