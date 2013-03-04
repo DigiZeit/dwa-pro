@@ -1319,6 +1319,16 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
         isRequired: NO
     })
 
+    , timeStampStart: M.Model.attr('String', {
+    	// wird nach Abschluss eines Bautageberichtes berechnet (dient nur der Übertragung)
+        isRequired: NO
+    })
+
+    , timeStampEnd: M.Model.attr('String', {
+    	// wird nach Abschluss eines Bautageberichtes berechnet (dient nur der Übertragung)
+        isRequired: NO
+    })
+
     , latitude: M.Model.attr('String', {
         isRequired:NO
     })
@@ -1332,14 +1342,6 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
     })
 
     , longitude_bis: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderName: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -2539,6 +2541,16 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     })
 
     , wechselhaft: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+    	// wird verwendet, falls Auto-StartUhrzeit gesetzt
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+    	// wird verwendet, falls Auto-StartUhrzeit gesetzt
         isRequired: NO
     })
 
@@ -4564,6 +4576,11 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 	, bis: null // in model
 	, dauer: null // in model
 
+	, latitude: null // in model
+	, longitude: null // in model
+	, latitude_bis: null // in model
+	, longitude_bis: null // in model
+
 	, init: function(isFirstLoad) {
 		var that = this;
 	}
@@ -5175,7 +5192,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3078
+    , softwareVersion: 3079
 
 
     /**
@@ -6232,6 +6249,9 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, auftraegeList: null // runtime
 	
 	, positionenList: null // runtime (auftraegeComboBox-change)
+	
+	, latitude: null
+	, longitude: null
 	
 	, wetter: null // in model
 	, setWetter: function(wetterObject) {
@@ -15000,7 +15020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3078'
+              value: 'Build: 3079'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17024,6 +17044,16 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 				mitarbeiterArray = _.compact(mitarbeiterArray);
 				DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterList", mitarbeiterArray);
 				
+				if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.von.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).show(); });}catch(e){};
+				} else {
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.von.id  + ']').each(function() { $(this).show(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.id  + ']').each(function() { $(this).show(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+				}
+				
 //		  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
 //					$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].disable();
 //				} else {
@@ -17328,15 +17358,15 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.dauerInput).blur();
 					          		M.DatePickerView.show({
 					          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'dauerInput')
-					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
+					          		    , initialDate: D8.create("01.01.1993 00:00:00")
 					          		    , showTimePicker: YES
 					          		    , showDatePicker: NO
 					          		    , showAmPm: NO
 						    		    , dateOrder: 'ddmmyy'
 					          		    , dateFormat: "dd.mm.yy"
 					          		    , timeFormat: "HH:ii"
-					          		    , minutesLabel: M.I18N.l('minute')
-					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , minutesLabel: M.I18N.l('minutes')
+					          		    , hoursLabel: M.I18N.l('hours')
 					          		    , dayLabel: M.I18N.l('day')
 					          		    , monthLabel: M.I18N.l('month')
 					          		    , yearLabel: M.I18N.l('year')
@@ -21134,7 +21164,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		      valuePattern: '<%= dauer %>'
 		    , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return " (" + v/60 + "h)";
+							return " (" + v + " h)";
 						} else {
 							return "";
 						}

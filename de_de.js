@@ -270,7 +270,6 @@ M.I18N.de_de = {
 	, refresh: "akt."
 	, cancel: "abbrechen"
 		
-
 	, selectSomethingOptional: "Bitte wählen... (optional)"
 	, bookingFrom: "Von"
 	, bookingTo: "Bis"

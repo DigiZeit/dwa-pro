@@ -259,7 +259,7 @@ M.I18N.en_us = {
 	, errorWhileBackingUpBookings: "Error while backing up bookings!"
 	, fehlzeit: "Absence"
 	, newFeatureActive: "New configuration"
-	, newFeatureActiveMsg: "A new configuration was received. DIGI-WebApp will restart now to apply the new configuration."
+	, newFeatureActiveMsg: "A new configuration has been received. DIGI-WebApp will now restart to apply the new configuration."
 	, appZuruecksetzen: "reset"
 	, applicationLanguage: "Application language"
 	, language_de_de: "Deutsch"
@@ -270,6 +270,11 @@ M.I18N.en_us = {
 	, refresh: "refresh"
 	, cancel: "cancel"
 		
+	, selectSomethingOptional: "Select something ... (optional)"
+	, bookingFrom: "From"
+	, bookingTo: "To"
+	, bookingDuration: "Duration"
+					
 	, second: "Second"
 	, seconds: "Seconds"
 	, minute: "Minute"
