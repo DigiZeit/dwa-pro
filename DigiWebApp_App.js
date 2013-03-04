@@ -5267,7 +5267,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3113
+    , softwareVersion: 3114
 
 
     /**
@@ -15154,7 +15154,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3113'
+              value: 'Build: 3114'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17384,6 +17384,17 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      					  target: this
 					      					, action: function(value, date) {
 					      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
+					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
+					      							try {
+					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+					      								var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
+					      								var myDauerStunden = parseInt(myDauerInMinuten / 60);
+					      								var myDauerMinuten = parseInt(myDauerInMinuten % 60);
+					      								var myDauer = D8.create("01.01.1993 " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
+					      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+					      							} catch(e){}
+					      						}
 					      					}
 					      				}
 					      				, before: {
@@ -17440,6 +17451,17 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      					  target: this
 					      					, action: function(value, date) {
 					      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
+					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
+					      							try {
+					      								var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+					      								var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+					      								var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
+					      								var myDauerStunden = parseInt(myDauerInMinuten / 60);
+					      								var myDauerMinuten = parseInt(myDauerInMinuten % 60);
+					      								var myDauer = D8.create("01.01.1993 " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
+					      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+					      							} catch(e){}
+					      						}
 					      					}
 					      				}
 					      				, before: {
