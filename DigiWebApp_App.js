@@ -5164,7 +5164,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3072
+    , softwareVersion: 3073
 
 
     /**
@@ -14989,7 +14989,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3072'
+              value: 'Build: 3073'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16434,14 +16434,15 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
             action: function() {
 					// verfügbare Positionen kopieren und ausgewählte selektieren
 					var itemSelected = NO;
-					_.each(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(p) {
+					var myPositionenList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList));
+					_.each(myPositionenList, function(p) {
 						if (parseInt(p.value) !== 0) {
 							p.isSelected = NO;
 						} else {
 							p.isSelected = YES;
 						}
 					});
-				    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
+				    var positionenArray = _.map(myPositionenList, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED position");
 				    	} else {    
@@ -16453,7 +16454,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	}
 				    });
 				    positionenArray = _.compact(positionenArray);
-				    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) {
+				    if (positionenArray.length !== 1) {
 				    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 				    } else {
 				    	DigiWebApp.BautagebuchMaterialienDetailsController.set("positionId", positionenArray[0].value)
@@ -16464,14 +16465,15 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 					DigiWebApp.BautagebuchMaterialienDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchMaterialienDetailsController.positionId);
 
 					// verfügbare Materialien kopieren und ausgewähltes selektieren
-					_.each(DigiWebApp.BautagebuchMainController.materialien, function(m) {
+					var myMaterialienList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchMainController.materialien))
+					_.each(myMaterialienList, function(m) {
 						if (parseInt(m.value) !== 0) {
 							m.isSelected = NO;
 						} else {
 							m.isSelected = YES;
 						}
 					});
-				    var materialienArray = _.map(DigiWebApp.BautagebuchMainController.materialien, function(o) {
+				    var materialienArray = _.map(myMaterialienList, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED material");
 				    	} else {    
@@ -16489,14 +16491,15 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 					DigiWebApp.BautagebuchMaterialienDetailsController.set("materialienList", materialienArray)
 
 					// verfügbare Mengeneinheiten kopieren und ausgewählte selektieren
-					_.each(DigiWebApp.BautagebuchMainController.mengeneinheiten, function(m) {
+					var myMengeneinheitenList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchMainController.mengeneinheiten))
+					_.each(myMengeneinheitenList, function(m) {
 						if (parseInt(m.value) !== 0) {
 							m.isSelected = NO;
 						} else {
 							m.isSelected = YES;
 						}
 					});
-				    var mengeneinheitenArray = _.map(DigiWebApp.BautagebuchMainController.mengeneinheiten, function(o) {
+				    var mengeneinheitenArray = _.map(myMengeneinheitenList, function(o) {
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED mengeneinheit");
 				    	} else {    
@@ -16963,14 +16966,15 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
             action: function() {
 				// verfügbare Positionen kopieren und ausgewählte selektieren
 				var itemSelected = NO;
-				_.each(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(p) {
+				var myPositionenList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList));
+				_.each(myPositionenList, function(p) {
 					if (parseInt(p.value) !== 0) {
 						p.isSelected = NO;
 					} else {
 						p.isSelected = YES;
 					}
 				});
-			    var positionenArray = _.map(DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList, function(o) {
+			    var positionenArray = _.map(myPositionenList, function(o) {
 			    	if ( typeof(o) === "undefined" ) {
 			    		console.log("UNDEFINED position");
 			    	} else {    
@@ -16982,7 +16986,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 			    	}
 			    });
 			    positionenArray = _.compact(positionenArray);
-			    if (DigiWebApp.BautagebuchBautageberichtDetailsController.positionenList.length !== 1) {
+			    if (positionenArray.length !== 1) {
 			    	positionenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
 			    } else {
 			    	DigiWebApp.BautagebuchZeitenDetailsController.set("positionId", positionenArray[0].value)
