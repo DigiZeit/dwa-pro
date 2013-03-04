@@ -5281,7 +5281,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3120
+    , softwareVersion: 3121
 
 
     /**
@@ -15186,7 +15186,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3120'
+              value: 'Build: 3121'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22323,7 +22323,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
                 }
             }
             , button: M.ButtonView.design({
-                  value: M.I18N.l('assume')
+                  value: M.I18N.l('BautagebuchSpeichernAbschliessen')
                 , cssClass: 'digiButton'
                 , anchorLocation: M.RIGHT
                 , events: {

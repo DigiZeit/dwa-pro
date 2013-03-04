@@ -355,6 +355,7 @@ M.I18N.de_de = {
 	, noProjektleiterSelectedMsg: "Bitte wählen Sie einen Projektleiter aus."
 	, noMitarbeiterSelected: "Keine Mitarbeiter ausgewählt"
 	, noMitarbeiterSelectedMsg: "Bitte wählen Sie mind. einen Mitarbeiter aus."
+	, BautagebuchSpeichernAbschliessen: "Speichern / Abschliessen"
     // Ende::Bautagebuch
 	
 };
