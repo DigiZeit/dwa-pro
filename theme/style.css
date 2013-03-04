@@ -657,7 +657,8 @@ label.ui-input-text, .ui-controlgroup-label {
 	color: #000000;
 }
 
-.bautagebuchListePage .small .ui-btn-inner
+  .bautagebuchListePage .small .ui-li .ui-btn-text a.ui-link-inherit
+, .bautagebuchListePage .small .ui-btn-inner
 {
 	white-space: normal !important;
 }
