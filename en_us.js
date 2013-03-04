@@ -275,7 +275,7 @@ M.I18N.en_us = {
 	, bookingTo: "To"
 	, bookingDuration: "Duration"
 	, wrongTimes: "Wrong points in time"
-	, wrongTimesMsg: "The from-moment may not be after the to-moment! (Nightshifts are not yet possible)"
+	, wrongTimesMsg: "The from-moment may not be after the to-moment! (Nightshifts are not possible yet)"
 	, falscheZeitenIgnorieren: "Do not check points in time"
 					
 	, second: "Second"
