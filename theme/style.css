@@ -651,6 +651,12 @@ label.ui-input-text, .ui-controlgroup-label {
     padding-top: 10px;
 }
 
+.bautagebuchZeitenListePage .small
+{
+    font-size: 12px;
+	color: #000000;
+}
+
   .bautagebuchZeitenDetailsPage .ui-content .ui-block-a 
 , .bautagebuchZeitenDetailsPage .ui-content .ui-block-b 
 {
