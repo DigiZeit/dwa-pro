@@ -348,6 +348,10 @@ M.I18N.de_de = {
 	, BautagebuchStartingFrom: "ab"
 	, BautagebuchStartUhrzeit: "Startuhrzeit"
 	, bautagebuchLimit_autoStartUhrzeit: "automatische Startuhrzeit"
+	, noProjektleiterSelected: "Kein Projektleiter ausgewählt"
+	, noProjektleiterSelectedMsg: "Bitte wählen Sie einen Projektleiter aus."
+	, noMitarbeiterSelected: "Keine Mitarbeiter ausgewählt"
+	, noMitarbeiterSelectedMsg: "Bitte wählen Sie mind. einen Mitarbeiter aus."
     // Ende::Bautagebuch
 	
 };
