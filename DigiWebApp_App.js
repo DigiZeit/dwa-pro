@@ -5164,7 +5164,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3073
+    , softwareVersion: 3074
 
 
     /**
@@ -14989,7 +14989,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3073'
+              value: 'Build: 3074'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21506,9 +21506,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					// verfügbare Mitarbeiter kopieren und ausgewählte selektieren
                     var mitarbeiterIds = DigiWebApp.BautagebuchBautageberichtDetailsController.mitarbeiterIds; 
                     var mitarbeiterList = [];
+                    var myMitarbeiterList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchMainController.mitarbeiter));
                     var mitarbeiterArray = mitarbeiterList;
     				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
-    					mitarbeiterArray = _.map(DigiWebApp.BautagebuchMainController.mitarbeiter, function(o) {
+    					mitarbeiterArray = _.map(myMitarbeiterList, function(o) {
     						var mitarbeiterSelected = NO;
     						_.each(mitarbeiterIds, function(m) {
     							if (m === o.value) {
@@ -21527,8 +21528,9 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 					// set mitarbeiterListSelected
                     var mitarbeiterListSelected = [];
                     var mitarbeiterArraySelected = mitarbeiterListSelected;
+                    myMitarbeiterList = JSON.parse(JSON.stringify(DigiWebApp.BautagebuchMainController.mitarbeiter));
     				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
-    					mitarbeiterArray = _.map(DigiWebApp.BautagebuchMainController.mitarbeiter, function(o) {
+    					mitarbeiterArraySelected = _.map(myMitarbeiterList, function(o) {
     						var mitarbeiterSelected = NO;
     						_.each(mitarbeiterIds, function(m) {
     							if (m === o.value) {
