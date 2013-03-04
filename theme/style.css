@@ -652,7 +652,9 @@ label.ui-input-text, .ui-controlgroup-label {
     padding-top: 10px;
 }
 
-.bautagebuchWetterPage .centerText {
+  .bautagebuchWetterPage .centerText
+, .bautagebuchZeitenDetailsPage .ui-grid-a 
+{
     text-align: center;
 }
 

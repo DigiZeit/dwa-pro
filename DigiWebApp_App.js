@@ -5192,7 +5192,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3081
+    , softwareVersion: 3082
 
 
     /**
@@ -15020,7 +15020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3081'
+              value: 'Build: 3082'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17044,15 +17044,13 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 				mitarbeiterArray = _.compact(mitarbeiterArray);
 				DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterList", mitarbeiterArray);
 				
-				/*if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.von.id  + ']').each(function() { $(this).hide(); });}catch(e){};
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.id  + ']').each(function() { $(this).hide(); });}catch(e){};
+				if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.GridVonBis.id  + ']').each(function() { $(this).hide(); });}catch(e){};
 					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).show(); });}catch(e){};
 				} else {
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.von.id  + ']').each(function() { $(this).show(); });}catch(e){};
-					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.id  + ']').each(function() { $(this).show(); });}catch(e){};
+					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.GridVonBis.id  + ']').each(function() { $(this).show(); });}catch(e){};
 					try{$('[id=' + DigiWebApp.BautagebuchZeitenDetailsPage.content.dauer.id  + ']').each(function() { $(this).hide(); });}catch(e){};
-				}*/
+				}
 				
 //		  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
 //					$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].disable();
@@ -17108,7 +17106,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'positionComboBox activityComboBox mitarbeiterGroup GridVonBis von bis dauer grid'
+    	  childViews: 'positionComboBox activityComboBox mitarbeiterGroup GridVonBis dauer grid'
         	  
         , cssClass: 'content'
     	
@@ -17211,138 +17209,121 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
         })
         
         , GridVonBis: M.GridView.design({
-              childViews: 'von bis'
+              childViews: 'vonInput bisInput'
             , layout: M.TWO_COLUMNS
-            , von: M.GridView.design({
-		            childViews: 'vonInput'
-		          , layout: M.TWO_COLUMNS
-		          , vonLabel: M.LabelView.design({
-			    	    cssClass: 'whiteText'
-		              , value: M.I18N.l('bookingFrom')
-		          })
-		          , vonInput: M.TextFieldView.design({
-		        	    label: M.I18N.l('bookingFrom')
-		        	  , contentBindingReverse: {
-		                    target: DigiWebApp.BautagebuchZeitenDetailsController
-		                  , property: 'von'
-		              }
-		              , contentBinding: {
-		                    target: DigiWebApp.BautagebuchZeitenDetailsController
-		                  , property: 'von'
-		              }
-		          	  , events: {
-		          		  tap: {
-			          		  	action: function(id, event) {
-		          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.von.vonInput).blur();
-						          		M.DatePickerView.show({
-						          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'vonInput')
-						          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
-						          		    , showTimePicker: YES
-						          		    , showDatePicker: NO
-						          		    , showAmPm: NO
-							    		    , dateOrder: 'ddmmyy'
-						          		    , dateFormat: "dd.mm.yy"
-						          		    , timeFormat: "HH:ii"
-						          		    , minutesLabel: M.I18N.l('minute')
-						          		    , hoursLabel: M.I18N.l('hour')
-						          		    , dayLabel: M.I18N.l('day')
-						          		    , monthLabel: M.I18N.l('month')
-						          		    , yearLabel: M.I18N.l('year')
-						          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
-						          		    , dayNames: DigiWebApp.ApplicationController.dayNames
-						          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
-						          		    , monthNames: DigiWebApp.ApplicationController.monthNames
-						          		    , callbacks: {
-						      				confirm: {
-						      					  target: this
-						      					, action: function(value, date) {
-						      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
-						      					}
-						      				}
-						      				, before: {
-						      					action: function(value, date) {
-						      					
-						      					}
-						      				}
-						      				, cancel: {
-						      					action: function() {
-						      					
-						      					}
-						      				}
-						      			}
-						          		});
-		          		  		}
-		          	  	  }
-		          	  }
-		          })
+            , vonInput: M.TextFieldView.design({
+	        	    label: M.I18N.l('bookingFrom')
+	        	  , contentBindingReverse: {
+	                    target: DigiWebApp.BautagebuchZeitenDetailsController
+	                  , property: 'von'
+	              }
+	              , contentBinding: {
+	                    target: DigiWebApp.BautagebuchZeitenDetailsController
+	                  , property: 'von'
+	              }
+	          	  , events: {
+	          		  tap: {
+		          		  	action: function(id, event) {
+	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.von.vonInput).blur();
+					          		M.DatePickerView.show({
+					          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'vonInput')
+					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
+					          		    , showTimePicker: YES
+					          		    , showDatePicker: NO
+					          		    , showAmPm: NO
+						    		    , dateOrder: 'ddmmyy'
+					          		    , dateFormat: "dd.mm.yy"
+					          		    , timeFormat: "HH:ii"
+					          		    , minutesLabel: M.I18N.l('minute')
+					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , dayLabel: M.I18N.l('day')
+					          		    , monthLabel: M.I18N.l('month')
+					          		    , yearLabel: M.I18N.l('year')
+					          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
+					          		    , dayNames: DigiWebApp.ApplicationController.dayNames
+					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
+					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
+					          		    , callbacks: {
+					      				confirm: {
+					      					  target: this
+					      					, action: function(value, date) {
+					      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
+					      					}
+					      				}
+					      				, before: {
+					      					action: function(value, date) {
+					      					
+					      					}
+					      				}
+					      				, cancel: {
+					      					action: function() {
+					      					
+					      					}
+					      				}
+					      			}
+					          		});
+	          		  		}
+	          	  	  }
+	          	  }
 		    })
 	
-	        , bis: M.GridView.design({
-		            childViews: 'bisInput'
-		          , layout: M.TWO_COLUMNS
-		          , bisLabel: M.LabelView.design({
-			    	    cssClass: 'whiteText'
-		              , value: M.I18N.l('bookingTo')
-		          })
-		          , bisInput: M.TextFieldView.design({
-		        	    label: M.I18N.l('bookingFrom')
-		        	  , contentBindingReverse: {
-		                    target: DigiWebApp.BautagebuchZeitenDetailsController
-		                  , property: 'bis'
-		              }
-		              , contentBinding: {
-		                    target: DigiWebApp.BautagebuchZeitenDetailsController
-		                  , property: 'bis'
-		              }
-		          	  , events: {
-		          		  tap: {
-			          		  	action: function(id, event) {
-		          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.bisInput).blur();
-						          		M.DatePickerView.show({
-						          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'bisInput')
-						          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
-						          		    , showTimePicker: YES
-						          		    , showDatePicker: NO
-						          		    , showAmPm: NO
-							    		    , dateOrder: 'ddmmyy'
-						          		    , dateFormat: "dd.mm.yy"
-						          		    , timeFormat: "HH:ii"
-						          		    , minutesLabel: M.I18N.l('minute')
-						          		    , hoursLabel: M.I18N.l('hour')
-						          		    , dayLabel: M.I18N.l('day')
-						          		    , monthLabel: M.I18N.l('month')
-						          		    , yearLabel: M.I18N.l('year')
-						          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
-						          		    , dayNames: DigiWebApp.ApplicationController.dayNames
-						          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
-						          		    , monthNames: DigiWebApp.ApplicationController.monthNames
-						          		    , callbacks: {
-						      				confirm: {
-						      					  target: this
-						      					, action: function(value, date) {
-						      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
-						      					}
-						      				}
-						      				, before: {
-						      					action: function(value, date) {
-						      					
-						      					}
-						      				}
-						      				, cancel: {
-						      					action: function() {
-						      					
-						      					}
-						      				}
-						      			}
-						          		});
-		          		  		}
-		          	  	  }
-		          	  }
-		          })
-		    })
-
+	        , bisInput: M.TextFieldView.design({
+	        	    label: M.I18N.l('bookingTo')
+	        	  , contentBindingReverse: {
+	                    target: DigiWebApp.BautagebuchZeitenDetailsController
+	                  , property: 'bis'
+	              }
+	              , contentBinding: {
+	                    target: DigiWebApp.BautagebuchZeitenDetailsController
+	                  , property: 'bis'
+	              }
+	          	  , events: {
+	          		  tap: {
+		          		  	action: function(id, event) {
+	          		  				$(DigiWebApp.BautagebuchZeitenDetailsPage.content.bis.bisInput).blur();
+					          		M.DatePickerView.show({
+					          		      source: M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'bisInput')
+					          		    , initialDate: D8.create("01.01.1993 " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit)
+					          		    , showTimePicker: YES
+					          		    , showDatePicker: NO
+					          		    , showAmPm: NO
+						    		    , dateOrder: 'ddmmyy'
+					          		    , dateFormat: "dd.mm.yy"
+					          		    , timeFormat: "HH:ii"
+					          		    , minutesLabel: M.I18N.l('minute')
+					          		    , hoursLabel: M.I18N.l('hour')
+					          		    , dayLabel: M.I18N.l('day')
+					          		    , monthLabel: M.I18N.l('month')
+					          		    , yearLabel: M.I18N.l('year')
+					          		    , dayNamesShort: DigiWebApp.ApplicationController.dayNamesShort
+					          		    , dayNames: DigiWebApp.ApplicationController.dayNames
+					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
+					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
+					          		    , callbacks: {
+					      				confirm: {
+					      					  target: this
+					      					, action: function(value, date) {
+					      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
+					      					}
+					      				}
+					      				, before: {
+					      					action: function(value, date) {
+					      					
+					      					}
+					      				}
+					      				, cancel: {
+					      					action: function() {
+					      					
+					      					}
+					      				}
+					      			}
+					          		});
+	          		  		}
+	          	  	  }
+	          	  }
+	        })
         })
-
+        
         , von: M.GridView.design({
 	            childViews: 'vonLabel vonInput'
 	          , layout: M.TWO_COLUMNS
