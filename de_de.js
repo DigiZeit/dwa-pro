@@ -272,6 +272,9 @@ M.I18N.de_de = {
 		
 
 	, selectSomethingOptional: "Bitte wählen... (optional)"
+	, bookingFrom: "Von"
+	, bookingTo: "Bis"
+	, bookingDuration: "Dauer"
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"
