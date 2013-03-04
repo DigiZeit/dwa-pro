@@ -646,7 +646,8 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 
-.bautagebuchBautageberichtDetailsPage .ui-content .ui-block-a 
+  .bautagebuchBautageberichtDetailsPage .ui-content .ui-block-a 
+, .bautagebuchZeitenDetailsPage .ui-content .ui-block-a 
 {
     padding-top: 10px;
 }
