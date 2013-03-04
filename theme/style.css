@@ -657,6 +657,11 @@ label.ui-input-text, .ui-controlgroup-label {
 	color: #000000;
 }
 
+.bautagebuchListePage .small .ui-btn-inner
+{
+	white-space: normal !important;
+}
+
   .bautagebuchZeitenDetailsPage .ui-content .ui-block-a 
 , .bautagebuchZeitenDetailsPage .ui-content .ui-block-b 
 {

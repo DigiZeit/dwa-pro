@@ -5242,7 +5242,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3099
+    , softwareVersion: 3100
 
 
     /**
@@ -15096,7 +15096,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3099'
+              value: 'Build: 3100'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21186,7 +21186,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	})
 
 	, von: M.LabelView.design({
-	      cssClass: 'small unselectable'
+	      cssClass: 'normal unselectable'
 		, isInline: YES
 		, computedValue: {
 		      valuePattern: '<%= von %>'
@@ -21201,7 +21201,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	})
 	
 	, bis: M.LabelView.design({
-	      cssClass: 'small unselectable'
+	      cssClass: 'normal unselectable'
 	    , isInline: YES
 		, computedValue: {
 		      valuePattern: '<%= bis %>'
@@ -21216,7 +21216,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	})
 
 	, dauer: M.LabelView.design({
-	      cssClass: 'small unselectable'
+	      cssClass: 'normal unselectable'
 	    , isInline: YES
 		, computedValue: {
 		      valuePattern: '<%= dauer %>'
