@@ -680,8 +680,9 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-top: 5px;
 }
 
-  .bautagebuchZeitenDetailsPage .ui-listview .location
-, .bautagebuchZeitenDetailsPage .ui-listview .small {
+  .bautagebuchZeitenListePage .ui-listview .location
+, .bautagebuchZeitenListePage .ui-listview .small
+{
     font-size: 12px;
     font-weight: normal;
     margin-left: 25px;

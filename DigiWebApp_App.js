@@ -5164,7 +5164,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3074
+    , softwareVersion: 3075
 
 
     /**
@@ -14989,7 +14989,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3074'
+              value: 'Build: 3075'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17000,18 +17000,16 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
                 var mitarbeiterIds = DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds; 
                 var mitarbeiterList = [];
                 var mitarbeiterArray = mitarbeiterList;
-				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
-					mitarbeiterArray = _.map(JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautageberichtDetailsController.mitarbeiterListSelected)), function(o) {
-						var mitarbeiterSelected = NO;
-						_.each(mitarbeiterIds, function(m) {
-							if (m === o.value) {
-								mitarbeiterSelected = YES;
-							}
-						});
-						o.isSelected = (mitarbeiterSelected === YES);
-						return o;
-	    			});
-            	}
+				mitarbeiterArray = _.map(JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautageberichtDetailsController.mitarbeiterListSelected)), function(o) {
+					var mitarbeiterSelected = NO;
+					_.each(mitarbeiterIds, function(m) {
+						if (m === o.value) {
+							mitarbeiterSelected = YES;
+						}
+					});
+					o.isSelected = (mitarbeiterSelected === YES);
+					return o;
+    			});
 				mitarbeiterArray = _.compact(mitarbeiterArray);
 				DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterList", mitarbeiterArray);
 				
@@ -20846,7 +20844,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	})
 
 	, mitarbeiterIds: M.LabelView.design({
-	      cssClass: 'normal unselectable'
+	      cssClass: 'small unselectable'
 		, computedValue: {
 		      valuePattern: '<%= mitarbeiterIds %>'
 		    , operation: function(v) {
@@ -20876,7 +20874,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 		      valuePattern: '<%= positionName %>'
 		    , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return ", " + v;
+							return v;
 						} else {
 							return "";
 						}
