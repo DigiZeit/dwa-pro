@@ -1303,11 +1303,7 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
         isRequired: NO
     })
     
-    , mitarbeiterId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , mitarbeiterName: M.Model.attr('String', {
+    , mitarbeiterIds: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -4560,6 +4556,9 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 	, activityId: null // in model
 	, activityName: null // in model
 	, activityList: null // runtime
+	
+	, mitarbeiterIds: null // in model
+	, mitarbeiterList: null // runtime
 
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -4572,6 +4571,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		that.set("positionName", myItem.get("positionName"));
 		that.set("activityId", myItem.get("activityId"));
 		that.set("activityName", myItem.get("activityName"));
+		that.set("mitarbeiterIds", JSON.parse(myItem.get("mitarbeiterIds")));
 	}
 	
 	, save: function() {
@@ -4580,6 +4580,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		that.item.set("positionName", that.positionName);
 		that.item.set("activityId", that.activityId);
 		that.item.set("activityName", that.activityName);
+		that.item.set("mitarbeiterIds", JSON.stringify(that.mitarbeiterIds));
 		that.item.saveSorted();
 		DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 		DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
@@ -5163,7 +5164,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3071
+    , softwareVersion: 3072
 
 
     /**
@@ -14988,7 +14989,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3071'
+              value: 'Build: 3072'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16990,6 +16991,32 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 				DigiWebApp.BautagebuchZeitenDetailsController.set("positionenList", positionenArray)
 				
 				DigiWebApp.BautagebuchZeitenDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchZeitenDetailsController.positionId);
+				
+				// im Bautagesbericht verfügbare Mitarbeiter kopieren und ausgewählte selektieren
+                var mitarbeiterIds = DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds; 
+                var mitarbeiterList = [];
+                var mitarbeiterArray = mitarbeiterList;
+				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
+					mitarbeiterArray = _.map(JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautageberichtDetailsController.mitarbeiterListSelected)), function(o) {
+						var mitarbeiterSelected = NO;
+						_.each(mitarbeiterIds, function(m) {
+							if (m === o.value) {
+								mitarbeiterSelected = YES;
+							}
+						});
+						o.isSelected = (mitarbeiterSelected === YES);
+						return o;
+	    			});
+            	}
+				mitarbeiterArray = _.compact(mitarbeiterArray);
+				DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterList", mitarbeiterArray);
+				
+//		  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
+//					$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].disable();
+//				} else {
+//					$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].enable();
+//				}
+
 			}
         }
         , pagehide: {
@@ -17038,11 +17065,11 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
 
-    	  childViews: 'positionComboBox activityComboBox grid'
+    	  childViews: 'positionComboBox activityComboBox mitarbeiterGroup grid'
         	  
         , cssClass: 'content'
     	
-            , positionComboBox: M.SelectionListView.design({
+        , positionComboBox: M.SelectionListView.design({
 
                 /* renders a selection view like check boxes */
                   selectionMode: M.SINGLE_SELECTION_DIALOG
@@ -17087,6 +17114,57 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
                     	}
                 	}
                 }
+        })
+
+        , mitarbeiterGroup: M.SelectionListView.design({
+
+            /* renders a selection view like check boxes */
+              selectionMode: M.MULTIPLE_SELECTION
+
+            , initialText: M.I18N.l('noData')
+            
+            , label: M.I18N.l('employees')
+
+            , applyTheme: NO
+
+            /* this seleciton view has no static entries, instead it is filled via content binding. */
+            , contentBinding: {
+                  target: DigiWebApp.BautagebuchZeitenDetailsController
+                , property: 'mitarbeiterList'
+            }
+
+            , events: {
+                  change: {
+                    /* executed in scope of DOMWindow because no target defined */
+                      action: function(itemValues, items) {
+	                        /* itemValues is an array because mode of selection is M.MULTIPLE_SELECTION */
+	            			var mitarbeiterIds = [];
+	                        for(var i = 0; i < itemValues.length; i++) {
+	                        	mitarbeiterIds.push(itemValues[i]);
+	                        }
+	                        DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterIds", mitarbeiterIds);
+	                        
+	                        var mitarbeiterList = [];
+	                        var mitarbeiterArray = mitarbeiterList;
+		    				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
+		    					mitarbeiterArray = _.map(DigiWebApp.BautagebuchMainController.mitarbeiter, function(o) {
+		    						var mitarbeiterSelected = NO;
+		    						_.each(mitarbeiterIds, function(m) {
+		    							if (m === o.value) {
+		    								mitarbeiterSelected = YES;
+		    							}
+		    						});
+		    						if (mitarbeiterSelected) {
+		    							o.isSelected = YES;
+		    							return o;
+		    						}
+	    		    			});
+    		            	}
+		    				mitarbeiterArray = _.compact(mitarbeiterArray);
+	    					DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterListSelected", mitarbeiterArray);
+            		}
+                }
+            }
         })
 
         , grid: M.GridView.design({
@@ -20742,7 +20820,7 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'mitarbeiterName positionName activityName spacer von bis dauer latitude longitude latitude_bis longitude_bis'
+    , childViews: 'positionName activityName spacer von bis dauer latitude longitude latitude_bis longitude_bis mitarbeiterIds'
 
     , events: {
         tap: {
@@ -20763,14 +20841,23 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 	    value: ''
 	})
 
-	, mitarbeiterName: M.LabelView.design({
+	, mitarbeiterIds: M.LabelView.design({
 	      cssClass: 'normal unselectable'
-		, isInline: YES
 		, computedValue: {
-		      valuePattern: '<%= positionName %>'
+		      valuePattern: '<%= mitarbeiterIds %>'
 		    , operation: function(v) {
 						if (v !== "" && v !== null) {
-							return v;
+							var outString = ""
+							// v ist eine (json-striginfied) Liste mit (DTC-)mitarbeiterIds
+							var vAsArray = JSON.parse(v);
+							var mitarbeiterList = DigiWebApp.BautagebuchMitarbeiter.findSorted();
+							_.each(mitarbeiterList, function(el){
+								if (vAsArray.indexOf(el.get("id")) !== -1) {
+									if (outString !== "") outString += ", ";
+									outString += el.vollername();
+								}
+							})
+							return outString;
 						} else {
 							return "";
 						}
@@ -21432,6 +21519,27 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 	            	}
     				mitarbeiterArray = _.compact(mitarbeiterArray);
 					DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterList", mitarbeiterArray);
+					
+					// set mitarbeiterListSelected
+                    var mitarbeiterListSelected = [];
+                    var mitarbeiterArraySelected = mitarbeiterListSelected;
+    				if (mitarbeiterIds && mitarbeiterIds.length !== 0) {
+    					mitarbeiterArray = _.map(DigiWebApp.BautagebuchMainController.mitarbeiter, function(o) {
+    						var mitarbeiterSelected = NO;
+    						_.each(mitarbeiterIds, function(m) {
+    							if (m === o.value) {
+    								mitarbeiterSelected = YES;
+    							}
+    						});
+    						if (mitarbeiterSelected) {
+    							o.isSelected = YES;
+    							return o;
+    						}
+		    			});
+	            	}
+    				mitarbeiterArraySelected = _.compact(mitarbeiterArraySelected);
+					DigiWebApp.BautagebuchBautageberichtDetailsController.set("mitarbeiterListSelected", mitarbeiterArraySelected);
+
 					
 			  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
 						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit.startUhrzeitInput)[0].disable();
