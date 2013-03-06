@@ -3285,13 +3285,13 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
@@ -3307,7 +3307,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -5373,7 +5373,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3169
+    , softwareVersion: 3170
 
 
     /**
@@ -11752,7 +11752,8 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 			if (fileContent && (fileContent !== "")) {
 				  that.set("data", fileContent);
 			      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-			      image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
+			      //image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
+			      image.src = fileContent;
 			}
 		});
 		that.set("remark", myItem.get("remark"));
@@ -11788,8 +11789,9 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 
 	    //that.item.set('fileType', DigiWebApp.ApplicationController.CONSTImageFiletype);
 
-		if (that.item.saveSorted()) {		
-		    that.item.saveToFile(that.data, function() {
+		if (that.item.saveSorted()) {
+			var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		    that.item.saveToFile(image.src, function() {
   		        DigiWebApp.ApplicationController.DigiLoaderView.hide();
 				DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 				DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
@@ -11802,7 +11804,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 	
 	, delete: function() {
 		var that = this;
-		if (that.item.deleteSorted()) {		
+		if (that.item.deleteSorted() !== false) {		
 			DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 			DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
 			return true;
@@ -15573,7 +15575,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3169'
+              value: 'Build: 3170'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
