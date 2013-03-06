@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3151
+    , softwareVersion: 3152
 
 
     /**
@@ -15503,7 +15503,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3151'
+              value: 'Build: 3152'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19006,7 +19006,7 @@ DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
 			action: function(id, m_id) {
 				    var view = M.ViewManager.getViewById(id);
 				    var view_modelId = view.modelId;
-				    _.each(DigiWebApp.BautagebuchMedienDetailsController.items, function(selectedItem) {
+				    _.each(DigiWebApp.BautagebuchMedienListeController.items, function(selectedItem) {
 						if (selectedItem.m_id === view_modelId) {
 							DigiWebApp.BautagebuchMedienDetailsController.load(selectedItem);
 						}
