@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3159
+    , softwareVersion: 3160
 
 
     /**
@@ -9998,7 +9998,15 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 						return false;
 					}
 					break;
-				case($(window).width()>1024 && $(window).width()<=1536):
+				case($(window).width()>1024  && $(window).width()<=1080):
+					if (this.sizeMode !== "w1080") {
+						this.sizeMode = "w1080";
+						return true;
+					} else {
+						return false;
+					}
+					break;
+				case($(window).width()>1080 && $(window).width()<=1536):
 					if (this.sizeMode !== "w1536") {
 						this.sizeMode = "w1536";
 						return true;
@@ -10029,7 +10037,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 		        _.each(DigiWebApp.app.pages, function(myPage) {
 		        	if ($('#' + myPage.id).get("0").classList) {
 	    				if (!$('#' + myPage.id).get("0").classList.contains(DigiWebApp.ApplicationController.sizeMode)) {
-	    					$('#' + myPage.id).removeClass("w320").removeClass("w480").removeClass("w640").removeClass("w1024").removeClass("w1536").removeClass("w5000");
+	    					$('#' + myPage.id).removeClass("w320").removeClass("w480").removeClass("w640").removeClass("w1024").removeClass("w1080").removeClass("w1536").removeClass("w5000");
 	        				$('#' + myPage.id).addClass(DigiWebApp.ApplicationController.sizeMode);	        					
 	    				}
 		        	}
@@ -15519,7 +15527,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3159'
+              value: 'Build: 3160'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
