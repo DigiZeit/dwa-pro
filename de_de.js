@@ -287,6 +287,7 @@ M.I18N.de_de = {
 	, other: "Andere"
 	, notImplemented: "Noch nicht implementiert"
 	, notImplementedMsg: "Diese Funktion ist noch nicht implementiert!"
+	, newMedia: "Art der neuen Mediendatei"
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"

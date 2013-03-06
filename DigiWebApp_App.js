@@ -3542,7 +3542,7 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 	, neu: function() {
 		var that = this;
     	M.DialogView.actionSheet({
-	          title: M.I18N.l('BautagebuchSaveOrClose')
+	          title: M.I18N.l('newMedia')
 	        , cancelButtonValue: M.I18N.l('cancel')
 	        , otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
 	        , otherButtonTags: ["audio", "photo", "video", "other"]
@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3145
+    , softwareVersion: 3146
 
 
     /**
@@ -15503,7 +15503,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3145'
+              value: 'Build: 3146'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

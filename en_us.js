@@ -287,7 +287,7 @@ M.I18N.en_us = {
 	, other: "Other"
 	, notImplemented: "Not yet implemented"
 	, notImplementedMsg: "This feature is yet not implemented!"
-
+	, newMedia: "Type of new mediafile"
 
 	, second: "Second"
 	, seconds: "Seconds"
