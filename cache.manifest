@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.4.2.3122 beta, Timestamp:1362414901738
+#Application:DigiWebApp, Version:1.4.2.3123 beta, Timestamp:1362560626977
 
 
 # Explicitly cached entries
@@ -14,13 +14,11 @@ d8-0.1.3.min.js
 theme/tmp.css
 bootstrap.js
 jquery.xml2json_1.1.js
+jquery-1.6.4.min.js
 jquery_mobile.js
 ui.js
-jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-childbrowser.js
-cordova.js
 core.js
 theme/jquery.mobile-1.0.min.css
 theme/images/icons-18-white.png
@@ -28,16 +26,8 @@ theme/images/ajax-loader.png
 theme/images/icons-18-black.png
 theme/images/icons-36-white.png
 theme/images/icons-36-black.png
-theme/journal.woff
-flashcanvas.swf
-jquery.signaturepad.min.js
-theme/journal.ttf
-theme/journal.svg
-flashcanvas.js
-pen.cur
-json2.min.js
-theme/jquery.signaturepad.css
-theme/journal.eot
+childbrowser.js
+cordova.js
 theme/style.css
 pen.cur
 theme/images/icon_handApplication.png
@@ -50,10 +40,7 @@ theme/images/icon_ios_57.png
 theme/images/Icon.png
 theme/images/icon_record.png
 theme/images/logo.png
-theme/images/ic_launcher_hdpi.png
 theme/images/icon_recordAudio.png
-theme/images/640x960_90_DIGI-WebApp_mitLogo.png
-theme/images/icon_ios_72.png
 theme/images/arrow_grey.png
 theme/images/ajax-loader.png
 theme/images/icon_ios_114.png
@@ -85,6 +72,19 @@ theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/icon_searchPicture.png
 theme/images/icon_closingTime.png
+theme/images/640x960_90_DIGI-WebApp_mitLogo.png
+theme/images/icon_ios_72.png
+theme/images/ic_launcher_hdpi.png
+theme/journal.woff
+flashcanvas.swf
+jquery.signaturepad.min.js
+theme/journal.ttf
+theme/journal.svg
+flashcanvas.js
+pen.cur
+json2.min.js
+theme/jquery.signaturepad.css
+theme/journal.eot
 DigiWebApp_App.js
 
 

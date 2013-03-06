@@ -277,7 +277,8 @@ M.I18N.en_us = {
 	, wrongTimes: "Wrong points in time"
 	, wrongTimesMsg: "The from-moment may not be after the to-moment! (Nightshifts are not possible yet)"
 	, falscheZeitenIgnorieren: "Do not check points in time"
-					
+	, characters: "characters"
+
 	, second: "Second"
 	, seconds: "Seconds"
 	, minute: "Minute"

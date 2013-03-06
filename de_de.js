@@ -277,6 +277,7 @@ M.I18N.de_de = {
 	, wrongTimes: "Falsche Uhrzeiten"
 	, wrongTimesMsg: "Der Von-Zeitpunkt kann nicht nach dem Bis-Zeitpunkt liegen! (Nachtschichten sind noch nicht möglich)"
 	, falscheZeitenIgnorieren: "eingegebene Zeiten nicht prüfen"
+	, characters: "Zeichen"
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"
