@@ -32,6 +32,7 @@ body {
 
 */
 
+/* TextShadows
 .ui-body-c, .ui-dialog.ui-overlay-c {
 	color: #333;
 	text-shadow: 1px 1px 0 #aaa !important;
@@ -40,7 +41,7 @@ body {
 .ui-btn-text .ui-btn-c {
 	text-shadow: 1px 1px 0 #ccc!important;
 }
-
+*
 .ui-header .ui-btn-left {
 	margin-top: 0px; /* pre jqm 1.1 (post jqm 1.1: 3px)*/
 }
@@ -674,10 +675,10 @@ label.ui-input-text, .ui-controlgroup-label {
     padding-bottom: 20px;
 }
 
-  .bautagebuchZeitenDetailsPage input.ui-input-text .dauerInput
-, .bautagebuchBautageberichtDetailsPage input.ui-input-text .startUhrzeit
+  .bautagebuchZeitenDetailsPage input.ui-input-text
+, .bautagebuchBautageberichtDetailsPage input.ui-input-text
 {
-	text-align: center;
+	text-align: center !important;
 	width: 98% !important;
 }
 
