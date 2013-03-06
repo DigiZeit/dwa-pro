@@ -5294,7 +5294,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3133
+    , softwareVersion: 3134
 
 
     /**
@@ -15214,7 +15214,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3133'
+              value: 'Build: 3134'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22581,7 +22581,8 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
 		}
         , pagehide: {
             action: function() {
-
+        		// reset auto-grow
+        		M.ViewManager.getView('bautagebuchNotizenDetailsPage', 'dataInput').setCssProperty("height","400px");
         	}
         }
     }
