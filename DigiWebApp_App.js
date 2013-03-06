@@ -5294,7 +5294,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3129
+    , softwareVersion: 3130
 
 
     /**
@@ -15214,7 +15214,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3129'
+              value: 'Build: 3130'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16299,16 +16299,21 @@ DigiWebApp.RemarkPage = M.PageView.design({
 				// load remark
 				if (typeof(DigiWebApp.BookingController.currentBooking) !== "undefined" && DigiWebApp.BookingController.currentBooking !== null) {
 					if (typeof(DigiWebApp.BookingController.currentBooking.get('remark')) !== "undefined" && DigiWebApp.BookingController.currentBooking.get('remark') !== null) {
+						//M.ViewManager.getView('remarkPage', 'remarkInput').setValue(DigiWebApp.BookingController.currentBooking.get('remark'));
 						$('#' + DigiWebApp.RemarkPage.content.remarkInput.id).val(DigiWebApp.BookingController.currentBooking.get('remark'));
 						M.ViewManager.getView('remarkPage', 'remarkInput').value = DigiWebApp.BookingController.currentBooking.get('remark');
 					} else {
+						//M.ViewManager.getView('remarkPage', 'remarkInput').setValue(null);
 						$('#' + DigiWebApp.RemarkPage.content.remarkInput.id).val("");
 						M.ViewManager.getView('remarkPage', 'remarkInput').value = "";
 					}
 				} else {
+					//M.ViewManager.getView('remarkPage', 'remarkInput').setValue(null);
 					$('#' + DigiWebApp.RemarkPage.content.remarkInput.id).val("");
 					M.ViewManager.getView('remarkPage', 'remarkInput').value = "";
 				}
+				$('#' + DigiWebApp.RemarkPage.content.remarkInput.id)[0].focus();
+				$('#' + DigiWebApp.RemarkPage.content.remarkInput.id)[0].blur();
 			}
         }
     }
@@ -22564,7 +22569,8 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
 				DigiWebApp.BautagebuchNotizenDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchNotizenDetailsController.positionId);
 				
 				M.ViewManager.getView('bautagebuchNotizenDetailsPage', 'dataInput').setValue(DigiWebApp.BautagebuchNotizenDetailsController.data);
-
+				$('#' + DigiWebApp.BautagebuchNotizenDetailsPage.content.dataInput.id)[0].focus();
+				$('#' + DigiWebApp.BautagebuchNotizenDetailsPage.content.dataInput.id)[0].blur();
 			}
         }
         , pagehide: {
