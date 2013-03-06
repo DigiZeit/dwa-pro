@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3155
+    , softwareVersion: 3156
 
 
     /**
@@ -15198,7 +15198,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
 	            	action: function(selectedValue, selectedItem) {
 						var myValue = M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').getValue();
 						if (myValue.length <= 255) {
-							DigiWebApp.BautagebuchMedienDetailsController.set("data", M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').getValue());
+							DigiWebApp.BautagebuchMedienDetailsController.set("remark", M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').getValue());
 						} else {
 							M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').setValue(DigiWebApp.BautagebuchMedienDetailsController.remark);
 				            DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -15519,7 +15519,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3155'
+              value: 'Build: 3156'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
