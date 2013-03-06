@@ -695,6 +695,14 @@ label.ui-input-text, .ui-controlgroup-label {
 	margin-bottom: 20px;
 	height: 400px;
 }
+.bautagebuchNotizenDetailsPage .dataInputInitial {
+	margin-bottom: 20px;
+	height: 400px;
+	vertical-align: middle; 
+	text-align: center;
+	font-weight: bold;
+	background: #F3E2A9;
+}
 
 .tmp-slider-container.tmp-slider-is-slider-only {
 	padding-top: 4px !important; 
