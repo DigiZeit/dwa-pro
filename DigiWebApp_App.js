@@ -2021,13 +2021,13 @@ DigiWebApp.Booking = M.Model.create({
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    }
 	
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	errorCallback = function(evt) {
 	            //console.log("saveToFileError: " + evt.target.error.code);
@@ -2039,7 +2039,7 @@ DigiWebApp.Booking = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 		try {
@@ -2085,13 +2085,13 @@ DigiWebApp.Booking = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("readFromFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
@@ -2109,7 +2109,7 @@ DigiWebApp.Booking = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 		
 		try {
@@ -2151,19 +2151,19 @@ DigiWebApp.Booking = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
@@ -2175,7 +2175,7 @@ DigiWebApp.Booking = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 		try {
@@ -2320,13 +2320,13 @@ DigiWebApp.MediaFile = M.Model.create({
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    }
 
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	errorCallback = function(evt) {
 	            //console.log("saveToFileError: " + evt.target.error.code);
@@ -2338,7 +2338,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -2379,19 +2379,19 @@ DigiWebApp.MediaFile = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("readFromFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -2403,7 +2403,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -2441,13 +2441,13 @@ DigiWebApp.MediaFile = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
@@ -2463,7 +2463,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -2593,13 +2593,13 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    }
 	
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	errorCallback = function(evt) {
 	            //console.log("saveToFileError: " + evt.target.error.code);
@@ -2611,7 +2611,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 		try {
@@ -2657,19 +2657,19 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("readFromFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -2681,7 +2681,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 		
 		try {
@@ -2723,19 +2723,19 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
@@ -2747,7 +2747,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 		try {
@@ -3164,13 +3164,13 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    }
 
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	errorCallback = function(evt) {
 	            //console.log("saveToFileError: " + evt.target.error.code);
@@ -3182,7 +3182,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -3223,19 +3223,19 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("readFromFileError: no fileName given");
-	        return;
+	        return false;
 	    };
 
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
-	        return;
+	        return false;
 	    };
 		
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
+	        return false;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -3247,7 +3247,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
-	        return;
+	        return true;
 	    }
 
 	    // open filesystem
@@ -5373,7 +5373,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3170
+    , softwareVersion: 3171
 
 
     /**
@@ -15575,7 +15575,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3170'
+              value: 'Build: 3171'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
