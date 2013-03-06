@@ -690,6 +690,12 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchWetterPage .marginBottom5px {
     margin-bottom: 5px;
 }
+
+.bautagebuchNotizenDetailsPage .dataInput {
+	margin-bottom: 20px;
+	height: 400px;
+}
+
 .tmp-slider-container.tmp-slider-is-slider-only {
 	padding-top: 4px !important; 
 }
