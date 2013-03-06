@@ -71,6 +71,7 @@ body {
 .w320 { background: url('images/320x480_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w480 { background: url('images/480x800_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w640 { background: url('images/640x960_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
+.w800 { background: url('images/800x1280_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w1024 { background: url('images/1024x1024_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w1080 { background: url('images/1080x1920_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w1536 { background: url('images/1536x2048_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
