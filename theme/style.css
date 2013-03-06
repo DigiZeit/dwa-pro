@@ -701,6 +701,12 @@ label.ui-input-text, .ui-controlgroup-label {
 	margin-bottom: 20px;
 	height: 400px;
 }
+
+.bautagebuchNotizenDetailsPage .remarkInput {
+	margin-bottom: 20px;
+	height: 50px;
+}
+
 .bautagebuchNotizenDetailsPage .dataInputInitial {
 	margin-bottom: 20px;
 	height: 400px;
