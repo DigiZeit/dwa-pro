@@ -3547,7 +3547,7 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 	        , otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
 	        , otherButtonTags: ["audio", "photo", "video", "other"]
 	        , callbacks: {
-  				, other: {action: function(buttonTag) {
+  				  other: {action: function(buttonTag) {
 	  			    switch(buttonTag) {
 		    		        case 'audio':
 		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3141
+    , softwareVersion: 3142
 
 
     /**
@@ -15467,7 +15467,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3141'
+              value: 'Build: 3142'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
