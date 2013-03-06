@@ -32,6 +32,15 @@ body {
 
 */
 
+.ui-body-c, .ui-dialog.ui-overlay-c {
+	color: #333;
+	text-shadow: 1px 1px 0 #aaa !important;
+}
+
+/*.ui-btn-text {
+	text-shadow: 1px 1px 0 #ccc!important;
+}*/
+
 .ui-header .ui-btn-left {
 	margin-top: 0px; /* pre jqm 1.1 (post jqm 1.1: 3px)*/
 }
