@@ -37,9 +37,9 @@ body {
 	text-shadow: 1px 1px 0 #aaa !important;
 }
 
-/*.ui-btn-text {
+.ui-btn-text .ui-btn-c {
 	text-shadow: 1px 1px 0 #ccc!important;
-}*/
+}
 
 .ui-header .ui-btn-left {
 	margin-top: 0px; /* pre jqm 1.1 (post jqm 1.1: 3px)*/
