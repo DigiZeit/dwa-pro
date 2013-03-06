@@ -671,6 +671,7 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
   .bautagebuchZeitenDetailsPage .dauerInput
+, .bautagebuchBautageberichtDetailsPage . startUhrzeit
 {
 	text-align: center;
 	width: 98% !important;
