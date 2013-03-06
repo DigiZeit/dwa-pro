@@ -5373,7 +5373,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3168
+    , softwareVersion: 3169
 
 
     /**
@@ -11752,7 +11752,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 			if (fileContent && (fileContent !== "")) {
 				  that.set("data", fileContent);
 			      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-			      image.src = fileContent;
+			      image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
 			}
 		});
 		that.set("remark", myItem.get("remark"));
@@ -15573,7 +15573,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3168'
+              value: 'Build: 3169'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
