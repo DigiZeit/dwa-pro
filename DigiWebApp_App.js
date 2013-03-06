@@ -5373,7 +5373,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3166
+    , softwareVersion: 3167
 
 
     /**
@@ -11862,7 +11862,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
     }
     
     , cameraSuccessBase64: function(imageData) {
-    	var that = this;
+    	var that = DigiWebApp.BautagebuchMedienDetailsController;
     	that.set("data", imageData);
         var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
         image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
@@ -15573,7 +15573,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3166'
+              value: 'Build: 3167'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
