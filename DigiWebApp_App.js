@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3150
+    , softwareVersion: 3151
 
 
     /**
@@ -15133,7 +15133,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
 		, pagehide: {
 		    action: function() {
 				// reset auto-grow
-				M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').setCssProperty("height","100px");
+				M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').setCssProperty("height","50px");
 			}
 		}
     }
@@ -15503,7 +15503,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3150'
+              value: 'Build: 3151'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18999,60 +18999,75 @@ DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'bezeichnungLabel bezeichnung'
+    , childViews: 'positionName activityName spacer remark'
 
     , events: {
         tap: {
 			action: function(id, m_id) {
-//				var doShow = NO;
-//			    var view = M.ViewManager.getViewById(id);
-//			    var view_modelId = view.modelId;
-//			    _.each(DigiWebApp.AnwesenheitslisteController.items, function(selectedItem) {
-//					if (selectedItem.m_id === view_modelId) {
-//						if (selectedItem.get("datum") !== "-") {
-//							DigiWebApp.ZeitbuchungenController.set('datum', selectedItem.get("datum"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', selectedItem.get("mitarbeiterId"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', selectedItem.get("nameVorname"));
-//							doShow = YES;
-//						}
-//					}
-//				});
-//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+				    var view = M.ViewManager.getViewById(id);
+				    var view_modelId = view.modelId;
+				    _.each(DigiWebApp.BautagebuchMedienDetailsController.items, function(selectedItem) {
+						if (selectedItem.m_id === view_modelId) {
+							DigiWebApp.BautagebuchMedienDetailsController.load(selectedItem);
+						}
+					});
+				    DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 			}
         }
     }
-
+	
 	, spacer: M.LabelView.design({
-	      cssClass: 'unselectable marginBottom12'
-	    , value: ' '
+	    value: ''
 	})
 	
-	, bezeichnungLabel: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnungLabel %>'
-	      , operation: function(v) {
-					return v;
-	          }
-	  }
+	, positionName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= positionName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return v;
+						} else {
+							return "";
+						}
+		        }
+		}
 	})
 	
-	, bezeichnung: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= bezeichnung %>'
-	      , operation: function(v) {
-				if (v !== "-") {
-					return v;
-				} else {
-					return "";
-				}
-	          }
-	  }
+	, activityName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= activityName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v + ":";
+						} else {
+							return ":";
+						}
+		        }
+		}
 	})
 
+	, remark: M.LabelView.design({
+	      cssClass: 'small unselectable'
+		, computedValue: {
+		      valuePattern: '<%= remark %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							var outputLength = 50;
+							if (v.length > outputLength) { 
+								return v.substring(0,outputLength) + "..."; 
+							} else { 
+								return v.substring(0,outputLength);
+							}
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
     
 });
 

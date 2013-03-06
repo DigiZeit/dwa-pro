@@ -712,8 +712,8 @@ label.ui-input-text, .ui-controlgroup-label {
 
 .bautagebuchMedienDetailsPage .remarkInputInitial {
 	margin-bottom: 20px;
-	height: 100px;
-	text-align: left;
+	height: 50px;
+	text-align: center;
 	font-weight: bold;
 	background: #F3E2A9;
 }
