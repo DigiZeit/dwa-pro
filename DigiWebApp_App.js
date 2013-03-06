@@ -5294,7 +5294,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3126
+    , softwareVersion: 3128
 
 
     /**
@@ -15214,7 +15214,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3126'
+              value: 'Build: 3128'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22560,6 +22560,9 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
 				DigiWebApp.BautagebuchNotizenDetailsController.set("positionenList", positionenArray)
 				
 				DigiWebApp.BautagebuchNotizenDetailsController.setTaetigkeiten(DigiWebApp.BautagebuchNotizenDetailsController.positionId);
+				
+				M.ViewManager.getView('bautagebuchNotizenDetailsPage', 'dataInput').setValue(DigiWebApp.BautagebuchNotizenDetailsController.data);
+
 			}
         }
         , pagehide: {
@@ -22665,6 +22668,14 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
                 , hasMultipleLines: YES
                 , initialText: "max. 4000 " + M.I18N.l('characters')
                 , numberOfChars: 4000
+	   	        , events: {
+	           		keyup: {
+	   	                /* executed in scope of DOMWindow because no target defined */
+	   	            	action: function(selectedValue, selectedItem) {
+	   	        				DigiWebApp.BautagebuchNotizenDetailsController.set("data", M.ViewManager.getView('bautagebuchNotizenDetailsPage', 'dataInput').getValue());
+	   	            	}
+	   	            }
+	   	    	}
         })
             
         , grid: M.GridView.design({
