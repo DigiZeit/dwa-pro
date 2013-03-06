@@ -5294,7 +5294,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3132
+    , softwareVersion: 3133
 
 
     /**
@@ -15214,7 +15214,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3132'
+              value: 'Build: 3133'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22679,6 +22679,7 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
         , dataInput: M.TextFieldView.design({
                   label: M.I18N.l('BautagebuchNotiz')
                 , cssClass: 'dataInput'
+                , cssClassOnInit: 'dataInput'
                 , hasMultipleLines: YES
                 , initialText: "max. 4000 " + M.I18N.l('characters')
                 , numberOfChars: 4000
