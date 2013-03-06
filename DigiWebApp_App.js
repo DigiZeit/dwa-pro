@@ -5371,7 +5371,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3152
+    , softwareVersion: 3153
 
 
     /**
@@ -15192,7 +15192,23 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
             , cssClassOnInit: 'remarkInputInitial'
             , initialText: "max. 255 " + M.I18N.l('characters')
             , hasMultipleLines: YES
-            , numberOfChars: 255
+   	        , events: {
+        		keyup: {
+	                /* executed in scope of DOMWindow because no target defined */
+	            	action: function(selectedValue, selectedItem) {
+						var myValue = M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').getValue();
+						if (myValue.length <= 255) {
+							DigiWebApp.BautagebuchNotizenDetailsController.set("data", M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').getValue());
+						} else {
+							M.ViewManager.getView('bautagebuchMedienDetailsPage', 'remarkInput').setValue(DigiWebApp.BautagebuchMedienDetailsController.remark);
+				            DigiWebApp.ApplicationController.nativeAlertDialogView({
+				                title: M.I18N.l('maximaleFeldlaengeErreicht')
+				              , message: M.I18N.l('maximaleFeldlaengeErreichtMsg')
+				            });
+						}
+	            	}
+	            }
+	    	}
         })
 
         , positionComboBox: M.SelectionListView.design({
@@ -15503,7 +15519,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3152'
+              value: 'Build: 3153'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
