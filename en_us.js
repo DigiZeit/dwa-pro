@@ -281,6 +281,13 @@ M.I18N.en_us = {
 	, GeraetekennungDesMA: "DTC-WebApp-DeviceId of the employee"
 	, maximaleFeldlaengeErreicht: "maximum fieldlength reached"
 	, maximaleFeldlaengeErreichtMsg: "You have reached the maximum length for this field."
+	, audio: "Audio"
+	, photo: "Photo"
+	, video: "Video"
+	, other: "Other"
+	, notImplemented: "Not yet implemented"
+	, notImplementedMsg: "This feature is yet not implemented!"
+
 
 	, second: "Second"
 	, seconds: "Seconds"

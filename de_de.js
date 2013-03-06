@@ -281,6 +281,12 @@ M.I18N.de_de = {
 	, GeraetekennungDesMA: "DTC-WebApp-Gerätekennung des Mitarbeiters"
 	, maximaleFeldlaengeErreicht: "maximale Feldlänge erreicht"
 	, maximaleFeldlaengeErreichtMsg: "Sie haben die maximale Länger für dieses Eingabefeld erreicht."
+	, audio: "Audio"
+	, photo: "Foto"
+	, video: "Video"
+	, other: "Andere"
+	, notImplemented: "Noch nicht implementiert"
+	, notImplementedMsg: "Diese Funktion ist noch nicht implementiert!"
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"

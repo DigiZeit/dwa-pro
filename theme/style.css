@@ -704,6 +704,14 @@ label.ui-input-text, .ui-controlgroup-label {
 	background: #F3E2A9;
 }
 
+.bautagebuchMedienDetailsPage .remarkInputInitial {
+	margin-bottom: 20px;
+	height: 100px;
+	text-align: left;
+	font-weight: bold;
+	background: #F3E2A9;
+}
+
 .tmp-slider-container.tmp-slider-is-slider-only {
 	padding-top: 4px !important; 
 }
