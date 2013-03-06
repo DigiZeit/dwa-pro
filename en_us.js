@@ -278,6 +278,7 @@ M.I18N.en_us = {
 	, wrongTimesMsg: "The from-moment may not be after the to-moment! (Nightshifts are not possible yet)"
 	, falscheZeitenIgnorieren: "Do not check points in time"
 	, characters: "characters"
+	, GeraetekennungDesMA: "DTC-WebApp-DeviceId of the employee"
 
 	, second: "Second"
 	, seconds: "Seconds"

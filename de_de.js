@@ -278,6 +278,7 @@ M.I18N.de_de = {
 	, wrongTimesMsg: "Der Von-Zeitpunkt kann nicht nach dem Bis-Zeitpunkt liegen! (Nachtschichten sind noch nicht möglich)"
 	, falscheZeitenIgnorieren: "eingegebene Zeiten nicht prüfen"
 	, characters: "Zeichen"
+	, GeraetekennungDesMA: "DTC-WebApp-Gerätekennung des Mitarbeiters"
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"

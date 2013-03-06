@@ -5294,7 +5294,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3128
+    , softwareVersion: 3129
 
 
     /**
@@ -15214,7 +15214,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3128'
+              value: 'Build: 3129'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -15729,10 +15729,11 @@ DigiWebApp.SettingsPage = M.PageView.design({
                 value: M.I18N.l('workerId')
             })
             , workerIdInput: M.TextFieldView.design({
-                contentBinding: {
+                  contentBinding: {
                       target: DigiWebApp.SettingsController
                     , property: 'settings.workerId'
                 }
+            	, initialText: M.I18N.l('GeraetekennungDesMA')
             })
         })
         , autoSyncAfterBookTimeCheck: M.SelectionListView.design({
@@ -16399,6 +16400,7 @@ DigiWebApp.RemarkPage = M.PageView.design({
                   label: M.I18N.l('remark')
                 , cssClass: 'remarkInput'
                 , hasMultipleLines: YES
+                , initialText: "max. 255 " + M.I18N.l('characters')
                 , numberOfChars: 255
         })
             
