@@ -279,6 +279,8 @@ M.I18N.de_de = {
 	, falscheZeitenIgnorieren: "eingegebene Zeiten nicht prüfen"
 	, characters: "Zeichen"
 	, GeraetekennungDesMA: "DTC-WebApp-Gerätekennung des Mitarbeiters"
+	, maximaleFeldlaengeErreicht: "maximale Feldlänge erreicht"
+	, maximaleFeldlaengeErreichtMsg: "Sie haben die maximale Länger für dieses Eingabefeld erreicht."
 			
 	, second: "Sekunde"
 	, seconds: "Sekunden"

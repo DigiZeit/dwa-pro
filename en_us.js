@@ -279,6 +279,8 @@ M.I18N.en_us = {
 	, falscheZeitenIgnorieren: "Do not check points in time"
 	, characters: "characters"
 	, GeraetekennungDesMA: "DTC-WebApp-DeviceId of the employee"
+	, maximaleFeldlaengeErreicht: "maximum fieldlength reached"
+	, maximaleFeldlaengeErreichtMsg: "You have reached the maximum length for this field."
 
 	, second: "Second"
 	, seconds: "Seconds"
