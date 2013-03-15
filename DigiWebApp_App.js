@@ -2068,7 +2068,7 @@ DigiWebApp.Booking = M.Model.create({
 						    			};
 					    				writer.truncate(writeContent.length);
 					    	        };
-					    	        
+					    	        debugger;
 				    	        	writer.write(writeContent.toString());
 				
 					    		}, errorCallback); // fileEntry.createWriter
@@ -5784,7 +5784,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3179
+    , softwareVersion: 3180
 
 
     /**
@@ -15986,7 +15986,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3179'
+              value: 'Build: 3180'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
