@@ -4462,7 +4462,8 @@ DigiWebApp.CameraController = M.Controller.extend({
     }
     
     , useLoadedPicture: function() {
-    	
+    	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+        image.src = DigiWebApp.CameraController.loadedPicture;
     }
     
     , savePicture: function() {
@@ -6101,7 +6102,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3194
+    , softwareVersion: 3195
 
 
     /**
@@ -16366,7 +16367,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3194'
+              value: 'Build: 3195'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21633,7 +21634,7 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 					var file = files[0];
 					var reader = new FileReader();
 					reader.onload = function() {
-						console.log(this.result);
+						//console.log(this.result);
 						DigiWebApp.FileChooserPage.successCallback(this.result);
 					}
 					reader.onerror = function() {
