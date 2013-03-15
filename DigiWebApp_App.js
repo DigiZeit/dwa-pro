@@ -4756,7 +4756,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
 		M.Request.init({
-			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion
+			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
 			, beforeSend: function(request) {
                 DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
             }
@@ -5690,7 +5690,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3174
+    , softwareVersion: 3175
 
 
     /**
@@ -15892,7 +15892,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3174'
+              value: 'Build: 3175'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
