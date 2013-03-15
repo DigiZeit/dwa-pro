@@ -2036,7 +2036,7 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
@@ -5786,7 +5786,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3184
+    , softwareVersion: 3185
 
 
     /**
@@ -15988,7 +15988,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3184'
+              value: 'Build: 3185'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
