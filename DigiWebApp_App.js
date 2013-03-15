@@ -6101,7 +6101,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3193
+    , softwareVersion: 3194
 
 
     /**
@@ -14812,10 +14812,12 @@ DigiWebApp.MediaListController = M.Controller.extend({
 			    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
 			    		        		var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
 			    		                image.src = imgData;
-
+			    		                console.log(image);
+			    		                console.log(image.src);
 			    		                DigiWebApp.CameraController.myImageObj = new Image();
 			    		                DigiWebApp.CameraController.myImageObj.src = imgData;
 			    		        		DigiWebApp.NavigationController.toCameraPageTransition();
+			    		        		
 			    		        	} else {
 				    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 				    		                title: M.I18N.l('error')
@@ -16364,7 +16366,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3193'
+              value: 'Build: 3194'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
