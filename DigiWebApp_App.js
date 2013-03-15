@@ -2068,8 +2068,10 @@ DigiWebApp.Booking = M.Model.create({
 						    			};
 					    				writer.truncate(writeContent.length);
 					    	        };
-					    	        debugger;
-				    	        	writer.write(writeContent.toString());
+					    	        // Create a new Blob and write it to log.txt.
+					    	        var blob = new Blob([writeContent], {type: 'text/plain'});
+					    	        
+				    	        	writer.write(blob);
 				
 					    		}, errorCallback); // fileEntry.createWriter
 					   		}, errorCallback);     // dataDirectory.getFile
@@ -5784,7 +5786,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3180
+    , softwareVersion: 3181
 
 
     /**
@@ -15986,7 +15988,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3180'
+              value: 'Build: 3181'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
