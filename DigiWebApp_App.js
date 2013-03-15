@@ -2047,7 +2047,7 @@ DigiWebApp.Booking = M.Model.create({
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
-				    window.requestFileSystem(LocalFileSystem.PERSISTENT, grantedBytes, function(fileSystem) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
 				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2146,7 +2146,7 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
@@ -2157,7 +2157,7 @@ DigiWebApp.Booking = M.Model.create({
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
-				    window.requestFileSystem(LocalFileSystem.PERSISTENT, grantedBytes, function(fileSystem) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
 				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2246,7 +2246,7 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
@@ -2257,7 +2257,7 @@ DigiWebApp.Booking = M.Model.create({
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
-					window.requestFileSystem(LocalFileSystem.PERSISTENT, grantedBytes, function(fileSystem) {
+					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
 				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2704,7 +2704,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
@@ -5786,7 +5786,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3183
+    , softwareVersion: 3184
 
 
     /**
@@ -15988,7 +15988,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3183'
+              value: 'Build: 3184'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -16809,7 +16809,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 				//DigiWebApp.BookingController.setNotBookedBookings();
 				
         		// Feature 405 (Unterschrift)
-        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
         			$('#' + DigiWebApp.EditTimeDataPage.content.signature.id).show();
 					// init canvas
 					var sigPadOptions = {
@@ -16858,7 +16858,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 				}
         		
         		// Feature 405 (Unterschrift)
-        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
         			// load signature
         			DigiWebApp.EditTimeDataPage.bookingToEdit.readFromFile(function(fileContent){
         				if (fileContent && (fileContent !== "")) {
@@ -16882,7 +16882,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
     	
     	var unterschriftString = "";
     	// Feature 405 (Unterschrift)
-		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined")) {
+		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
 			//unterschriftImageString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureImage();
     		unterschriftString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureString();
 			//var unterschriftRawValue = $('#' + DigiWebApp.EditTimeDataPage.content.signature.signatureform.signaturecanvas.id).val();
