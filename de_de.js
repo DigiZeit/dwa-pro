@@ -367,6 +367,15 @@ M.I18N.de_de = {
 	, noMitarbeiterSelected: "Keine Mitarbeiter ausgewählt"
 	, noMitarbeiterSelectedMsg: "Bitte wählen Sie mind. einen Mitarbeiter aus."
 	, BautagebuchSpeichernAbschliessen: "Speichern / Abschliessen"
+	, BautagebuchLadeMaterialien: "Lade Materialien"
+	, BautagebuchLadeMengeneinheiten: "Lade Mengeneinheiten"
+	, BautagebuchLadeProjektleiter: "Lade Projektleiter"
+	, BautagebuchLadeMitarbeiter: "Lade Mitarbeiter"
+	, BautagebuchSendeBautagesbericht: "Sende Bautagesbericht"
+	, BautagebuchSendeMaterialbuchungen: "Sende Materialbuchungen"
+	, BautagebuchSendeZeitbuchungen: "Sende Zeitbuchungen"
+	, BautagebuchSendeNotizen: "Sende Notizen"
+	, BautagebuchSendeMedien: "Sende Medien"
     // Ende::Bautagebuch
 	
 };

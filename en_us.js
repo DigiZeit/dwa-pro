@@ -367,6 +367,15 @@ M.I18N.en_us = {
 	, noMitarbeiterSelected: "No Employee(s) selected"
 	, noMitarbeiterSelectedMsg: "Please select at least one employee"
 	, BautagebuchSpeichernAbschliessen: "Save / Finish"
+	, BautagebuchLadeMaterialien: "Loading materials"
+	, BautagebuchLadeMengeneinheiten: "Loading quantity units"
+	, BautagebuchLadeProjektleiter: "Loading projectleaders"
+	, BautagebuchLadeMitarbeiter: "Loading employees"
+	, BautagebuchSendeBautagesbericht: "Sending builder's diary"
+	, BautagebuchSendeMaterialbuchungen: "Sending materialbookings"
+	, BautagebuchSendeZeitbuchungen: "Sending timebookings"
+	, BautagebuchSendeNotizen: "Sending notes"
+	, BautagebuchSendeMedien: "Sending mediafiles"
     // Ende::Bautagebuch
 
 };

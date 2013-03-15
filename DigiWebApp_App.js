@@ -1011,146 +1011,6 @@ DigiWebApp.BautagebuchMaterial = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: SentBookingArchived
-// ==========================================================================
-
-DigiWebApp.SentBookingArchived = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'SentBookingArchived'
-
-    , fileName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fileType: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , orderName: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , timeStampStart: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timeStampEnd: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , tagLabel: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
-
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude_bis: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude_bis: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isCurrent: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , employees: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , remark: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , closeBooking: function() {
-        this.set('timeStampEnd', +new Date());
-    }
-
-    , setRemark: function(v) {
-        this.set('remark', v);
-    }
-
-    , setAsCurrent: function() {
-        this.set('isCurrent', YES);
-    }
-
-    , removeAsCurrent: function() {
-        this.set('isCurrent', NO);
-    }
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-	, deleteOld: function() {
-		try {
-			var daysToHoldBookingsOnDevice = 0 + new Number(DigiWebApp.SettingsController.getSetting('daysToHoldBookingsOnDevice'));
-		} catch(e) {
-//            DigiWebApp.ApplicationController.nativeAlertDialogView({
-//                title: M.I18N.l('error')
-//              , message: M.I18N.l('daysToHoldBookingsOnDeviceNaN')
-//	        });
-			var daysToHoldBookingsOnDevice = DigiWebApp.SettingsController.defaultsettings.get('daysToHoldBookingsOnDevice');
-		}
-		var oldestDayTimestamp = D8.create(D8.now().format("dd.mm.yyyy")).addDays(-daysToHoldBookingsOnDevice).getTimestamp();
-        _.each(this.find(), function(el) {
-    		var elTimestamp = D8.create(el.get("timeStampStart")).getTimestamp();
-    		if (elTimestamp < oldestDayTimestamp) {
-    			el.del();
-    		}
-        });
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Model: BautagebuchMaterialBuchung
 // ==========================================================================
 
@@ -2044,7 +1904,7 @@ DigiWebApp.Booking = M.Model.create({
 
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		    	
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2114,7 +1974,7 @@ DigiWebApp.Booking = M.Model.create({
 		
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2180,7 +2040,7 @@ DigiWebApp.Booking = M.Model.create({
 
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2342,7 +2202,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 	    	
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2407,7 +2267,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2467,7 +2327,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2616,7 +2476,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		    	
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2686,7 +2546,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -2752,7 +2612,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 
 		try {
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 		
 		    	// get dataDirectory from filesystem (create if not exists)
 		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -3186,7 +3046,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 	    	
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -3251,7 +3111,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -3311,7 +3171,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 
 	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
 
 	    	// get dataDirectory from filesystem (create if not exists)
 	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
@@ -3516,6 +3376,146 @@ DigiWebApp.BautagebuchEinstellungen = M.Model.create({
 	        });
 	    }
 	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: SentBookingArchived
+// ==========================================================================
+
+DigiWebApp.SentBookingArchived = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'SentBookingArchived'
+
+    , fileName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fileType: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , timeStampStart: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timeStampEnd: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , tagLabel: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
+
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude_bis: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isCurrent: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , employees: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , remark: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , closeBooking: function() {
+        this.set('timeStampEnd', +new Date());
+    }
+
+    , setRemark: function(v) {
+        this.set('remark', v);
+    }
+
+    , setAsCurrent: function() {
+        this.set('isCurrent', YES);
+    }
+
+    , removeAsCurrent: function() {
+        this.set('isCurrent', NO);
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+	, deleteOld: function() {
+		try {
+			var daysToHoldBookingsOnDevice = 0 + new Number(DigiWebApp.SettingsController.getSetting('daysToHoldBookingsOnDevice'));
+		} catch(e) {
+//            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//                title: M.I18N.l('error')
+//              , message: M.I18N.l('daysToHoldBookingsOnDeviceNaN')
+//	        });
+			var daysToHoldBookingsOnDevice = DigiWebApp.SettingsController.defaultsettings.get('daysToHoldBookingsOnDevice');
+		}
+		var oldestDayTimestamp = D8.create(D8.now().format("dd.mm.yyyy")).addDays(-daysToHoldBookingsOnDevice).getTimestamp();
+        _.each(this.find(), function(el) {
+    		var elTimestamp = D8.create(el.get("timeStampStart")).getTimestamp();
+    		if (elTimestamp < oldestDayTimestamp) {
+    			el.del();
+    		}
+        });
 	}
 
 }, M.DataProviderLocalStorage);
@@ -4487,6 +4487,323 @@ DigiWebApp.DashboardController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchDatenuebertragungController
+// ==========================================================================
+
+DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
+
+	  successReturnCallback: function() {}
+	, errorReturnCallback: function() {}
+
+	, empfangen: function(successReturnCallback, errorReturnCallback) {
+		var that = this;
+		
+		that.successReturnCallback = successReturnCallback;
+		that.errorReturnCallback = errorReturnCallback;
+
+		//var successCallback = function(data, msg, request) {};
+		//var errorCallback = function(request, msg) {};
+		
+		// Verarbeitungskette definieren und starten
+		that.empfangeMengeneinheiten(
+			that.empfangeMaterialien(
+				that.empfangeProjektleiter(
+					that.empfangeMitarbeiter(
+						that.successReturnCallback
+					  , that.errorReturnCallback)
+				  , that.errorReturnCallback)
+			  , that.errorReturnCallback)
+		  , that.errorReturnCallback);
+		
+	}
+	
+	, empfangeMengeneinheiten: function(successCallback, errorCallback) {
+		// wird noch nicht via WebService befüllt
+		
+		// direkt weiter in der Verarbeitungskette
+		successCallback();
+
+//		var internalSuccessCallback = function(data, msg, request) {
+//			// verarbeite empfangene Daten
+//						
+//			// wurde eine Mengeneinheitenliste erhalten?
+//			if (typeof(data.mengeneinheiten) === "undefined") {
+//				console.error("missing mengeneinheiten");
+//				return errorCallback();
+//			}
+//			
+//			// enthält die Mengeneinheitenliste Mengeneinheiten?
+//			if (data.mengeneinheiten === null) {
+//				// ohne Mengeneinheiten geht im Bautagebuch nichts
+//				return errorCallback();
+//			} else {
+//				// ist data.mengeneinheiten auch wirklich ein Array?
+//				var myLength = null;
+//				try {
+//					myLength = data.mengeneinheiten.length;
+//				} catch(e) {
+//					return errorCallback();
+//				}
+//			}
+//			
+//			// data.mengeneinheiten enthält also myLength Elemente
+//			// alle "alten" Mengeneinheiten löschen
+//			DigiWebApp.BautagebuchMengeneinheiten.deleteAll();
+//			
+//			// die empfangenen Mengeneinheiten mit Model ablegen
+//			_.each(data.mengeneinheiten, function(el) {
+//				if (typeof(el.id) === "undefined") {
+//					console.error("missing mengeneinheit id");
+//					return errorCallback();
+//				} else if (typeof(el.bezeichnung) === "undefined") {
+//					console.error("missing mengeneinheit bezeichnung");
+//					return errorCallback();
+//				} else if (typeof(el.kuerzel) === "undefined") {
+//					console.error("missing mengeneinheit kuerzel");
+//					return errorCallback();
+//				} else {
+//					
+//					// mengeneinheit (el) zur Liste hinzufügen
+//					DigiWebApp.BautagebuchMengeneinheit.createRecord({id: el.id, bezeichnung: el.bezeichnung, kuerzel: el.kuerzel}).saveSorted();
+//
+//				}
+//			});
+//			
+//			// weiter in der Verarbeitungskette
+//			successCallback();
+//		};
+//		
+//		recieveData("mengeneinheiten", M.I18N.l('BautagebuchLadeMengeneinheiten'), internalSuccessCallback, errorCallback);
+		
+	}
+	
+	, empfangeMaterialien: function(successCallback, errorCallback) {
+
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+			
+			var myMaterialliste = [];
+			
+			// wurde eine materialliste erhalten?
+			if (typeof(data.materialliste) === "undefined") {
+				console.error("missing materialliste");
+				return errorCallback();
+			}
+			
+			// enthält die Materialliste Materialien?
+			if (data.materialliste === null) {
+				// hier könnte man wenn gewünscht verhindern, dass es im Bautagebuch gar keine Materialien gibt
+				//return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.materialliste.length;
+				} catch(e) {
+					//return errorCallback();
+				}
+			}
+			
+			// data.materialliste enthält also myLength (oder gar keine) Elemente
+			// alle "alten" Materialien löschen
+			DigiWebApp.BautagebuchMaterial.deleteAll();
+			
+			// die empfangenen Materialien mit Model ablegen
+			_.each(data.materialliste, function(el) {
+				if (typeof(el.materialbezeichnung) === "undefined") {
+					console.error("missing materialbezeichnung");
+					return errorCallback();
+				} else {
+					// el.materialbezeichnung zur Liste hinzufügen
+					DigiWebApp.BautagebuchMaterial.createRecord({bezeichnung: el.materialbezeichnung}).saveSorted();
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+			successCallback();
+		};
+		
+		recieveData("materialliste", M.I18N.l('BautagebuchLadeMaterialien'), internalSuccessCallback, errorCallback);
+		
+	}
+
+	, empfangeProjektleiter: function(successCallback, errorCallback) {
+
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+						
+			// wurde eine Projektleiterliste erhalten?
+			if (typeof(data.projektleiter) === "undefined") {
+				console.error("missing projektleiterliste");
+				return errorCallback();
+			}
+			
+			// enthält die Projektleiterliste Projektleiter?
+			if (data.projektleiter === null) {
+				// ohne Projektleiter geht im Bautagebuch nichts
+				return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.projektleiter.length;
+				} catch(e) {
+					// ohne Projektleiter geht im Bautagebuch nichts
+					return errorCallback();
+				}
+			}
+			
+			// data.projektleiter enthält also myLength Elemente
+			// alle "alten" Projektleiter löschen
+			DigiWebApp.BautagebuchProjektleiter.deleteAll();
+			
+			// die empfangenen Projektleiter mit Model ablegen
+			_.each(data.projektleiter, function(el) {
+				if (typeof(el.id) === "undefined") {
+					console.error("missing projektleiter id");
+					return errorCallback();
+				} else if (typeof(el.vorname) === "undefined") {
+					console.error("missing projektleiter vorname");
+					return errorCallback();
+				} else if (typeof(el.nachname) === "undefined") {
+					console.error("missing projektleiter nachname");
+					return errorCallback();
+				} else {
+					
+					// projektleiter (el) zur Liste hinzufügen
+					DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
+
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+			successCallback();
+		};
+		
+		recieveData("projektleiter", M.I18N.l('BautagebuchLadeProjektleiter'), internalSuccessCallback, errorCallback);
+		
+	}
+
+	, empfangeMitarbeiter: function(successCallback, errorCallback) {
+
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+						
+			// wurde eine Mitarbeiterliste erhalten?
+			if (typeof(data.mitarbeiter) === "undefined") {
+				console.error("missing projektleiterliste");
+				return errorCallback();
+			}
+			
+			// enthält die Mitarbeiterliste Mitarbeiter?
+			if (data.mitarbeiter === null) {
+				// ohne Mitarbeiter geht im Bautagebuch nichts
+				return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.mitarbeiter.length;
+				} catch(e) {
+					// ohne Mitarbeiter geht im Bautagebuch nichts
+					return errorCallback();
+				}
+			}
+			
+			// data.projektleiter enthält also myLength Elemente
+			// alle "alten" Mitarbeiter löschen
+			DigiWebApp.BautagebuchMitarbeiter.deleteAll();
+			
+			// die empfangenen Projektleiter mit Model ablegen
+			_.each(data.mitarbeiter, function(el) {
+				if (typeof(el.id) === "undefined") {
+					console.error("missing mitarbeiter id");
+					return errorCallback();
+				} else if (typeof(el.vorname) === "undefined") {
+					console.error("missing mitarbeiter vorname");
+					return errorCallback();
+				} else if (typeof(el.nachname) === "undefined") {
+					console.error("missing mitarbeiter nachname");
+					return errorCallback();
+				} else if (typeof(el.projektleiterId) === "undefined") {
+					console.error("missing mitarbeiter projektleiterId");
+					return errorCallback();
+				} else {
+					
+					// Mitarbeiter (el) zur Liste hinzufügen
+					DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId}).saveSorted();
+
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+			successCallback();
+		};
+		
+		recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback);
+		
+	}
+	
+	, senden: function(item) {
+		// item ist ein Bautagesbericht
+		
+		var webservice = "";
+		
+		webservice = "bautagesbericht";
+		
+			
+	}
+	
+	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
+		M.Request.init({
+			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion;
+			, beforeSend: function(request) {
+                DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
+            }
+			, method: 'POST'
+			, sendNoCacheHeader: YES
+			, sendTimestamp: YES
+			, isJSON: YES
+			, data: data
+			, onSuccess: function(data, msg, request) {
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				successCallback(data, msg, request);
+			}
+			, onError: function(request, msg) {
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				errorCallback(request, msg);
+			}
+		}).send();
+	}
+
+	, recieveData: function(webservice, loaderText, successCallback, errorCallback) {
+		M.Request.init({
+			var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
+			, beforeSend: function(xhr) {
+                DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
+            }
+			, method: 'GET'
+			, sendNoCacheHeader: YES
+			, sendTimestamp: YES
+			, isJSON: YES
+			, data: data
+			, onSuccess: function(data, msg, request) {
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				successCallback(data, msg, request);
+			}
+			, onError: function(request, msg) {
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				errorCallback(request, msg);
+			}
+		}).send();
+	}
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: AudioController
 // ==========================================================================
 
@@ -5373,7 +5690,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3171
+    , softwareVersion: 3172
 
 
     /**
@@ -15575,7 +15892,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3171'
+              value: 'Build: 3172'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23430,6 +23747,9 @@ if (!window.console) {
 window.newAppVersionAvailable = NO;
 
 M.Application.useTransitions = NO;
+
+// enable FileSystem also in Chrome
+window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
 var DigiWebApp  = DigiWebApp || {};
 
