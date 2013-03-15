@@ -2075,6 +2075,9 @@ DigiWebApp.Booking = M.Model.create({
 					   		}, errorCallback);     // dataDirectory.getFile
 					   	}, errorCallback);         // fileSystem.root.getDirectory
 				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
 
 			} else {
 		    
@@ -5781,7 +5784,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3178
+    , softwareVersion: 3179
 
 
     /**
@@ -15983,7 +15986,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3178'
+              value: 'Build: 3179'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
