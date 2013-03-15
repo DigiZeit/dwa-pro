@@ -4071,7 +4071,8 @@ DigiWebApp.CameraController = M.Controller.extend({
         if ((       typeof navigator.device !== 'undefined' 
         		&& typeof navigator.device.capture !== 'undefined' 
         		&& typeof navigator.device.capture.captureImage !== 'undefined'
-        	) && ( DigiWebApp.CameraController.loadedPicture !== null ) 
+        	) && ( DigiWebApp.CameraController.loadedPicture !== null )
+        )
         {
         	DigiWebApp.CameraController.takePicture();
         } else {
@@ -6096,7 +6097,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3190
+    , softwareVersion: 3191
 
 
     /**
@@ -16354,7 +16355,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3190'
+              value: 'Build: 3191'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
