@@ -2043,7 +2043,7 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 
 		try {
-			var myQuota = 50*1024*1024;
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
@@ -2153,7 +2153,7 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 		
 		try {
-			var myQuota = 50*1024*1024;
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
@@ -2253,7 +2253,7 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 
 		try {
-			var myQuota = 50*1024*1024;
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
@@ -2401,24 +2401,23 @@ DigiWebApp.MediaFile = M.Model.create({
     	
     }
     
-	, saveToFile: function(myWriteContent, successCallback, errorCallback) {
-		
+    , saveToFile: function(myWriteContent, successCallback, errorCallback) {		
 		var that = this;
 		var writeContent = new String(myWriteContent);
 		
-		// check if fileName is already set
+		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'MediaFile_' + D8.now().getTimestamp());
+			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
 			that.save();
 	    }
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
 	        return false;
 	    }
-
+	
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
@@ -2431,42 +2430,87 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
 
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-	    	
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				    	
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				
+					    	// get fileEntry from filesystem (create if not exists)
+					    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+				
+					    		fileEntry.createWriter(function(writer) {
+					    				
+					    			writer.onerror = function(evt) {
+					    				console.error("writeError", evt);
+					    				errorCallback(evt);
+					    			};
+					    			
+					    			writer.onwriteend = function(evt) {
+						    			writer.onwriteend = function(ev) {
+					    					successCallback(ev);
+						    			};
+					    				writer.truncate(writeContent.length);
+					    	        };
+					    	        // Create a new Blob and write it to log.txt.
+					    	        var blob = new Blob([writeContent], {type: 'text/plain'});
+					    	        
+				    	        	writer.write(blob);
+				
+					    		}, errorCallback); // fileEntry.createWriter
+					   		}, errorCallback);     // dataDirectory.getFile
+					   	}, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
 
-		    	// get fileEntry from filesystem (create if not exists)
-		    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
-	
-		    		fileEntry.createWriter(function(writer) {
-		    				
-		    			writer.onerror = function(evt) {
-		    				console.error("writeError", evt);
-		    				errorCallback(evt);
-		    			};
-		    			
-		    			writer.onwriteend = function(evt) {
-			    			writer.onwriteend = function(ev) {
-		    					successCallback(ev);
-			    			};
-		    				writer.truncate(writeContent.length);
-		    	        };
-		    	        
-	    	        	writer.write(writeContent.toString());
+			} else {
+		    
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			    	
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			
+				    	// get fileEntry from filesystem (create if not exists)
+				    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+			
+				    		fileEntry.createWriter(function(writer) {
+				    				
+				    			writer.onerror = function(evt) {
+				    				console.error("writeError", evt);
+				    				errorCallback(evt);
+				    			};
+				    			
+				    			writer.onwriteend = function(evt) {
+					    			writer.onwriteend = function(ev) {
+				    					successCallback(ev);
+					    			};
+				    				writer.truncate(writeContent.length);
+				    	        };
+				    	        
+			    	        	writer.write(writeContent.toString());
+			
+				    		}, errorCallback); // fileEntry.createWriter
+				   		}, errorCallback);     // dataDirectory.getFile
+				   	}, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
 
-		    		}, errorCallback); // fileEntry.createWriter
-		   		}, errorCallback);     // dataDirectory.getFile
-		   	}, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
-	}
+    }
 	
 	, readFromFile: function(successCallback, errorCallback) {
 		var that = this;
@@ -2477,7 +2521,7 @@ DigiWebApp.MediaFile = M.Model.create({
 			console.error("readFromFileError: no fileName given");
 	        return false;
 	    };
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
@@ -2487,7 +2531,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return false;
+	        return;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -2496,50 +2540,88 @@ DigiWebApp.MediaFile = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
+		
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// get file from fileEntry
+					    		fileEntry.file(function(file) {
+					    			
+					    			// read from file
+					    			var reader = new FileReader();
+					    			reader.onloadend = function(evt) {
+					    		    	
+					    		    	// return content via successCallback
+					    				successCallback(this.result);
+					    				
+					    	        };
+					    			reader.readAsText(file);
+					    	        
+					        	}, errorCallback); // fileEntry.file
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
+			} else {
 
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		    			
-		    	// get fileEntry from filesystem
-		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-		    		
-		    		// get file from fileEntry
-		    		fileEntry.file(function(file) {
-		    			
-		    			// read from file
-		    			var reader = new FileReader();
-		    			reader.onloadend = function(evt) {
-		    		    	
-		    		    	// return content via successCallback
-		    				successCallback(evt.target.result);
-		    				
-		    	        };
-		    			reader.readAsText(file);
-		    	        
-		        	}, errorCallback); // fileEntry.file
-		    	}, errorCallback);     // dataDirectory.getFile
-		    }, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+					
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// get file from fileEntry
+				    		fileEntry.file(function(file) {
+				    			
+				    			// read from file
+				    			var reader = new FileReader();
+				    			reader.onloadend = function(evt) {
+				    		    	
+				    		    	// return content via successCallback
+				    				successCallback(evt.target.result);
+				    				
+				    	        };
+				    			reader.readAsText(file);
+				    	        
+				        	}, errorCallback); // fileEntry.file
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
 	}
 	
 	, deleteFile: function(successCallback, errorCallback) {
 		var that = this;
-
+		
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
 	        return false;
 	    };
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
@@ -2549,38 +2631,62 @@ DigiWebApp.MediaFile = M.Model.create({
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	    	errorCallback = function(evt) {
+	        return false;
+	    } else {
+	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
-	    	}
+	    	};
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
 
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		    			
-		    	// get fileEntry from filesystem
-		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-		    		
-		    		// remove fileEntry
-					try {
-						fileEntry.remove(successCallback, errorCallback);
-					} catch(e) {
-						errorCallback();
-					}
-		    		
-		    	}, errorCallback);     // dataDirectory.getFile
-		    }, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+						
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// remove fileEntry
+					    		fileEntry.remove(successCallback, errorCallback);
+					    		
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+				  console.error('Error while requesting Quota', e);
+				});
+			} else {
+				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// remove fileEntry
+				    		fileEntry.remove(successCallback, errorCallback);
+				    		
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
 	}
 
 }, M.DataProviderLocalStorage);
@@ -2675,7 +2781,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     	
     }
     
-    , saveToFile: function(myWriteContent, successCallback, errorCallback) {		
+	, saveToFile: function(myWriteContent, successCallback, errorCallback) {		
 		var that = this;
 		var writeContent = new String(myWriteContent);
 		
@@ -2709,42 +2815,82 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 			successCallback("");
 	        return true;
 	    }
-
+	
 		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-		    	
-		    	// get dataDirectory from filesystem (create if not exists)
-		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		
-			    	// get fileEntry from filesystem (create if not exists)
-			    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
-		
-			    		fileEntry.createWriter(function(writer) {
-			    				
-			    			writer.onerror = function(evt) {
-			    				console.error("writeError", evt);
-			    				errorCallback(evt);
-			    			};
-			    			
-			    			writer.onwriteend = function(evt) {
-				    			writer.onwriteend = function(ev) {
-			    					successCallback(ev);
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				    	
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				
+					    	// get fileEntry from filesystem (create if not exists)
+					    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+				
+					    		fileEntry.createWriter(function(writer) {
+					    				
+					    			writer.onerror = function(evt) {
+					    				console.error("writeError", evt);
+					    				errorCallback(evt);
+					    			};
+					    			
+					    			writer.onwriteend = function(evt) {
+						    			writer.onwriteend = function(ev) {
+					    					successCallback(ev);
+						    			};
+					    				writer.truncate(writeContent.length);
+					    	        };
+					    	        // Create a new Blob and write it to log.txt.
+					    	        var blob = new Blob([writeContent], {type: 'text/plain'});
+					    	        
+				    	        	writer.write(blob);
+				
+					    		}, errorCallback); // fileEntry.createWriter
+					   		}, errorCallback);     // dataDirectory.getFile
+					   	}, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
+	
+			} else {
+		    
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			    	
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			
+				    	// get fileEntry from filesystem (create if not exists)
+				    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+			
+				    		fileEntry.createWriter(function(writer) {
+				    				
+				    			writer.onerror = function(evt) {
+				    				console.error("writeError", evt);
+				    				errorCallback(evt);
 				    			};
-			    				writer.truncate(writeContent.length);
-			    	        };
-			    	        
-		    	        	writer.write(writeContent.toString());
-		
-			    		}, errorCallback); // fileEntry.createWriter
-			   		}, errorCallback);     // dataDirectory.getFile
-			   	}, errorCallback);         // fileSystem.root.getDirectory
-		    }, errorCallback);             // window.requestFileSystem
+				    			
+				    			writer.onwriteend = function(evt) {
+					    			writer.onwriteend = function(ev) {
+				    					successCallback(ev);
+					    			};
+				    				writer.truncate(writeContent.length);
+				    	        };
+				    	        
+			    	        	writer.write(writeContent.toString());
+			
+				    		}, errorCallback); // fileEntry.createWriter
+				   		}, errorCallback);     // dataDirectory.getFile
+				   	}, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
 		} catch(e) {
 			errorCallback();
 		}
-
-    }
+	
+	}
 	
 	, readFromFile: function(successCallback, errorCallback) {
 		var that = this;
@@ -2765,7 +2911,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return false;
+	        return;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -2774,39 +2920,73 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
 		
 		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-		
-		    	// get dataDirectory from filesystem (create if not exists)
-		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-			    			
-			    	// get fileEntry from filesystem
-			    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-			    		
-			    		// get file from fileEntry
-			    		fileEntry.file(function(file) {
-			    			
-			    			// read from file
-			    			var reader = new FileReader();
-			    			reader.onloadend = function(evt) {
-			    		    	
-			    		    	// return content via successCallback
-			    				successCallback(evt.target.result);
-			    				
-			    	        };
-			    			reader.readAsText(file);
-			    	        
-			        	}, errorCallback); // fileEntry.file
-			    	}, errorCallback);     // dataDirectory.getFile
-			    }, errorCallback);         // fileSystem.root.getDirectory
-		    }, errorCallback);             // window.requestFileSystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// get file from fileEntry
+					    		fileEntry.file(function(file) {
+					    			
+					    			// read from file
+					    			var reader = new FileReader();
+					    			reader.onloadend = function(evt) {
+					    		    	
+					    		    	// return content via successCallback
+					    				successCallback(this.result);
+					    				
+					    	        };
+					    			reader.readAsText(file);
+					    	        
+					        	}, errorCallback); // fileEntry.file
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
+			} else {
+	
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+					
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// get file from fileEntry
+				    		fileEntry.file(function(file) {
+				    			
+				    			// read from file
+				    			var reader = new FileReader();
+				    			reader.onloadend = function(evt) {
+				    		    	
+				    		    	// return content via successCallback
+				    				successCallback(evt.target.result);
+				    				
+				    	        };
+				    			reader.readAsText(file);
+				    	        
+				        	}, errorCallback); // fileEntry.file
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
 		} catch(e) {
 			errorCallback();
 		}
@@ -2840,28 +3020,50 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
-
+	
 		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-		
-		    	// get dataDirectory from filesystem (create if not exists)
-		    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-			    			
-			    	// get fileEntry from filesystem
-			    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-			    		
-			    		// remove fileEntry
-			    		fileEntry.remove(successCallback, errorCallback);
-			    		
-			    	}, errorCallback);     // dataDirectory.getFile
-			    }, errorCallback);         // fileSystem.root.getDirectory
-		    }, errorCallback);             // window.requestFileSystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+						
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// remove fileEntry
+					    		fileEntry.remove(successCallback, errorCallback);
+					    		
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+				  console.error('Error while requesting Quota', e);
+				});
+			} else {
+				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// remove fileEntry
+				    		fileEntry.remove(successCallback, errorCallback);
+				    		
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
 		} catch(e) {
 			errorCallback();
 		}
@@ -3245,24 +3447,23 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
     	
     }
     
-	, saveToFile: function(myWriteContent, successCallback, errorCallback) {
-		
+	, saveToFile: function(myWriteContent, successCallback, errorCallback) {		
 		var that = this;
 		var writeContent = new String(myWriteContent);
 		
-		// check if fileName is already set
+		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'MediaFile_' + D8.now().getTimestamp());
+			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
 			that.save();
 	    }
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("saveToFileError: successCallback is not a function");
 	        return false;
 	    }
-
+	
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
@@ -3275,41 +3476,86 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 		
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("saveToFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
-
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-	    	
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-
-		    	// get fileEntry from filesystem (create if not exists)
-		    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
 	
-		    		fileEntry.createWriter(function(writer) {
-		    				
-		    			writer.onerror = function(evt) {
-		    				console.error("writeError", evt);
-		    				errorCallback(evt);
-		    			};
-		    			
-		    			writer.onwriteend = function(evt) {
-			    			writer.onwriteend = function(ev) {
-		    					successCallback(ev);
-			    			};
-		    				writer.truncate(writeContent.length);
-		    	        };
-		    	        
-	    	        	writer.write(writeContent.toString());
-
-		    		}, errorCallback); // fileEntry.createWriter
-		   		}, errorCallback);     // dataDirectory.getFile
-		   	}, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				    	
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				
+					    	// get fileEntry from filesystem (create if not exists)
+					    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+				
+					    		fileEntry.createWriter(function(writer) {
+					    				
+					    			writer.onerror = function(evt) {
+					    				console.error("writeError", evt);
+					    				errorCallback(evt);
+					    			};
+					    			
+					    			writer.onwriteend = function(evt) {
+						    			writer.onwriteend = function(ev) {
+					    					successCallback(ev);
+						    			};
+					    				writer.truncate(writeContent.length);
+					    	        };
+					    	        // Create a new Blob and write it to log.txt.
+					    	        var blob = new Blob([writeContent], {type: 'text/plain'});
+					    	        
+				    	        	writer.write(blob);
+				
+					    		}, errorCallback); // fileEntry.createWriter
+					   		}, errorCallback);     // dataDirectory.getFile
+					   	}, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
+	
+			} else {
+		    
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			    	
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			
+				    	// get fileEntry from filesystem (create if not exists)
+				    	dataDirectory.getFile(that.get("fileName"), {create: true, exclusive: false}, function(fileEntry) {
+			
+				    		fileEntry.createWriter(function(writer) {
+				    				
+				    			writer.onerror = function(evt) {
+				    				console.error("writeError", evt);
+				    				errorCallback(evt);
+				    			};
+				    			
+				    			writer.onwriteend = function(evt) {
+					    			writer.onwriteend = function(ev) {
+				    					successCallback(ev);
+					    			};
+				    				writer.truncate(writeContent.length);
+				    	        };
+				    	        
+			    	        	writer.write(writeContent.toString());
+			
+				    		}, errorCallback); // fileEntry.createWriter
+				   		}, errorCallback);     // dataDirectory.getFile
+				   	}, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
+	
 	}
 	
 	, readFromFile: function(successCallback, errorCallback) {
@@ -3321,7 +3567,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 			console.error("readFromFileError: no fileName given");
 	        return false;
 	    };
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("readFromFileError: successCallback is not a function");
@@ -3331,7 +3577,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return false;
+	        return;
 	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("readFromFileError: " + evt.target.error.code);
@@ -3340,50 +3586,88 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("readFromFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
-
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		    			
-		    	// get fileEntry from filesystem
-		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-		    		
-		    		// get file from fileEntry
-		    		fileEntry.file(function(file) {
-		    			
-		    			// read from file
-		    			var reader = new FileReader();
-		    			reader.onloadend = function(evt) {
-		    		    	
-		    		    	// return content via successCallback
-		    				successCallback(evt.target.result);
-		    				
-		    	        };
-		    			reader.readAsText(file);
-		    	        
-		        	}, errorCallback); // fileEntry.file
-		    	}, errorCallback);     // dataDirectory.getFile
-		    }, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
+		
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+				
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// get file from fileEntry
+					    		fileEntry.file(function(file) {
+					    			
+					    			// read from file
+					    			var reader = new FileReader();
+					    			reader.onloadend = function(evt) {
+					    		    	
+					    		    	// return content via successCallback
+					    				successCallback(this.result);
+					    				
+					    	        };
+					    			reader.readAsText(file);
+					    	        
+					        	}, errorCallback); // fileEntry.file
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+					  console.error('Error while requesting Quota', e);
+				});
+			} else {
+	
+			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+					
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// get file from fileEntry
+				    		fileEntry.file(function(file) {
+				    			
+				    			// read from file
+				    			var reader = new FileReader();
+				    			reader.onloadend = function(evt) {
+				    		    	
+				    		    	// return content via successCallback
+				    				successCallback(evt.target.result);
+				    				
+				    	        };
+				    			reader.readAsText(file);
+				    	        
+				        	}, errorCallback); // fileEntry.file
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
 	}
 	
 	, deleteFile: function(successCallback, errorCallback) {
 		var that = this;
-
+		
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			console.error("deleteFileError: no fileName given");
 	        return false;
 	    };
-
+	
 		// check for successCallback is a function
 		if (typeof successCallback !== "function") {
 			console.error("deleteFileError: successCallback is not a function");
@@ -3393,38 +3677,62 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		// check for errorCallback is a function (optional)
 	    if (errorCallback && (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	    	errorCallback = function(evt) {
+	        return false;
+	    } else {
+	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
-	    	}
+	    	};
 	    };
 	    
 		// check if LocalFileSystem is defined
-		if ((typeof LocalFileSystem === "undefined") || (typeof window.requestFileSystem === "undefined")) {
+		if (typeof window.requestFileSystem === "undefined") {
 			console.error("deleteFileError: no LocalFileSystem available");
 			successCallback("");
 	        return true;
 	    }
-
-	    // open filesystem
-	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 50*1024*1024, function(fileSystem) {
-
-	    	// get dataDirectory from filesystem (create if not exists)
-	    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		    			
-		    	// get fileEntry from filesystem
-		    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
-		    		
-		    		// remove fileEntry
-					try {
-						fileEntry.remove(successCallback, errorCallback);
-					} catch(e) {
-						errorCallback();
-					}
-		    		
-		    	}, errorCallback);     // dataDirectory.getFile
-		    }, errorCallback);         // fileSystem.root.getDirectory
-	    }, errorCallback);             // window.requestFileSystem
+	
+		try {
+			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		    // open filesystem
+			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+						
+				    	// get dataDirectory from filesystem (create if not exists)
+				    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+					    			
+					    	// get fileEntry from filesystem
+					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+					    		
+					    		// remove fileEntry
+					    		fileEntry.remove(successCallback, errorCallback);
+					    		
+					    	}, errorCallback);     // dataDirectory.getFile
+					    }, errorCallback);         // fileSystem.root.getDirectory
+				    }, errorCallback);             // window.requestFileSystem
+				}, function(e) {
+				  console.error('Error while requesting Quota', e);
+				});
+			} else {
+				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+			
+			    	// get dataDirectory from filesystem (create if not exists)
+			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+				    			
+				    	// get fileEntry from filesystem
+				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		
+				    		// remove fileEntry
+				    		fileEntry.remove(successCallback, errorCallback);
+				    		
+				    	}, errorCallback);     // dataDirectory.getFile
+				    }, errorCallback);         // fileSystem.root.getDirectory
+			    }, errorCallback);             // window.requestFileSystem
+			}
+		} catch(e) {
+			errorCallback();
+		}
 	}
 
 	, deleteSorted: function() {
@@ -5786,7 +6094,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3188
+    , softwareVersion: 3189
 
 
     /**
@@ -9993,7 +10301,9 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	, CONSTAudioFiletype: "audio/wav;base64"
 	, CONSTVideoFiletype: "video/mp4;base64"
 	, CONSTTextFiletype: "text/plain"
-
+		
+	, CONSTApplicationQuota: 10*1024*1024
+	
 	// Namespace for XML-Results in IE
 	// gets reset in getOrdersFromRemoteSuccess
 	, myns: "ax21"
@@ -15988,7 +16298,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3188'
+              value: 'Build: 3189'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21247,7 +21557,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
         tap: {
 			action: function(id, m_id) {
 			    // Start::Bemerkungsfeld (403) oder Unterschrift (405)
-			    if (DigiWebApp.SettingsController.featureAvailable('403') || ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof LocalFileSystem !== "undefined") && (typeof window.requestFileSystem !== "undefined"))) {
+			    if (DigiWebApp.SettingsController.featureAvailable('403') || ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined"))) {
 					// if remark-feature active: go to remarkpage
 					// load booking in EditTimeData.bookingToEdit
 			    	//console.log('remark is active');
