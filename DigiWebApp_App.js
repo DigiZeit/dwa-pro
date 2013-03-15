@@ -2173,7 +2173,7 @@ DigiWebApp.Booking = M.Model.create({
 					    			reader.onloadend = function(evt) {
 					    		    	
 					    		    	// return content via successCallback
-					    				successCallback(evt.target.result);
+					    				successCallback(this.result);
 					    				
 					    	        };
 					    			reader.readAsText(file);
@@ -5786,7 +5786,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3181
+    , softwareVersion: 3182
 
 
     /**
@@ -15988,7 +15988,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3181'
+              value: 'Build: 3182'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
