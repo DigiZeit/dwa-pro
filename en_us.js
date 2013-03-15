@@ -289,6 +289,10 @@ M.I18N.en_us = {
 	, notImplementedMsg: "This feature is yet not implemented!"
 	, newMedia: "Type of new mediafile"
 
+	, library: "Open file"
+	, camera: "Open camera"
+	, noCamera: "No camera available"
+
 	, second: "Second"
 	, seconds: "Seconds"
 	, minute: "Minute"

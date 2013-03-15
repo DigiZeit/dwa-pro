@@ -4055,6 +4055,8 @@ DigiWebApp.CameraController = M.Controller.extend({
         , activity: null
     }
 
+	, loadedPicture: null
+
     , init: function(isFirstLoad) {
 		
         if(isFirstLoad) {
@@ -4066,22 +4068,22 @@ DigiWebApp.CameraController = M.Controller.extend({
         DigiWebApp.CameraController.myImageObj = new Image();
 
         /* do something, for any other load. */
-        if (       typeof navigator.device !== 'undefined' 
+        if ((       typeof navigator.device !== 'undefined' 
         		&& typeof navigator.device.capture !== 'undefined' 
         		&& typeof navigator.device.capture.captureImage !== 'undefined'
-        	) {
-        	// camera probably available
-        	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).show();
+        	) && ( DigiWebApp.CameraController.loadedPicture !== null ) 
+        {
         	DigiWebApp.CameraController.takePicture();
-            if(DigiWebApp.BookingController.currentBooking) {
-                DigiWebApp.CameraController.setSelectionByCurrentBooking();
-            } else {
-                DigiWebApp.CameraController.initSelection();
-            }
-            this.saveSelection();
         } else {
-        	$('#' + DigiWebApp.CameraPage.content.savePictureGrid.id).hide();
+        	// camera unavailable or loadedPicture is set
+        	DigiWebApp.CameraController.useLoadedPicture();
         }
+        if(DigiWebApp.BookingController.currentBooking) {
+            DigiWebApp.CameraController.setSelectionByCurrentBooking();
+        } else {
+            DigiWebApp.CameraController.initSelection();
+        }
+        this.saveSelection();
     }
 
     , setSelectionByCurrentBooking: function() {
@@ -6094,7 +6096,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3189
+    , softwareVersion: 3190
 
 
     /**
@@ -13436,6 +13438,10 @@ DigiWebApp.NavigationController = M.Controller.extend({
     }
     // Ende::Bautagebuch
 
+    , toFileChooserPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('fileChooserPage', M.TRANSITION.POP, NO);
+    }
+
 });
 
 // ==========================================================================
@@ -14721,7 +14727,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
             	actions.push({
                       label: M.I18N.l('takePicture')
                     , icon: 'icon_takePicture.png'
-                    , id: 'camera'
+                    , id: 'foto'
                 });
             }
             // End::TakePicture
@@ -14783,8 +14789,58 @@ DigiWebApp.MediaListController = M.Controller.extend({
         }
     }
 
-    , camera: function() {
-        DigiWebApp.NavigationController.toCameraPageTransition();
+    , foto: function() {
+		var that = this;
+    	M.DialogView.actionSheet({
+	          title: M.I18N.l('takePicture')
+	        , cancelButtonValue: M.I18N.l('cancel')
+	        , otherButtonValues: [M.I18N.l('library'),M.I18N.l('camera')]
+	        , otherButtonTags: ["library", "camera"]
+	        , callbacks: {
+				  other: {action: function(buttonTag) {
+	  			    switch(buttonTag) {
+		    		        case 'library':
+		    		        	
+		    		        	// lade Foto
+		    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
+			    		        	if (imgData !== null) {
+			    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
+			    		        		DigiWebApp.NavigationController.toCameraPageTransition();
+			    		        	} else {
+				    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+				    		                title: M.I18N.l('error')
+				    		              , message: M.I18N.l('noPicLoaded')
+				    		            });
+			    		        	}
+		    		        	});
+		    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
+		    		        	
+		    		            break;
+		    		        case 'camera':
+		    		        	if (       typeof navigator.device !== 'undefined' 
+		    		            		&& typeof navigator.device.capture !== 'undefined' 
+		    		            		&& typeof navigator.device.capture.captureImage !== 'undefined'
+		    		            	) {
+		    		        			DigiWebApp.CameraController.set("loadedPicture", null);
+		    		        			DigiWebApp.NavigationController.toCameraPageTransition();
+		    		        	} else {
+			    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		                title: M.I18N.l('error')
+			    		              , message: M.I18N.l('noCamera')
+			    		            });
+		    		        	}
+		    		            break;
+		    		        default:
+		    		            console.log("unknonw ButtonTag");
+		    		            break;
+	  			    }
+	  			}}
+			, cancel: {action: function() {
+				//console.log(M.I18N.l('cancel'));
+			}}
+		}
+	    });
+
     }
 
     , audio: function() {
@@ -16298,7 +16354,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3189'
+              value: 'Build: 3190'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21544,6 +21600,94 @@ DigiWebApp.MediaListTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: FileChooserPage
+// ==========================================================================
+
+DigiWebApp.FileChooserPage = M.PageView.design({
+
+	  childViews: 'header content'
+	
+	, cssClass: 'fileChooserPage'
+		
+	, successCallback: function() {}
+	
+	, events: {
+		pagebeforeshow: {
+	        //  target: DigiWebApp.EditPicturePageController
+	        //, action: 'init'
+			action: function() {
+				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).change(function(evt) { 
+					var files = evt.target.files;
+					var file = files[0];
+					var reader = new FileReader();
+					reader.onload = function() {
+						console.log(this.result);
+						DigiWebApp.FileChooserPage.successCallback(this.result);
+					}
+					reader.onerror = function() {
+						DigiWebApp.FileChooserPage.successCallback(null);
+					}
+					reader.readAsText(file);
+				});
+			}
+	    }
+ 	}
+	
+	, header: M.ToolbarView.design({
+	      childViews: 'backButton title'
+	    , cssClass: 'header'
+	    , isFixed: YES
+	    
+	    , backButton: M.ButtonView.design({
+	    	  value: M.I18N.l('back')
+	    	, icon: 'arrow-l'
+	    	, anchorLocation: M.LEFT
+	    	, events: {
+	          	tap: {
+	              	//  target: DigiWebApp.NavigationController
+	              	//, action: DigiWebApp.FileChooserPage.NavigationControllerMethodToReturnTo
+	    			action: function() {
+	    				DigiWebApp.NavigationController.switchToPage(pageToReturnTo, M.TRANSITION.POP, YES);
+	    			}
+	          	}
+	      	  }
+	    })
+
+	  , title: M.LabelView.design({
+	            value: M.I18N.l('editPicture')
+	          , anchorLocation: M.CENTER
+	        })
+	      , anchorLocation: M.TOP
+	  })
+	
+	  , content: M.ScrollView.design({
+	  	
+	        	childViews: 'inputfile'
+	
+              , inputfile: M.FormView.design({
+	                	
+	              	    childViews: ''
+	              		                  	
+	                  , render: function() {
+	              		this.html += '<form method="post" action="" class="">';
+	                  	//this.renderChildViews();
+	              		this.html += '<input type="file" id="' + this.id + '" enctype="multipart/form-data" />';
+	      				this.html += '</form>';
+	                  	return this.html;
+	              	}
+	              })
+			  
+		      
+	  })
+	  
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: TimeDataTemplateView
 // ==========================================================================
 
@@ -24336,6 +24480,7 @@ if (searchForFeature(400)) { // Camera
 	DigiWebAppOrdinaryDesign.mediaListPage = DigiWebApp.MediaListPage // für 400 & 401
 	DigiWebAppOrdinaryDesign.cameraPage = DigiWebApp.CameraPage
 	DigiWebAppOrdinaryDesign.editPicturePage = DigiWebApp.EditPicturePage
+	DigiWebAppOrdinaryDesign.fileChooserPage = DigiWebApp.FileChooserPage
 }
 
 if (searchForFeature(401)) { // Audio
@@ -24343,6 +24488,7 @@ if (searchForFeature(401)) { // Audio
 	DigiWebAppOrdinaryDesign.audioPage = DigiWebApp.AudioPage
 	DigiWebAppOrdinaryDesign.demoaudioPage = DigiWebApp.DemoAudioPage
 	DigiWebAppOrdinaryDesign.demomediaPage = DigiWebApp.DemoMediaPage
+	DigiWebAppOrdinaryDesign.fileChooserPage = DigiWebApp.FileChooserPage
 }
 
 if (searchForFeature(402)) { // Materialerfassung
@@ -24407,6 +24553,7 @@ if ( (searchForFeature(412)) && !(searchForFeature(409)) ) { // Bautagebuch
 	DigiWebAppOrdinaryDesign.bautagebuchZeitenDetailsPage = DigiWebApp.BautagebuchZeitenDetailsPage
 	DigiWebAppOrdinaryDesign.bautagebuchEinstellungenPage = DigiWebApp.BautagebuchEinstellungenPage
 	DigiWebAppOrdinaryDesign.bautagebuchWetterPage = DigiWebApp.BautagebuchWetterPage
+	DigiWebAppOrdinaryDesign.fileChooserPage = DigiWebApp.FileChooserPage
 }
 
 var restartOnBlackBerry = true;
