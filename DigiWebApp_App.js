@@ -2441,6 +2441,7 @@ DigiWebApp.MediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				alert("using window.webkitStorageInfo");
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
@@ -2477,7 +2478,8 @@ DigiWebApp.MediaFile = M.Model.create({
 				});
 
 			} else {
-		    
+				alert("using window.requestFileSystem");
+
 			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
 			    	
 			    	// get dataDirectory from filesystem (create if not exists)
@@ -2490,6 +2492,7 @@ DigiWebApp.MediaFile = M.Model.create({
 				    				
 				    			writer.onerror = function(evt) {
 				    				console.error("writeError", evt);
+				    				alert("writeError", evt);
 				    				errorCallback(evt);
 				    			};
 				    			
@@ -4468,8 +4471,8 @@ DigiWebApp.CameraController = M.Controller.extend({
     }
     
     , useLoadedPicture: function() {
-    	console.log("useLoadedPicture");
-    	console.log(DigiWebApp.CameraController.loadedPicture);
+    	//console.log("useLoadedPicture");
+    	//console.log(DigiWebApp.CameraController.loadedPicture);
     	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = DigiWebApp.CameraController.loadedPicture;
         DigiWebApp.CameraController.myImageObj = new Image();
@@ -6126,7 +6129,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3206
+    , softwareVersion: 3207
 
 
     /**
@@ -16424,7 +16427,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3206'
+              value: 'Build: 3207'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
