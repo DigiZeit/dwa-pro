@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3256
+    , softwareVersion: 3257
 
 
     /**
@@ -16732,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3256'
+              value: 'Build: 3257'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20228,7 +20228,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 
       isSelectable: YES
 
-    , childViews: 'id'
+    , childViews: 'idLabel'
 
     , events: {
         tap: {
@@ -20245,7 +20245,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
         }
     }
 	
-	, id: M.LabelView.design({
+	, idLabel: M.LabelView.design({
 	    cssClass: 'normal unselectable bigLabel'
   	  , isInline: YES
 	  , computedValue: {
@@ -20313,7 +20313,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-						DigiWebApp.BautagebuchMedienListeController.neu();
+						//DigiWebApp.BautagebuchMedienListeController.neu();
 					}
                 }
             }
