@@ -4468,6 +4468,7 @@ DigiWebApp.CameraController = M.Controller.extend({
     
     , useLoadedPicture: function() {
     	console.log("useLoadedPicture");
+    	console.log(DigiWebApp.CameraController.loadedPicture);
     	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = DigiWebApp.CameraController.loadedPicture;
         DigiWebApp.CameraController.myImageObj = new Image();
@@ -6124,7 +6125,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3201
+    , softwareVersion: 3202
 
 
     /**
@@ -16415,7 +16416,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3201'
+              value: 'Build: 3202'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
