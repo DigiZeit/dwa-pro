@@ -6124,7 +6124,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3200
+    , softwareVersion: 3201
 
 
     /**
@@ -16415,7 +16415,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3200'
+              value: 'Build: 3201'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21724,6 +21724,8 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 	  , content: M.ScrollView.design({
 	  	
 	        	childViews: 'inputfile'
+	        
+	          , cssClass: 'inputfile'
 	
               , inputfile: M.FormView.design({
 	                	

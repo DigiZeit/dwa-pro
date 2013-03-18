@@ -648,6 +648,11 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-bottom: 10px;
 }
 
+.fileChooserPage .inputfile {
+	text-align: center;
+	background: #fff;
+}
+
   .bautagebuchWetterPage .whiteText 
 , .bautagebuchBautageberichtDetailsPage .whiteText 
 , .bautagebuchZeitenDetailsPage .whiteText 
