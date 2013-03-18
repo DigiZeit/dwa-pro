@@ -6231,7 +6231,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3219
+    , softwareVersion: 3220
 
 
     /**
@@ -12646,8 +12646,13 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 
 		that.item.set("positionId", that.positionId);
 		that.item.set("positionName", that.positionName);
-		that.item.set("activityId", that.activityId);
-		that.item.set("activityName", that.activityName);
+		if (parseInt(that.activityId) !== 0) {
+			that.item.set("activityId", that.activityId);
+			that.item.set("activityName", that.activityName);
+		} else {
+			that.item.set("activityId", null);
+			that.item.set("activityName", null);
+		}
 		if (that.remark !== DigiWebApp.BautagebuchMedienDetailsPage.content.remarkInput.initialText) {
 			that.item.set("remark", that.remark);
 		} else {
@@ -15109,8 +15114,13 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		
 		that.item.set("positionId", that.positionId);
 		that.item.set("positionName", that.positionName);
-		that.item.set("activityId", that.activityId);
-		that.item.set("activityName", that.activityName);
+		if (parseInt(that.activityId) !== 0) {
+			that.item.set("activityId", that.activityId);
+			that.item.set("activityName", that.activityName);
+		} else {
+			that.item.set("activityId", null);
+			that.item.set("activityName", null);
+		}
 		that.item.set("materialId", that.materialId);
 		that.item.set("mengeneinheitId", that.mengeneinheitId);
 		that.item.set("artikel", that.artikel);
@@ -16538,7 +16548,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3219'
+              value: 'Build: 3220'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
