@@ -5731,7 +5731,9 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 		that.item.set("positionName", that.positionName);
 		that.item.set("activityId", that.activityId);
 		that.item.set("activityName", that.activityName);
-		that.item.set("data", that.data);
+		if (that.data !== DigiWebApp.BautagebuchNotizenDetailsPage.content.dataInput.initialText) {
+			that.item.set("data", that.data);
+		}
 		if (that.item.saveSorted()) {		
 			DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
 			DigiWebApp.NavigationController.backToBautagebuchNotizenListePageTransition();
@@ -6227,7 +6229,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3217
+    , softwareVersion: 3218
 
 
     /**
@@ -16532,7 +16534,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3217'
+              value: 'Build: 3218'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
