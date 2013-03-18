@@ -4068,22 +4068,22 @@ DigiWebApp.CameraController = M.Controller.extend({
         image.src = '';
         DigiWebApp.CameraController.myImageObj = new Image();
 
-        if ((       typeof navigator.device !== 'undefined' 
-        		&& typeof navigator.device.capture !== 'undefined' 
-        		&& typeof navigator.device.capture.captureImage !== 'undefined'
-        	) && ( DigiWebApp.CameraController.loadedPicture !== null )
-        )
-        {
+        if (     typeof navigator.camera !== 'undefined' 
+      		  && typeof navigator.camera.getPicture !== 'undefined'
+        	  && DigiWebApp.CameraController.loadedPicture !== null
+        ) {
         	DigiWebApp.CameraController.takePicture();
         } else {
         	// camera unavailable or loadedPicture is set
         	DigiWebApp.CameraController.useLoadedPicture();
         }
+
         if(DigiWebApp.BookingController.currentBooking) {
             DigiWebApp.CameraController.setSelectionByCurrentBooking();
         } else {
             DigiWebApp.CameraController.initSelection();
         }
+        
         this.saveSelection();
     }
 
@@ -6105,7 +6105,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3196
+    , softwareVersion: 3197
 
 
     /**
@@ -14860,9 +14860,8 @@ DigiWebApp.MediaListController = M.Controller.extend({
 		    		        	
 		    		            break;
 		    		        case 'camera':
-		    		        	if (       typeof navigator.device !== 'undefined' 
-		    		            		&& typeof navigator.device.capture !== 'undefined' 
-		    		            		&& typeof navigator.device.capture.captureImage !== 'undefined'
+		    		        	if (       typeof navigator.camera !== 'undefined' 
+				    	        		&& typeof navigator.camera.getPicture !== 'undefined'
 		    		            	) {
 		    		        			DigiWebApp.CameraController.set("loadedPicture", null);
 		    		        			DigiWebApp.NavigationController.toCameraPageTransition();
@@ -16397,7 +16396,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3196'
+              value: 'Build: 3197'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
