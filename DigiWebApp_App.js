@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3252
+    , softwareVersion: 3253
 
 
     /**
@@ -16721,7 +16721,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3252'
+              value: 'Build: 3253'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20583,14 +20583,15 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	      })
     	      
     	      , zeitenSummeList: M.ListView.design({
-    	    	  childViews: 'list'
-    	    	        , list: M.ListView.design({
-    	    	              contentBinding: {
-    	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-    	    	                , property: 'ZeitbuchungenPerMitarbeiterIdList'
-    	    	            }
-    	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
-    	    	        })
+      	    	  	  childViews: 'list'
+      	    	  	, cssClass: 'marginBottom20 marginTop20' 
+	    	        , list: M.ListView.design({
+	    	              contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
+	    	                , property: 'ZeitbuchungenPerMitarbeiterIdList'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
+	    	        })
     	      })
     	      
 	    })
