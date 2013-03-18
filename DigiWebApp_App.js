@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3231
+    , softwareVersion: 3232
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3231'
+              value: 'Build: 3232'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20462,11 +20462,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        , value: ''
 						        , operation: function(v) {
 						        	// projekleiterName nachladen
-						        	_.each(DigiWebApp.BautagebuchProjektleiter.find(),function(el) {
-						        		if (parseInt(el.get("id")) === parseInt(v)) {
-						        			return el.vollername();
-						        		}
-						        	});
+						        	return DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0].vollername();
 						        }
 						    }
 	        			})
@@ -20484,7 +20480,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        }
 						        , value: ''
 						        , operation: function(v) {
-						            return M.I18N.l('BautagebuchStartingFrom') + " " + v;
+						            return M.I18N.l('BautagebuchStartingFrom') + " " + v + " " + M.I18N.l('oclock');
 						        }
 						    }
 						})
