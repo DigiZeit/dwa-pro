@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3232
+    , softwareVersion: 3233
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3232'
+              value: 'Build: 3233'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20421,10 +20421,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
   						      value: ''
   						    , cssClass: 'bigLabel'
   						    , isInline: YES
-//  						    contentBinding: {
-//  						          target: DigiWebApp.BautagebuchZusammenfassungController
-//  						        , property: 'auftragsName'
-//  						    }
   						    , computedValue: {
   						          contentBinding: {
   						              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20450,10 +20446,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	        			, projektleiter: M.LabelView.design({
 	    				      value: ''
 	    				    , cssClass: ''
-//	    				    , contentBinding: {
-//	    				          target: DigiWebApp.BautagebuchZusammenfassungController
-//	    				        , property: 'projektleiterId'
-//	    				    }
 						    , computedValue: {
 						          contentBinding: {
 						              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20469,10 +20461,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						, startUhrzeit: M.LabelView.design({
 						      value: ''
 						    , cssClass: ''
-//						    , contentBinding: {
-//						          target: DigiWebApp.BautagebuchZusammenfassungController
-//						        , property: 'startUhrzeit'
-//						    }
 						    , computedValue: {
 						          contentBinding: {
 						              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20484,25 +20472,56 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        }
 						    }
 						})
-        	    }),
-        	    wetter: M.ContainerView.design({
-        			childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
-              			, temperatur: M.LabelView.design({
-        				      value: ''
-        				    , cssClass: ''
-        				    , contentBinding: {
-        				          target: DigiWebApp.BautagebuchZusammenfassungController
-        				        , property: 'wetter.temperatur'
-        				    }
+        	    })
+        	    , wetter: M.ContainerView.design({
+        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
+        				
+              			, temperatur: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView({
+              					value: M.I18N.l('BautagebuchTemperatur')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.temperatur'
+							        }
+							        , value: ''
+							        , operation: function(v) {
+							            return v + "°C";
+							        }
+							    }
+
+                			})
               			})
-	        			, luftfeuchte: M.LabelView.design({
-	    				      value: ''
-	    				    , cssClass: ''
-	    				    , contentBinding: {
-	    				          target: DigiWebApp.BautagebuchZusammenfassungController
-	    				        , property: 'wetter.luftfeuchtigkeit'
-	    				    }
-	        			})
+              			
+              			, luftfeuchte: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView({
+              					value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.luftfeuchtigkeit'
+							        }
+							        , value: ''
+							        , operation: function(v) {
+							            return v;
+							        }
+							    }
+
+                			})
+              			})
+
 		    			, bewoelkung: M.LabelView.design({
 						      value: ''
 						    , cssClass: ''
