@@ -789,6 +789,9 @@ label.ui-input-text, .ui-controlgroup-label {
 	border-top-width: 2px;
 	padding-top: 30px;
 }
+.bautagebuchZusammenfassungScrollView .ui-listview {
+	margin-left: 10px;
+}
 
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
