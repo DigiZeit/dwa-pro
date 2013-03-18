@@ -4070,7 +4070,7 @@ DigiWebApp.CameraController = M.Controller.extend({
 
         if (     typeof navigator.camera !== 'undefined' 
       		  && typeof navigator.camera.getPicture !== 'undefined'
-        	  && DigiWebApp.CameraController.loadedPicture !== null
+        	  && DigiWebApp.CameraController.loadedPicture === null
         ) {
         	DigiWebApp.CameraController.takePicture();
         } else {
@@ -6105,7 +6105,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3197
+    , softwareVersion: 3198
 
 
     /**
@@ -14824,7 +14824,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
 					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 					    		                title: M.I18N.l('error')
-					    		              , message: M.I18N.l('noPicLoaded') + err
+					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
 					    		            });	    		        					
 	    		        				}
 	    		        				, {
@@ -16396,7 +16396,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3197'
+              value: 'Build: 3198'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
