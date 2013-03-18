@@ -6125,7 +6125,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3202
+    , softwareVersion: 3204
 
 
     /**
@@ -14837,8 +14837,12 @@ DigiWebApp.MediaListController = M.Controller.extend({
 		    		        		// auf Geraet:
 		    		        		navigator.camera.getPicture(
 	    		        				  function(imgData) {
+	    		        					  if (imgData.indexOf("data:") === 0) {
 					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
-					    		        		DigiWebApp.NavigationController.toCameraPageTransition();		    		        			
+	    		        					  } else {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData);
+	    		        					  }
+				    		        		DigiWebApp.NavigationController.toCameraPageTransition();
 	    		        				}
 	    		        				, function(err) {
 				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
@@ -14864,9 +14868,12 @@ DigiWebApp.MediaListController = M.Controller.extend({
 			    		        	// im Browser:
 			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
 				    		        	if (imgData !== null) {
-				    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
-				    		        		DigiWebApp.NavigationController.toCameraPageTransition();
-				    		        		
+	    		        					  if (imgData.indexOf("data:") === 0) {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
+	    		        					  } else {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData);
+	    		        					  }
+	    		        					  DigiWebApp.NavigationController.toCameraPageTransition();
 				    		        	} else {
 				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
 					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -16416,7 +16423,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3202'
+              value: 'Build: 3204'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
