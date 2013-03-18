@@ -4558,6 +4558,7 @@ DigiWebApp.CameraController = M.Controller.extend({
     , myImageData: null
     , myImageObj: null
     , cameraSuccessBase64: function(imageData) {
+    	alert("success");
     	DigiWebApp.CameraController.myImageData = imageData;
         var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
@@ -6128,7 +6129,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3209
+    , softwareVersion: 3210
 
 
     /**
@@ -14840,6 +14841,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 		    		        		// auf Geraet:
 		    		        		navigator.camera.getPicture(
 	    		        				  function(imgData) {
+	    		        				    	alert("success");
 	    		        					  if (imgData.indexOf("data:") === 0) {
 					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
 	    		        					  } else {
@@ -16426,7 +16428,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3209'
+              value: 'Build: 3210'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
