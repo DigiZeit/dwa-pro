@@ -767,6 +767,16 @@ label.ui-input-text, .ui-controlgroup-label {
     color: #000000;
 }
 
+.bautagebuchZusammenfassungScrollView {
+	background: #fff;
+	opacity: 0.7;
+}
+
+.bautagebuchZusammenfassungScrollView .bigLabel {
+	font-weight: bold;
+	font-size: 14px;
+}
+
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
     border-color: #0d0d0d;
