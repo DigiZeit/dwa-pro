@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3227
+    , softwareVersion: 3228
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3227'
+              value: 'Build: 3228'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20417,87 +20417,125 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         		, layout: M.TWO_COLUMNS,
         		details: M.ContainerView.design({
         				  childViews: 'auftrag datum projektleiter startUhrzeit'
+  		    			, auftrag: M.LabelView.design({
+  						      value: ''
+  						    , cssClass: 'bigLabel'
+  						    , isInline: YES
+//  						    contentBinding: {
+//  						          target: DigiWebApp.BautagebuchZusammenfassungController
+//  						        , property: 'auftragsName'
+//  						    }
+  						    , computedValue: {
+  						          contentBinding: {
+  						              target: DigiWebApp.BautagebuchZusammenfassungController
+  						            , property: 'auftragsName'
+  						        }
+  						        , value: ''
+  						        , operation: function(v) {
+  						            return v + ": ";
+  						        }
+  						    }
+  		    			})
+
               			, datum: M.LabelView.design({
-        				    value: '',
-        				    cssClass: 'bigLabel',
-        				    contentBinding: {
-        				        target: DigiWebApp.BautagebuchZusammenfassungController,
-        				        property: 'datum'
+        				      value: ''
+        				    , cssClass: 'bigLabel'
+        				    , contentBinding: {
+        				          target: DigiWebApp.BautagebuchZusammenfassungController
+        				        , property: 'datum'
         				    }
               			})
+
 	        			, projektleiter: M.LabelView.design({
-	    				    value: '',
-	    				    cssClass: '',
-	    				    contentBinding: {
-	    				        target: DigiWebApp.BautagebuchZusammenfassungController,
-	    				        property: 'projektleiterId'
-	    				    }
-	        			})
-		    			, auftrag: M.LabelView.design({
-						    value: '',
-						    cssClass: 'bigLabel',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'auftragsName'
+	    				      value: ''
+	    				    , cssClass: ''
+//	    				    , contentBinding: {
+//	    				          target: DigiWebApp.BautagebuchZusammenfassungController
+//	    				        , property: 'projektleiterId'
+//	    				    }
+						    , computedValue: {
+						          contentBinding: {
+						              target: DigiWebApp.BautagebuchZusammenfassungController
+						            , property: 'projektleiterId'
+						        }
+						        , value: ''
+						        , operation: function(v) {
+						        	// projekleiterName nachladen
+						        	_.each(DigiWebApp.BautagebuchProjektleiter.find(),function(el) {
+						        		if (el.get("id") === v) {
+						        			return el.vollername();
+						        		}
+						        	});
+						        }
 						    }
-		    			})
+	        			})
 						, startUhrzeit: M.LabelView.design({
-						    value: '',
-						    cssClass: '',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'startUhrzeit'
+						      value: ''
+						    , cssClass: ''
+//						    , contentBinding: {
+//						          target: DigiWebApp.BautagebuchZusammenfassungController
+//						        , property: 'startUhrzeit'
+//						    }
+						    , computedValue: {
+						          contentBinding: {
+						              target: DigiWebApp.BautagebuchZusammenfassungController
+						            , property: 'startUhrzeit'
+						        }
+						        , value: ''
+						        , operation: function(v) {
+						            return v;
+						        }
 						    }
 						})
         	    }),
         	    wetter: M.ContainerView.design({
         			childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
               			, temperatur: M.LabelView.design({
-        				    value: '',
-        				    cssClass: '',
-        				    contentBinding: {
-        				        target: DigiWebApp.BautagebuchZusammenfassungController,
-        				        property: 'wetter.temperatur'
+        				      value: ''
+        				    , cssClass: ''
+        				    , contentBinding: {
+        				          target: DigiWebApp.BautagebuchZusammenfassungController
+        				        , property: 'wetter.temperatur'
         				    }
               			})
 	        			, luftfeuchte: M.LabelView.design({
-	    				    value: '',
-	    				    cssClass: '',
-	    				    contentBinding: {
-	    				        target: DigiWebApp.BautagebuchZusammenfassungController,
-	    				        property: 'wetter.luftfeuchtigkeit'
+	    				      value: ''
+	    				    , cssClass: ''
+	    				    , contentBinding: {
+	    				          target: DigiWebApp.BautagebuchZusammenfassungController
+	    				        , property: 'wetter.luftfeuchtigkeit'
 	    				    }
 	        			})
 		    			, bewoelkung: M.LabelView.design({
-						    value: '',
-						    cssClass: '',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'wetter.bewoelkung'
+						      value: ''
+						    , cssClass: ''
+						    , contentBinding: {
+						          target: DigiWebApp.BautagebuchZusammenfassungController
+						        , property: 'wetter.bewoelkung'
 						    }
 		    			})
 						, niederschlag: M.LabelView.design({
-						    value: '',
-						    cssClass: 'bigLabel',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'wetter.niederschlag'
+						      value: ''
+						    , cssClass: 'bigLabel'
+						    , contentBinding: {
+						          target: DigiWebApp.BautagebuchZusammenfassungController
+						        , property: 'wetter.niederschlag'
 						    }
 						})
 						, wind: M.LabelView.design({
-						    value: '',
-						    cssClass: 'bigLabel',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'wetter.wind'
+						      value: ''
+						    , cssClass: 'bigLabel'
+						    , contentBinding: {
+						          target: DigiWebApp.BautagebuchZusammenfassungController
+						        , property: 'wetter.wind'
 						    }
 						})
 						, wechselhaft: M.LabelView.design({
-						    value: '',
-						    cssClass: 'bigLabel',
-						    contentBinding: {
-						        target: DigiWebApp.BautagebuchZusammenfassungController,
-						        property: 'wetter.wechselhaft'
+						      value: ''
+						    , cssClass: 'bigLabel'
+						    , contentBinding: {
+						          target: DigiWebApp.BautagebuchZusammenfassungController
+						        , property: 'wetter.wechselhaft'
 						    }
 						})
         	    })
