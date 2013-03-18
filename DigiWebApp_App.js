@@ -2014,7 +2014,7 @@ DigiWebApp.Booking = M.Model.create({
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
+			that.set('fileName', that.__proto__.name + '_Signature_' + D8.now().getTimestamp());
 			that.save();
 	    }
 	
@@ -2408,7 +2408,8 @@ DigiWebApp.MediaFile = M.Model.create({
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
+			that.set('fileName', that.__proto__.name + '_' + D8.now().getTimestamp());
+			alert("saving with fileName " + that.get("fileName"));
 			that.save();
 	    }
 	
@@ -2788,7 +2789,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
+			that.set('fileName', that.__proto__.name + '_Signature_' + D8.now().getTimestamp());
 			that.save();
 	    }
 	
@@ -3454,7 +3455,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		// check if fileName is set
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
-			that.set('fileName', 'Signature_' + D8.now().getTimestamp());
+			that.set('fileName', that.__proto__.name + '_' + D8.now().getTimestamp());
 			that.save();
 	    }
 	
@@ -6125,7 +6126,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3205
+    , softwareVersion: 3206
 
 
     /**
@@ -16423,7 +16424,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3205'
+              value: 'Build: 3206'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
