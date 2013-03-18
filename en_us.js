@@ -292,6 +292,8 @@ M.I18N.en_us = {
 	, library: "Open file"
 	, camera: "Open camera"
 	, noCamera: "No camera available"
+	, noPicLoaded: "Not foto has been loaded"
+	, errorWhileRequestingQuota: "Not enough space available!"
 
 	, second: "Second"
 	, seconds: "Seconds"

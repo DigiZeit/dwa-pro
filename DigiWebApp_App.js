@@ -2079,6 +2079,10 @@ DigiWebApp.Booking = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 
 			} else {
@@ -2184,6 +2188,10 @@ DigiWebApp.Booking = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 
@@ -2272,7 +2280,11 @@ DigiWebApp.Booking = M.Model.create({
 					    }, errorCallback);         // fileSystem.root.getDirectory
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
-				  console.error('Error while requesting Quota', e);
+					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
@@ -2475,6 +2487,10 @@ DigiWebApp.MediaFile = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 
 			} else {
@@ -2582,6 +2598,10 @@ DigiWebApp.MediaFile = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 
@@ -2669,7 +2689,11 @@ DigiWebApp.MediaFile = M.Model.create({
 					    }, errorCallback);         // fileSystem.root.getDirectory
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
-				  console.error('Error while requesting Quota', e);
+					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
@@ -2856,6 +2880,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 	
 			} else {
@@ -2961,6 +2989,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 	
@@ -3049,7 +3081,11 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 					    }, errorCallback);         // fileSystem.root.getDirectory
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
-				  console.error('Error while requesting Quota', e);
+					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
@@ -3522,6 +3558,10 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 	
 			} else {
@@ -3627,6 +3667,10 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
 					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 	
@@ -3715,7 +3759,11 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 					    }, errorCallback);         // fileSystem.root.getDirectory
 				    }, errorCallback);             // window.requestFileSystem
 				}, function(e) {
-				  console.error('Error while requesting Quota', e);
+					  console.error('Error while requesting Quota', e);
+	  		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			                title: M.I18N.l('error')
+			              , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+			            });	    		        					
 				});
 			} else {
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
@@ -3961,18 +4009,6 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 		    		                title: M.I18N.l('notImplemented')
 		    		              , message: M.I18N.l('notImplementedMsg')
 		    		            });
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("item", DigiWebApp.BautagebuchMediaFile.createRecord({
-//			    		  			    bautagesberichtId: DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id
-//			    		  			  , fileType: DigiWebApp.ApplicationController.CONSTAudioFiletype
-//			    		  		}));
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("data", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("remark", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("fileType", DigiWebApp.ApplicationController.CONSTAudioFiletype);
-//			    		  		DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 		    		            break;
 		    		        case 'photo':
 		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("item", DigiWebApp.BautagebuchMediaFile.createRecord({
@@ -3986,41 +4022,103 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("data", null);
 		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("remark", null);
 		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
-		    		    		DigiWebApp.BautagebuchMedienDetailsController.takePicture();
-			    		  		DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
-			    		  		
+		    		        	M.DialogView.actionSheet({
+			    		  	          title: M.I18N.l('takePicture')
+			    		  	        , cancelButtonValue: M.I18N.l('cancel')
+			    		  	        , otherButtonValues: [M.I18N.l('library'),M.I18N.l('camera')]
+			    		  	        , otherButtonTags: ["library", "camera"]
+			    		  	        , callbacks: {
+			    		  				  other: {action: function(buttonTag) {
+			    		  	  			    switch(buttonTag) {
+			    		  		    		        case 'library':
+			    		  		    		        	
+			    		  		    		        	// unterscheiden: auf Gerät oder im Browser?
+			    		  		    		        	if ( typeof navigator.camera !== 'undefined' 
+			    		  		    	        		  && typeof navigator.camera.getPicture !== 'undefined') {
+			    		  		    		        		
+			    		  		    		        		// auf Geraet:
+			    		  		    		        		navigator.camera.getPicture(
+			    		  	    		        				  function(imgData) {
+			    		  	    		        				      var that = DigiWebApp.BautagebuchMedienDetailsController;
+			    		  	    		        				      that.set("data", imageData);
+			    		  	    		        				      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+			    		  	    		        					  if (imgData.indexOf("data:") === 0) {
+				    		  	    		        				        image.src = imgData;
+			    		  	    		        					  } else {
+				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
+			    		  	    		        					  }
+			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+			    		  	    		        				}
+			    		  	    		        				, function(err) {
+		    		  	    		        				    	var that = DigiWebApp.BautagebuchMedienDetailsController;
+			    		  				    		        		that.set("data", null);
+			    		  					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		  					    		                title: M.I18N.l('error')
+			    		  					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
+			    		  					    		            });	    		        					
+			    		  	    		        				}
+			    		  	    		        				, {
+			    		  	    		        					  quality: 40
+			    		  	    		     	    				, allowEdit: true
+			    		  	    		     	    				, destinationType : navigator.camera.DestinationType.DATA_URL
+			    		  	    		     	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
+			    		  	    		     	    				, encodingType: navigator.camera.EncodingType.JPEG
+			    		  	    		     	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
+			    		  	    		     	    				, mediaType: navigator.camera.MediaType.PICTURE
+			    		  	    		     	    				, saveToPhotoAlbum: false
+			    		  	    		        				}
+			    		  		    		        		);
+			    		  		    		        		
+			    		  		    		        	} else {
+			    		  		    		        	
+			    		  			    		        	// im Browser:
+			    		  			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
+	    		  	    		        				    	var that = DigiWebApp.BautagebuchMedienDetailsController;
+			    		  				    		        	if (imgData !== null) {
+		    		  	    		        				    	that.set("data", imageData);
+		    		  	    		        				        var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+			    		  	    		        					  if (imgData.indexOf("data:") === 0) {
+				    		  	    		        				    	image.src = imgData;
+			    		  	    		        					  } else {
+				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
+			    		  	    		        					  }
+			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+			    		  				    		        	} else {
+			    		  				    		        		that.set("data", null);
+			    		  					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		  					    		                title: M.I18N.l('error')
+			    		  					    		              , message: M.I18N.l('noPicLoaded')
+			    		  					    		            });
+			    		  				    		        	}
+			    		  			    		        	});
+			    		  			    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
+			    		  		    		        	}
+			    		  		    		            break;
+			    		  		    		        case 'camera':
+			    				    		    		DigiWebApp.BautagebuchMedienDetailsController.takePicture();
+			    		  		    		            break;
+			    		  		    		        default:
+			    		  		    		            console.log("unknonw ButtonTag");
+			    		  		    		            break;
+			    		  	  			    }
+			    		  	  			}}
+			    		  			, cancel: {action: function() {
+			    		  				//console.log(M.I18N.l('cancel'));
+			    		  			}}
+			    		  		}
+			    		  	    });
 		    		            break;
 		    		        case 'video':
 		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 		    		                title: M.I18N.l('notImplemented')
 		    		              , message: M.I18N.l('notImplementedMsg')
 		    		            });
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("item", DigiWebApp.BautagebuchMediaFile.createRecord({
-//			    		  			    bautagesberichtId: DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id
-//			    		  			  , fileType: DigiWebApp.ApplicationController.CONSTVideoFiletype
-//			    		  		}));
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("data", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("remark", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("fileType", DigiWebApp.ApplicationController.CONSTVideoFiletype);
-//			    		  		DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 		    		            break;
 		    		        case 'other':
 		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 		    		                title: M.I18N.l('notImplemented')
 		    		              , message: M.I18N.l('notImplementedMsg')
 		    		            });
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("positionName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityId", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("activityName", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("data", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("remark", null);
-//		    		    		DigiWebApp.BautagebuchMedienDetailsController.set("fileType", null);
-//			    		  		DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 		    		            break;
 		    		        default:
 		    		            console.log("unknonw ButtonTag");
@@ -6129,7 +6227,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3214
+    , softwareVersion: 3215
 
 
     /**
@@ -16432,7 +16530,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3214'
+              value: 'Build: 3215'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

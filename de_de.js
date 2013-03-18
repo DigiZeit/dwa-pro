@@ -293,6 +293,7 @@ M.I18N.de_de = {
 	, camera: "Kamera öffnen"
 	, noCamera: "Keine Kamera vorhanden"
 	, noPicLoaded: "Es wurde kein Foto geladen"
+	, errorWhileRequestingQuota: "Nicht ausreichend Speicherplatz verfügbar!"
 	
 	, second: "Sekunde"
 	, seconds: "Sekunden"
