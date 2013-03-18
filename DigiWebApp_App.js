@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3239
+    , softwareVersion: 3240
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3239'
+              value: 'Build: 3240'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20414,9 +20414,15 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         , cssClass: 'bautagebuchZusammenfassungScrollView'
         , detailsGrid: M.GridView.design({
         		  childViews: 'details wetter'
-        		, layout: M.TWO_COLUMNS,
-        		details: M.ContainerView.design({
-        				  childViews: 'auftrag datum startUhrzeit projektleiter'
+        		, layout: M.TWO_COLUMNS
+        		, details: M.ContainerView.design({
+        				  childViews: 'auftrag datum spacer1 startUhrzeit spacer2 projektleiter'
+          				, spacer1: M.LabelView.design({
+        					value: "&nbsp;"
+        				})
+        				, spacer2: M.LabelView.design({
+        					value: "&nbsp;"
+        				})
   		    			, auftrag: M.LabelView.design({
   						      value: ''
   						    , cssClass: 'bigLabel'
