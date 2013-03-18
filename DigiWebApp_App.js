@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3251
+    , softwareVersion: 3252
 
 
     /**
@@ -16721,7 +16721,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3251'
+              value: 'Build: 3252'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20589,7 +20589,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
     	    	                , property: 'ZeitbuchungenPerMitarbeiterIdList'
     	    	            }
-    	    	            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
+    	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
     	    	        })
     	      })
     	      
