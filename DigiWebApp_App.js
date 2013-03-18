@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3243
+    , softwareVersion: 3244
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3243'
+              value: 'Build: 3244'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20410,9 +20410,11 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     })
 
     , content: M.ScrollView.design({
-          childViews: 'detailsGrid'
-        , cssClass: 'bautagebuchZusammenfassungScrollView'
-        , detailsGrid: M.GridView.design({
+          childViews: 'container grid'
+	    , container: M.ContainerView.design({
+    	    	childViews: 'detailsGrid'
+    	      , cssClass: 'bautagebuchZusammenfassungScrollView'
+    	      , detailsGrid: M.GridView.design({
         		  childViews: 'details wetter'
         		, layout: M.TWO_COLUMNS
         		, details: M.ContainerView.design({
@@ -20438,7 +20440,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
   						        }
   						    }
   		    			})
-
               			, datum: M.LabelView.design({
         				      value: ''
         				    , cssClass: 'bigLabel'
@@ -20448,7 +20449,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         				        , property: 'datum'
         				    }
               			})
-
 	        			, projektleiter: M.LabelView.design({
 	    				      value: ''
 	    				    , cssClass: 'bigLabel'
@@ -20485,9 +20485,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						})
         	    })
         	    , wetter: M.ContainerView.design({
-        	    	
-        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
-        				
+        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'        				
               			, temperatur: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
@@ -20510,7 +20508,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
                 			})
               			})
-              			
               			, luftfeuchte: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
@@ -20533,7 +20530,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
                 			})
               			})
-              			
               			, bewoelkung: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
@@ -20571,7 +20567,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
                 			})
               			})
-
               			, niederschlag: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
@@ -20615,7 +20610,6 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
                 			})
               			})
-
               			, wind: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
@@ -20685,40 +20679,41 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
                 			})
               			})
 
-        	    })
-        })
-    })
-
-    , grid: M.GridView.design({
-        childViews: 'button icon'
-      , layout: {
-            cssClass: 'digiButton'
-          , columns: {
-                0: 'button'
-              , 1: 'icon'
-          }
-      }
-      , button: M.ButtonView.design({
-            value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
-          , cssClass: 'digiButton'
-          , anchorLocation: M.RIGHT
-          , events: {
-              tap: {
-	                //target: DigiWebApp.BautagebuchBautageberichtDetailsController,
-	                //action: 'save'
-	    			action: function() {
-	    				var that = this;
-		    		}
-              }
-          }
-      })
-      , icon: M.ImageView.design({
-          value: 'theme/images/icon_bookTime.png'
-      })
-  })
-
+        	    	})
+    	      })
+	    })
+	
+	    , grid: M.GridView.design({
+	        childViews: 'button icon'
+	      , layout: {
+	            cssClass: 'digiButton'
+	          , columns: {
+	                0: 'button'
+	              , 1: 'icon'
+	          }
+	      }
+	      , button: M.ButtonView.design({
+	            value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+	          , cssClass: 'digiButton'
+	          , anchorLocation: M.RIGHT
+	          , events: {
+	              tap: {
+		                  target: DigiWebApp.BautagebuchZusammenfassungController
+		                , action: 'finish'
+		    			//action: function() {
+		    			//	var that = this;
+			    		//}
+	              }
+	          }
+	      })
+	      , icon: M.ImageView.design({
+	          value: 'theme/images/icon_bookTime.png'
+	      })
+	  })
+	
+	})
+	
 });
-
 
 //// ==========================================================================
 //// The M-Project - Mobile HTML5 Application Framework
