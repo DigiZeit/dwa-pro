@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3254
+    , softwareVersion: 3255
 
 
     /**
@@ -12686,7 +12686,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}
 	}
 	
-	, getZeitbuchungenPerMitarbeiterIdList: function() {
+	, getZeitbuchungenPerMitarbeiterList: function() {
 		var that = this;
 		var MAList = [];
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
@@ -16732,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3254'
+              value: 'Build: 3255'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20322,11 +20322,14 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
     , content: M.ScrollView.design({
           childViews: 'container grid'
+        	  
 	    , container: M.ContainerView.design({
     	    	childViews: 'detailsGrid zeitenSummeList'
     	      , cssClass: 'bautagebuchZusammenfassungScrollView'
+    	    	  
     	      , detailsGrid: M.GridView.design({
         		  childViews: 'details wetter'
+        		, cssClass: 'marginBottom20'
         		, layout: M.TWO_COLUMNS
         		, details: M.ContainerView.design({
         				  childViews: 'auftrag datum spacer1 projektleiter spacer2 startUhrzeit'
@@ -20595,7 +20598,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	      
     	      , zeitenSummeList: M.ListView.design({
       	    	  	  childViews: 'list'
-      	    	  	, cssClass: 'marginBottom20 marginTop20' 
+      	    	  	, cssClass: 'marginBottom20' 
 	    	        , list: M.ListView.design({
 	    	              contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
