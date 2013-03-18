@@ -382,6 +382,7 @@ M.I18N.de_de = {
 	, BautagebuchSendeZeitbuchungen: "Sende Zeitbuchungen"
 	, BautagebuchSendeNotizen: "Sende Notizen"
 	, BautagebuchSendeMedien: "Sende Medien"
+	, BautagebuchZusammenfassung: "Zusammenfassung"
     // Ende::Bautagebuch
 	
 };

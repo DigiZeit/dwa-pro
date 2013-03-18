@@ -382,6 +382,7 @@ M.I18N.en_us = {
 	, BautagebuchSendeZeitbuchungen: "Sending timebookings"
 	, BautagebuchSendeNotizen: "Sending notes"
 	, BautagebuchSendeMedien: "Sending mediafiles"
+	, BautagebuchZusammenfassung: "Summary"
     // Ende::Bautagebuch
 
 };
