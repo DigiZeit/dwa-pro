@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3249
+    , softwareVersion: 3250
 
 
     /**
@@ -12623,7 +12623,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}]);		
 		that.setPositionen(myItem.get("orderId"));
 		
-		that.set("ZeitbuchungenPerMitarbeiterIdList", that.getZeitbuchungenPerMitarbeiterIdList();)
+		that.set("ZeitbuchungenPerMitarbeiterIdList", that.getZeitbuchungenPerMitarbeiterIdList())
 	}
 
 	, save: function(successcallback, errorcallback) {
@@ -16721,7 +16721,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3249'
+              value: 'Build: 3250'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
