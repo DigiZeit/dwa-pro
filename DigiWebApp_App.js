@@ -4467,6 +4467,7 @@ DigiWebApp.CameraController = M.Controller.extend({
     }
     
     , useLoadedPicture: function() {
+    	console.log("useLoadedPicture");
     	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = DigiWebApp.CameraController.loadedPicture;
         DigiWebApp.CameraController.myImageObj = new Image();
@@ -4601,6 +4602,8 @@ DigiWebApp.DashboardController = M.Controller.extend({
     , itemsWithoutUpdate: null
 
     , latestId: null
+    
+    , lastTimestampDatatransfer: null
     
     , appCacheUpdateReady: function() {
 		if (window.applicationCache) {
@@ -4824,13 +4827,25 @@ DigiWebApp.DashboardController = M.Controller.extend({
     }
 
     , dataTransfer: function(isClosingDay) {
-        var bookings = DigiWebApp.Booking.find();
-        if(bookings.length > 0) {
-            DigiWebApp.BookingController.sendBookings(isClosingDay, true);
-         } else {
-            // calling startsync here
-            DigiWebApp.ApplicationController.startsync(YES);
-        }
+    	var startTransfer = NO;
+    	if (DigiWebApp.DashboardController.lastTimestampDatatransfer !== null) {
+    		var timestampNow = D8.now().getTimestamp();
+    		if (timestampNow - DigiWebApp.DashboardController.lastTimestampDatatransfer > 30000) {
+    			startTransfer = YES;
+    		} else {
+    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
+    		}
+    	}
+    	if (startTransfer === YES) {
+    		DigiWebApp.DashboardController.set("lastTimestampDatatransfer") = D8.now().getTimestamp();
+	        var bookings = DigiWebApp.Booking.find();
+	        if(bookings.length > 0) {
+	            DigiWebApp.BookingController.sendBookings(isClosingDay, true);
+	         } else {
+	            // calling startsync here
+	            DigiWebApp.ApplicationController.startsync(YES);
+	        }
+    	}
     }
 
     , settings: function() {
@@ -6109,7 +6124,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3199
+    , softwareVersion: 3200
 
 
     /**
@@ -16400,7 +16415,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3199'
+              value: 'Build: 3200'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
