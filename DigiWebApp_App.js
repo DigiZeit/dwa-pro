@@ -4040,13 +4040,13 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 			    		  		    		        		navigator.camera.getPicture(
 			    		  	    		        				  function(imgData) {
 			    		  	    		        				      var that = DigiWebApp.BautagebuchMedienDetailsController;
-			    		  	    		        				      that.set("data", imageData);
 			    		  	    		        				      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
 			    		  	    		        					  if (imgData.indexOf("data:") === 0) {
 				    		  	    		        				        image.src = imgData;
 			    		  	    		        					  } else {
 				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
 			    		  	    		        					  }
+			    		  	    		        					  that.set("data", image.src);
 			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 			    		  	    		        				}
 			    		  	    		        				, function(err) {
@@ -4075,13 +4075,13 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 			    		  			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
 	    		  	    		        				    	var that = DigiWebApp.BautagebuchMedienDetailsController;
 			    		  				    		        	if (imgData !== null) {
-		    		  	    		        				    	that.set("data", imageData);
-		    		  	    		        				        var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		    		  	    		        				          var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
 			    		  	    		        					  if (imgData.indexOf("data:") === 0) {
 				    		  	    		        				    	image.src = imgData;
 			    		  	    		        					  } else {
 				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
 			    		  	    		        					  }
+			    		  	    		        					  that.set("data", image.src);
 			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 			    		  				    		        	} else {
 			    		  				    		        		that.set("data", null);
@@ -6227,7 +6227,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3215
+    , softwareVersion: 3216
 
 
     /**
@@ -16530,7 +16530,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3215'
+              value: 'Build: 3216'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21823,7 +21823,7 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 	              	//  target: DigiWebApp.NavigationController
 	              	//, action: DigiWebApp.FileChooserPage.NavigationControllerMethodToReturnTo
 	    			action: function() {
-	    				DigiWebApp.NavigationController.switchToPage(pageToReturnTo, M.TRANSITION.POP, YES);
+	    				history.back();
 	    			}
 	          	}
 	      	  }
