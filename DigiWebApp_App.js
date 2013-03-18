@@ -2409,7 +2409,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
 		if (!that.hasFileName()) {
 			that.set('fileName', that.__proto__.name + '_' + D8.now().getTimestamp());
-			alert("saving with fileName " + that.get("fileName"));
+			//alert("saving with fileName " + that.get("fileName"));
 			that.save();
 	    }
 	
@@ -2441,7 +2441,7 @@ DigiWebApp.MediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
-				alert("using window.webkitStorageInfo");
+				//alert("using window.webkitStorageInfo");
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
@@ -2478,7 +2478,7 @@ DigiWebApp.MediaFile = M.Model.create({
 				});
 
 			} else {
-				alert("using window.requestFileSystem");
+				//alert("using window.requestFileSystem");
 
 			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
 			    	
@@ -2492,7 +2492,6 @@ DigiWebApp.MediaFile = M.Model.create({
 				    				
 				    			writer.onerror = function(evt) {
 				    				console.error("writeError", evt);
-				    				alert("writeError", evt);
 				    				errorCallback(evt);
 				    			};
 				    			
@@ -4458,14 +4457,14 @@ DigiWebApp.CameraController = M.Controller.extend({
 	    			  DigiWebApp.CameraController.cameraSuccessBase64
 	    			, DigiWebApp.CameraController.cameraError
 	    			, { 
-    					//  quality: 40
- 	    				//, allowEdit: true
- 	    				  destinationType : navigator.camera.DestinationType.DATA_URL
+    					  quality: 40
+ 	    				, allowEdit: true
+ 	    				, destinationType : navigator.camera.DestinationType.DATA_URL
  	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
- 	    				//, encodingType: navigator.camera.EncodingType.JPEG
+ 	    				, encodingType: navigator.camera.EncodingType.JPEG
  	    				, sourceType: navigator.camera.PictureSourceType.CAMERA 
- 	    				//, mediaType: navigator.camera.MediaType.PICTURE
- 	    				//, saveToPhotoAlbum: false
+ 	    				, mediaType: navigator.camera.MediaType.PICTURE
+ 	    				, saveToPhotoAlbum: false
 	    			  }
     			);    	
     }
@@ -6129,7 +6128,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3207
+    , softwareVersion: 3208
 
 
     /**
@@ -14856,14 +14855,14 @@ DigiWebApp.MediaListController = M.Controller.extend({
 					    		            });	    		        					
 	    		        				}
 	    		        				, {
-	    		        					//  quality: 40
-	    		     	    				//, allowEdit: true
-	    		     	    				  destinationType : navigator.camera.DestinationType.DATA_URL
+	    		        					  quality: 40
+	    		     	    				, allowEdit: true
+	    		     	    				, destinationType : navigator.camera.DestinationType.DATA_URL
 	    		     	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
-	    		     	    				//, encodingType: navigator.camera.EncodingType.JPEG
+	    		     	    				, encodingType: navigator.camera.EncodingType.JPEG
 	    		     	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
-	    		     	    				//, mediaType: navigator.camera.MediaType.PICTURE
-	    		     	    				//, saveToPhotoAlbum: false
+	    		     	    				, mediaType: navigator.camera.MediaType.PICTURE
+	    		     	    				, saveToPhotoAlbum: false
 	    		        				}
 		    		        		);
 		    		        		
@@ -16427,7 +16426,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3207'
+              value: 'Build: 3208'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
