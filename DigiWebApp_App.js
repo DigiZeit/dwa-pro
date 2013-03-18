@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3233
+    , softwareVersion: 3234
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3233'
+              value: 'Build: 3234'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20474,12 +20474,13 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						})
         	    })
         	    , wetter: M.ContainerView.design({
+        	    	
         				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
         				
               			, temperatur: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView({
+              				, myLabel: M.LabelView.design({
               					value: M.I18N.l('BautagebuchTemperatur')
               				})
                   			, myValue: M.LabelView.design({
@@ -20502,7 +20503,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               			, luftfeuchte: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView({
+              				, myLabel: M.LabelView.design({
               					value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
               				})
                   			, myValue: M.LabelView.design({
@@ -20515,7 +20516,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 							        }
 							        , value: ''
 							        , operation: function(v) {
-							            return v;
+							            return v + "%";
 							        }
 							    }
 
