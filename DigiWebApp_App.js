@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3223
+    , softwareVersion: 3224
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3223'
+              value: 'Build: 3224'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22883,7 +22883,7 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 			    var view_modelId = view.modelId;
 			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
 					if (selectedItem.m_id === view_modelId) {
-						if (selectedItem.get("abgeschlossen") === YES {
+						if (selectedItem.get("abgeschlossen") === YES) {
 							DigiWebApp.BautagebuchZusammenfassungController.load(selectedItem);
 							DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
 						} else {
@@ -25079,3 +25079,23 @@ if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
 } else {
 	DigiWebApp.app = M.Application.design(DigiWebAppOrdinaryDesign);	
 };
+
+parseBool = function(val) {
+	       if (val === "YES") {
+		return YES;
+	} else if (val === YES) {
+		return YES;
+	} else if (val === "true") {
+		return YES;
+	} else if (val === true) {
+		return YES;
+	} else if (val === "NO") {
+		return NO;
+	} else if (val === NO) {
+		return NO;
+	} else if (val === "false") {
+		return NO;
+	} else if (val === false) {
+		return NO;
+	}
+}
