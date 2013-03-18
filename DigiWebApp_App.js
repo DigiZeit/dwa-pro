@@ -2598,7 +2598,7 @@ DigiWebApp.MediaFile = M.Model.create({
 				    			// read from file
 				    			var reader = new FileReader();
 				    			reader.onloadend = function(evt) {
-				    		    	
+				    		    	alert("loadend");
 				    		    	// return content via successCallback
 				    				successCallback(evt.target.result);
 				    				
@@ -6129,7 +6129,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3210
+    , softwareVersion: 3211
 
 
     /**
@@ -16428,7 +16428,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3210'
+              value: 'Build: 3211'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
