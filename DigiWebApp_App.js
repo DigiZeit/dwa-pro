@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3255
+    , softwareVersion: 3256
 
 
     /**
@@ -12584,7 +12584,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	
 	, startUhrzeit: null
 		
-	, ZeitbuchungenPerMitarbeiterIdList: null
+	, ZeitbuchungenPerMitarbeiterList: null
 	
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -16732,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3255'
+              value: 'Build: 3256'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20278,6 +20278,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
             //, action: 'init'
 			action: function() {
 				DigiWebApp.BautagebuchZusammenfassungController.init(YES);
+				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("marginBottom20");
 			}
         }
     }
@@ -20602,7 +20603,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	        , list: M.ListView.design({
 	    	              contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-	    	                , property: 'ZeitbuchungenPerMitarbeiterIdList'
+	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
 	    	            }
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
 	    	        })
