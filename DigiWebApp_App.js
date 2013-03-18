@@ -5119,7 +5119,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	}
 	
 	, empfangeMaterialien: function(successCallback, errorCallback) {
-
+		var that = this;
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 			
@@ -5164,12 +5164,12 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			successCallback();
 		};
 		
-		recieveData("materialliste", M.I18N.l('BautagebuchLadeMaterialien'), internalSuccessCallback, errorCallback);
+		that.recieveData("materialliste", M.I18N.l('BautagebuchLadeMaterialien'), internalSuccessCallback, errorCallback);
 		
 	}
 
 	, empfangeProjektleiter: function(successCallback, errorCallback) {
-
+		var that = this;
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 						
@@ -5221,12 +5221,12 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			successCallback();
 		};
 		
-		recieveData("projektleiter", M.I18N.l('BautagebuchLadeProjektleiter'), internalSuccessCallback, errorCallback);
+		that.recieveData("projektleiter", M.I18N.l('BautagebuchLadeProjektleiter'), internalSuccessCallback, errorCallback);
 		
 	}
 
 	, empfangeMitarbeiter: function(successCallback, errorCallback) {
-
+		var that = this;
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 						
@@ -5281,7 +5281,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			successCallback();
 		};
 		
-		recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback);
+		that.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback);
 		
 	}
 	
@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3224
+    , softwareVersion: 3225
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3224'
+              value: 'Build: 3225'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20415,7 +20415,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         		  childViews: 'details wetter'
         		, layout: M.TWO_COLUMNS,
         		details: M.ContainerView.design({
-        				  childViews: 'datum projektleiter auftrag startUhrzeit'
+        				  childViews: 'auftrag datum projektleiter startUhrzeit'
               			, datum: M.LabelView.design({
         				    value: '',
         				    cssClass: 'bigLabel',
