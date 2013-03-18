@@ -4062,12 +4062,12 @@ DigiWebApp.CameraController = M.Controller.extend({
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
         }
+        /* do something, for any other load. */
 
         var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = '';
         DigiWebApp.CameraController.myImageObj = new Image();
 
-        /* do something, for any other load. */
         if ((       typeof navigator.device !== 'undefined' 
         		&& typeof navigator.device.capture !== 'undefined' 
         		&& typeof navigator.device.capture.captureImage !== 'undefined'
@@ -4452,11 +4452,14 @@ DigiWebApp.CameraController = M.Controller.extend({
 	    			  DigiWebApp.CameraController.cameraSuccessBase64
 	    			, DigiWebApp.CameraController.cameraError
 	    			, { 
-	    				  quality: 40
-	    				//, allowEdit: true
-	    				, destinationType : navigator.camera.DestinationType.DATA_URL
-	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
-	    				//, sourceType: navigator.camera.PictureSourceType.CAMERA 
+    					  quality: 40
+ 	    				, allowEdit: true
+ 	    				, destinationType : navigator.camera.DestinationType.DATA_URL
+ 	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
+ 	    				, encodingType: navigator.camera.EncodingType.JPEG
+ 	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
+ 	    				, mediaType: navigator.camera.MediaType.PICTURE
+ 	    				, saveToPhotoAlbum: false
 	    			  }
     			);    	
     }
@@ -6102,7 +6105,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3195
+    , softwareVersion: 3196
 
 
     /**
@@ -14807,26 +14810,53 @@ DigiWebApp.MediaListController = M.Controller.extend({
 	  			    switch(buttonTag) {
 		    		        case 'library':
 		    		        	
-		    		        	// lade Foto
-		    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
-			    		        	if (imgData !== null) {
-			    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
-			    		        		var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-			    		                image.src = imgData;
-			    		                console.log(image);
-			    		                console.log(image.src);
-			    		                DigiWebApp.CameraController.myImageObj = new Image();
-			    		                DigiWebApp.CameraController.myImageObj.src = imgData;
-			    		        		DigiWebApp.NavigationController.toCameraPageTransition();
-			    		        		
-			    		        	} else {
-				    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-				    		                title: M.I18N.l('error')
-				    		              , message: M.I18N.l('noPicLoaded')
-				    		            });
-			    		        	}
-		    		        	});
-		    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
+		    		        	// unterscheiden: auf Gerät oder im Browser?
+		    		        	if ( typeof navigator.camera !== 'undefined' 
+		    	        		  && typeof navigator.camera.getPicture !== 'undefined') {
+		    		        		
+		    		        		// auf Geraet:
+		    		        		navigator.camera.getPicture(
+	    		        				  function(imgData) {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
+					    		        		DigiWebApp.NavigationController.toCameraPageTransition();		    		        			
+	    		        				}
+	    		        				, function(err) {
+				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					    		                title: M.I18N.l('error')
+					    		              , message: M.I18N.l('noPicLoaded') + err
+					    		            });	    		        					
+	    		        				}
+	    		        				, {
+	    		        					  quality: 40
+	    		     	    				, allowEdit: true
+	    		     	    				, destinationType : navigator.camera.DestinationType.DATA_URL
+	    		     	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
+	    		     	    				, encodingType: navigator.camera.EncodingType.JPEG
+	    		     	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
+	    		     	    				, mediaType: navigator.camera.MediaType.PICTURE
+	    		     	    				, saveToPhotoAlbum: false
+	    		        				}
+		    		        		);
+		    		        		
+		    		        	} else {
+		    		        	
+			    		        	// im Browser:
+			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
+				    		        	if (imgData !== null) {
+				    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
+				    		        		DigiWebApp.NavigationController.toCameraPageTransition();
+				    		        		
+				    		        	} else {
+				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					    		                title: M.I18N.l('error')
+					    		              , message: M.I18N.l('noPicLoaded')
+					    		            });
+				    		        	}
+			    		        	});
+			    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
+		    		        	}
 		    		        	
 		    		            break;
 		    		        case 'camera':
@@ -16367,7 +16397,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3195'
+              value: 'Build: 3196'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
