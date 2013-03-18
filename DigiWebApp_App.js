@@ -4064,9 +4064,11 @@ DigiWebApp.CameraController = M.Controller.extend({
         }
         /* do something, for any other load. */
 
-        var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
-        image.src = '';
-        DigiWebApp.CameraController.myImageObj = new Image();
+        if (DigiWebApp.CameraController.loadedPicture === null) {
+        	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
+        	image.src = '';
+        	DigiWebApp.CameraController.myImageObj = new Image();
+        }
 
         if (     typeof navigator.camera !== 'undefined' 
       		  && typeof navigator.camera.getPicture !== 'undefined'
@@ -4457,7 +4459,7 @@ DigiWebApp.CameraController = M.Controller.extend({
  	    				, destinationType : navigator.camera.DestinationType.DATA_URL
  	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
  	    				, encodingType: navigator.camera.EncodingType.JPEG
- 	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
+ 	    				, sourceType: navigator.camera.PictureSourceType.CAMERA 
  	    				, mediaType: navigator.camera.MediaType.PICTURE
  	    				, saveToPhotoAlbum: false
 	    			  }
@@ -4467,6 +4469,8 @@ DigiWebApp.CameraController = M.Controller.extend({
     , useLoadedPicture: function() {
     	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         image.src = DigiWebApp.CameraController.loadedPicture;
+        DigiWebApp.CameraController.myImageObj = new Image();
+        DigiWebApp.CameraController.myImageObj.src = DigiWebApp.CameraController.loadedPicture;
     }
     
     , savePicture: function() {
@@ -6105,7 +6109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3198
+    , softwareVersion: 3199
 
 
     /**
@@ -16396,7 +16400,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3198'
+              value: 'Build: 3199'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
