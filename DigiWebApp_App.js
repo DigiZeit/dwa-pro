@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3238
+    , softwareVersion: 3239
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3238'
+              value: 'Build: 3239'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20456,7 +20456,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        	// projekleiterName nachladen
 					        		var myProjektleiter = DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 					        		if (typeof myProjektleiter !== "undefined") {
-					        			return myProjektleiter.vollername();
+					        			return M.I18N.l('BautagebuchProjektleiter') + ": " + myProjektleiter.vollername();
 						        	} else {
 						        		return "";
 						        	}
@@ -20527,39 +20527,158 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
                 			})
               			})
+              			
+              			, bewoelkung: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchBewoelkung')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.bewoelkung'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchBewoelkungKlar');
+		    				    				break;
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchBewoelkungMaessig');
+		    					    			break;
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
+		    						    		break;
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchBewoelkungNeblig');
+		    					    			break;
+		    					    		default:
+		    					    		  return "";
+		    				    		}
+		    				        }
+							    }
 
-		    			, bewoelkung: M.LabelView.design({
-						      value: ''
-						    , cssClass: ''
-						    , contentBinding: {
-						          target: DigiWebApp.BautagebuchZusammenfassungController
-						        , property: 'wetter.bewoelkung'
-						    }
-		    			})
-						, niederschlag: M.LabelView.design({
-						      value: ''
-						    , cssClass: ''
-						    , contentBinding: {
-						          target: DigiWebApp.BautagebuchZusammenfassungController
-						        , property: 'wetter.niederschlag'
-						    }
-						})
-						, wind: M.LabelView.design({
-						      value: ''
-						    , cssClass: ''
-						    , contentBinding: {
-						          target: DigiWebApp.BautagebuchZusammenfassungController
-						        , property: 'wetter.wind'
-						    }
-						})
-						, wechselhaft: M.LabelView.design({
-						      value: ''
-						    , cssClass: ''
-						    , contentBinding: {
-						          target: DigiWebApp.BautagebuchZusammenfassungController
-						        , property: 'wetter.wechselhaft'
-						    }
-						})
+                			})
+              			})
+
+              			, niederschlag: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchNiederschlag')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.niederschlag'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchNiederschlagKein');
+		    				    				break;
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchNiederschlagNiesel');
+		    					    			break;
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchNiederschlagRegen');
+		    						    		break;
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchNiederschlagGraupel');
+		    					    			break;
+		    					    		case 4:
+		    				    				return M.I18N.l('BautagebuchNiederschlagSchnee');
+		    					    			break;
+		    					    		case 5:
+		    				    				return M.I18N.l('BautagebuchNiederschlagHagel');
+		    					    			break;
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+
+              			, wind: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchWind')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.wind'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchWindStill');
+		    				    				break;
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchWindMaessig');
+		    					    			break;
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchWindBoeig');
+		    						    		break;
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchWindStuermisch');
+		    					    			break;
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+              			, wechselhaft: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchWechselhaft')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: ''
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.wechselhaft'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case false:
+		    				    				return M.I18N.l('no');
+		    				    				break;
+		    					    		case true:
+		    				    				return M.I18N.l('yes');
+		    					    			break;
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+
         	    })
         })
     })
