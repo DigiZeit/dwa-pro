@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3253
+    , softwareVersion: 3254
 
 
     /**
@@ -12600,7 +12600,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		
 		that.set("item", myItem); 
 		
-		that.set("bautagesberichtId", myItem.get("bautagesberichtId"));
+		that.set("bautagesberichtId", myItem.m_id);
 		
 		that.set("datum", myItem.get("datum"));
 		that.set("projektleiterId", myItem.get("projektleiterId"));
@@ -12623,7 +12623,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}]);		
 		that.setPositionen(myItem.get("orderId"));
 		
-		that.set("ZeitbuchungenPerMitarbeiterIdList", that.getZeitbuchungenPerMitarbeiterIdList())
+		that.set("ZeitbuchungenPerMitarbeiterList", that.getZeitbuchungenPerMitarbeiterList());
 	}
 
 	, save: function(successcallback, errorcallback) {
@@ -12692,7 +12692,18 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
 			  var zeitbuchungMAIds = JSON.parse(m.get("mitarbeiterIds"));
 			  _.each(zeitbuchungMAIds, function(el) {
-				  if (MAList.indexOf(el) === -1) { MAList.push(el); }
+	        		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el}})[0];
+	        		if (typeof myMitarbeiter !== "undefined") {
+		        		var found = NO;
+	        			_.each(MAList, function(MAListEntry) {
+	        				if (MAListEntry.get("id") === myMitarbeiter.get("id")) {
+	        					found = YES;
+	        				}
+	        			});
+	        			if (found === NO) {
+	        				MAList.push(myMitarbeiter)
+	        			}
+		        	}
 			  });
 		});
 		return MAList;
@@ -16721,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3253'
+              value: 'Build: 3254'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
