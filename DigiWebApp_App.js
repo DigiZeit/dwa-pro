@@ -5733,6 +5733,8 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 		that.item.set("activityName", that.activityName);
 		if (that.data !== DigiWebApp.BautagebuchNotizenDetailsPage.content.dataInput.initialText) {
 			that.item.set("data", that.data);
+		} else {
+			that.item.set("data", null);
 		}
 		if (that.item.saveSorted()) {		
 			DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
@@ -6229,7 +6231,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3218
+    , softwareVersion: 3219
 
 
     /**
@@ -12648,6 +12650,8 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 		that.item.set("activityName", that.activityName);
 		if (that.remark !== DigiWebApp.BautagebuchMedienDetailsPage.content.remarkInput.initialText) {
 			that.item.set("remark", that.remark);
+		} else {
+			that.item.set("remark", null);
 		}
 	    var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
 
@@ -16534,7 +16538,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3218'
+              value: 'Build: 3219'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
