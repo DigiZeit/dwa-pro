@@ -770,12 +770,17 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchZusammenfassungScrollView {
 	background: #fff;
 	opacity: 0.7;
-	margin: 7px;
+	padding: 15px;
 }
 
+.bautagebuchZusammenfassungScrollView .hugeLabel {
+	font-size: 24px;
+}
 .bautagebuchZusammenfassungScrollView .bigLabel {
-	font-weight: bold;
 	font-size: 18px;
+}
+.bautagebuchZusammenfassungScrollView .bold {
+	font-weight: bold;
 }
 
 /* IOS LIKE FOOTER / TABBAR */
