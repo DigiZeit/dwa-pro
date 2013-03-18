@@ -770,6 +770,7 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchZusammenfassungScrollView {
 	background: #fff;
 	opacity: 0.7;
+	margin: 7px;
 }
 
 .bautagebuchZusammenfassungScrollView .bigLabel {

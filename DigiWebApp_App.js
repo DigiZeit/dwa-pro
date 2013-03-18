@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3245
+    , softwareVersion: 3246
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3245'
+              value: 'Build: 3246'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20362,16 +20362,12 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
             //  target: DigiWebApp.BautagebuchZusammenfassungController
             //, action: 'init'
 			action: function() {
-	
 				DigiWebApp.BautagebuchZusammenfassungController.init(YES);
-				
-				
-	
 			}
         }
     }
 
-    , childViews: 'header content grid'
+    , childViews: 'header content'
 
     , cssClass: 'bautagebuchListePage unselectable'
 
