@@ -783,6 +783,13 @@ label.ui-input-text, .ui-controlgroup-label {
 	font-weight: bold;
 }
 
+.bautagebuchZusammenfassungScrollView .zeitenSummeList {
+	border-top-color: #999;
+	border-top-style: solid;
+	border-top-width: 2px;
+	padding-top: 30px;
+}
+
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
     border-color: #0d0d0d;
