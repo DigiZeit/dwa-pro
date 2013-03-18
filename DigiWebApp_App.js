@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3228
+    , softwareVersion: 3229
 
 
     /**
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3228'
+              value: 'Build: 3229'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20440,6 +20440,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               			, datum: M.LabelView.design({
         				      value: ''
         				    , cssClass: 'bigLabel'
+  						    , isInline: YES
         				    , contentBinding: {
         				          target: DigiWebApp.BautagebuchZusammenfassungController
         				        , property: 'datum'
@@ -20462,7 +20463,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        , operation: function(v) {
 						        	// projekleiterName nachladen
 						        	_.each(DigiWebApp.BautagebuchProjektleiter.find(),function(el) {
-						        		if (el.get("id") === v) {
+						        		if (parseInt(el.get("id")) === v) {
 						        			return el.vollername();
 						        		}
 						        	});
@@ -20516,7 +20517,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		    			})
 						, niederschlag: M.LabelView.design({
 						      value: ''
-						    , cssClass: 'bigLabel'
+						    , cssClass: ''
 						    , contentBinding: {
 						          target: DigiWebApp.BautagebuchZusammenfassungController
 						        , property: 'wetter.niederschlag'
@@ -20524,7 +20525,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						})
 						, wind: M.LabelView.design({
 						      value: ''
-						    , cssClass: 'bigLabel'
+						    , cssClass: ''
 						    , contentBinding: {
 						          target: DigiWebApp.BautagebuchZusammenfassungController
 						        , property: 'wetter.wind'
@@ -20532,7 +20533,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						})
 						, wechselhaft: M.LabelView.design({
 						      value: ''
-						    , cssClass: 'bigLabel'
+						    , cssClass: ''
 						    , contentBinding: {
 						          target: DigiWebApp.BautagebuchZusammenfassungController
 						        , property: 'wetter.wechselhaft'
