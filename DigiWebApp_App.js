@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3225
+    , softwareVersion: 3226
 
 
     /**
@@ -7416,7 +7416,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	, finish: function(successcallback, errorcallback) {
 		var that = this;
 		if (that.save()) {
-			DigiWebApp.BautagebuchZusammenfassungController.load(selectedItem);
+			DigiWebApp.BautagebuchZusammenfassungController.load(that.item);
 			DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
 			if (typeof(successcallback) === "function") successcallback();
 			return true;
@@ -16701,7 +16701,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3225'
+              value: 'Build: 3226'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.5.0.3225 beta, Timestamp:1363612183578
+#Application:DigiWebApp, Version:1.5.0.3226 beta, Timestamp:1363612260528
 
 
 # Explicitly cached entries
@@ -16,11 +16,11 @@ bootstrap.js
 jquery.xml2json_1.1.js
 jquery_mobile.js
 ui.js
-jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 childbrowser.js
 cordova.js
+jquery-1.6.4.min.js
 core.js
 theme/jquery.mobile-1.0.min.css
 theme/images/icons-18-white.png
