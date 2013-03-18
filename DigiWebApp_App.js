@@ -2553,6 +2553,7 @@ DigiWebApp.MediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(window.webkitStorageInfo) !== "undefined") {
+				//alert("using window.webkitStorageInfo");
 				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
@@ -2583,14 +2584,17 @@ DigiWebApp.MediaFile = M.Model.create({
 					  console.error('Error while requesting Quota', e);
 				});
 			} else {
+				alert("using window.requestFileSystem");
 
 			    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-					
+			    	alert("got fileSystem");
 			    	// get dataDirectory from filesystem (create if not exists)
 			    	fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+			    		alert("got dataDirectory");
 				    			
 				    	// get fileEntry from filesystem
 				    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
+				    		alert("got fileEntry");
 				    		
 				    		// get file from fileEntry
 				    		fileEntry.file(function(file) {
@@ -6129,7 +6133,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3211
+    , softwareVersion: 3212
 
 
     /**
@@ -16428,7 +16432,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3211'
+              value: 'Build: 3212'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24375,7 +24379,9 @@ window.newAppVersionAvailable = NO;
 M.Application.useTransitions = NO;
 
 // enable FileSystem also in Chrome
-window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+if (typeof(window.webkitStorageInfo) !== "undefined") {
+	window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+}
 
 var DigiWebApp  = DigiWebApp || {};
 
