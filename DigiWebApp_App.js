@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3277
+    , softwareVersion: 3278
 
 
     /**
@@ -16815,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3277'
+              value: 'Build: 3278'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20333,7 +20333,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	    cssClass: 'normal unselectable bigLabel'
 	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= von %>'
+	        valuePattern: '<%= name %>'
 	      , operation: function(v) {
 //			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 //			    		if (typeof myMitarbeiter !== "undefined") {
@@ -20350,7 +20350,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	    cssClass: 'normal unselectable bigLabel right'
   	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= bis %>'
+	        valuePattern: '<%= prop %>'
 	      , operation: function(v) {
 						return v;
 	      }
@@ -20740,7 +20740,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	        	, isDividedList: YES
 	    	            , contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
+	    	                , property: 'dividedList'
 	    	            }
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
 	    	        })
