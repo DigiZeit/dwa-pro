@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3275
+    , softwareVersion: 3276
 
 
     /**
@@ -16810,7 +16810,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3275'
+              value: 'Build: 3276'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20307,7 +20307,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
       isSelectable: YES
 
     //, childViews: 'grid'
-	, childViews: 'name summe'
+	, childViews: 'von bis'
 
     , events: {
         tap: {
@@ -20324,27 +20324,28 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
         }
     }
 	
-	, name: M.LabelView.design({
+	, von: M.LabelView.design({
 	    cssClass: 'normal unselectable bigLabel'
 	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= id %>'
+	        valuePattern: '<%= von %>'
 	      , operation: function(v) {
-			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
-			    		if (typeof myMitarbeiter !== "undefined") {
-			    			return myMitarbeiter.vollername();
-			        	} else {
-			        		return v;
-			        	}
+//			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
+//			    		if (typeof myMitarbeiter !== "undefined") {
+//			    			return myMitarbeiter.vollername();
+//			        	} else {
+//			        		return v;
+//			        	}
+					return v;
 	      }
 	  }
 	})
 	
-	, summe: M.LabelView.design({
+	, bis: M.LabelView.design({
 	    cssClass: 'normal unselectable bigLabel right'
   	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= id %>'
+	        valuePattern: '<%= bis %>'
 	      , operation: function(v) {
 						return v;
 	      }
