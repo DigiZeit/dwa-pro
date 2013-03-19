@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3283
+    , softwareVersion: 3284
 
 
     /**
@@ -12724,7 +12724,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}
 	}
 	
-	, berechneVonBis: function() {
+	, berechneVonBis: function(saveit) {
 		var that = this;
 		var result = [];
 		var letztesBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit);
@@ -12736,6 +12736,9 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 			letztesBis = naechstesBis;
 			//console.log("bis", letztesBis.format("HH:MM"));
 			m.set("bis", letztesBis.format("HH:MM"));
+			if (typeof savit !== "undefined" && parseBool(saveit)) {
+				m.saveSorted();
+			}
 			result.push(m);
 		});
 		return result;
@@ -16815,7 +16818,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3283'
+              value: 'Build: 3284'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20461,7 +20464,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	    	  
     	      , detailsGrid: M.GridView.design({
         		  childViews: 'details wetter'
-        		, cssClass: 'marginBottom20'
+        		, cssClass: 'marginBottom20 detailsGrid'
         		, layout: M.TWO_COLUMNS
         		, details: M.ContainerView.design({
         				  childViews: 'auftrag datum spacer1 projektleiter spacer2 startUhrzeit'

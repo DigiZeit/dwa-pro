@@ -802,10 +802,10 @@ label.ui-input-text, .ui-controlgroup-label {
  	right: 30px;
 }
 
-.bautagebuchZusammenfassungScrollView .wetterBlock .ui-grid-a .ui-block-a {
+.bautagebuchZusammenfassungScrollView .detailsGrid .ui-grid-a .ui-block-a {
 	width: 60%;
 }
-.bautagebuchZusammenfassungScrollView .wetterBlock .ui-grid-a .ui-block-b {
+.bautagebuchZusammenfassungScrollView .detailsGrid .ui-grid-a .ui-block-b {
 	width: 40%;
 }
 
