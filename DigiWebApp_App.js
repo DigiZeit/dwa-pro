@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3316
+    , softwareVersion: 3318
 
 
     /**
@@ -16410,10 +16410,10 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
 				$('#' + DigiWebApp.BautagebuchMedienDetailsPage.content.remarkInput.id)[0].blur();
 
 				if (DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("abgeschlossen")) {
-					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.content.speichernButton.id).hide();
+					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.content.grid.id).hide();
 					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.header.delButton.id).hide();
 				} else {
-					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.content.speichernButton.id).show();
+					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.content.grid.id).show();
 					$("#" + DigiWebApp.BautagebuchMedienDetailsPage.header.delButton.id).show();
 				}
 
@@ -16815,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3316'
+              value: 'Build: 3318'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24153,28 +24153,9 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	        })
     	      })
 
-    	      , medienList: M.ContainerView.design({
-	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 medienList'
-	  	    	  	, doNotOverlapAtTop: YES
-	  	    	  	, doNotOverlapAtBottom: YES
-	  	    	  	, myLabel: M.LabelView.design({
-	  	    	  		  cssClass: 'bigLabel bold'
-	  	    	  		, value: M.I18N.l('BautagebuchMedien') + ":"
-	  	    	  	})
-	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop20'
-	    	            , contentBinding: {
-	    	                  target: DigiWebApp.BautagebuchMedienListeController
-	    	                , property: 'items'
-	    	            }
-	    	            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
-	    	        })
-		      })
-
     	      , notizenList: M.ContainerView.design({
 	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 notizenList borderBottom'
+	  	    	  	, cssClass: 'marginBottom20 notizenList'
 	  	    	  	, doNotOverlapAtTop: YES
 	  	    	  	, doNotOverlapAtBottom: YES
 	  	    	  	, myLabel: M.LabelView.design({
@@ -24188,6 +24169,25 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	                , property: 'items'
 	    	            }
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchNotizenTemplateView
+	    	        })
+		      })
+		      
+    	      , medienList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 medienList borderBottom'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchMedien') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchMedienListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
 	    	        })
 		      })
 		      
@@ -25072,10 +25072,10 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
 				$('#' + DigiWebApp.BautagebuchNotizenDetailsPage.content.dataInput.id)[0].blur();
 				
 				if (DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("abgeschlossen")) {
-					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.content.speichernButton.id).hide();
+					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.content.grid.id).hide();
 					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.header.delButton.id).hide();
 				} else {
-					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.content.speichernButton.id).show();
+					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.content.grid.id).show();
 					$("#" + DigiWebApp.BautagebuchNotizenDetailsPage.header.delButton.id).show();
 				}
 
