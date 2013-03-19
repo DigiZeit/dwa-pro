@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3298
+    , softwareVersion: 3299
 
 
     /**
@@ -12693,6 +12693,8 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 
 	, finish: function(successcallback, errorcallback) {
 		var that = this;
+		that.item.set("abgeschlossen", YES);
+		that.berechneVonBis(YES);
 		if (that.save()) {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 			if (typeof(successcallback) === "function") successcallback();
@@ -16820,7 +16822,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3298'
+              value: 'Build: 3299'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23755,6 +23757,11 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				DigiWebApp.BautagebuchMaterialienListeController.init(YES);
 				DigiWebApp.BautagebuchNotizenListeController.init(YES);
 				DigiWebApp.BautagebuchMedienListeController.init(YES);
+				if (parseBool(DigiWebApp.BautagebuchZusammenfassungController.item.get("abgeschlossen"))) {
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide()
+				} else {
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show()
+				}
 			}
         }
     }
