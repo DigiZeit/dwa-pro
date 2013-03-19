@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3270
+    , softwareVersion: 3271
 
 
     /**
@@ -12586,6 +12586,43 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		
 	, ZeitbuchungenPerMitarbeiterList: null
 	
+	//If a list is a isDividedList the contentBinding is also an array of objects. The objects should have a label for the divider headline and an items array known from the listView. 
+	, dividedList = [
+	    {
+	        "label": "First Divider",
+	        "items": [
+	            {
+	                name: "List Item 1",
+	                prop: "another property"
+	            },
+	            {
+	                name: "List Item 2",
+	                prop: "another property"
+	            },
+	            {
+	                name: "List Item 3",
+	                prop: "another property"
+	            }
+	        ]
+	    },
+	    {
+	        "label": "Second Divider",
+	        "items": [
+	            {
+	                name: "List Item 1",
+	                prop: "another property"
+	            },
+	            {
+	                name: "List Item 2",
+	                prop: "another property"
+	            },
+	            {
+	                name: "List Item 3",
+	                prop: "another property"
+	            }
+	        ]
+	    }
+	]
 	, init: function(isFirstLoad) {
 		var that = this;
 		if (isFirstLoad) {
@@ -16732,7 +16769,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3270'
+              value: 'Build: 3271'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20229,7 +20266,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
       isSelectable: YES
 
     //, childViews: 'grid'
-	, childViews: 'name summe list'
+	, childViews: 'name summe'
 
     , events: {
         tap: {
@@ -20272,16 +20309,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	      }
 	  }
 	})
-	
-	, list: M.ListView.design({
-    	  cssClass: 'marginTop20'
-        , contentBinding: {
-              target: DigiWebApp.BautagebuchZusammenfassungController
-            , property: 'ZeitbuchungenPerMitarbeiterList'
-        }
-        , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterZeitenTemplateView
-    })
-	
+		
 //	, grid: M.GridView.design({
 //		
 //		  layout: M.TWO_COLUMNS
@@ -20662,9 +20690,10 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
       	    	  	})
 	    	        , list: M.ListView.design({
 	    	        	  cssClass: 'marginTop20'
+	    	        	, isDividedList: YES
 	    	            , contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
+	    	                , property: 'dividedList'
 	    	            }
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
 	    	        })
