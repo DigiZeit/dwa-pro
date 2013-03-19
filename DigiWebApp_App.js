@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3313
+    , softwareVersion: 3315
 
 
     /**
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3313'
+              value: 'Build: 3315'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24158,7 +24158,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
     	      , notizenList: M.ContainerView.design({
 	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 notizenList'
+	  	    	  	, cssClass: 'marginBottom20 notizenList borderBottom'
 	  	    	  	, doNotOverlapAtTop: YES
 	  	    	  	, doNotOverlapAtBottom: YES
 	  	    	  	, myLabel: M.LabelView.design({
@@ -24187,7 +24187,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		            	
 		            	, signaturecanvas: M.CanvasView.design({
 
-		            		  label: M.I18N.l('signature')
+		            		  label: M.I18N.l('signature') + ":"
 
 		            		, canvasWidth: 450
 		                    , canvasHeight: 320

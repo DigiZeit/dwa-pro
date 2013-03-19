@@ -810,6 +810,14 @@ label.ui-input-text, .ui-controlgroup-label {
 	padding-top: 20px;
 }
 
+.bautagebuchZusammenfassungScrollView .borderBottom
+{
+	border-bottom-color: #999;
+	border-bottom-style: solid;
+	border-bottom-width: 2px;
+	padding-bottom: 20px;
+}
+
 .bautagebuchZusammenfassungScrollView .ui-listview {
 	margin: 10px;
 }
@@ -1006,6 +1014,12 @@ li.ui-li {
 
 .ui-navbar {
     height: 47px;
+}
+
+.bautagebuchZusammenfassungScrollView .signaturecanvaslabel {
+	color: #000 !important;
+	font-weight: bold;
+	font-size: 18px !important;
 }
 
 .signaturecanvaslabel {
