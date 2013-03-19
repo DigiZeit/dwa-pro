@@ -784,6 +784,9 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchZusammenfassungScrollView .bigLabel {
 	font-size: 18px;
 }
+.bautagebuchZusammenfassungScrollView .normalLabel {
+	font-size: 12px;
+}
 .bautagebuchZusammenfassungScrollView .bold {
 	font-weight: bold;
 }

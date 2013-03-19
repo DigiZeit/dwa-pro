@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3289
+    , softwareVersion: 3290
 
 
     /**
@@ -16819,7 +16819,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3289'
+              value: 'Build: 3290'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20334,7 +20334,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
     }
 
 	, position: M.LabelView.design({
-	    	cssClass: 'normal unselectable bigLabel'
+	    	cssClass: 'normal unselectable normalLabel'
 		  , isInline: YES
 		  , computedValue: {
 		        valuePattern: '<%= positionName %>'
@@ -20345,7 +20345,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	})
 	
 	, activity: M.LabelView.design({
-		    cssClass: 'normal unselectable bigLabel'
+		    cssClass: 'normal unselectable normalLabel'
 	  	  , isInline: YES
 		  , computedValue: {
 		        valuePattern: '<%= activityName %>'
@@ -20357,7 +20357,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 		
 
 	, vonbisdauer: M.LabelView.design({
-	    cssClass: 'normal unselectable bigLabel right'
+	    cssClass: 'normal unselectable normalLabel right'
 	  , isInline: YES
 	  , computedValue: {
 	        valuePattern: '<%= vonbisdauer %>'
