@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3290
+    , softwareVersion: 3291
 
 
     /**
@@ -12782,7 +12782,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 				    	  // benutze diese Zeitbuchung
 					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1]);
 					   				var zeitbuchItem = {
-					   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + ")"
+					   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
 					   					, positionName: zeitbuch.get("positionName")
 					   					, activityName: zeitbuch.get("activityName")
 					   				}
@@ -16819,7 +16819,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3290'
+              value: 'Build: 3291'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
