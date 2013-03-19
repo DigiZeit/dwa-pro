@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3272
+    , softwareVersion: 3273
 
 
     /**
@@ -12584,10 +12584,10 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	
 	, startUhrzeit: null
 		
-	, ZeitbuchungenPerMitarbeiterList: null
+	, ZeitbuchungenPerMitarbeiterList: []
 	
 	//If a list is a isDividedList the contentBinding is also an array of objects. The objects should have a label for the divider headline and an items array known from the listView. 
-	, dividedList = [
+	, dividedList : [
 	    {
 	        "label": "First Divider",
 	        "items": [
@@ -12723,6 +12723,12 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}
 	}
 	
+	, berechneVonBis: function() {
+		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
+			
+		}
+	}
+	
 	, getZeitbuchungenPerMitarbeiterList: function() {
 		var that = this;
 		var MAList = [];
@@ -12743,7 +12749,12 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		        	}
 			  });
 		});
-		return MAList;
+		var OutList = [];
+		_.each(MAList, function(el) {
+			//var 
+			var OutElement = {"label": el.vollername, "items":[]}
+			OutList.push(OutElement);
+		});
 	}
 });
 
@@ -16769,7 +16780,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3272'
+              value: 'Build: 3273'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
