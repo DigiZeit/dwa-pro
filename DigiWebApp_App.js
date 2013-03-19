@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3276
+    , softwareVersion: 3277
 
 
     /**
@@ -12725,6 +12725,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	}
 	
 	, berechneVonBis: function() {
+		var that = this;
 		var result = [];
 		var letztesBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit);
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
@@ -12776,8 +12777,12 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 				   _.each(maIds, function(maId) {
 					   	if (maId === el.get("id")) {
 				    	  // benutze diese Zeitbuchung
-					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1])
-					   				items.push(zeitbuch);
+					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1]);
+					   				var zeitbuchItem = {
+					   					  von: zeitbuch.get("von")
+					   					, bis: zeitbuch.get("bis")
+					   				}
+					   				items.push(zeitbuchItem);
 				      	}
 				   });
 			});
@@ -16810,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3276'
+              value: 'Build: 3277'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
