@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3284
+    , softwareVersion: 3287
 
 
     /**
@@ -16818,7 +16818,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3284'
+              value: 'Build: 3287'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20315,7 +20315,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
       isSelectable: NO
 
     //, childViews: 'grid'
-	, childViews: 'von bis'
+	, childViews: 'position activity von bis'
 
     , events: {
         tap: {
@@ -20331,7 +20331,30 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 			}
         }
     }
+
+	, position: M.LabelView.design({
+	    	cssClass: 'normal unselectable bigLabel right'
+		  , isInline: YES
+		  , computedValue: {
+		        valuePattern: '<%= positionName %>'
+		      , operation: function(v) {
+					return v;
+	      }
+	  }
+	})
 	
+	, activity: M.LabelView.design({
+		    cssClass: 'normal unselectable bigLabel right'
+	  	  , isInline: YES
+		  , computedValue: {
+		        valuePattern: '<%= activityName %>'
+		      , operation: function(v) {
+					return v;
+		      }
+		  }
+	})
+		
+
 	, von: M.LabelView.design({
 	    cssClass: 'normal unselectable bigLabel'
 	  , isInline: YES

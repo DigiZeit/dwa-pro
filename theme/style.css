@@ -802,11 +802,19 @@ label.ui-input-text, .ui-controlgroup-label {
  	right: 30px;
 }
 
-.bautagebuchZusammenfassungScrollView .detailsGrid .ui-grid-a .ui-block-a {
-	width: 60%;
+.detailsGrid ..ui-block-a {
+	width: 65%;
 }
-.bautagebuchZusammenfassungScrollView .detailsGrid .ui-grid-a .ui-block-b {
-	width: 40%;
+.detailsGrid .ui-block-b {
+	width: 35%;
+}
+
+.wetterBlock .ui-block-a {
+	width: 75% !important;
+}
+.wetterBlock .ui-block-b {
+	width: 25% !important;
+	text-align: right;
 }
 
 /* IOS LIKE FOOTER / TABBAR */
