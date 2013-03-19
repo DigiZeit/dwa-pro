@@ -782,6 +782,10 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchZusammenfassungScrollView .bold {
 	font-weight: bold;
 }
+.bautagebuchZusammenfassungScrollView .right {
+	right: 60px;
+	position: absolute;
+}
 
 .bautagebuchZusammenfassungScrollView .zeitenSummeList {
 	border-top-color: #999;
