@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3307
+    , softwareVersion: 3309
 
 
     /**
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3307'
+              value: 'Build: 3309'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23753,7 +23753,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).show();
 					// init canvas
 					var sigPadOptions = {
-							    bgColour : '#fff'
+							    bgColour : '#aaa'
 							  , lineTop: 300
 							  , drawOnly : true
 							};
@@ -23792,8 +23792,9 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
             , anchorLocation: M.LEFT
             , events: {
                 tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchBautageberichtDetailsPageTransition'
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchBautageberichtDetailsPageTransition'
+        			action: function() {history.back();}
                 }
             }
         })
