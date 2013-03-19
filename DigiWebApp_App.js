@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3281
+    , softwareVersion: 3282
 
 
     /**
@@ -16815,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3281'
+              value: 'Build: 3282'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20541,7 +20541,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20563,7 +20563,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20585,7 +20585,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20622,7 +20622,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20665,7 +20665,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController
@@ -20702,7 +20702,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
               				})
                   			, myValue: M.LabelView.design({
 	          				      value: ''
-	          				    , cssClass: ''
+	          				    , cssClass: 'right'
 							    , computedValue: {
 							          contentBinding: {
 							              target: DigiWebApp.BautagebuchZusammenfassungController

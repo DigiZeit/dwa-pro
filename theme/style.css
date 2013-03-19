@@ -785,6 +785,7 @@ label.ui-input-text, .ui-controlgroup-label {
 .bautagebuchZusammenfassungScrollView .right {
 	right: 60px;
 	position: absolute;
+	text-align: right;
 }
 
 .bautagebuchZusammenfassungScrollView .zeitenSummeList {
@@ -798,8 +799,7 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 .bautagebuchZusammenfassungScrollView .wetterBlock {
- 	right: -17%;
-	position: absolute;
+ 	right: 30px;
 }
 
 /* IOS LIKE FOOTER / TABBAR */
