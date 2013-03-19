@@ -383,6 +383,7 @@ M.I18N.de_de = {
 	, BautagebuchSendeNotizen: "Sende Notizen"
 	, BautagebuchSendeMedien: "Sende Medien"
 	, BautagebuchZusammenfassung: "Zusammenfassung"
+	, BautagebuchLeistungsnachweis: "Leistungsnachweis"
     // Ende::Bautagebuch
 	
 };
