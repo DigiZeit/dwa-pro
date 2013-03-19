@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3279
+    , softwareVersion: 3280
 
 
     /**
@@ -16815,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3279'
+              value: 'Build: 3280'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20333,7 +20333,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	    cssClass: 'normal unselectable bigLabel'
 	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= name %>'
+	        valuePattern: '<%= von %>'
 	      , operation: function(v) {
 //			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 //			    		if (typeof myMitarbeiter !== "undefined") {
@@ -20350,7 +20350,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 	    cssClass: 'normal unselectable bigLabel right'
   	  , isInline: YES
 	  , computedValue: {
-	        valuePattern: '<%= prop %>'
+	        valuePattern: '<%= bis %>'
 	      , operation: function(v) {
 						return v;
 	      }
@@ -20734,7 +20734,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
       	    	  	, doNotOverlapAtTop: YES
       	    	  	, doNotOverlapAtBottom: YES
       	    	  	, myLabel: M.LabelView.design({
-      	    	  		  cssClass: 'bigLabel'
+      	    	  		  cssClass: 'bigLabel bold'
       	    	  		, value: M.I18N.l('BautagebuchZeiten') + ":"
       	    	  	})
 	    	        , list: M.ListView.design({
@@ -20742,7 +20742,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	        	, isDividedList: YES
 	    	            , contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-	    	                , property: 'dividedList'
+	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
 	    	            }
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
 	    	        })
