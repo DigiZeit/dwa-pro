@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3312
+    , softwareVersion: 3313
 
 
     /**
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3312'
+              value: 'Build: 3313'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17811,8 +17811,8 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 
             		  label: M.I18N.l('signature')
 
-            		, canvasWidth: 290
-                    , canvasHeight: 120
+            		, canvasWidth: 450
+                    , canvasHeight: 320
                 	
                     , render: function() {
                     	if (this.label) {
