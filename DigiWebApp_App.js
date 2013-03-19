@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3291
+    , softwareVersion: 3292
 
 
     /**
@@ -16819,7 +16819,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3291'
+              value: 'Build: 3292'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20316,7 +20316,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
       isSelectable: NO
 
     //, childViews: 'grid'
-	, childViews: 'position activity vonbis'
+	, childViews: 'position activity vonbisdauer'
 
     , events: {
         tap: {
