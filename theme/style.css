@@ -799,12 +799,20 @@ label.ui-input-text, .ui-controlgroup-label {
 	text-decoration: underline;
 }
 
-.bautagebuchZusammenfassungScrollView .zeitenSummeList {
+.bautagebuchZusammenfassungScrollView .leistungsnachweisList {
 	border-top-color: #999;
 	border-top-style: solid;
 	border-top-width: 2px;
 	padding-top: 20px;
 }
+
+.bautagebuchZusammenfassungScrollView .materialienList {
+	border-top-color: #999;
+	border-top-style: solid;
+	border-top-width: 2px;
+	padding-top: 20px;
+}
+
 .bautagebuchZusammenfassungScrollView .ui-listview {
 	margin: 10px;
 }
@@ -821,10 +829,10 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 .wetterBlock .ui-block-a {
-	width: 75% !important;
+	width: 70% !important;
 }
 .wetterBlock .ui-block-b {
-	width: 25% !important;
+	width: 30% !important;
 	text-align: right;
 }
 

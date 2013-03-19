@@ -383,6 +383,7 @@ M.I18N.en_us = {
 	, BautagebuchSendeNotizen: "Sending notes"
 	, BautagebuchSendeMedien: "Sending mediafiles"
 	, BautagebuchZusammenfassung: "Summary"
+	, BautagebuchLeistungsnachweis: "Activity confirmation"
     // Ende::Bautagebuch
 
 };
