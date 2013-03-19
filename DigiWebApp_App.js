@@ -4944,7 +4944,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
     		}
     	}
     	if (startTransfer === YES || DigiWebApp.DashboardController.lastTimestampDatatransfer === null) {
-    		DigiWebApp.DashboardController.set("lastTimestampDatatransfer") = D8.now().getTimestamp();
+    		DigiWebApp.DashboardController.set("lastTimestampDatatransfer", D8.now().getTimestamp());
 	        var bookings = DigiWebApp.Booking.find();
 	        if(bookings.length > 0) {
 	            DigiWebApp.BookingController.sendBookings(isClosingDay, true);
@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3264
+    , softwareVersion: 3265
 
 
     /**
@@ -16732,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3264'
+              value: 'Build: 3265'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
