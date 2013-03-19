@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3273
+    , softwareVersion: 3274
 
 
     /**
@@ -12726,7 +12726,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	, berechneVonBis: function() {
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
 			
-		}
+		});
 	}
 	
 	, getZeitbuchungenPerMitarbeiterList: function() {
@@ -16780,7 +16780,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3273'
+              value: 'Build: 3274'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
