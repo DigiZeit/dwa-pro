@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3303
+    , softwareVersion: 3304
 
 
     /**
@@ -12629,9 +12629,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 
 	, save: function(successcallback, errorcallback) {
 		var that = this;
-	
-		// alle geladenen Zeitbuchungen speichern:
-		
+			
 		if (that.item.saveSorted()) {		
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 			if (typeof(successcallback) === "function") successcallback();
@@ -12656,15 +12654,39 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 
 	, finish: function(successcallback, errorcallback) {
 		var that = this;
+
 		that.item.set("abgeschlossen", YES);
 		that.berechneVonBis(YES);
-		if (that.save()) {
-			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) === "function") successcallback();
-			return true;
+
+		var unterschriftString = "";
+    	// Feature 405 (Unterschrift)
+		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+			//unterschriftImageString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureImage();
+    		unterschriftString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureString();
+			//var unterschriftRawValue = $('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.signatureform.signaturecanvas.id).val();
+    	
+			//console.log(DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI);
+			//console.log(unterschriftImageString);
+    		that.item.set('fileType', DigiWebApp.ApplicationController.CONSTTextFiletype);
+    		that.item.saveToFile(unterschriftString, function(){
+    			if (that.save()) {
+    				DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+    				if (typeof(successcallback) === "function") successcallback();
+    				return true;
+    			} else {
+    				if (typeof(errorcallback) === "function") errorcallback();
+    				return false;
+    			}
+    		});
 		} else {
-			if (typeof(errorcallback) === "function") errorcallback();
-			return false;
+			if (that.save()) {
+				DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+				if (typeof(successcallback) === "function") successcallback();
+				return true;
+			} else {
+				if (typeof(errorcallback) === "function") errorcallback();
+				return false;
+			}
 		}
 	}
 
@@ -16785,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3303'
+              value: 'Build: 3304'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17611,7 +17633,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 					// init canvas
 					var sigPadOptions = {
 							    bgColour : '#fff'
-							  , lineTop: 110
+							  , lineTop: 300
 							  , drawOnly : true
 							};
 					DigiWebApp.EditTimeDataPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
@@ -23725,9 +23747,36 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				} else {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show()
 				}
+				
+        		// Feature 405 (Unterschrift)
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.id).show();
+					// init canvas
+					var sigPadOptions = {
+							    bgColour : '#fff'
+							  , lineTop: 300
+							  , drawOnly : true
+							};
+					DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
+        		} else {
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.id).hide();
+        		}
+        		// Feature 405 (Unterschrift)
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+        			// load signature
+        			DigiWebApp.BautagebuchZusammenfassungController.item.readFromFile(function(fileContent){
+        				if (fileContent && (fileContent !== "")) {
+       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
+        				}
+        			});
+        		}
+
+
 			}
         }
     }
+
+	, signaturePadAPI: null
 
     , childViews: 'header content'
 
@@ -24120,6 +24169,45 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    	            , listItemTemplateView: DigiWebApp.BautagebuchNotizenTemplateView
 	    	        })
 		      })
+		      
+	          , signature: M.ContainerView.design({
+		        	
+		        	  childViews: 'signatureform'
+		        		  
+		            , cssClass: 'signaturecanvas marginTop20 marginBottom20'
+
+		        	, signatureform: M.FormView.design({
+		            	
+		            	  childViews: 'signaturecanvas'
+		            	
+		            	, signaturecanvas: M.CanvasView.design({
+
+		            		  label: M.I18N.l('signature')
+
+		            		, canvasWidth: 450
+		                    , canvasHeight: 320
+		                	
+		                    , render: function() {
+		                    	if (this.label) {
+		                    		this.html += '<label for="' + this.id + '" class="signaturecanvaslabel">' + this.label + '</label>';
+		                    	}
+		    					this.html += '  <div id="' + this.id + '_container" class="sig sigWrapper">';
+		        				this.html += '    <canvas id="' + this.id + '_canvas" class="pad" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px"></canvas>';
+		        				this.html += '    <input id="' + this.id + '" type="hidden" name="output" class="output">';
+		        				this.html += '  </div>';
+		                    	return this.html;
+		                	}
+		    	        })
+		                	
+		                , render: function() {
+		            		this.html += '<form method="post" action="" class="sigPad">';
+		                	this.renderChildViews();
+		    				this.html += '</form>';
+		                	return this.html;
+		            	}
+		            })
+		      })
+
 
 	    })
 	
