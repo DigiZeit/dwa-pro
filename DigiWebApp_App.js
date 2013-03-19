@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3274
+    , softwareVersion: 3275
 
 
     /**
@@ -12632,7 +12632,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		
 	}
 	
-	, load: function(myItem) {
+	, load: function(myItem, readOnly) {
 		var that = this;
 		
 		that.set("item", myItem); 
@@ -12661,6 +12661,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		that.setPositionen(myItem.get("orderId"));
 		
 		that.set("ZeitbuchungenPerMitarbeiterList", that.getZeitbuchungenPerMitarbeiterList());
+		
 	}
 
 	, save: function(successcallback, errorcallback) {
@@ -12724,15 +12725,32 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	}
 	
 	, berechneVonBis: function() {
+		var result = [];
+		var letztesBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchBautageberichtDetailsController.startUhrzeit);
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
-			
+			//console.log("von", letztesBis.format("HH:MM"));
+			m.set("von", letztesBis.format("HH:MM"));
+			var dauer = m.get("dauer");
+			var naechstesBis = letztesBis.addHours(parseInt(dauer.split(":")[0])).addMinutes(parseInt(dauer.split(":")[1]));
+			letztesBis = naechstesBis;
+			//console.log("bis", letztesBis.format("HH:MM"));
+			m.set("bis", letztesBis.format("HH:MM"));
+			result.push(m);
 		});
+		return result;
 	}
 	
 	, getZeitbuchungenPerMitarbeiterList: function() {
 		var that = this;
 		var MAList = [];
-		_.each(DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}), function(m) {
+		var zeitbuchungenList = [];
+		if (parseBool(that.item.get("abgeschlossen")) || !DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
+			// Zeitbuchungen wurden bereits berechnet oder es wird nicht in Stunden gebucht (sondern mit Von/Bis)
+			zeitbuchungenList = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}});
+		} else {
+			zeitbuchungenList = that.berechneVonBis();
+		}
+		_.each(zeitbuchungenList, function(m) {
 			  var zeitbuchungMAIds = JSON.parse(m.get("mitarbeiterIds"));
 			  _.each(zeitbuchungMAIds, function(el) {
 	        		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el}})[0];
@@ -12749,12 +12767,24 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		        	}
 			  });
 		});
-		var OutList = [];
+		var result = [];
 		_.each(MAList, function(el) {
-			//var 
-			var OutElement = {"label": el.vollername, "items":[]}
-			OutList.push(OutElement);
+			var items = [];
+			var mySumme = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " 00:00");
+			_.each(zeitbuchungenList,function(zeitbuch) {
+				   var maIds = JSON.parse(zeitbuch.get("mitarbeiterIds"));
+				   _.each(maIds, function(maId) {
+					   	if (maId === el.get("id")) {
+				    	  // benutze diese Zeitbuchung
+					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1])
+					   				items.push(zeitbuch);
+				      	}
+				   });
+			});
+			var maItem = {"label": el.vollername() + ": " + mySumme.format("HH:MM") + "h", "items":items}
+			result.push(maItem);
 		});
+		return result;
 	}
 });
 
@@ -16780,7 +16810,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3274'
+              value: 'Build: 3275'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
