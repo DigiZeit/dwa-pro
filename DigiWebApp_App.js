@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3297
+    , softwareVersion: 3298
 
 
     /**
@@ -16452,9 +16452,9 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
             , anchorLocation: M.LEFT
             , events: {
                 tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchMedienListePageTransition'
-        			//action: function() {history.back();}
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchMedienListePageTransition'
+        			action: function() {history.back();}
                 }
             }
         })
@@ -16820,7 +16820,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3297'
+              value: 'Build: 3298'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18378,9 +18378,9 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
             , anchorLocation: M.LEFT
             , events: {
                 tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchMaterialienListePageTransition'
-        			//action: function() {history.back();}
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchMaterialienListePageTransition'
+        			action: function() {history.back();}
                 }
             }
         })
@@ -25020,9 +25020,9 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
             , anchorLocation: M.LEFT
             , events: {
                 tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchNotizenListePageTransition'
-        			//action: function() {history.back();}
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchNotizenListePageTransition'
+        			action: function() {history.back();}
                 }
             }
         })
