@@ -799,14 +799,11 @@ label.ui-input-text, .ui-controlgroup-label {
 	text-decoration: underline;
 }
 
-.bautagebuchZusammenfassungScrollView .leistungsnachweisList {
-	border-top-color: #999;
-	border-top-style: solid;
-	border-top-width: 2px;
-	padding-top: 20px;
-}
-
-.bautagebuchZusammenfassungScrollView .materialienList {
+  .bautagebuchZusammenfassungScrollView .leistungsnachweisList
+, .bautagebuchZusammenfassungScrollView .materialienList
+, .bautagebuchZusammenfassungScrollView .medienList
+, .bautagebuchZusammenfassungScrollView .notizenList
+{
 	border-top-color: #999;
 	border-top-style: solid;
 	border-top-width: 2px;

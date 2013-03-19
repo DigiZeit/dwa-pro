@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3296
+    , softwareVersion: 3297
 
 
     /**
@@ -16454,6 +16454,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
                 tap: {
                       target: DigiWebApp.NavigationController
                     , action: 'backToBautagebuchMedienListePageTransition'
+        			//action: function() {history.back();}
                 }
             }
         })
@@ -16819,7 +16820,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3296'
+              value: 'Build: 3297'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18379,6 +18380,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
                 tap: {
                       target: DigiWebApp.NavigationController
                     , action: 'backToBautagebuchMaterialienListePageTransition'
+        			//action: function() {history.back();}
                 }
             }
         })
@@ -23737,6 +23739,8 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
 
 m_require('app/views/BautagebuchZusammenfassungMitarbeiterSummeTemplateView');
 m_require('app/views/BautagebuchMaterialienTemplateView');
+m_require('app/views/BautagebuchNotizenTemplateView');
+m_require('app/views/BautagebuchMedienTemplateView');
 
 DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
@@ -23749,6 +23753,8 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("marginBottom20");
 				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("detailsGrid");
 				DigiWebApp.BautagebuchMaterialienListeController.init(YES);
+				DigiWebApp.BautagebuchNotizenListeController.init(YES);
+				DigiWebApp.BautagebuchMedienListeController.init(YES);
 			}
         }
     }
@@ -23795,7 +23801,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
           childViews: 'container grid'
         	  
 	    , container: M.ContainerView.design({
-    	    	childViews: 'detailsGrid leistungsnachweisList materialienList'
+    	    	childViews: 'detailsGrid leistungsnachweisList materialienList notizenList medienList'
     	      , cssClass: 'bautagebuchZusammenfassungScrollView'
     	    	  
     	      , detailsGrid: M.GridView.design({
@@ -24089,23 +24095,61 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	      })
 
     	      , materialienList: M.ContainerView.design({
-  	    	  	  childViews: 'myLabel list'
-  	    	  	, cssClass: 'marginBottom20 materialienList'
-  	    	  	, doNotOverlapAtTop: YES
-  	    	  	, doNotOverlapAtBottom: YES
-  	    	  	, myLabel: M.LabelView.design({
-  	    	  		  cssClass: 'bigLabel bold'
-  	    	  		, value: M.I18N.l('BautagebuchMaterialien') + ":"
-  	    	  	})
-    	        , list: M.ListView.design({
-    	        	  cssClass: 'marginTop20'
-    	            , contentBinding: {
-    	                  target: DigiWebApp.BautagebuchMaterialienListeController
-    	                , property: 'items'
-    	            }
-    	            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
-    	        })
-	      })
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 materialienList'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchMaterialien') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchMaterialienListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
+	    	        })
+    	      })
+
+    	      , medienList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 medienList'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchMedien') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchMedienListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
+	    	        })
+		      })
+
+    	      , notizenList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 notizenList'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchNotizen') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchNotizenListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchNotizenTemplateView
+	    	        })
+		      })
 
 	    })
 	
@@ -24978,6 +25022,7 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
                 tap: {
                       target: DigiWebApp.NavigationController
                     , action: 'backToBautagebuchNotizenListePageTransition'
+        			//action: function() {history.back();}
                 }
             }
         })
