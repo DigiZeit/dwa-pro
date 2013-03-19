@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3304
+    , softwareVersion: 3305
 
 
     /**
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3304'
+              value: 'Build: 3305'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23750,7 +23750,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				
         		// Feature 405 (Unterschrift)
         		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
-        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.id).show();
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).show();
 					// init canvas
 					var sigPadOptions = {
 							    bgColour : '#fff'
@@ -23759,7 +23759,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 							};
 					DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
         		} else {
-        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.id).hide();
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).hide();
         		}
         		// Feature 405 (Unterschrift)
         		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
