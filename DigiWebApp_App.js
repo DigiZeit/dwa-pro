@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3299
+    , softwareVersion: 3301
 
 
     /**
@@ -12586,43 +12586,6 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		
 	, ZeitbuchungenPerMitarbeiterList: []
 				
-	//If a list is a isDividedList the contentBinding is also an array of objects. The objects should have a label for the divider headline and an items array known from the listView. 
-	, dividedList : [
-	    {
-	        "label": "First Divider",
-	        "items": [
-	            {
-	                name: "List Item 1",
-	                prop: "another property"
-	            },
-	            {
-	                name: "List Item 2",
-	                prop: "another property"
-	            },
-	            {
-	                name: "List Item 3",
-	                prop: "another property"
-	            }
-	        ]
-	    },
-	    {
-	        "label": "Second Divider",
-	        "items": [
-	            {
-	                name: "List Item 1",
-	                prop: "another property"
-	            },
-	            {
-	                name: "List Item 2",
-	                prop: "another property"
-	            },
-	            {
-	                name: "List Item 3",
-	                prop: "another property"
-	            }
-	        ]
-	    }
-	]
 	, init: function(isFirstLoad) {
 		var that = this;
 		if (isFirstLoad) {
@@ -16822,7 +16785,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3299'
+              value: 'Build: 3301'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22942,11 +22905,11 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 			    var view_modelId = view.modelId;
 			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
 					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
 						if (selectedItem.get("abgeschlossen") === YES) {
 							DigiWebApp.BautagebuchZusammenfassungController.load(selectedItem);
 							DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
 						} else {
-							DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
 							DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
 						}
 					}
@@ -23633,7 +23596,7 @@ DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 	        valuePattern: '<%= einheit %>'
 	      , operation: function(v) {
 					if (v !== "" && v !== null) {
-						return " " + v + ".";
+						return " " + v;
 					} else {
 						return "";
 					}
