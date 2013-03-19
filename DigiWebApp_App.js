@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3311
+    , softwareVersion: 3312
 
 
     /**
@@ -12723,7 +12723,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 			letztesBis = naechstesBis;
 			//console.log("bis", letztesBis.format("HH:MM"));
 			m.set("bis", letztesBis.format("HH:MM"));
-			if (typeof savit !== "undefined" && parseBool(saveit)) {
+			if (typeof saveit !== "undefined" && parseBool(saveit)) {
 				m.saveSorted();
 			}
 			result.push(m);
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3311'
+              value: 'Build: 3312'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
