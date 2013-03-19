@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3301
+    , softwareVersion: 3302
 
 
     /**
@@ -12628,8 +12628,8 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 	}
 
 	, save: function(successcallback, errorcallback) {
-		that.item.set("abgeschlossen", YES);
-		
+		var that = this;
+	
 		// alle geladenen Zeitbuchungen speichern:
 		
 		if (that.item.saveSorted()) {		
@@ -16785,7 +16785,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3301'
+              value: 'Build: 3302'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
