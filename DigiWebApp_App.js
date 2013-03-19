@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3309
+    , softwareVersion: 3310
 
 
     /**
@@ -16807,7 +16807,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3309'
+              value: 'Build: 3310'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24193,7 +24193,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		                    		this.html += '<label for="' + this.id + '" class="signaturecanvaslabel">' + this.label + '</label>';
 		                    	}
 		    					this.html += '  <div id="' + this.id + '_container" class="sig sigWrapper">';
-		        				this.html += '    <canvas id="' + this.id + '_canvas" class="pad" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px"></canvas>';
+		        				this.html += '    <canvas id="' + this.id + '_canvas" class="pad" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" style="border-color: #000; border: 1px solid #ccc;"></canvas>';
 		        				this.html += '    <input id="' + this.id + '" type="hidden" name="output" class="output">';
 		        				this.html += '  </div>';
 		                    	return this.html;

@@ -1032,6 +1032,10 @@ li.ui-li {
    user-select: none;
 }
 
+.sigWrapper.current {
+	border-color: transparent !important;
+}
+
 .tmp-dialog {
 	background-color: #003366; 
 }
