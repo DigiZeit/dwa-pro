@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3280
+    , softwareVersion: 3281
 
 
     /**
@@ -16815,7 +16815,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3280'
+              value: 'Build: 3281'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20309,7 +20309,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 
 DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemView.design({
 
-      isSelectable: YES
+      isSelectable: NO
 
     //, childViews: 'grid'
 	, childViews: 'von bis'
@@ -20531,7 +20531,8 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						})
         	    })
         	    , wetter: M.ContainerView.design({
-        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'        				
+        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
+        				, cssClass: 'wetterBlock'
               			, temperatur: M.GridView.design({
               				  layout: M.TWO_COLUMNS
               				, childViews: 'myLabel myValue'
