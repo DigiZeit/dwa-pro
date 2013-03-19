@@ -6235,7 +6235,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3265
+    , softwareVersion: 3266
 
 
     /**
@@ -16732,7 +16732,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3265'
+              value: 'Build: 3266'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20228,7 +20228,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 
       isSelectable: YES
 
-    , childViews: 'vorname'
+    , childViews: 'name summe'
 
     , events: {
         tap: {
@@ -20245,16 +20245,26 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
         }
     }
 	
-	, vorname: M.LabelView.design({
+	, summe: M.LabelView.design({
 	    cssClass: 'normal unselectable bigLabel'
 	  , computedValue: {
-	        valuePattern: '<%= vorname %>'
+	        valuePattern: '<%= id %>'
 	      , operation: function(v) {
 						return v;
           }
 	  }
 	})
 	
+	, name: M.LabelView.design({
+	    cssClass: 'normal unselectable bigLabel'
+	  , computedValue: {
+	        valuePattern: '<%= id %>'
+	      , operation: function(v) {
+						return v;
+          }
+	  }
+	})
+
 });
 
 
@@ -20601,7 +20611,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
       	    	  	, cssClass: 'marginBottom20 zeitenSummeList'
       	    	  	, myLabel: M.LabelView.design({
       	    	  		  cssClass: 'bigLabel'
-      	    	  		, value: M.I18N.l('BautagebuchZeiten')
+      	    	  		, value: M.I18N.l('BautagebuchZeiten') + ":"
       	    	  	})
 	    	        , list: M.ListView.design({
 	    	        	  isCountedList: YES
