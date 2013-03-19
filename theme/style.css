@@ -809,11 +809,15 @@ label.ui-input-text, .ui-controlgroup-label {
 	margin: 10px;
 }
 
+.bautagebuchZusammenfassungScrollView .wetterBlock {
+ 	right: 30px;
+}
+
 .detailsGrid .ui-block-a {
-	width: 65% !important;
+	width: 65%;
 }
 .detailsGrid .ui-block-b {
-	width: 35% !important;
+	width: 35%;
 }
 
 .wetterBlock .ui-block-a {
