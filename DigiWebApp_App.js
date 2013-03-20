@@ -3488,6 +3488,10 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
         isRequired: NO
     })
 
+    , data: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
     , setRemark: function(v) {
         this.set('remark', v);
     }
@@ -5566,7 +5570,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					if (typeof(successCallback) === "function") successCallback(data, msg, request);
 					return true;
 				} else {
-					if (typeof(errorCallback) === "function") errorCallback();
+					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+					if (typeof(errorCallback) === "function") errorCallback("deleteSorted");
 					return false;
 				}
 			} else {
@@ -6539,7 +6544,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3368
+    , softwareVersion: 3369
 
 
     /**
@@ -17143,7 +17148,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3368'
+              value: 'Build: 3369'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
