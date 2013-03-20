@@ -1310,6 +1310,11 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
         isRequired: NO
     })
 
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
     , von: M.Model.attr('String', {
         isRequired: NO
     })
@@ -5329,8 +5334,14 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		
 		var items = [];
-		_.each(DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
-			items.push(el.record);
+		_.each(DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: item.m_id}), function(el) {
+			_.each(JSON.parse(item.get("mitarbeiterIds")), function(maId) {
+				var zeitbuch = DigiWebApp.BautagebuchZeitbuchung.createRecord({
+					  bautagesberichtId: item.m_id
+				});
+				//zeitbuch.set("", );
+				items.push(zeitbuch.record);				
+			});
 		});
 		
 		var data = {"medien": items}
@@ -5350,7 +5361,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: item.m_id}), function(el) {
 			items.push(el.record);
 		});
 		
@@ -5371,7 +5382,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: item.m_id}), function(el) {
 			items.push(el.record);
 		});
 		
@@ -5391,6 +5402,13 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		// item ist ein Bautagesbericht
 		
 		var that = this;
+		var items = [];
+		_.each(DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: item.m_id}), function(el) {
+			items.push(el.record);
+		});
+		
+		var data = {"medien": items}
+		
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 			
@@ -6362,7 +6380,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3332
+    , softwareVersion: 3333
 
 
     /**
@@ -16944,7 +16962,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3332'
+              value: 'Build: 3333'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
