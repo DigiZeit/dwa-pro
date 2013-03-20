@@ -5336,12 +5336,12 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 								that.sendeBautagesberichtFertig(
 										item
 									  , that.successReturnCallback
-									  , that.errorReturnCallback);
-							}, that.errorReturnCallback);
-						}, that.errorReturnCallback);
-					}, that.errorReturnCallback);
-				}, that.errorReturnCallback);
-			}, that.errorReturnCallback);
+									  , that.errorReturnCallback("sendeBautagesberichtFertig"));
+							}, that.errorReturnCallback("sendeMedien"));
+						}, that.errorReturnCallback("sendeNotizen"));
+					}, that.errorReturnCallback("sendeMaterialbuchungen"));
+				}, that.errorReturnCallback("sendeZeitbuchungen"));
+			}, that.errorReturnCallback("sendeBautagesbericht"));
 		});
 	}
 	
@@ -5500,7 +5500,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	    		
     			console.log('loading mediaFile for mediaFilesIndex ' + mediaFilesIndex);
     			if (el.hasFileName()) {
-	    			console.log(el.get('fileName'));
+	    			console.log("fileName: " + el.get('fileName'));
 					// load signature into el
 					el.readFromFile(function(fileContent){
 						//console.log("fileContent: " + fileContent);
@@ -5548,7 +5548,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				// scheint alles gut gengen zu sein
 				if (item.deleteSorted()) {
 					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-					if (typeof(successCallback) === "function") successCallback();
+					if (typeof(successCallback) === "function") successCallback(data, msg, request);
 					return true;
 				} else {
 					if (typeof(errorCallback) === "function") errorCallback();
@@ -6524,7 +6524,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3361
+    , softwareVersion: 3362
 
 
     /**
@@ -17128,7 +17128,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3361'
+              value: 'Build: 3362'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
