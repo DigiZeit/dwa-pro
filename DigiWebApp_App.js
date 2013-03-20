@@ -5553,6 +5553,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		that.set("activityId", myItem.get("activityId"));
 		that.set("activityName", myItem.get("activityName"));
 		that.set("mitarbeiterIds", JSON.parse(myItem.get("mitarbeiterIds")));
+		that.set("verbuchen", myItem.get("verbuchen"));
 		that.set("von", myItem.get("von"));
 		that.set("timeStampStart", myItem.get("timeStampStart"));
 		that.set("bis", myItem.get("bis"));
@@ -5604,6 +5605,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		that.item.set("activityId", that.activityId);
 		that.item.set("activityName", that.activityName);
 		that.item.set("mitarbeiterIds", JSON.stringify(that.mitarbeiterIds));
+		that.item.set("verbuchen", that.verbuchen);
 		that.item.set("von", that.von);
 		that.item.set("timeStampStart", that.timeStampStart);
 		that.item.set("bis", that.bis);
@@ -6229,7 +6231,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3325
+    , softwareVersion: 3326
 
 
     /**
@@ -16811,7 +16813,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3325'
+              value: 'Build: 3326'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
