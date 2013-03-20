@@ -5427,7 +5427,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 
 	, sendeMedien: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
-		
+		var that = this;
+
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
 
 		var proceed = function(mediaFiles) {
@@ -5444,8 +5445,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				
 				if (request.status === 200) {
 					// scheint alles gut gengen zu sein
-					var that = this;
-					if (that.item.deleteSorted()) {
+					if (item.deleteSorted()) {
 						DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 						if (typeof(successCallback) === "function") successCallback();
 						return true;
@@ -6567,7 +6567,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3347
+    , softwareVersion: 3348
 
 
     /**
@@ -17171,7 +17171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3347'
+              value: 'Build: 3348'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
