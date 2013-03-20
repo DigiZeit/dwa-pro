@@ -2043,7 +2043,7 @@ DigiWebApp.Booking = M.Model.create({
 	
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("saveToFileError: errorCallback is not a function");
+			//console.error("saveToFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
@@ -2155,7 +2155,7 @@ DigiWebApp.Booking = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("readFromFileError: errorCallback is not a function");
+			//console.error("readFromFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
@@ -2257,7 +2257,7 @@ DigiWebApp.Booking = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("deleteFileError: errorCallback is not a function");
+			//console.error("deleteFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -2444,7 +2444,7 @@ DigiWebApp.MediaFile = M.Model.create({
 	
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("saveToFileError: errorCallback is not a function");
+			//console.error("saveToFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
@@ -2558,7 +2558,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("readFromFileError: errorCallback is not a function");
+			//console.error("readFromFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
@@ -2660,7 +2660,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("deleteFileError: errorCallback is not a function");
+			//console.error("deleteFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -2848,7 +2848,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("saveToFileError: errorCallback is not a function");
+			//console.error("saveToFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
@@ -2960,7 +2960,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("readFromFileError: errorCallback is not a function");
+			//console.error("readFromFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
@@ -3062,7 +3062,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("deleteFileError: errorCallback is not a function");
+			//console.error("deleteFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -3524,7 +3524,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("saveToFileError: errorCallback is not a function");
+			//console.error("saveToFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
@@ -3636,7 +3636,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("readFromFileError: errorCallback is not a function");
+			//console.error("readFromFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
@@ -3738,7 +3738,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
-			console.error("deleteFileError: errorCallback is not a function");
+			//console.error("deleteFileError: errorCallback is not a function");
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -5339,7 +5339,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		
 		item.readFromFile(function(result){
-			item.set("unterschrift", result);
+			item.set("unterschrift", JSON.parse(result));
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
 										
@@ -5348,7 +5348,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				
 			};
 			that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
-		});
+		},function(){});
 		
 	}
 
@@ -6517,7 +6517,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3343
+    , softwareVersion: 3344
 
 
     /**
@@ -17121,7 +17121,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3343'
+              value: 'Build: 3344'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
