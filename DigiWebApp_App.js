@@ -2285,7 +2285,8 @@ DigiWebApp.Booking = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove(successCallback, errorCallback);
+					    		fileEntry.remove();
+					    		successCallback();
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -2688,7 +2689,8 @@ DigiWebApp.MediaFile = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove(successCallback, errorCallback);
+					    		fileEntry.remove();
+					    		successCallback();
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -3098,7 +3100,8 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove(successCallback, errorCallback);
+					    		fileEntry.remove();
+					    		successCallback();
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -3778,7 +3781,8 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove(successCallback, errorCallback);
+					    		fileEntry.remove();
+					    		successCallback();
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -6544,7 +6548,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3369
+    , softwareVersion: 3370
 
 
     /**
@@ -17148,7 +17152,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3369'
+              value: 'Build: 3370'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
