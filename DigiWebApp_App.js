@@ -5336,12 +5336,12 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 								that.sendeBautagesberichtFertig(
 										item
 									  , that.successReturnCallback
-									  , that.errorReturnCallback("sendeBautagesberichtFertig"));
-							}, that.errorReturnCallback("sendeMedien"));
-						}, that.errorReturnCallback("sendeNotizen"));
-					}, that.errorReturnCallback("sendeMaterialbuchungen"));
-				}, that.errorReturnCallback("sendeZeitbuchungen"));
-			}, that.errorReturnCallback("sendeBautagesbericht"));
+									  , that.errorReturnCallback);
+							}, that.errorReturnCallback);
+						}, that.errorReturnCallback);
+					}, that.errorReturnCallback);
+				}, that.errorReturnCallback);
+			}, that.errorReturnCallback);
 		});
 	}
 	
@@ -6539,7 +6539,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3364
+    , softwareVersion: 3365
 
 
     /**
@@ -17143,7 +17143,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3364'
+              value: 'Build: 3365'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
