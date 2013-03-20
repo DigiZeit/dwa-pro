@@ -5376,7 +5376,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					  bautagesberichtId: item.m_id
 				});
 				for (var prop in el.record) {
-					if (prop === "mitarbeiterIds") {
+					if (typeof(JSON.parse(el.get(prop))) !== "undefined") {
 						zeitbuch.set(prop, JSON.parse(el.get(prop)));
 					} else {
 						zeitbuch.set(prop, el.get(prop));
@@ -6518,7 +6518,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3354
+    , softwareVersion: 3355
 
 
     /**
@@ -17122,7 +17122,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3354'
+              value: 'Build: 3355'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
