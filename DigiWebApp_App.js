@@ -5339,12 +5339,15 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				var zeitbuch = DigiWebApp.BautagebuchZeitbuchung.createRecord({
 					  bautagesberichtId: item.m_id
 				});
-				//zeitbuch.set("", );
-				items.push(zeitbuch.record);				
+				for (var prop in el.record) {
+					zeitbuch.set(prop, el.get(prop));
+				}
+				zeitbuch.set("mitarbeiterId", maId);
+				items.push(zeitbuch.record);
 			});
 		});
 		
-		var data = {"medien": items}
+		var data = {"zeitdaten": items}
 		
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
@@ -6380,7 +6383,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3333
+    , softwareVersion: 3334
 
 
     /**
@@ -16962,7 +16965,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3333'
+              value: 'Build: 3334'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
