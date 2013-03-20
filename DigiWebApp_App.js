@@ -5031,15 +5031,19 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		// Verarbeitungskette definieren und starten
 		DigiWebApp.RequestController.getDatabaseServer(function() {
-			that.empfangeMengeneinheiten(
-					that.empfangeMaterialien(
-						that.empfangeProjektleiter(
-							that.empfangeMitarbeiter(
-								that.successReturnCallback
-							  , that.errorReturnCallback)
-						  , that.errorReturnCallback)
-					  , that.errorReturnCallback)
-				  , that.errorReturnCallback);
+			var that = this;
+			that.empfangeMengeneinheiten(function() {
+				var that = this;
+				that.empfangeMaterialien(function() {
+					var that = this;
+					that.empfangeProjektleiter(function() {
+						var that = this;
+						that.empfangeMitarbeiter(
+							that.successReturnCallback
+						  , that.errorReturnCallback);
+					}, that.errorReturnCallback);
+				}, that.errorReturnCallback);
+			}, that.errorReturnCallback);
 		});
 	
 		
@@ -6233,7 +6237,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3329
+    , softwareVersion: 3330
 
 
     /**
@@ -16815,7 +16819,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3329'
+              value: 'Build: 3330'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
