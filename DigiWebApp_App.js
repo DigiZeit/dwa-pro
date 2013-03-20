@@ -5458,7 +5458,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
 		var that = this;
-		that.saveCallbacks(successCallback, errorCallback, 'sendData');
+		//that.saveCallbacks(successCallback, errorCallback, 'sendData');
 		
 		M.Request.init({
 			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
@@ -5466,7 +5466,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
                 DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
             }
 			, method: 'POST'
-            , data: data
+            , data: JSON.stringify(data)
             , timeout: 15000
             , contentType: 'text/plain; charset=UTF-8'
             , dataType: 'text' // oder 'json'
@@ -5483,11 +5483,13 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
             }
             , onSuccess: function(data, msg, xhr) { // success callback of sendData
                 DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                that.bindToCaller(that, that.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
+                //that.bindToCaller(that, that.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
+                successCallback();
             }
             , onError: function(xhr, err) {// error callback of sendData
                 DigiWebApp.ApplicationController.DigiLoaderView.hide();
-                that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
+                //that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
+                errorCallback();
             }
         }).send();
 		
@@ -6515,7 +6517,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3341
+    , softwareVersion: 3342
 
 
     /**
@@ -17119,7 +17121,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3341'
+              value: 'Build: 3342'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
