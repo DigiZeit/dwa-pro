@@ -5354,7 +5354,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			item.set("unterschrift", JSON.parse(result));
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-										
+				console.log("sendeBautagesbericht Status: " + request.status);
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5395,7 +5395,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-										
+				console.log("sendeZeitbuchungen Status: " + request.status);
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5420,7 +5420,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-										
+				console.log("sendeMaterialbuchungen Status: " + request.status);
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5445,7 +5445,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-										
+				console.log("sendeNotizen Status: " + request.status);										
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5475,7 +5475,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				
 				var internalSuccessCallback = function(data, msg, request) {
 					// verarbeite empfangene Daten
-					
+					console.log("sendeMedien Status: " + request.status);
 					// weiter in der Verarbeitungskette
 					successCallback();
 								
@@ -6524,7 +6524,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3360
+    , softwareVersion: 3361
 
 
     /**
@@ -17128,7 +17128,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3360'
+              value: 'Build: 3361'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
