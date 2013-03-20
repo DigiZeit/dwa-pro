@@ -5357,13 +5357,18 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			successCallback();
 			
 		};
-		item.readFromFile(function(result){
-			item.set("unterschrift", JSON.parse(result));
-			that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
-		},function(err){
+		if (item.hasFileName()) {
+			item.readFromFile(function(result){
+				item.set("unterschrift", JSON.parse(result));
+				that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
+			},function(err){
+				item.set("unterschrift", "");
+				that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
+			});
+		} else {
 			item.set("unterschrift", "");
 			that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
-		});
+		}
 		
 	}
 
@@ -6534,7 +6539,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3363
+    , softwareVersion: 3364
 
 
     /**
@@ -17138,7 +17143,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3363'
+              value: 'Build: 3364'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
