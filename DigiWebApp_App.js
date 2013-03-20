@@ -5331,7 +5331,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 						var that = DigiWebApp.BautagebuchDatenuebertragungController;
 						that.sendeNotizen(item,function() {
 							var that = DigiWebApp.BautagebuchDatenuebertragungController;
-							that.sendeMedien(
+							that.sendeMedien(item,function() {
 								var that = DigiWebApp.BautagebuchDatenuebertragungController;
 								that.sendeBautagesberichtFertig(
 										item
@@ -6514,7 +6514,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3352
+    , softwareVersion: 3353
 
 
     /**
@@ -17118,7 +17118,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3352'
+              value: 'Build: 3353'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
