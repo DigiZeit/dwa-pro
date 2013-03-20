@@ -1332,6 +1332,10 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
         isRequired: NO
     })
 
+    , verbuchen: M.Model.attr('String', {
+        isRequired:NO
+    })
+
     , latitude: M.Model.attr('String', {
         isRequired:NO
     })
@@ -2025,15 +2029,13 @@ DigiWebApp.Booking = M.Model.create({
 	    }
 	
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return false;
-	    } else {
-	    	errorCallback = function(evt) {
-	            //console.log("saveToFileError: " + evt.target.error.code);
+	    	var errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
-	    	}
-	    }
+	    	};
+	    };
 		
 		// check if LocalFileSystem is defined
 		if (typeof window.requestFileSystem === "undefined") {
@@ -2139,12 +2141,10 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
-	    } else {
 	    	var errorCallback = function(evt) {
-	            //console.log("readFromFileError: " + evt.target.error.code);
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
 	    	};
 	    };
@@ -2243,10 +2243,8 @@ DigiWebApp.Booking = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return false;
-	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -2432,15 +2430,13 @@ DigiWebApp.MediaFile = M.Model.create({
 	    }
 	
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return false;
-	    } else {
-	    	errorCallback = function(evt) {
-	            //console.log("saveToFileError: " + evt.target.error.code);
+	    	var errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
-	    	}
-	    }
+	    	};
+	    };
 		
 		// check if LocalFileSystem is defined
 		if (typeof window.requestFileSystem === "undefined") {
@@ -2548,12 +2544,10 @@ DigiWebApp.MediaFile = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
-	    } else {
 	    	var errorCallback = function(evt) {
-	            //console.log("readFromFileError: " + evt.target.error.code);
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
 	    	};
 	    };
@@ -2652,10 +2646,8 @@ DigiWebApp.MediaFile = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return false;
-	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -2830,15 +2822,13 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    }
 	
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return false;
-	    } else {
-	    	errorCallback = function(evt) {
-	            //console.log("saveToFileError: " + evt.target.error.code);
+	    	var errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
-	    	}
-	    }
+	    	};
+	    };
 		
 		// check if LocalFileSystem is defined
 		if (typeof window.requestFileSystem === "undefined") {
@@ -2944,12 +2934,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
-	    } else {
 	    	var errorCallback = function(evt) {
-	            //console.log("readFromFileError: " + evt.target.error.code);
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
 	    	};
 	    };
@@ -3048,10 +3036,8 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return false;
-	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -3512,15 +3498,13 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    }
 	
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("saveToFileError: errorCallback is not a function");
-	        return false;
-	    } else {
-	    	errorCallback = function(evt) {
-	            //console.log("saveToFileError: " + evt.target.error.code);
+	    	var errorCallback = function(evt) {
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("saveToFileError", evt);
-	    	}
-	    }
+	    	};
+	    };
 		
 		// check if LocalFileSystem is defined
 		if (typeof window.requestFileSystem === "undefined") {
@@ -3626,12 +3610,10 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("readFromFileError: errorCallback is not a function");
-	        return;
-	    } else {
 	    	var errorCallback = function(evt) {
-	            //console.log("readFromFileError: " + evt.target.error.code);
+	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
 	    	};
 	    };
@@ -3730,10 +3712,8 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	    };
 		
 		// check for errorCallback is a function (optional)
-	    if (errorCallback && (typeof errorCallback !== "function")) {
+	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			console.error("deleteFileError: errorCallback is not a function");
-	        return false;
-	    } else {
 	    	var errorCallback = function(evt) {
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("deleteFileError", evt);
@@ -5554,6 +5534,8 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		
 	, dauer: "00:00" // in model
 
+	, verbuchen: YES // in model
+
 	, latitude: "" // in model
 	, longitude: "" // in model
 	, latitude_bis: "" // in model
@@ -6247,7 +6229,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3324
+    , softwareVersion: 3325
 
 
     /**
@@ -16829,7 +16811,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3324'
+              value: 'Build: 3325'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
