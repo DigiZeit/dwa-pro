@@ -5432,31 +5432,44 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
 
 		var proceed = function(mediaFiles) {
-			var items = [];
 			
-			_.each(mediaFiles, function(mf){
-				items.push(mf.record);
-			});
-			
-			var data = {"medien": items}
-			
-			var internalSuccessCallback = function(data, msg, request) {
-				// verarbeite empfangene Daten
+			if (mediaFile.length !== 0) {
+				var items = [];
 				
-				if (request.status === 200) {
-					// scheint alles gut gengen zu sein
-					if (item.deleteSorted()) {
-						DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-						if (typeof(successCallback) === "function") successCallback();
-						return true;
-					} else {
-						if (typeof(errorCallback) === "function") errorCallback();
-						return false;
+				_.each(mediaFiles, function(mf){
+					items.push(mf.record);
+				});
+				
+				var data = {"medien": items}
+				
+				var internalSuccessCallback = function(data, msg, request) {
+					// verarbeite empfangene Daten
+					
+					if (request.status === 200) {
+						// scheint alles gut gengen zu sein
+						if (item.deleteSorted()) {
+							DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+							if (typeof(successCallback) === "function") successCallback();
+							return true;
+						} else {
+							if (typeof(errorCallback) === "function") errorCallback();
+							return false;
+						}
 					}
+								
+				};
+				that.sendData(data, "bautagesbericht/medien", M.I18N.l('BautagebuchSendeMedien'), internalSuccessCallback, errorCallback);
+			} else {
+				// no files to send
+				if (item.deleteSorted()) {
+					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+					if (typeof(successCallback) === "function") successCallback();
+					return true;
+				} else {
+					if (typeof(errorCallback) === "function") errorCallback();
+					return false;
 				}
-							
-			};
-			that.sendData(data, "bautagesbericht/medien", M.I18N.l('BautagebuchSendeMedien'), internalSuccessCallback, errorCallback);
+			}
     	}
 
 		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: item.m_id});
@@ -6567,7 +6580,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3348
+    , softwareVersion: 3349
 
 
     /**
@@ -17171,7 +17184,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3348'
+              value: 'Build: 3349'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
