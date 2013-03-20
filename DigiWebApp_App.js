@@ -5442,41 +5442,55 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
 		var that = this;
-//		M.Request.init({
-//			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
-//			, beforeSend: function(request) {
-//                DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
-//            }
-//			, method: 'POST'
-//			, sendNoCacheHeader: YES
-//			, sendTimestamp: YES
-//			, isJSON: YES
-//			, data: data
-//			, onSuccess: function(data, msg, request) {
-//				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-//				successCallback(data, msg, request);
+		that.saveCallbacks(successCallback, errorCallback, 'sendData');
+		
+		M.Request.init({
+			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
+			, beforeSend: function(request) {
+                DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
+            }
+			, method: 'POST'
+            , data: data
+            , timeout: 15000
+            , contentType: 'text/plain; charset=UTF-8'
+            , dataType: 'text' // oder 'json'
+            , beforeSend: function(xhr) {
+                DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
+//                xhr.setRequestHeader(
+//                    "SOAPAction",
+//                    "urn:sendeDaten"
+//                );
+                xhr.setRequestHeader(
+                    "Content-Type",
+                    "text/plain;charset=UTF-8"
+                );
+            }
+            , onSuccess: function(data, msg, xhr) { // success callback of sendData
+                DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                that.bindToCaller(that, that.handleSuccessCallback, [data, msg, xhr, null, null, 'sendData'])();
+            }
+            , onError: function(xhr, err) {// error callback of sendData
+                DigiWebApp.ApplicationController.DigiLoaderView.hide();
+                that.bindToCaller(that, that.handleErrorCallback, [xhr, err, 'sendData'])();
+            }
+        }).send();
+		
+//		$.ajax({
+//              type: 'POST'
+//            , url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
+//            , async: YES
+//            , dataType: 'text'
+//            , contentType: 'text/plain'
+//            , timeout: null
+//            , data: JSON.stringify(data)
+//            , context: that
+//            , beforeSend: function(request) {
+//				DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
 //			}
-//			, onError: function(request, msg) {
-//				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-//				errorCallback(request, msg);
-//			}
-//		}).send();
-		$.ajax({
-              type: 'POST'
-            , url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
-            , async: YES
-            , dataType: 'text'
-            , contentType: 'text/plain'
-            , timeout: null
-            , data: JSON.stringify(data)
-            , context: that
-            , beforeSend: function(request) {
-				DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
-			}
-            , success: successCallback
-            , error: errorCallback
-            , cache: NO
-        });
+//            , success: successCallback
+//            , error: errorCallback
+//            , cache: NO
+//        });
 	}
 
 	, recieveData: function(webservice, loaderText, successCallback, errorCallback) {
@@ -6408,7 +6422,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3336
+    , softwareVersion: 3337
 
 
     /**
@@ -17008,7 +17022,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3336'
+              value: 'Build: 3337'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
