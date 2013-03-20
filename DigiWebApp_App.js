@@ -6243,7 +6243,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3321
+    , softwareVersion: 3322
 
 
     /**
@@ -16825,7 +16825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3321'
+              value: 'Build: 3322'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19098,7 +19098,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      					  target: this
 					      					, action: function(value, date) {
 					      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampStart", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp();
+					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampStart", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
 					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
 					      							// dauer kann berechnet werden
 					      							try {
@@ -19169,7 +19169,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					      					  target: this
 					      					, action: function(value, date) {
 					      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampEnd", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp();
+					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampEnd", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
 					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
 					      							// dauer kann berechnet werden
 					      							try {
