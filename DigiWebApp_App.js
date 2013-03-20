@@ -2736,16 +2736,16 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchBautagesbericht'
 
-    , id: M.Model.attr('String', {
-        isRequired: YES
-    })
-
     , datum: M.Model.attr('String', {
         isRequired: YES
     })
 
     , startUhrzeit: M.Model.attr('String', {
         isRequired: YES
+    })
+
+    , bautagesberichtId: M.Model.attr('String', {
+        isRequired: NO
     })
 
     , projektleiterId: M.Model.attr('String', {
@@ -5341,7 +5341,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
 		var that = this;
-		item.set("id", item.m_id);
+		item.set("bautagesberichtId", item.m_id);
 		item.readFromFile(function(result){
 			item.set("unterschrift", JSON.parse(result));
 			var internalSuccessCallback = function(data, msg, request) {
@@ -5374,17 +5374,20 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				items.push(zeitbuch.record);
 			});
 		});
-		
-		var data = {"zeitdaten": items}
-		
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-									
-			// weiter in der Verarbeitungskette
-			successCallback();
+		if (items.length !== 0) {
+			var data = {"zeitdaten": items}
 			
-		};
-		that.sendData(data, "zeitdaten", M.I18N.l('BautagebuchSendeZeitbuchungen'), internalSuccessCallback, errorCallback);
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+										
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			that.sendData(data, "zeitdaten", M.I18N.l('BautagebuchSendeZeitbuchungen'), internalSuccessCallback, errorCallback);
+		} else {
+			successCallback();
+		}
 	}
 
 	, sendeMaterialbuchungen: function(item, successCallback, errorCallback) {
@@ -5396,16 +5399,20 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			items.push(el.record);
 		});
 		
-		var data = {"materialbuchungen": items}
-		
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-									
-			// weiter in der Verarbeitungskette
-			successCallback();
+		if (items.length !== 0) {
+			var data = {"materialbuchungen": items}
 			
-		};
-		that.sendData(data, "bautagesbericht/materialbuchung", M.I18N.l('BautagebuchSendeMaterialbuchungen'), internalSuccessCallback, errorCallback);
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+										
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			that.sendData(data, "bautagesbericht/materialbuchung", M.I18N.l('BautagebuchSendeMaterialbuchungen'), internalSuccessCallback, errorCallback);
+		} else {
+			successCallback();
+		}
 	}
 
 	, sendeNotizen: function(item, successCallback, errorCallback) {
@@ -5417,16 +5424,20 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			items.push(el.record);
 		});
 		
-		var data = {"notizen": items}
-		
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-									
-			// weiter in der Verarbeitungskette
-			successCallback();
+		if (items.length !== 0) {
+			var data = {"notizen": items}
 			
-		};
-		that.sendData(data, "bautagesbericht/notiz", M.I18N.l('BautagebuchSendeNotizen'), internalSuccessCallback, errorCallback);
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+										
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			that.sendData(data, "bautagesbericht/notiz", M.I18N.l('BautagebuchSendeNotizen'), internalSuccessCallback, errorCallback);
+		} else {
+			successCallback();
+		}
 	}
 
 	, sendeMedien: function(item, successCallback, errorCallback) {
@@ -6584,7 +6595,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3350
+    , softwareVersion: 3351
 
 
     /**
@@ -17188,7 +17199,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3350'
+              value: 'Build: 3351'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
