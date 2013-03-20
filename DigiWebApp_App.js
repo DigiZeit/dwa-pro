@@ -3167,6 +3167,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 		    	// delete record from localStorage only if file
 	    		// was deleted successfully from device
 	    		return that.del();
+	    	}
+        	, function(n){
+		    	// delete record from localStorage anyway
+	    		return that.del();
 	    	});
     	} else {
     		// there is no file to delete, so delete the record
@@ -6243,7 +6247,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3323
+    , softwareVersion: 3324
 
 
     /**
@@ -7411,19 +7415,14 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	
 	, delete: function(successcallback, errorcallback) {
 		var that = this;
-		that.item.deleteSorted();
-		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-		if (typeof(successcallback) === "function") successcallback();
-
-//		if (that.item.deleteSorted()) {
-//			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-//			if (typeof(successcallback) === "function") successcallback();
-//			return true;
-//		} else {
-//			if (typeof(errorcallback) === "function") errorcallback();
-//			return false;
-//		}
-		
+		if (that.item.deleteSorted()) {
+			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			if (typeof(successcallback) === "function") successcallback();
+			return true;
+		} else {
+			if (typeof(errorcallback) === "function") errorcallback();
+			return false;
+		}
 	}
 
 	, finish: function(successcallback, errorcallback) {
@@ -16830,7 +16829,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3323'
+              value: 'Build: 3324'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
