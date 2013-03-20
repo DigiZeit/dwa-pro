@@ -2791,6 +2791,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         isRequired: NO
     })
 
+    , unterschrift: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , fileName: M.Model.attr('String', {
         isRequired: NO
     })
@@ -5317,15 +5321,19 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
 		
-		var that = this;
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-									
-			// weiter in der Verarbeitungskette
-			successCallback();
-			
-		};
-		that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
+		item.readFromFile(function(result){
+			var that = this;
+			item.set("unterschrift", result);
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+										
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
+		});
+		
 	}
 
 	, sendeZeitbuchungen: function(item, successCallback, errorCallback) {
@@ -6400,7 +6408,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3335
+    , softwareVersion: 3336
 
 
     /**
@@ -12548,6 +12556,24 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         // end session on server
         this.endSession();
 
+        if (DigiWebApp.SettingsController.featureAvailable('412')) {
+	    	DigiWebApp.BautagebuchDatenuebertragungController.empfangen(
+	    		  function(msg){
+	    			  var that = this;
+	    			  that.afterTransfer();
+	    		}
+	    		, function(err){
+	    			  var that = this;
+	    			  that.afterTransfer();
+	    		}
+	    	);
+    	} else {
+    		this.afterTransfer();
+    	}
+
+    }
+    
+    , afterTransfer: function() {
         this.syncStopTimestamp = D8.now().getTimestamp();
         this.syncLastDuration = this.syncStopTimestamp - this.syncStartTimestamp;
         if (this.profilingIntervalVar !== null) {
@@ -16982,7 +17008,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3335'
+              value: 'Build: 3336'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
