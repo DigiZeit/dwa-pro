@@ -5428,32 +5428,82 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	, sendeMedien: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
 		
-		var that = this;
-		var items = [];
-		_.each(DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: item.m_id}), function(el) {
-			items.push(el.record);
-		});
-		
-		var data = {"medien": items}
-		
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
+
+		var proceed = function(mediaFiles) {
+			var items = [];
 			
-			if (request.status === 200) {
-				// scheint alles gut gengen zu sein
-				var that = this;
-				if (that.item.deleteSorted()) {
-					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-					if (typeof(successCallback) === "function") successCallback();
-					return true;
-				} else {
-					if (typeof(errorCallback) === "function") errorCallback();
-					return false;
+			_.each(mediaFiles, functioni(mf){
+				items.push(mf.record);
+			});
+			
+			var data = {"medien": items}
+			
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+				
+				if (request.status === 200) {
+					// scheint alles gut gengen zu sein
+					var that = this;
+					if (that.item.deleteSorted()) {
+						DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+						if (typeof(successCallback) === "function") successCallback();
+						return true;
+					} else {
+						if (typeof(errorCallback) === "function") errorCallback();
+						return false;
+					}
 				}
-			}
-						
-		};
-		that.sendData(data, "bautagesbericht/medien", M.I18N.l('BautagebuchSendeMedien'), internalSuccessCallback, errorCallback);
+							
+			};
+			that.sendData(data, "bautagesbericht/medien", M.I18N.l('BautagebuchSendeMedien'), internalSuccessCallback, errorCallback);
+    	}
+
+		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: item.m_id});
+		var mediaFilesLength = mediaFiles.length;
+    	var mediaFilesIndex = 0;
+    	
+    	if (mediaFilesLength !== 0) { 
+	    	_.each(mediaFiles, function(el) {
+	    		
+	    		mediaFilesIndex = mediaFilesIndex + 1;
+	    		
+    			console.log('loading mediaFile for mediaFilesIndex ' + mediaFilesIndex);
+    			if (el.hasFileName()) {
+	    			console.log(el.get('fileName'));
+					// load signature into el
+					el.readFromFile(function(fileContent){
+						//console.log("fileContent: " + fileContent);
+						if (fileContent && (fileContent !== "")) {
+					    	_.each(mediaFiles, function(mf) {
+					            if (mf.m_id === el.m_id) {
+					            	mf.set("data", fileContent);
+					            }
+					        });
+						}
+						if ( mediaFilesIndex === mediaFilesLength ) {
+							// last mediaFile loaded
+				    		console.log('last mediaFile done (with file)');
+		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				proceed(mediaFiles);
+						}
+					});
+    			} else {
+	    			// this mediaFile has no file
+					if ( mediaFilesIndex === mediaFilesLength ) {
+						// last mediaFile loaded
+			    		console.log('last mediaFile done (no file)');
+	    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	    				proceed(mediaFiles);
+					}
+	    		}
+	        });
+    	} else {
+    		//console.log('no mediafiles');
+			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			proceed(mediaFiles);
+    	}
+
 	}
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
@@ -6517,7 +6567,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3345
+    , softwareVersion: 3346
 
 
     /**
@@ -17121,7 +17171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3345'
+              value: 'Build: 3346'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

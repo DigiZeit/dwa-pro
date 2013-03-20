@@ -288,7 +288,8 @@ M.I18N.de_de = {
 	, notImplemented: "Noch nicht implementiert"
 	, notImplementedMsg: "Diese Funktion ist noch nicht implementiert!"
 	, newMedia: "Art der neuen Mediendatei"
-			
+	, loadMediaFiles: "Lade Medien-Daten ..."
+
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"
 	, noCamera: "Keine Kamera vorhanden"
