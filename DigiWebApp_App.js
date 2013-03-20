@@ -5271,7 +5271,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			// alle "alten" Mitarbeiter löschen
 			DigiWebApp.BautagebuchMitarbeiter.deleteAll();
 			
-			// die empfangenen Projektleiter mit Model ablegen
+			// die empfangenen Projektleiter im Model ablegen
 			_.each(data.mitarbeiter, function(el) {
 				if (typeof(el.id) === "undefined") {
 					console.error("missing mitarbeiter id");
@@ -5529,6 +5529,83 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			}
 		}).send();
 	}
+	
+    /**
+     * Object containing the success callback for the several calls
+     */
+    , successCallback: {}
+
+    /**
+     * Object containing the success callback for the several calls
+     */
+    , errorCallback: {}
+
+    /**
+    *
+    * Is a proxy for the success callback and prepares the data returned from the server.
+    *
+    * Transforms it from XML to JSON, either through transformResultToJson() or special functions
+    * for work plans and kolonne, because they cannot be transformed automatically.
+    *
+    * Calls the success callback of the source call afterwards.
+    *
+    * @param {Document|Object} data The returned data of the server as a jQuery Document
+    * @param {Object} msg
+    * @param {Object} xhr The XMLHTTPRequest object.
+    * @param {Boolean} workPlanTransform F
+    * @param {Boolean} kolonneTransform
+    * @param {String} source The name of the method to identify the source of the call
+    */
+   , handleSuccessCallback: function(data, msg, xhr, workPlanTransform, kolonneTransform, source) {
+       var d = data;
+//       if(!workPlanTransform && !kolonneTransform) {
+//           d = this.transformResultToJson(data);
+//       } else {
+//           if(workPlanTransform) {
+//               d = this.transformWorkPlanXmlToJson(data);
+//           } else if(kolonneTransform) {
+//               d = this.transformKolonneXmlToJson(data);
+//           }
+//       }
+       M.EventDispatcher.checkHandler(this.successCallback[source]);
+       this.successCallback[source].target = this.successCallback[source].target || this;
+       this.bindToCaller(this.successCallback[source].target, this.successCallback[source].action, [d, msg, xhr])();
+   }
+
+
+   /**
+    *
+    * Calls the error callback of the source call
+    *
+    * @param {Object} xhr The XMLHTTPRequest object.
+    * @param {String} err The text status, e.g. "parseerror" or "timeout"
+    * @param {String} source The name of the method to identify the source of the call
+    */
+   , handleErrorCallback: function(xhr, err, source) {
+       M.EventDispatcher.checkHandler(this.errorCallback[source]);
+       this.errorCallback[source].target = this.errorCallback[source].target || this;
+       this.bindToCaller(this.errorCallback[source].target, this.errorCallback[source].action, [xhr, err])();
+   }
+
+   /**
+    * Saves the callback objects in the corresponding controller properties:
+    * - successCallback
+    * - errorCallback
+    * with their source as key.
+    *
+    * @param {Object} success The success callback object.
+    * @param {Object} error The error callback object.
+    * @param source
+    */
+   , saveCallbacks: function(success, error, source) {
+       if(success) {
+           this.successCallback[source] = success;
+       }
+       if(error) {
+           this.errorCallback[source] = error;
+       }
+   }
+
 });
 
 // ==========================================================================
@@ -6438,7 +6515,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3340
+    , softwareVersion: 3341
 
 
     /**
@@ -17042,7 +17119,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3340'
+              value: 'Build: 3341'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
