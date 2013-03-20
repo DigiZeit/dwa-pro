@@ -5433,7 +5433,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var proceed = function(mediaFiles) {
 			var items = [];
 			
-			_.each(mediaFiles, functioni(mf){
+			_.each(mediaFiles, function(mf){
 				items.push(mf.record);
 			});
 			
@@ -6567,7 +6567,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3346
+    , softwareVersion: 3347
 
 
     /**
@@ -17171,7 +17171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3346'
+              value: 'Build: 3347'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
