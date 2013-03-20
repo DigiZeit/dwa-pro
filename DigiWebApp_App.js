@@ -5544,7 +5544,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 			
-			if (request.status === 200) {
+			if (request.status > 199 && request.status < 300) {
 				// scheint alles gut gengen zu sein
 				if (item.deleteSorted()) {
 					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
@@ -5554,6 +5554,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					if (typeof(errorCallback) === "function") errorCallback();
 					return false;
 				}
+			} else {
+				console.error("Request ended with status: " + request.status);
 			}
 						
 		};
@@ -6522,7 +6524,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3359
+    , softwareVersion: 3360
 
 
     /**
@@ -17126,7 +17128,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3359'
+              value: 'Build: 3360'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
