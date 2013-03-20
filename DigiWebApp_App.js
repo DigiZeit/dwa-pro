@@ -2803,6 +2803,14 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         isRequired: NO
     })
 
+    , unterschrift_hoehe: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , unterschrift_breite: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , fileName: M.Model.attr('String', {
         isRequired: NO
     })
@@ -5328,9 +5336,9 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	
 	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
+		var that = this;
 		
 		item.readFromFile(function(result){
-			var that = this;
 			item.set("unterschrift", result);
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
@@ -6430,7 +6438,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3339
+    , softwareVersion: 3340
 
 
     /**
@@ -12882,6 +12890,10 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 			//console.log(unterschriftImageString);
     		that.item.set('fileType', DigiWebApp.ApplicationController.CONSTTextFiletype);
     		that.item.saveToFile(unterschriftString, function(){
+    			
+    		    that.item.set("unterschrift_breite", DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasWidth);
+    		    that.item.set("unterschrift_hoehe", DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasHeight);
+
     			if (that.save()) {
     				DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
     				if (typeof(successcallback) === "function") successcallback();
@@ -17030,7 +17042,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3339'
+              value: 'Build: 3340'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
