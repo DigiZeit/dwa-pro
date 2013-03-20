@@ -2285,8 +2285,7 @@ DigiWebApp.Booking = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove();
-					    		successCallback();
+					    		fileEntry.remove(successCallback, errorCallback);
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -2689,8 +2688,7 @@ DigiWebApp.MediaFile = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove();
-					    		successCallback();
+					    		fileEntry.remove(successCallback, errorCallback);
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -3100,8 +3098,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove();
-					    		successCallback();
+					    		fileEntry.remove(successCallback, errorCallback);
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -3140,7 +3137,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         });
     }
 
-	, deleteSorted: function() {
+	, deleteSorted: function(successCallback,errorCallback) {
 	    var that = this;
 	    
 	    // alle zugehörigen Zeiten löschen
@@ -3188,15 +3185,18 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
         	that.deleteFile(function(n){
 		    	// delete record from localStorage only if file
 	    		// was deleted successfully from device
-	    		return that.del();
+	    		that.del();
+	    		if (typeof(successCallback) === "function") successCallback();
 	    	}
         	, function(n){
 		    	// delete record from localStorage anyway
-	    		return that.del();
+	    		that.del();
+	    		if (typeof(successCallback) === "function") successCallback();
 	    	});
     	} else {
     		// there is no file to delete, so delete the record
-    		return that.del();
+    		that.del();
+    		if (typeof(successCallback) === "function") successCallback();
     	}	    
 	}
 	
@@ -3781,8 +3781,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 					    	dataDirectory.getFile(that.get("fileName"), null, function(fileEntry) {
 					    		
 					    		// remove fileEntry
-					    		fileEntry.remove();
-					    		successCallback();
+					    		fileEntry.remove(successCallback, errorCallback);
 					    		
 					    	}, errorCallback);     // dataDirectory.getFile
 					    }, errorCallback);         // fileSystem.root.getDirectory
@@ -5569,15 +5568,10 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			if (request.status > 199 && request.status < 300) {
 				// scheint alles gut gengen zu sein
-				if (item.deleteSorted()) {
+				item.deleteSorted(function() {
 					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 					if (typeof(successCallback) === "function") successCallback(data, msg, request);
-					return true;
-				} else {
-					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-					if (typeof(errorCallback) === "function") errorCallback("deleteSorted");
-					return false;
-				}
+				});
 			} else {
 				console.error("Request ended with status: " + request.status);
 			}
@@ -6548,7 +6542,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3371
+    , softwareVersion: 3372
 
 
     /**
@@ -17152,7 +17146,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3371'
+              value: 'Build: 3372'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
