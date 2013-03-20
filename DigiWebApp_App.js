@@ -5468,7 +5468,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			, method: 'POST'
             , data: JSON.stringify(data)
             , timeout: 15000
-            , contentType: 'text/plain; charset=UTF-8'
+            , contentType: 'text/plain'
             , dataType: 'text' // oder 'json'
             , beforeSend: function(xhr) {
                 DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
@@ -5478,7 +5478,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 //                );
                 xhr.setRequestHeader(
                     "Content-Type",
-                    "text/plain;charset=UTF-8"
+                    "text/plain"
                 );
             }
             , onSuccess: function(data, msg, xhr) { // success callback of sendData
@@ -6517,7 +6517,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3342
+    , softwareVersion: 3343
 
 
     /**
@@ -17121,7 +17121,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3342'
+              value: 'Build: 3343'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
