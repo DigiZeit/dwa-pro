@@ -5359,7 +5359,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var items = [];
 		_.each(DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: item.m_id}), function(el) {
-			_.each(JSON.parse(item.get("mitarbeiterIds")), function(maId) {
+			_.each(JSON.parse(el.get("mitarbeiterIds")), function(maId) {
 				var zeitbuch = DigiWebApp.BautagebuchZeitbuchung.createRecord({
 					  bautagesberichtId: item.m_id
 				});
@@ -5409,11 +5409,11 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: item.m_id}), function(el) {
+		_.each(DigiWebApp.BautagebuchNotiz.find({bautagesberichtId: item.m_id}), function(el) {
 			items.push(el.record);
 		});
 		
-		var data = {"materialbuchungen": items}
+		var data = {"notizen": items}
 		
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
@@ -6517,7 +6517,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3344
+    , softwareVersion: 3345
 
 
     /**
@@ -17121,7 +17121,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3344'
+              value: 'Build: 3345'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
