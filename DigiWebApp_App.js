@@ -5276,16 +5276,141 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 	}
 	
-	, senden: function(item) {
+	, senden: function(item, successReturnCallback, errorReturnCallback) {
 		// item ist ein Bautagesbericht
+
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
 		
-		var webservice = "";
+		that.successReturnCallback = successReturnCallback;
+		that.errorReturnCallback = errorReturnCallback;
+
+		//var successCallback = function(data, msg, request) {};
+		//var errorCallback = function(request, msg) {};
 		
-		webservice = "bautagesbericht";
-		
-			
+		// Verarbeitungskette definieren und starten
+		DigiWebApp.RequestController.getDatabaseServer(function() {
+			var that = DigiWebApp.BautagebuchDatenuebertragungController;
+			that.sendeBautagesbericht(item,function() {
+				var that = DigiWebApp.BautagebuchDatenuebertragungController;
+				that.sendeZeitbuchungen(item,function() {
+					var that = DigiWebApp.BautagebuchDatenuebertragungController;
+					that.sendeMaterialbuchungen(item,function() {
+						var that = DigiWebApp.BautagebuchDatenuebertragungController;
+						that.sendeNotizen(item,function() {
+							var that = DigiWebApp.BautagebuchDatenuebertragungController;
+							that.sendeMedien(
+								item
+							  , that.successReturnCallback
+							  , that.errorReturnCallback);
+						}, that.errorReturnCallback);
+					}, that.errorReturnCallback);
+				}, that.errorReturnCallback);
+			}, that.errorReturnCallback);
+		});
 	}
 	
+	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		var that = this;
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+									
+			// weiter in der Verarbeitungskette
+			successCallback();
+			
+		};
+		that.sendData(item.record, "bautagesbericht", M.I18N.l('BautagebuchSendeBautagesbericht'), internalSuccessCallback, errorCallback);
+	}
+
+	, sendeZeitbuchungen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		var that = this;
+		
+		var items = [];
+		_.each(DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
+			items.push(el.record);
+		});
+		
+		var data = {"medien": items}
+		
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+									
+			// weiter in der Verarbeitungskette
+			successCallback();
+			
+		};
+		that.sendData(data, "zeitdaten", M.I18N.l('BautagebuchSendeZeitbuchungen'), internalSuccessCallback, errorCallback);
+	}
+
+	, sendeMaterialbuchungen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		var that = this;
+		var items = [];
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
+			items.push(el.record);
+		});
+		
+		var data = {"materialbuchungen": items}
+		
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+									
+			// weiter in der Verarbeitungskette
+			successCallback();
+			
+		};
+		that.sendData(data, "bautagesbericht/materialbuchung", M.I18N.l('BautagebuchSendeMaterialbuchungen'), internalSuccessCallback, errorCallback);
+	}
+
+	, sendeNotizen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		var that = this;
+		var items = [];
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: that.m_id}), functioin(el) {
+			items.push(el.record);
+		});
+		
+		var data = {"materialbuchungen": items}
+		
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+									
+			// weiter in der Verarbeitungskette
+			successCallback();
+			
+		};
+		that.sendData(data, "bautagesbericht/notiz", M.I18N.l('BautagebuchSendeNotizen'), internalSuccessCallback, errorCallback);
+	}
+
+	, sendeMedien: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		var that = this;
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+			
+			if (request.status === 200) {
+				// scheint alles gut gengen zu sein
+				var that = this;
+				if (that.item.deleteSorted()) {
+					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+					if (typeof(successCallback) === "function") successCallback();
+					return true;
+				} else {
+					if (typeof(errorCallback) === "function") errorCallback();
+					return false;
+				}
+			}
+						
+		};
+		that.sendData(data, "bautagesbericht/medien", M.I18N.l('BautagebuchSendeMedien'), internalSuccessCallback, errorCallback);
+	}
+
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
 		M.Request.init({
 			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
@@ -6237,7 +6362,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3331
+    , softwareVersion: 3332
 
 
     /**
@@ -16819,7 +16944,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3331'
+              value: 'Build: 3332'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
