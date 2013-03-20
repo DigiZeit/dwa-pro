@@ -5021,7 +5021,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	, errorReturnCallback: function() {}
 
 	, empfangen: function(successReturnCallback, errorReturnCallback) {
-		var that = this;
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
 		
 		that.successReturnCallback = successReturnCallback;
 		that.errorReturnCallback = errorReturnCallback;
@@ -5031,13 +5031,13 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		// Verarbeitungskette definieren und starten
 		DigiWebApp.RequestController.getDatabaseServer(function() {
-			var that = this;
+			var that = DigiWebApp.BautagebuchDatenuebertragungController;
 			that.empfangeMengeneinheiten(function() {
-				var that = this;
+				var that = DigiWebApp.BautagebuchDatenuebertragungController;
 				that.empfangeMaterialien(function() {
-					var that = this;
+					var that = DigiWebApp.BautagebuchDatenuebertragungController;
 					that.empfangeProjektleiter(function() {
-						var that = this;
+						var that = DigiWebApp.BautagebuchDatenuebertragungController;
 						that.empfangeMitarbeiter(
 							that.successReturnCallback
 						  , that.errorReturnCallback);
@@ -6237,7 +6237,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3330
+    , softwareVersion: 3331
 
 
     /**
@@ -16819,7 +16819,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3330'
+              value: 'Build: 3331'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
