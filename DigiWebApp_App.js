@@ -6430,7 +6430,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3338
+    , softwareVersion: 3339
 
 
     /**
@@ -12581,11 +12581,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         if (DigiWebApp.SettingsController.featureAvailable('412')) {
 	    	DigiWebApp.BautagebuchDatenuebertragungController.empfangen(
 	    		  function(msg){
-	    			  var that = this;
+	    			  var that = DigiWebApp.ApplicationController;
 	    			  that.afterTransfer();
 	    		}
 	    		, function(err){
-	    			  var that = this;
+	    			  var that = DigiWebApp.ApplicationController;
 	    			  that.afterTransfer();
 	    		}
 	    	);
@@ -17030,7 +17030,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3338'
+              value: 'Build: 3339'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
