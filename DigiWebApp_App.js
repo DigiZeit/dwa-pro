@@ -6243,7 +6243,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3322
+    , softwareVersion: 3323
 
 
     /**
@@ -7411,14 +7411,19 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	
 	, delete: function(successcallback, errorcallback) {
 		var that = this;
-		if (that.item.deleteSorted()) {
-			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) === "function") successcallback();
-			return true;
-		} else {
-			if (typeof(errorcallback) === "function") errorcallback();
-			return false;
-		}
+		that.item.deleteSorted();
+		DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+		if (typeof(successcallback) === "function") successcallback();
+
+//		if (that.item.deleteSorted()) {
+//			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+//			if (typeof(successcallback) === "function") successcallback();
+//			return true;
+//		} else {
+//			if (typeof(errorcallback) === "function") errorcallback();
+//			return false;
+//		}
+		
 	}
 
 	, finish: function(successcallback, errorcallback) {
@@ -16825,7 +16830,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3322'
+              value: 'Build: 3323'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19094,38 +19099,38 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
 					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
 					          		    , callbacks: {
-					      				confirm: {
-					      					  target: this
-					      					, action: function(value, date) {
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampStart", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
-					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
-					      							// dauer kann berechnet werden
-					      							try {
-					      								var myVon = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
-					      								var myBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
-					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
-					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
-					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
-					      									var myDauer = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
-					      									DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
-					      								}
-					      							} catch(e){}
-					      						}
-					      					}
-					      				}
-					      				, before: {
-					      					action: function(value, date) {
-					      					
-					      					}
-					      				}
-					      				, cancel: {
-					      					action: function() {
-					      					
-					      					}
-					      				}
-					      			}
+						      				  confirm: {
+						      					  target: this
+						      					, action: function(value, date) {
+						      						DigiWebApp.BautagebuchZeitenDetailsController.set("von", value);
+						      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampStart", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
+						      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
+						      							// dauer kann berechnet werden
+						      							try {
+						      								var myVon = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+						      								var myBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+						      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+						      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
+						      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
+						      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
+						      									var myDauer = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
+						      									DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+						      								}
+						      							} catch(e){}
+						      						}
+						      					}
+						      				}
+						      				, before: {
+						      					action: function(value, date) {
+						      					
+						      					}
+						      				}
+						      				, cancel: {
+						      					action: function() {
+						      					
+						      					}
+						      				}
+						      			}
 					          		});
 	          		  		}
 	          	  	  }
@@ -19165,38 +19170,38 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 					          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
 					          		    , monthNames: DigiWebApp.ApplicationController.monthNames
 					          		    , callbacks: {
-					      				confirm: {
-					      					  target: this
-					      					, action: function(value, date) {
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
-					      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampEnd", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
-					      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
-					      							// dauer kann berechnet werden
-					      							try {
-					      								var myVon = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
-					      								var myBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-					      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
-					      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
-					      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
-					      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
-					      									var myDauer = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
-						      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
-					      								}
-					      							} catch(e){}
+					      					confirm: {
+						      					  target: this
+						      					, action: function(value, date) {
+						      						DigiWebApp.BautagebuchZeitenDetailsController.set("bis", value);
+						      						DigiWebApp.BautagebuchZeitenDetailsController.set("timeStampEnd", D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + value).getTimestamp());
+						      						if (DigiWebApp.BautagebuchZeitenDetailsController.get("von") !== null && DigiWebApp.BautagebuchZeitenDetailsController.get("bis") !== null) {
+						      							// dauer kann berechnet werden
+						      							try {
+						      								var myVon = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+						      								var myBis = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+						      								if (myVon.getTimestamp() <= myBis.getTimestamp() || DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+						      									var myDauerInMinuten = myVon.timeBetween(myBis) / 60000;
+						      									var myDauerStunden = parseInt(myDauerInMinuten / 60);
+						      									var myDauerMinuten = parseInt(myDauerInMinuten % 60);
+						      									var myDauer = D8.create(DigiWebApp.BautagebuchBautageberichtDetailsController.item.get("datum") + " " + myDauerStunden + ":" + myDauerMinuten).format("HH:MM");
+							      								DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", myDauer);
+						      								}
+						      							} catch(e){}
+						      						}
 					      						}
-					      					}
-					      				}
-					      				, before: {
-					      					action: function(value, date) {
-					      					
-					      					}
-					      				}
-					      				, cancel: {
-					      					action: function() {
-					      					
-					      					}
-					      				}
-					      			}
+						      				}
+						      				, before: {
+						      					action: function(value, date) {
+						      					
+						      					}
+						      				}
+						      				, cancel: {
+						      					action: function() {
+						      					
+						      					}
+						      				}
+						      			}
 					          		});
 	          		  		}
 	          	  	  }
@@ -19238,23 +19243,23 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 				          		    , monthNamesShort: DigiWebApp.ApplicationController.monthNamesShort
 				          		    , monthNames: DigiWebApp.ApplicationController.monthNames
 				          		    , callbacks: {
-				      				confirm: {
-				      					  target: this
-				      					, action: function(value, date) {
-				      						DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", value);
-				      					}
-				      				}
-				      				, before: {
-				      					action: function(value, date) {
-				      					
-				      					}
-				      				}
-				      				, cancel: {
-				      					action: function() {
-				      					
-				      					}
-				      				}
-				      			}
+					      				  confirm: {
+					      					  target: this
+					      					, action: function(value, date) {
+					      						DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", value);
+					      					}
+					      				}
+					      				, before: {
+					      					action: function(value, date) {
+					      					
+					      					}
+					      				}
+					      				, cancel: {
+					      					action: function() {
+					      					
+					      					}
+					      				}
+					      			}
 				          		});
 	      		  		}
 	      	  	  }
