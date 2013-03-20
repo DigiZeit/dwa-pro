@@ -748,7 +748,7 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     , responsePath: 'zeitbuchungen'
 
     , url: function(datum, mitarbeiterID) {
-		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdatenliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdaten?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
         if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
         	console.log('Zeitbuchungen: using ' + myURL);
         }
@@ -1780,6 +1780,14 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
     })
 
     , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , webAppId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , webAppPin: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -5272,7 +5280,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				} else {
 					
 					// Mitarbeiter (el) zur Liste hinzufügen
-					DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId}).saveSorted();
+					DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
 
 				}
 			});
@@ -6422,7 +6430,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3337
+    , softwareVersion: 3338
 
 
     /**
@@ -17022,7 +17030,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3337'
+              value: 'Build: 3338'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
