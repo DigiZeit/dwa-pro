@@ -2736,6 +2736,10 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchBautagesbericht'
 
+    , id: M.Model.attr('String', {
+        isRequired: YES
+    })
+
     , datum: M.Model.attr('String', {
         isRequired: YES
     })
@@ -5337,7 +5341,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
 		// item ist ein Bautagesbericht
 		var that = this;
-		
+		item.set("id", item.m_id);
 		item.readFromFile(function(result){
 			item.set("unterschrift", JSON.parse(result));
 			var internalSuccessCallback = function(data, msg, request) {
@@ -6580,7 +6584,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3349
+    , softwareVersion: 3350
 
 
     /**
@@ -17184,7 +17188,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3349'
+              value: 'Build: 3350'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
