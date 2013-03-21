@@ -6546,7 +6546,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3375
+    , softwareVersion: 3376
 
 
     /**
@@ -17156,7 +17156,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3375'
+              value: 'Build: 3376'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24646,14 +24646,15 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		    						DigiWebApp.BautagebuchZusammenfassungController.item
 		    					    , function(msg) {
 		    							//console.log("successHandler");
-		    							DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition
+		    							DigiWebApp.BautagebuchZusammenfassungController.set("item", null);
+		    							DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
 		    						}
 		    						, function(xhr,err) {
 		    							//console.log("errorHandler");
 		    							console.error(xhr,err);
 		    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
-		    				                title: M.I18N.l('maximaleFeldlaengeErreicht')
-		    				              , message: M.I18N.l('maximaleFeldlaengeErreichtMsg')
+		    				                title: M.I18N.l('BautagebuchUebertragungsfehler')
+		    				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
 		    				            });
 		    						}
 		    				);
