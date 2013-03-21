@@ -6557,7 +6557,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3385
+    , softwareVersion: 3386
 
 
     /**
@@ -17170,7 +17170,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3385'
+              value: 'Build: 3386'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20710,6 +20710,17 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 			}
         }
     }
+
+	, mitarbeiterId: M.LabelView.design({
+	    cssClass: 'normal unselectable normalLabel'
+		  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= mitarbeiterId %>'
+	      , operation: function(v) {
+				return "";
+	      }
+	  }
+	})
 
 	, position: M.LabelView.design({
 	    	cssClass: 'normal unselectable normalLabel'
