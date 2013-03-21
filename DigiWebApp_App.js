@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3395
+    , softwareVersion: 3396
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3395'
+              value: 'Build: 3396'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24243,7 +24243,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).hide();
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).hide();
 				}
-				
+				$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).addClass("zeitenAendernButton");
         		// Feature 405 (Unterschrift)
         		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
         			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).show();
@@ -24612,7 +24612,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	      	              value: M.I18N.l('BautagebuchZeitenAendern')
 	      	            , anchorLocation: M.RIGHT
     	    	  		, isInline: YES
-    	    	  		, cssClass: 'zeitenAendernButton'
+    	    	  		//, cssClass: 'zeitenAendernButton'
 	      	            , events: {
 	      	                tap: {
 	      	                      target: DigiWebApp.NavigationController
