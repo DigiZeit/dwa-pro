@@ -938,6 +938,10 @@ label.ui-input-text, .ui-controlgroup-label {
     background: url(images/tabSprite.png) -32px -32px no-repeat;
 }
 
+.hiddenLabel {
+	opacity: 0;
+}
+
 /* allgemeine Klassen */
 div.ui-select {
     margin-bottom: 10px;

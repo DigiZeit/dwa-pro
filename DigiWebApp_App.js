@@ -6557,7 +6557,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3387
+    , softwareVersion: 3388
 
 
     /**
@@ -13121,14 +13121,10 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 				    	  // benutze diese Zeitbuchung
 					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1]);
 					   				var zeitbuchItem = {
-					   					  record:	{
-						   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
-						   					, positionName: zeitbuch.get("positionName")
-						   					, activityName: zeitbuch.get("activityName")
-						   					, mitarbeiterId: maId
-					   					}
-					   					, m_id: el.m_id
-					   					, state: "state_valid"
+					   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
+					   					, positionName: zeitbuch.get("positionName")
+					   					, activityName: zeitbuch.get("activityName")
+					   					, mitarbeiterId: maId
 					   				}
 					   				items.push(zeitbuchItem);
 				      	}
@@ -17172,7 +17168,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3387'
+              value: 'Build: 3388'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20714,12 +20710,12 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
     }
 
 	, mitarbeiterId: M.LabelView.design({
-	    cssClass: 'normal unselectable normalLabel'
+	    cssClass: 'hiddenLabel'
 	  , isInline: YES
 	  , computedValue: {
 	        valuePattern: '<%= mitarbeiterId %>'
 	      , operation: function(v) {
-				return "";
+				return v;
 	      }
 	  }
 	})
