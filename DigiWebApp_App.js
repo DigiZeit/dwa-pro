@@ -6561,7 +6561,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3389
+    , softwareVersion: 3390
 
 
     /**
@@ -17172,7 +17172,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3389'
+              value: 'Build: 3390'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19278,8 +19278,9 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
             , anchorLocation: M.LEFT
             , events: {
                 tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: 'backToBautagebuchZeitenListePageTransition'
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchZeitenListePageTransition'
+        			action: function() {history.back();}
                 }
             }
         })
