@@ -6557,7 +6557,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3386
+    , softwareVersion: 3387
 
 
     /**
@@ -13121,12 +13121,14 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 				    	  // benutze diese Zeitbuchung
 					   		mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0]).addMinutes(zeitbuch.get("dauer").split(":")[1]);
 					   				var zeitbuchItem = {
-					   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
-					   					, positionName: zeitbuch.get("positionName")
-					   					, activityName: zeitbuch.get("activityName")
-					   					, modelId: el.modelId
+					   					  record:	{
+						   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
+						   					, positionName: zeitbuch.get("positionName")
+						   					, activityName: zeitbuch.get("activityName")
+						   					, mitarbeiterId: maId
+					   					}
 					   					, m_id: el.m_id
-					   					, mitarbeiterId: maId
+					   					, state: "state_valid"
 					   				}
 					   				items.push(zeitbuchItem);
 				      	}
@@ -17170,7 +17172,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3386'
+              value: 'Build: 3387'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20689,7 +20691,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
       isSelectable: YES
 
     //, childViews: 'grid'
-	, childViews: 'position activity vonbisdauer'
+	, childViews: 'position activity vonbisdauer mitarbeiterId'
 
     , events: {
         tap: {
@@ -20713,7 +20715,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 
 	, mitarbeiterId: M.LabelView.design({
 	    cssClass: 'normal unselectable normalLabel'
-		  , isInline: YES
+	  , isInline: YES
 	  , computedValue: {
 	        valuePattern: '<%= mitarbeiterId %>'
 	      , operation: function(v) {
