@@ -5060,6 +5060,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	  successReturnCallback: function() {}
 	, errorReturnCallback: function() {}
 
+	, consoleLogOutput: YES
+	
 	, empfangen: function(successReturnCallback, errorReturnCallback) {
 		var that = DigiWebApp.BautagebuchDatenuebertragungController;
 		
@@ -5098,6 +5100,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 //		var internalSuccessCallback = function(data, msg, request) {
 //			// verarbeite empfangene Daten
 //						
+//		if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeMengeneinheiten Status: " + request.status);
+//
 //			// wurde eine Mengeneinheitenliste erhalten?
 //			if (typeof(data.mengeneinheiten) === "undefined") {
 //				console.error("missing mengeneinheiten");
@@ -5154,6 +5158,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 			
+			if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeMaterialien Status: " + request.status);
+
 			var myMaterialliste = [];
 			
 			// wurde eine materialliste erhalten?
@@ -5204,6 +5210,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 						
+			if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeProjektleiter Status: " + request.status);
+
 			// wurde eine Projektleiterliste erhalten?
 			if (typeof(data.projektleiter) === "undefined") {
 				console.error("missing projektleiterliste");
@@ -5261,6 +5269,8 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
 						
+			if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeMitarbeiter Status: " + request.status);
+			
 			// wurde eine Mitarbeiterliste erhalten?
 			if (typeof(data.mitarbeiter) === "undefined") {
 				console.error("missing projektleiterliste");
@@ -5359,7 +5369,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		item.set("transferCompleted", NO);
 		var internalSuccessCallback = function(data, msg, request) {
 			// verarbeite empfangene Daten
-			console.log("sendeBautagesbericht Status: " + request.status);
+			if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeBautagesbericht Status: " + request.status);
 			// weiter in der Verarbeitungskette
 			successCallback();
 			
@@ -5439,7 +5449,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-				console.log("sendeMaterialbuchungen Status: " + request.status);
+				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMaterialbuchungen Status: " + request.status);
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5464,7 +5474,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-				console.log("sendeNotizen Status: " + request.status);										
+				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeNotizen Status: " + request.status);										
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -5494,7 +5504,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				
 				var internalSuccessCallback = function(data, msg, request) {
 					// verarbeite empfangene Daten
-					console.log("sendeMedien Status: " + request.status);
+					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMedien Status: " + request.status);
 					// weiter in der Verarbeitungskette
 					successCallback();
 								
@@ -5574,7 +5584,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				// scheint alles gut gengen zu sein
 				item.deleteSorted(function() {
 					DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-					console.log("sendeBautagesberichtFertig Status: " + request.status);
+					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeBautagesberichtFertig Status: " + request.status);
 					if (typeof(successCallback) === "function") successCallback(data, msg, request);
 				});
 			} else {
@@ -6547,7 +6557,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3378
+    , softwareVersion: 3380
 
 
     /**
@@ -17157,7 +17167,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3378'
+              value: 'Build: 3380'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
