@@ -942,6 +942,11 @@ label.ui-input-text, .ui-controlgroup-label {
 	opacity: 0;
 }
 
+.zeitenAendernButton {
+	float: right;
+	top: -17px;
+}
+
 /* allgemeine Klassen */
 div.ui-select {
     margin-bottom: 10px;

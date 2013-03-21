@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3394
+    , softwareVersion: 3395
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3394'
+              value: 'Build: 3395'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24612,6 +24612,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	      	              value: M.I18N.l('BautagebuchZeitenAendern')
 	      	            , anchorLocation: M.RIGHT
     	    	  		, isInline: YES
+    	    	  		, cssClass: 'zeitenAendernButton'
 	      	            , events: {
 	      	                tap: {
 	      	                      target: DigiWebApp.NavigationController
@@ -24620,7 +24621,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	      	            }
 	      	        })
 	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop20'
+	    	        	  cssClass: 'marginTop25'
 	    	        	, isDividedList: YES
 	    	            , contentBinding: {
 	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
