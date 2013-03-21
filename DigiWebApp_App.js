@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3398
+    , softwareVersion: 3399
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3398'
+              value: 'Build: 3399'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21019,7 +21019,7 @@ DigiWebApp.BautagebuchNotizenZusammenfassungTemplateView = M.ListItemView.design
 	})
 
 	, data: M.LabelView.design({
-	      cssClass: 'small unselectable'
+	      cssClass: 'small unselectable marginRight40'
 		, computedValue: {
 		      valuePattern: '<%= data %>'
 		    , operation: function(v) {
