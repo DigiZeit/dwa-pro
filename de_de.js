@@ -388,6 +388,7 @@ M.I18N.de_de = {
 	, BautagebuchUebertragen: "zum Server übertragen"
 	, BautagebuchUebertragungsfehler: "Übertragungsfehler"
 	, BautagebuchUebertragungsfehlerMsg: "Der Bautagesbericht konnte nicht vollständig übertragen werden."
+	, BautagebuchZeitenAendern: "Zeiten ändern"
     // Ende::Bautagebuch
 	
 };

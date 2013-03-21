@@ -387,6 +387,7 @@ M.I18N.en_us = {
 	, BautagebuchUebertragen: "upload to server"
 	, BautagebuchUebertragungsfehler: "Transmission error"
 	, BautagebuchUebertragungsfehlerMsg: "The construction record could not get uploaded completely."
+	, BautagebuchZeitenAendern: "Change times"
     // Ende::Bautagebuch
 
 };

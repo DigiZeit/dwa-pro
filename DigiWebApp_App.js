@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3392
+    , softwareVersion: 3393
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3392'
+              value: 'Build: 3393'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24599,14 +24599,25 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     	      })
     	      
     	      , leistungsnachweisList: M.ContainerView.design({
-      	    	  	  childViews: 'myLabel list'
+      	    	  	  childViews: 'myLabel zeitenAendernButton list'
       	    	  	, cssClass: 'marginBottom20 leistungsnachweisList'
       	    	  	, doNotOverlapAtTop: YES
       	    	  	, doNotOverlapAtBottom: YES
       	    	  	, myLabel: M.LabelView.design({
-      	    	  		  cssClass: 'bigLabel bold'
-      	    	  		, value: M.I18N.l('BautagebuchLeistungsnachweis') + ":"
-      	    	  	})
+    	    	  		  cssClass: 'bigLabel bold'
+    	    	  		, isInline: YES
+    	    	  		, value: M.I18N.l('BautagebuchLeistungsnachweis') + ":"
+    	    	  	})
+      	    	  	, zeitenAendernButton: M.ButtonView.design({
+	      	              value: M.I18N.l('BautagebuchZeitenAendern')
+	      	            , anchorLocation: M.RIGHT
+	      	            , events: {
+	      	                tap: {
+	      	                      target: DigiWebApp.NavigationController
+	      	                    , action: 'backToBautagebuchZeitenListePageTransition'
+	      	                }
+	      	            }
+	      	        })
 	    	        , list: M.ListView.design({
 	    	        	  cssClass: 'marginTop20'
 	    	        	, isDividedList: YES
