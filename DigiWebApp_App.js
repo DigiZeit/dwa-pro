@@ -6557,7 +6557,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3384
+    , softwareVersion: 3385
 
 
     /**
@@ -13124,7 +13124,9 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 					   					  vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
 					   					, positionName: zeitbuch.get("positionName")
 					   					, activityName: zeitbuch.get("activityName")
-					   					, mitarbeiter_m_id: el.m_id
+					   					, modelId: el.modelId
+					   					, m_id: el.m_id
+					   					, mitarbeiterId: maId
 					   				}
 					   				items.push(zeitbuchItem);
 				      	}
@@ -17168,7 +17170,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3384'
+              value: 'Build: 3385'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20694,9 +20696,11 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 			action: function(id, m_id) {
 				console.log(id, m_id);
 			    var view = M.ViewManager.getViewById(id);
+			    console.log(view);
 			    var view_modelId = view.modelId;
+			    console.log(view_modelId);
 			    _.each(DigiWebApp.BautagebuchZusammenfassungController.ZeitbuchungenPerMitarbeiterList, function(selectedItem) {
-					if (selectedItem.mitarbeiter_m_id === view_modelId) {
+					if (selectedItem.m_id === view_modelId) {
 						//DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
 						console.log(selectedItem);
 					}
