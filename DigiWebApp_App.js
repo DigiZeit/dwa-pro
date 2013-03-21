@@ -6139,7 +6139,7 @@ DigiWebApp.BautagebuchZeitenListeController = M.Controller.extend({
 		
 	}
 
-	, neu: function() {
+	, neu: function(vorselektierterMitarbeiter) {
 		var that = this;
 		
 		DigiWebApp.BautagebuchZeitenDetailsController.set("item", DigiWebApp.BautagebuchZeitbuchung.createRecord({
@@ -6149,7 +6149,11 @@ DigiWebApp.BautagebuchZeitenListeController = M.Controller.extend({
 		DigiWebApp.BautagebuchZeitenDetailsController.set("positionName", null);
 		DigiWebApp.BautagebuchZeitenDetailsController.set("activityId", null);
 		DigiWebApp.BautagebuchZeitenDetailsController.set("activityName", null);
-		DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterIds", null);
+		if (vorselektierterMitarbeiter) {
+			DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterIds", [vorselektierterMitarbeiter]);
+		} else {
+			DigiWebApp.BautagebuchZeitenDetailsController.set("mitarbeiterIds", null);
+		}
 		DigiWebApp.BautagebuchZeitenDetailsController.set("von", "");
 		DigiWebApp.BautagebuchZeitenDetailsController.set("bis", "");
 		DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", "00:00");
@@ -6557,7 +6561,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3388
+    , softwareVersion: 3389
 
 
     /**
@@ -17168,7 +17172,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3388'
+              value: 'Build: 3389'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20692,19 +20696,20 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
     , events: {
         tap: {
 			action: function(id, m_id) {
-				console.log(id, m_id);
-			    var view = M.ViewManager.getViewById(id);
-			    console.log(view);
-			    var view_modelId = view.modelId;
-			    console.log(view_modelId);
-			    _.each(DigiWebApp.BautagebuchZusammenfassungController.ZeitbuchungenPerMitarbeiterList, function(selectedItem) {
-					if (selectedItem.m_id === view_modelId) {
-						//DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
-						console.log(selectedItem);
-					}
-				});
+				var view = M.ViewManager.getViewById(id);
+			    //console.log(view);
+			    var view_mitarbeiterId = view.mitarbeiterId.value;
+			    //console.log(view_mitarbeiterId);
+//			    _.each(DigiWebApp.BautagebuchZusammenfassungController.ZeitbuchungenPerMitarbeiterList, function(maItem) {
+//			        _.each(maItem.items, function(selectedItem) {
+//						if (selectedItem.mitarbeiterId === view_mitarbeiterId ) {
+//							//DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
+//							console.log(selectedItem.mitarbeiterId);
+//						}
+//					});
+//				});
 			    //DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
-			    //DigiWebApp.BautagebuchZeitenListeController.neu();
+			    DigiWebApp.BautagebuchZeitenListeController.neu(view_mitarbeiterId);
 			}
         }
     }
