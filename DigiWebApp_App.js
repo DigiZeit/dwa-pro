@@ -6546,7 +6546,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3374
+    , softwareVersion: 3375
 
 
     /**
@@ -17156,7 +17156,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3374'
+              value: 'Build: 3375'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24115,11 +24115,11 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				if (parseBool(DigiWebApp.BautagebuchZusammenfassungController.item.get("abgeschlossen"))) {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide();
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.transferGrid.grid.id).show();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).show();
 				} else {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show();
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).hide();
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.transferGrid.grid.id).hide();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).hide();
 				}
 				
         		// Feature 405 (Unterschrift)
