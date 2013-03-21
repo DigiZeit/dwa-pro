@@ -384,6 +384,9 @@ M.I18N.en_us = {
 	, BautagebuchSendeMedien: "Sending mediafiles"
 	, BautagebuchZusammenfassung: "Summary"
 	, BautagebuchLeistungsnachweis: "Activity confirmation"
+	, BautagebuchUebertragen: "upload to server"
+	, BautagebuchUebertragungsfehler: "Transmission error"
+	, BautagebuchUebertragungsfehlerMsg: "The construction record could not get uploaded completely."
     // Ende::Bautagebuch
 
 };

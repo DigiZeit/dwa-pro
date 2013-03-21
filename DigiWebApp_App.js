@@ -6542,7 +6542,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3372
+    , softwareVersion: 3373
 
 
     /**
@@ -7710,14 +7710,10 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	
 	, delete: function(successcallback, errorcallback) {
 		var that = this;
-		if (that.item.deleteSorted()) {
+		item.deleteSorted(function() {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) === "function") successcallback();
-			return true;
-		} else {
-			if (typeof(errorcallback) === "function") errorcallback();
-			return false;
-		}
+			if (typeof(successCallback) === "function") successCallback();
+		});
 	}
 
 	, finish: function(successcallback, errorcallback) {
@@ -17146,7 +17142,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3372'
+              value: 'Build: 3373'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24105,9 +24101,11 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 				if (parseBool(DigiWebApp.BautagebuchZusammenfassungController.item.get("abgeschlossen"))) {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide();
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.transferGrid.grid.id).show();
 				} else {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show();
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).hide();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.transferGrid.grid.id).hide();
 				}
 				
         		// Feature 405 (Unterschrift)
@@ -24184,7 +24182,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
     })
 
     , content: M.ScrollView.design({
-          childViews: 'container grid'
+          childViews: 'container grid transferGrid'
         	  
 	    , container: M.ContainerView.design({
     	    	childViews: 'detailsGrid leistungsnachweisList materialienList notizenList medienList signature spacer'
@@ -24583,6 +24581,35 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	    })
 	
 	    , grid: M.GridView.design({
+		        childViews: 'button icon'
+		      , layout: {
+		            cssClass: 'digiButton marginTop20'
+		          , columns: {
+		                0: 'button'
+		              , 1: 'icon'
+		          }
+		      }
+		      , button: M.ButtonView.design({
+		            value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+		          , cssClass: 'digiButton'
+		          , anchorLocation: M.RIGHT
+		          , events: {
+		              tap: {
+			                //  target: DigiWebApp.BautagebuchZusammenfassungController
+			                //, action: 'finish'
+			    			action: function() {
+			    				var that = this;
+			    				DigiWebApp.BautagebuchZusammenfassungController.finish(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
+				    		}
+		              }
+		          }
+		      })
+		      , icon: M.ImageView.design({
+		          value: 'theme/images/icon_bookTime.png'
+		      })
+		})
+		  
+	    , transferGrid: M.GridView.design({
 	        childViews: 'button icon'
 	      , layout: {
 	            cssClass: 'digiButton marginTop20'
@@ -24592,7 +24619,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	          }
 	      }
 	      , button: M.ButtonView.design({
-	            value: M.I18N.l('BautagebuchBautageberichtAbschliessen')
+	            value: M.I18N.l('BautagebuchUebertragen')
 	          , cssClass: 'digiButton'
 	          , anchorLocation: M.RIGHT
 	          , events: {
@@ -24601,7 +24628,21 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		                //, action: 'finish'
 		    			action: function() {
 		    				var that = this;
-		    				DigiWebApp.BautagebuchZusammenfassungController.finish(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
+		    				DigiWebApp.BautagebuchDatenuebertragungController.senden(
+		    						DigiWebApp.BautagebuchZusammenfassungController.item
+		    					    , function(msg) {
+		    							//console.log("successHandler");
+		    							DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition
+		    						}
+		    						, function(xhr,err) {
+		    							//console.log("errorHandler");
+		    							console.error(xhr,err);
+		    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
+		    				                title: M.I18N.l('maximaleFeldlaengeErreicht')
+		    				              , message: M.I18N.l('maximaleFeldlaengeErreichtMsg')
+		    				            });
+		    						}
+		    				);
 			    		}
 	              }
 	          }

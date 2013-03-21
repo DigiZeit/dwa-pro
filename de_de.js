@@ -385,6 +385,9 @@ M.I18N.de_de = {
 	, BautagebuchSendeMedien: "Sende Medien"
 	, BautagebuchZusammenfassung: "Zusammenfassung"
 	, BautagebuchLeistungsnachweis: "Leistungsnachweis"
+	, BautagebuchUebertragen: "zum Server übertragen"
+	, BautagebuchUebertragungsfehler: "Übertragungsfehler"
+	, BautagebuchUebertragungsfehlerMsg: "Der Bautagesbericht konnte nicht vollständig übertragen werden."
     // Ende::Bautagebuch
 	
 };
