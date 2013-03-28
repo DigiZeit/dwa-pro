@@ -21,6 +21,7 @@
   font-style: normal;
 }
 
+/* Zeitbuchungen::Start */
 .sigPad {
   margin: 0;
   padding: 0;
@@ -76,6 +77,65 @@
 
   color: #fff;
 }
+/* Zeitbuchungen::Ende */
+
+/* Bautagebuch::Start */
+.sigPad2 {
+  margin: 0;
+  padding: 0;
+  width: 200px;
+}
+
+.sigPad2 label {
+  display: block;
+  margin: 0 0 0.515em;
+  padding: 0;
+
+  color: #000;
+  font: italic normal 1em/1.375 Georgia,Times,serif;
+}
+
+.sigPad2 label.error {
+  color: #f33;
+}
+
+.sigPad2 input {
+  margin: 0;
+  padding: 0.2em 0;
+  width: 198px;
+
+  border: 1px solid #666;
+
+  font-size: 1em;
+}
+
+.sigPad2 input.error {
+  border-color: #f33;
+}
+
+.sigPad2 button {
+  margin: 1em 0 0 0;
+  padding: 0.6em 0.6em 0.7em;
+
+  background-color: #ccc;
+  border: 0;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  color: #555;
+  font: bold 1em/1.375 sans-serif;
+  text-align: left;
+}
+
+.sigPad2 button:hover {
+  background-color: #333;
+
+  color: #fff;
+}
+/* Bautagebuch::End */
 
 .sig {
   display: none;
