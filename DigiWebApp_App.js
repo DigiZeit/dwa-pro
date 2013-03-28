@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3408
+    , softwareVersion: 3409
 
 
     /**
@@ -7728,7 +7728,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function(successcallback, errorcallback) {
+	, delete: function(successCallback, errorCallback) {
 		var that = this;
 		that.item.deleteSorted(function() {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3408'
+              value: 'Build: 3409'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24264,7 +24264,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
         		// Feature 405 (Unterschrift)
         		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
         			// load signature
-        			if (DigiWebApp.BautagebuchZusammenfassungController.item.hasFileName()) {
+        			if (DigiWebApp.BautagebuchZusammenfassungController.item.hasFileName() === YES) {
 	        			DigiWebApp.BautagebuchZusammenfassungController.item.readFromFile(function(fileContent){
 	        				if (fileContent && (fileContent !== "")) {
 	       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
