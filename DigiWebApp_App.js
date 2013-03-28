@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3407
+    , softwareVersion: 3408
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3407'
+              value: 'Build: 3408'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24270,6 +24270,8 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
 	        				}
 	        			});
+        			} else {
+        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
         			}
         		}
 
