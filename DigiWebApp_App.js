@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3403
+    , softwareVersion: 3404
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3403'
+              value: 'Build: 3404'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18002,7 +18002,9 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 							  , lineTop: 300
 							  , drawOnly : true
 							};
-					DigiWebApp.EditTimeDataPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
+					if (DigiWebApp.EditTimeDataPage.signaturePadAPI === null) {
+						DigiWebApp.EditTimeDataPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
+					}
         		} else {
         			$('#' + DigiWebApp.EditTimeDataPage.content.signature.id).hide();
         		}
@@ -24253,7 +24255,9 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 							  , lineTop: 300
 							  , drawOnly : true
 							};
-					DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
+					if (DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI === null) {
+						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad').signaturePad(sigPadOptions);
+					}
         		} else {
         			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).hide();
         		}
