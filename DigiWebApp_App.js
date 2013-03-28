@@ -5395,7 +5395,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		
 		var items = [];
-		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({bautagesberichtId: item.m_id}); 
+		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}); 
 		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
             return parseInt(z.get('_createdAt'));
         });
@@ -5440,7 +5440,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({bautagesberichtId: item.m_id}), function(el) {
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}), function(el) {
 			items.push(el.record);
 		});
 		
@@ -5465,7 +5465,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchNotiz.find({bautagesberichtId: item.m_id}), function(el) {
+		_.each(DigiWebApp.BautagebuchNotiz.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}), function(el) {
 			items.push(el.record);
 		});
 		
@@ -5518,7 +5518,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			}
     	}
 
-		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({bautagesberichtId: item.m_id});
+		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}});
 		var mediaFilesLength = mediaFiles.length;
     	var mediaFilesIndex = 0;
     	
@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3412
+    , softwareVersion: 3413
 
 
     /**
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3412'
+              value: 'Build: 3413'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
