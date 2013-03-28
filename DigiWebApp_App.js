@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3406
+    , softwareVersion: 3407
 
 
     /**
@@ -7730,7 +7730,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 	
 	, delete: function(successcallback, errorcallback) {
 		var that = this;
-		item.deleteSorted(function() {
+		that.item.deleteSorted(function() {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
 			if (typeof(successCallback) === "function") successCallback();
 		});
@@ -17173,7 +17173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3406'
+              value: 'Build: 3407'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
