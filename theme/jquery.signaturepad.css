@@ -25,7 +25,7 @@
 .sigPad {
   margin: 0;
   padding: 0;
-  width: 200px;
+  width: 300px;
 }
 
 .sigPad label {
@@ -44,7 +44,7 @@
 .sigPad input {
   margin: 0;
   padding: 0.2em 0;
-  width: 198px;
+  width: 298px;
 
   border: 1px solid #666;
 
@@ -83,7 +83,7 @@
 .sigPad2 {
   margin: 0;
   padding: 0;
-  width: 200px;
+  width: 448px;
 }
 
 .sigPad2 label {
@@ -205,9 +205,10 @@
   line-height: 1.375;
 }
 
+/* Zeitbuchungen::Start */
 .sigWrapper {
   clear: both;
-  height: 55px;
+  height: 150px;
 
   border: 1px solid #ccc;
 }
@@ -219,6 +220,24 @@
 .signed .sigWrapper {
   border: 0;
 }
+/* Zeitbuchungen::Ende */
+
+/* Bautagebuch::Start */
+.sigWrapper2 {
+  clear: both;
+  height: 320px;
+
+  border: 1px solid #ccc;
+}
+
+.sigWrapper2.current {
+  border-color: #666;
+}
+
+.signed .sigWrapper2 {
+  border: 0;
+}
+/* Bautagebuch::Ende */
 
 .pad {
   position: relative;
