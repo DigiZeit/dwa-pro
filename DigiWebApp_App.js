@@ -6562,7 +6562,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3415
+    , softwareVersion: 3417
 
 
     /**
@@ -17189,7 +17189,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3415'
+              value: 'Build: 3417'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18015,7 +18015,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 					// init canvas
 					var sigPadOptions = {
 							    bgColour : '#fff'
-							  , lineTop: 300
+							  , lineTop: 130
 							  , drawOnly : true
 							};
 					if (DigiWebApp.EditTimeDataPage.signaturePadAPI === null) {
@@ -24714,7 +24714,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		        	
 		        	  childViews: 'signatureform'
 		        		  
-		            , cssClass: 'signaturecanvas marginTop20 marginBottom20'
+		            , cssClass: 'signaturecanvas2 marginTop20 marginBottom20'
 
 		        	, signatureform: M.FormView.design({
 		            	
