@@ -294,6 +294,8 @@ M.I18N.en_us = {
 	, noCamera: "No camera available"
 	, noPicLoaded: "Not foto has been loaded"
 	, errorWhileRequestingQuota: "Not enough space available!"
+	, ungueltigeZahl : 'Wrong Numberformat'
+	, ungueltigeZahlMsg: 'You cannot use . and , at the same time!'
 
 	, second: "Second"
 	, seconds: "Seconds"

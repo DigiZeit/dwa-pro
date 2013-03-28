@@ -295,7 +295,9 @@ M.I18N.de_de = {
 	, noCamera: "Keine Kamera vorhanden"
 	, noPicLoaded: "Es wurde kein Foto geladen"
 	, errorWhileRequestingQuota: "Nicht ausreichend Speicherplatz verfügbar!"
-	
+	, ungueltigeZahl : 'Falsches Zahlenformat'
+	, ungueltigeZahlMsg: 'Sie können nicht . und , gleichzeitig verwenden!'
+		
 	, second: "Sekunde"
 	, seconds: "Sekunden"
 	, minute: "Minute"
