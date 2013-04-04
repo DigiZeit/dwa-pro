@@ -5437,8 +5437,9 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			// weiter in der Verarbeitungskette
 			successCallback();
 		};
-		
-		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback);
+		// getAll=true  Alle
+		// getAll=false KolonnenMAs
+		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback, 'getAll=true');
 		
 	}
 	
@@ -6629,7 +6630,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3440
+    , softwareVersion: 3441
 
 
     /**
@@ -9028,21 +9029,25 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 
 	  consoleLogOutput: YES
 
-	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
+	, sendData: function(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter) {
 		//if (!DigiWebApp.RequestController.DatabaseServer) {
 		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
-		  		DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
+		  		DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter);
 		  	}, null);
 		//} else {
-		//	DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
+		//	DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter);
 		//}
 	}
 
-	, sendDataWithServer: function(data, webservice, loaderText, successCallback, errorCallback) {
+	, sendDataWithServer: function(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter) {
 		var that = this;
 		
+		var myURL =  'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		if (additionalQueryParameter) {
+			myURL = myURL + '&' + additionalQueryParameter
+		}
 		M.Request.init({
-			  url: 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
+			  url: myURL
 			, beforeSend: function(request) {
                 DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
             }
@@ -9069,10 +9074,10 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         }).send();
 	}
 
-	, recieveData: function(webservice, loaderText, successCallback, errorCallback) {
+	, recieveData: function(webservice, loaderText, successCallback, errorCallback, additionalQueryParameter) {
 		//if (!DigiWebApp.RequestController.DatabaseServer) {
 		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
-		  		DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
+		  		DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback, additionalQueryParameter);
 		  	}, null);
 		//} else {
 		//	DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
@@ -9080,8 +9085,12 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	}
 
 	, recieveDataWithServer: function(webservice, loaderText, successCallback, errorCallback) {
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
+		if (additionalQueryParameter) {
+			myURL = myURL + '&' + additionalQueryParameter
+		}
 		M.Request.init({
-			  url : 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
+			  url: myURL
 			, beforeSend: function(xhr) {
                 DigiWebApp.ApplicationController.DigiLoaderView.show(loaderText);
             }
@@ -17599,7 +17608,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3440'
+              value: 'Build: 3441'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
