@@ -6519,7 +6519,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3424
+    , softwareVersion: 3425
 
 
     /**
@@ -15728,6 +15728,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
     
     , uploadMediaFiles: function() {
         //TODO: MediaFiles zu WebService übertragen (tbd)
+    	console.log("upload");
     }
 
 });
@@ -17263,7 +17264,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3424'
+              value: 'Build: 3425'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
