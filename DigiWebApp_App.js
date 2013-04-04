@@ -901,6 +901,8 @@ DigiWebApp.Settings = M.Model.create({
     , daysToHoldBookingsOnDevice: M.Model.attr('String')
 
     , bautagebuchLimit_autoStartUhrzeit: M.Model.attr('Boolean')
+    
+    , datatransfer_min_delay: M.Model.attr('String')
 
 }, M.DataProviderLocalStorage);
 
@@ -5075,7 +5077,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
     	var startTransfer = NO;
     	if (DigiWebApp.DashboardController.lastTimestampDatatransfer !== null) {
     		var timestampNow = D8.now().getTimestamp();
-    		if (timestampNow - DigiWebApp.DashboardController.lastTimestampDatatransfer > 30000) {
+    		if (timestampNow - DigiWebApp.DashboardController.lastTimestampDatatransfer > parseInt(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
     			startTransfer = YES;
     		} else {
     			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
@@ -6627,7 +6629,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3438
+    , softwareVersion: 3439
 
 
     /**
@@ -14524,6 +14526,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , useTransitionsSetting: true
         , daysToHoldBookingsOnDevice: '10'
         , bautagebuchLimit_autoStartUhrzeit: false
+        , datatransfer_min_delay: 30000
     }
 
     , defaultsettings: null
@@ -14693,6 +14696,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                     , label: M.I18N.l('useTransitionsSetting')
                     , isSelected: record.get('useTransitionsSetting')
                 }]
+                , datatransfer_min_delay: record.get('datatransfer_min_delay')
             };
         /* default values */
         } else {
@@ -14753,6 +14757,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                       value: DigiWebApp.SettingsController.defaultsettings.get("useTransitionsSetting")
                     , label: M.I18N.l('useTransitionsSetting')
                 }]
+                , datatransfer_min_delay: DigiWebApp.SettingsController.defaultsettings.get('datatransfer_min_delay')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -14812,6 +14817,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
         if (M.ViewManager.getView('settingsPage', 'bautagebuchLimit_autoStartUhrzeit') !== null) {
         	bautagebuchLimit_autoStartUhrzeit = $('#' + M.ViewManager.getView('settingsPage', 'bautagebuchLimit_autoStartUhrzeit').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
+        
+        var datatransfer_min_delay      = DigiWebApp.SettingsController.getSetting('datatransfer_min_delay');
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -14900,6 +14907,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                                     record.set('remarkIsMandatory', remarkIsMandatory);
                                                     record.set('useTransitionsSetting', useTransitionsSetting);
+                                                    record.set('datatransfer_min_delay', datatransfer_min_delay);
                 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -14951,6 +14959,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                     record.set('remarkIsMandatory', remarkIsMandatory);
                                     record.set('useTransitionsSetting', useTransitionsSetting);
+                                    record.set('datatransfer_min_delay', datatransfer_min_delay);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -14980,6 +14989,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
+                                record.set('datatransfer_min_delay', datatransfer_min_delay);
                                 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -15009,6 +15019,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
+                                record.set('datatransfer_min_delay', datatransfer_min_delay);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -15040,6 +15051,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , bautagebuchLimit_autoStartUhrzeit: bautagebuchLimit_autoStartUhrzeit
                                 , remarkIsMandatory: remarkIsMandatory
                                 , useTransitionsSetting: useTransitionsSetting
+                                , datatransfer_min_delay: datatransfer_min_delay
                             });
 
                             /* now save */
@@ -15947,7 +15959,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
     	var startTransfer = NO;
     	if (that.lastTimestampDatatransfer !== null) {
     		var timestampNow = D8.now().getTimestamp();
-    		if (timestampNow - that.lastTimestampDatatransfer > 30000) {
+    		if (timestampNow - that.lastTimestampDatatransfer > parseInt(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
     			startTransfer = YES;
     		} else {
     			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
@@ -17587,7 +17599,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3438'
+              value: 'Build: 3439'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25219,7 +25231,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		    		    	var startTransfer = NO;
 		    		    	if (that.lastTimestampDatatransfer !== null) {
 		    		    		var timestampNow = D8.now().getTimestamp();
-		    		    		if (timestampNow - that.lastTimestampDatatransfer > 30000) {
+		    		    		if (timestampNow - that.lastTimestampDatatransfer > parseInt(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
 		    		    			startTransfer = YES;
 		    		    		} else {
 		    		    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
