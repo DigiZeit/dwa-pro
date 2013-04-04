@@ -5545,7 +5545,9 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		var items = [];
 		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}), function(el) {
-			items.push(el.record);
+			var tmp = el.record;
+			tmp.menge = parseInt(tmp.menge);
+			items.push(tmp);
 		});
 		
 		if (items.length !== 0) {
@@ -6615,7 +6617,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3432
+    , softwareVersion: 3433
 
 
     /**
@@ -17495,7 +17497,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3432'
+              value: 'Build: 3433'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

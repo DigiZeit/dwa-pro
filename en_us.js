@@ -295,7 +295,7 @@ M.I18N.en_us = {
 	, library: "Open file"
 	, camera: "Open camera"
 	, noCamera: "No camera available"
-	, noPicLoaded: "Not foto has been loaded"
+	, noPicLoaded: "Not picture (jpg, png or bmp) has been loaded."
 	, errorWhileRequestingQuota: "Not enough space available!"
 	, ungueltigeZahl : 'Wrong Numberformat'
 	, ungueltigeZahlMsg: 'You cannot use . and , at the same time!'

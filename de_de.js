@@ -295,7 +295,7 @@ M.I18N.de_de = {
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"
 	, noCamera: "Keine Kamera vorhanden"
-	, noPicLoaded: "Es wurde kein Foto geladen"
+	, noPicLoaded: "Es wurde kein Foto geladen. Erlaubt sind jpg, png und bmp."
 	, errorWhileRequestingQuota: "Nicht ausreichend Speicherplatz verfügbar!"
 	, ungueltigeZahl : 'Falsches Zahlenformat'
 	, ungueltigeZahlMsg: 'Sie können nicht . und , gleichzeitig verwenden!'
