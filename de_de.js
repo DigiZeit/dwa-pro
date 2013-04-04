@@ -299,6 +299,8 @@ M.I18N.de_de = {
 	, errorWhileRequestingQuota: "Nicht ausreichend Speicherplatz verfügbar!"
 	, ungueltigeZahl : 'Falsches Zahlenformat'
 	, ungueltigeZahlMsg: 'Sie können nicht . und , gleichzeitig verwenden!'
+	, notActivated: 'Fehlende Freischaltung!'
+	, notActivatedMsg: 'Diese Funktion ist nicht freigeschaltet!'
 		
 	, second: "Sekunde"
 	, seconds: "Sekunden"

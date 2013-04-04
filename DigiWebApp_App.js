@@ -6627,7 +6627,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3435
+    , softwareVersion: 3436
 
 
     /**
@@ -15655,7 +15655,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
     * Which files do we have to display?
     */
     , init: function(isFirstLoad) {
-		var that = this;
+		var that = DigiWebApp.MediaListController;
 		var items = [];
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
@@ -15669,27 +15669,27 @@ DigiWebApp.MediaListController = M.Controller.extend({
         if(DigiWebApp.MediaListPage.needsUpdate) {
             var actions = [];
                         
-            // Start::TakePicture (400)
-            if (DigiWebApp.SettingsController.featureAvailable('400')) {
-            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
-            	actions.push({
-                      label: M.I18N.l('takePicture')
-                    , icon: 'icon_takePicture.png'
-                    , id: 'foto'
-                });
-            }
-            // End::TakePicture
-
-            // Start::RecordAudio (401)
-            if (DigiWebApp.SettingsController.featureAvailable('401')) {
-            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
-            	actions.push({
-                      label: M.I18N.l('recordAudio')
-                    , icon: 'icon_recordAudio.png'
-                    , id: 'audio'
-                });
-            }
-            // End::RecordAudio
+//            // Start::TakePicture (400)
+//            if (DigiWebApp.SettingsController.featureAvailable('400')) {
+//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
+//            	actions.push({
+//                      label: M.I18N.l('takePicture')
+//                    , icon: 'icon_takePicture.png'
+//                    , id: 'foto'
+//                });
+//            }
+//            // End::TakePicture
+//
+//            // Start::RecordAudio (401)
+//            if (DigiWebApp.SettingsController.featureAvailable('401')) {
+//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
+//            	actions.push({
+//                      label: M.I18N.l('recordAudio')
+//                    , icon: 'icon_recordAudio.png'
+//                    , id: 'audio'
+//                });
+//            }
+//            // End::RecordAudio
 
         	actions.push({
                   label: M.I18N.l('uploadMediaFiles')
@@ -15736,6 +15736,65 @@ DigiWebApp.MediaListController = M.Controller.extend({
             this[m_id]();
         }
     }
+
+	, neu: function() {
+		var that = DigiWebApp.MediaListController;
+    	M.DialogView.actionSheet({
+	          title: M.I18N.l('newMedia')
+	        , cancelButtonValue: M.I18N.l('cancel')
+	        , otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
+	        , otherButtonTags: ["audio", "photo", "video", "other"]
+	        , callbacks: {
+  				  other: {action: function(buttonTag) {
+	  			    switch(buttonTag) {
+		    		        case 'audio':
+		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+		    		                title: M.I18N.l('notImplemented')
+		    		              , message: M.I18N.l('notImplementedMsg')
+		    		            });
+		    		        	/*if (DigiWebApp.SettingsController.featureAvailable('401')) {
+		    		        		that.audio();
+		    		        	} else {
+		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		                title: M.I18N.l('notActivated')
+			    		              , message: M.I18N.l('notActivatedMsg')
+			    		            });
+		    		        	}*/
+		    		            break;
+		    		        case 'photo':
+		    		        	if (DigiWebApp.SettingsController.featureAvailable('400')) {
+		    		        		that.foto();
+		    		        	} else {
+		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		                title: M.I18N.l('notActivated')
+			    		              , message: M.I18N.l('notActivatedMsg')
+			    		            });
+		    		        	}
+		    		            break;
+		    		        case 'video':
+		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+		    		                title: M.I18N.l('notImplemented')
+		    		              , message: M.I18N.l('notImplementedMsg')
+		    		            });
+		    		            break;
+		    		        case 'other':
+		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+		    		                title: M.I18N.l('notImplemented')
+		    		              , message: M.I18N.l('notImplementedMsg')
+		    		            });
+		    		            break;
+		    		        default:
+		    		            console.log("unknonw ButtonTag");
+		    		            break;
+	  			    }
+	  			}}
+  			, cancel: {action: function() {
+  				//console.log(M.I18N.l('cancel'));
+  			}}
+  		}
+	    });
+	
+	}
 
     , foto: function() {
 		var that = this;
@@ -17507,7 +17566,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3435'
+              value: 'Build: 3436'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24312,7 +24371,7 @@ DigiWebApp.MediaListPage = M.PageView.design({
     , cssClass: 'mediaListPage unselectable'
 
     , header: M.ToolbarView.design({
-          childViews: 'backButton title'
+          childViews: 'backButton title newButton'
         , cssClass: 'header'
         , isFixed: YES
         , backButton: M.ButtonView.design({
@@ -24329,6 +24388,18 @@ DigiWebApp.MediaListPage = M.PageView.design({
         , title: M.LabelView.design({
               value: M.I18N.l('mediaList')
             , anchorLocation: M.CENTER
+        })
+                , newButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchAdd')
+            , icon: 'new'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+        			action: function() {
+						DigiWebApp.MediaListController.neu();
+					}
+                }
+            }
         })
         , anchorLocation: M.TOP
     })
