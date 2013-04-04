@@ -6627,7 +6627,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3436
+    , softwareVersion: 3438
 
 
     /**
@@ -13073,6 +13073,8 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 
 	  item: null // model itself
+
+	, lastTimestampDatatransfer: null
 	  
 	, bautagesberichtId: null
 	
@@ -15650,6 +15652,8 @@ DigiWebApp.MediaListController = M.Controller.extend({
     , actions: null
 
     , latestId: null
+    
+    , lastTimestampDatatransfer: null
 
     /*
     * Which files do we have to display?
@@ -15939,9 +15943,26 @@ DigiWebApp.MediaListController = M.Controller.extend({
     }
     
     , uploadMediaFiles: function() {
+    	var that = DigiWebApp.MediaListController;
+    	var startTransfer = NO;
+    	if (that.lastTimestampDatatransfer !== null) {
+    		var timestampNow = D8.now().getTimestamp();
+    		if (timestampNow - that.lastTimestampDatatransfer > 30000) {
+    			startTransfer = YES;
+    		} else {
+    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
+    		}
+    	}
+    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
+    		that.doUploadMediaFiles();
+    	}
+    }
+    
+    , doUploadMediaFiles: function() {
 
-		var that = this;
-
+		var that = DigiWebApp.MediaListController;
+		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
+		
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
 
 		successCallback = function() {
@@ -17566,7 +17587,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3436'
+              value: 'Build: 3438'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25194,23 +25215,35 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 		                //  target: DigiWebApp.BautagebuchZusammenfassungController
 		                //, action: 'finish'
 		    			action: function() {
-		    				var that = this;
-		    				DigiWebApp.BautagebuchDatenuebertragungController.senden(
-		    						DigiWebApp.BautagebuchZusammenfassungController.item
-		    					    , function(msg) {
-		    							//console.log("successHandler");
-		    							DigiWebApp.BautagebuchZusammenfassungController.set("item", null);
-		    							DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
-		    						}
-		    						, function(xhr,err) {
-		    							//console.log("errorHandler");
-		    							console.error(xhr,err);
-		    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
-		    				                title: M.I18N.l('BautagebuchUebertragungsfehler')
-		    				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
-		    				            });
-		    						}
-		    				);
+		    		    	var that = DigiWebApp.BautagebuchZusammenfassungController;
+		    		    	var startTransfer = NO;
+		    		    	if (that.lastTimestampDatatransfer !== null) {
+		    		    		var timestampNow = D8.now().getTimestamp();
+		    		    		if (timestampNow - that.lastTimestampDatatransfer > 30000) {
+		    		    			startTransfer = YES;
+		    		    		} else {
+		    		    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
+		    		    		}
+		    		    	}
+		    		    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
+		    		    		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
+			    				DigiWebApp.BautagebuchDatenuebertragungController.senden(
+			    						DigiWebApp.BautagebuchZusammenfassungController.item
+			    					    , function(msg) {
+			    							//console.log("successHandler");
+			    							DigiWebApp.BautagebuchZusammenfassungController.set("item", null);
+			    							DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition();
+			    						}
+			    						, function(xhr,err) {
+			    							//console.log("errorHandler");
+			    							console.error(xhr,err);
+			    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    				                title: M.I18N.l('BautagebuchUebertragungsfehler')
+			    				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
+			    				            });
+			    						}
+			    				);
+		    		    	}
 			    		}
 	              }
 	          }
