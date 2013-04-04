@@ -6519,7 +6519,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3421
+    , softwareVersion: 3422
 
 
     /**
@@ -8919,6 +8919,16 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	  consoleLogOutput: YES
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
+		if (!DigiWebApp.RequestController.DatabaseServer) {
+		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
+		  		DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
+		  	}, null);
+		} else {
+			DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
+		}
+	}
+
+	, sendDataWithServer: function(data, webservice, loaderText, successCallback, errorCallback) {
 		var that = this;
 		
 		M.Request.init({
@@ -8950,6 +8960,16 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	}
 
 	, recieveData: function(webservice, loaderText, successCallback, errorCallback) {
+		if (!DigiWebApp.RequestController.DatabaseServer) {
+		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
+		  		DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
+		  	}, null);
+		} else {
+			DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
+		}
+	}
+
+	, recieveDataWithServer: function(webservice, loaderText, successCallback, errorCallback) {
 		M.Request.init({
 			  url : 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf()
 			, beforeSend: function(xhr) {
@@ -17243,7 +17263,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3421'
+              value: 'Build: 3422'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
