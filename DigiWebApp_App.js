@@ -2149,20 +2149,7 @@ DigiWebApp.Booking = M.Model.create({
 	
 	, readFromFile: function(successCallback, errorCallback) {
 		var that = this;
-		
-		// check if fileName is set
-		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
-		if (!that.hasFileName()) {
-			console.error("readFromFileError: no fileName given");
-	        return false;
-	    };
-	
-		// check for successCallback is a function
-		if (typeof successCallback !== "function") {
-			console.error("readFromFileError: successCallback is not a function");
-	        return false;
-	    };
-		
+			
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			//console.error("readFromFileError: errorCallback is not a function");
@@ -2172,6 +2159,20 @@ DigiWebApp.Booking = M.Model.create({
 	    	};
 	    };
 	    
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("readFromFileError: successCallback is not a function");
+	        return false;
+	    };
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("readFromFileError: no fileName given");
+			errorCallback();
+	        return false;
+	    };
+
 		// check if LocalFileSystem is defined
 		if (typeof window.requestFileSystem === "undefined") {
 			console.error("readFromFileError: no LocalFileSystem available");
@@ -3672,19 +3673,6 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	, readFromFile: function(successCallback, errorCallback) {
 		var that = this;
 		
-		// check if fileName is set
-		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
-		if (!that.hasFileName()) {
-			console.error("readFromFileError: no fileName given");
-	        return false;
-	    };
-	
-		// check for successCallback is a function
-		if (typeof successCallback !== "function") {
-			console.error("readFromFileError: successCallback is not a function");
-	        return false;
-	    };
-		
 		// check for errorCallback is a function (optional)
 	    if (!errorCallback || (typeof errorCallback !== "function")) {
 			//console.error("readFromFileError: errorCallback is not a function");
@@ -3692,6 +3680,20 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 	            //console.log("deleteFileError: " + evt.target.error.code);
 	    		console.error("readFromFileError", evt);
 	    	};
+	    };
+	    
+		// check for successCallback is a function
+		if (typeof successCallback !== "function") {
+			console.error("readFromFileError: successCallback is not a function");
+	        return false;
+	    };
+		
+		// check if fileName is set
+		//if ((!(that.get('fileName'))) || (that.get('fileName') && (that.get('fileName').length === 0))) {
+		if (!that.hasFileName()) {
+			console.error("readFromFileError: no fileName given");
+			errorCallback();
+	        return false;
 	    };
 	    
 		// check if LocalFileSystem is defined
@@ -6635,7 +6637,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3444
+    , softwareVersion: 3445
 
 
     /**
@@ -8819,6 +8821,13 @@ DigiWebApp.BookingController = M.Controller.extend({
 		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
 							successCallback();
 						}
+					}, function() {
+						if ( bookingsIndex === bookingsLength ) {
+							// last signature loaded
+				    		//console.log('last booking done (with file)');
+		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+							successCallback();
+						}
 					});
     			} else {
 	    			// this booking has no signature
@@ -9171,6 +9180,9 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 			      var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
 			      image.src = fileContent;
 			}
+	  }, function() {
+	      var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+	      image.src = '';
 	  });
 
       /* do something, for any other load. */
@@ -13428,6 +13440,10 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 			      //image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
 			      image.src = fileContent;
 			}
+		}, function() {
+			  that.set("data", null);
+		      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		      image.src = '';
 		});
 		that.set("remark", myItem.get("remark"));
 	}
@@ -17613,7 +17629,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3444'
+              value: 'Build: 3445'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18490,7 +18506,11 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
         			DigiWebApp.EditTimeDataPage.bookingToEdit.readFromFile(function(fileContent){
         				if (fileContent && (fileContent !== "")) {
        						DigiWebApp.EditTimeDataPage.signaturePadAPI.regenerate(fileContent);
+        				} else {
+        					DigiWebApp.EditTimeDataPage.signaturePadAPI.clearCanvas();
         				}
+        			}, function() {
+        				DigiWebApp.EditTimeDataPage.signaturePadAPI.clearCanvas();
         			});
         		}
 				
@@ -24726,6 +24746,8 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 	        				if (fileContent && (fileContent !== "")) {
 	       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
 	        				}
+	        			}, function() {
+	        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
 	        			});
         			} else {
         				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
