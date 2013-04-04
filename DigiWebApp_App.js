@@ -2421,19 +2421,29 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     })
     
-    , deleteAll: function() {
+    , deleteAll: function(successCallback) {
 		var that = this;
+		var files = that.find()
+		var iMax = files.length;
+		var i = 0;
+		var internalSuccessCallback = function(el) {
+			el.del();
+			i = i + 1;
+			if (i === iMax) successCallback(); 
+		}
 	    _.each(that.find(), function(el) {
 			if (el.hasFileName()) {
 		    	// delete mediafile from device
 		    	el.deleteFile(function(n){
 			    	// delete record from localStorage only if file
 		    		// was deleted successfully from device
-			        el.del();	    		
+		    		internalSuccessCallback(el);	    		
+		    	}, function() {
+		    		internalSuccessCallback(el);
 		    	});
 	    	} else {
 	    		// there is no file to delete, so delete the record
-	    		el.del();
+	    		internalSuccessCallback(el);
 	    	}
 	    });
 	}
@@ -6617,7 +6627,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3433
+    , softwareVersion: 3434
 
 
     /**
@@ -15875,8 +15885,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
 
 		successCallback = function() {
-			DigiWebApp.MediaFile.deleteAll();
-			DigiWebApp.MediaListController.init();
+			DigiWebApp.MediaFile.deleteAll(DigiWebApp.MediaListController.init);
 		}
 		
 		errorCallback = function(err) {
@@ -17497,7 +17506,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3433'
+              value: 'Build: 3434'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
