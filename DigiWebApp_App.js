@@ -6519,7 +6519,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3422
+    , softwareVersion: 3423
 
 
     /**
@@ -8919,13 +8919,13 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	  consoleLogOutput: YES
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback) {
-		if (!DigiWebApp.RequestController.DatabaseServer) {
+		//if (!DigiWebApp.RequestController.DatabaseServer) {
 		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
 		  		DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
 		  	}, null);
-		} else {
-			DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
-		}
+		//} else {
+		//	DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback);
+		//}
 	}
 
 	, sendDataWithServer: function(data, webservice, loaderText, successCallback, errorCallback) {
@@ -8960,13 +8960,13 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	}
 
 	, recieveData: function(webservice, loaderText, successCallback, errorCallback) {
-		if (!DigiWebApp.RequestController.DatabaseServer) {
+		//if (!DigiWebApp.RequestController.DatabaseServer) {
 		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
 		  		DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
 		  	}, null);
-		} else {
-			DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
-		}
+		//} else {
+		//	DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(webservice, loaderText, successCallback, errorCallback);
+		//}
 	}
 
 	, recieveDataWithServer: function(webservice, loaderText, successCallback, errorCallback) {
@@ -17263,7 +17263,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3422'
+              value: 'Build: 3423'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
