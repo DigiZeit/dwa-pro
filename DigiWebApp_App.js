@@ -4225,6 +4225,8 @@ DigiWebApp.CameraController = M.Controller.extend({
         }
         /* do something, for any other load. */
 
+        $('#' + DigiWebApp.CameraPage.content.remarkInput.id).val("");
+        
         if (DigiWebApp.CameraController.loadedPicture === null) {
         	var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
         	image.src = '';
@@ -6575,7 +6577,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3430
+    , softwareVersion: 3431
 
 
     /**
@@ -15834,10 +15836,12 @@ DigiWebApp.MediaListController = M.Controller.extend({
 
 		successCallback = function() {
 			DigiWebApp.MediaFile.deleteAll();
+			DigiWebApp.MediaListController.init();
 		}
 		
 		errorCallback = function(err) {
 			console.error(err);
+			DigiWebApp.MediaListController.init();
 		}
 		
 		var proceed = function(mediaFiles) {
@@ -17453,7 +17457,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3430'
+              value: 'Build: 3431'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
