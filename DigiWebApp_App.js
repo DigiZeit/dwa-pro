@@ -6519,7 +6519,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3423
+    , softwareVersion: 3424
 
 
     /**
@@ -8759,7 +8759,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		_.each(bookings, function(el) {
 			if (el.signature) {
 				var mySig = el.record;
-				mySig.unterschrift = el.signature;
+				mySig.unterschrift = JSON.parse(el.signature);
 				items.push(mySig);
 			}
 		});
@@ -17263,7 +17263,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3423'
+              value: 'Build: 3424'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
