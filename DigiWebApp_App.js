@@ -4113,12 +4113,14 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
 			    		  	    		        					  }
 			    		  	    		        					  that.set("data", image.src);
+			    		  	    		        					  that.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
 			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 			    		  	    		        				}
 			    		  	    		        				, function(err) {
 		    		  	    		        				    	var that = DigiWebApp.BautagebuchMedienDetailsController;
 			    		  				    		        		that.set("data", null);
-			    		  					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		  				    		        		that.set("fileType", null);
+			    		  				    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
 			    		  					    		                title: M.I18N.l('error')
 			    		  					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
 			    		  					    		            });	    		        					
@@ -6637,7 +6639,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3445
+    , softwareVersion: 3446
 
 
     /**
@@ -15867,10 +15869,12 @@ DigiWebApp.MediaListController = M.Controller.extend({
 	    		        					  } else {
 					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData);
 	    		        					  }
-				    		        		DigiWebApp.NavigationController.toCameraPageTransition();
+	    		        					  DigiWebApp.CameraController.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
+	    		        					  DigiWebApp.NavigationController.toCameraPageTransition();
 	    		        				}
 	    		        				, function(err) {
 				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+				    		        		DigiWebApp.CameraController.set("fileType", null);
 					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 					    		                title: M.I18N.l('error')
 					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
@@ -17629,7 +17633,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3445'
+              value: 'Build: 3446'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
