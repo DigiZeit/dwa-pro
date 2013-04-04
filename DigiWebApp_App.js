@@ -2397,6 +2397,10 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     })
 
+    , data: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
     , setRemark: function(v) {
         this.set('remark', v);
     }
@@ -6519,7 +6523,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3426
+    , softwareVersion: 3427
 
 
     /**
@@ -17353,7 +17357,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3426'
+              value: 'Build: 3427'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
