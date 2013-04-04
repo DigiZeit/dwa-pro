@@ -2369,11 +2369,23 @@ DigiWebApp.MediaFile = M.Model.create({
         isRequired: NO
     })
 
+    , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
     , positionId: M.Model.attr('String', {
         isRequired: NO
     })
 
+    , positionName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -4112,19 +4124,25 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
 			    		  		    		        	} else {
 			    		  		    		        	
 			    		  			    		        	// im Browser:
-			    		  			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
+			    		  			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData, fileName) {
 	    		  	    		        				    	var that = DigiWebApp.BautagebuchMedienDetailsController;
 			    		  				    		        	if (imgData !== null) {
 		    		  	    		        				          var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		    		  					    		        		  that.set("loadedFileName", fileName);
+		    		  					    		        		  var myFileType = DigiWebApp.ApplicationController.CONSTImageFiletype;
+		    		  					    		        		  
+		    		  					    		        		  that.set("fileType", myFileType);
 			    		  	    		        					  if (imgData.indexOf("data:") === 0) {
 				    		  	    		        				    	image.src = imgData;
 			    		  	    		        					  } else {
-				    		  	    		        				        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData;
+				    		  	    		        				        image.src = 'data:' + myFileType + ',' + imgData;
 			    		  	    		        					  }
 			    		  	    		        					  that.set("data", image.src);
 			    		  	    		        					  DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
 			    		  				    		        	} else {
 			    		  				    		        		that.set("data", null);
+		    		  					    		        		that.set("loadedFileName", null);
+		    		  					    		        		that.set("fileType", null);
 			    		  					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 			    		  					    		                title: M.I18N.l('error')
 			    		  					    		              , message: M.I18N.l('noPicLoaded')
@@ -4197,6 +4215,8 @@ DigiWebApp.CameraController = M.Controller.extend({
     }
 
 	, loadedPicture: null
+	, loadedFileName: null
+	, fileType: null
 
     , init: function(isFirstLoad) {
 		
@@ -4673,7 +4693,39 @@ DigiWebApp.CameraController = M.Controller.extend({
 	    
 	    var image = document.getElementById(DigiWebApp.CameraPage.content.image.id);
 
-	    myMediaFile.set('fileType', DigiWebApp.ApplicationController.CONSTImageFiletype);
+	    myMediaFile.set('fileType', DigiWebApp.CameraController.get("fileType"));
+	    
+    	var myOrderName = M.I18N.l('notDefined');
+    	var myPositionName = M.I18N.l('notDefined');
+    	var myActivityName = M.I18N.l('notDefined');
+    	try {
+			var myO_id = myMediaFile.oId;
+			var myHO_id = myMediaFile.hoId;
+    		if (myO_id !== null || myHO_id != null) {
+        		var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
+        			if (o) {
+                		//var myOID = obj.oId;
+                		//var myHOID = obj.hoId;
+        				var myGetO_id = o.get('id');
+        				return myO_id == myGetO_id || myHO_id == myGetO_id; // || get('name') is for checking handOrders also
+        			}
+                });
+                if(order && order.length > 0) {
+                    order = order[0];
+                    myOrderName = order.get('name');
+                }
+    		}
+    	} catch(e) {}
+    	try {
+    		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: myMediaFile.pId}})[0].get('name');
+    	} catch(e) {}
+    	try {
+    		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: myMediaFile.aId}})[0].get('name');
+    	} catch(e) {}
+	    myMediaFile.set('orderName', myOrderName);
+	    myMediaFile.set('positionName', myPositionName);
+	    myMediaFile.set('activityName', myActivityName);
+
 	    myMediaFile.save();
 	    myMediaFile.saveToFile(image.src, DigiWebApp.NavigationController.backToMediaListPageTransition);
 
@@ -6523,7 +6575,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3428
+    , softwareVersion: 3429
 
 
     /**
@@ -13283,6 +13335,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 	, data: null // runtime (base64-string)
 	, remark: null // in model
 	, fileType: null // in model
+	, loadedFileName: null // runtime
 
 	, init: function(isFirstLoad) {
 		var that = this;
@@ -15680,16 +15733,59 @@ DigiWebApp.MediaListController = M.Controller.extend({
 		    		        	} else {
 		    		        	
 			    		        	// im Browser:
-			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData) {
+			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData, fileName) {
 				    		        	if (imgData !== null) {
-	    		        					  if (imgData.indexOf("data:") === 0) {
-					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
-	    		        					  } else {
-					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imgData);
-	    		        					  }
-	    		        					  DigiWebApp.NavigationController.toCameraPageTransition();
+				    		        		  DigiWebApp.CameraController.set("loadedFileName", fileName);
+				    		        		  var myFileType = ""; //DigiWebApp.ApplicationController.CONSTImageFiletype;
+				    		        		  var tmp = fileName;
+				    		        		  var i = 0;
+				    		        		  while (i !== -1) {
+				    		        			  tmp = tmp.substr(i + 1);
+				    		        			  i = tmp.indexOf(".");
+				    		        		  }
+				    		        		  tmp = tmp.toLowerCase();
+				    		        		  switch (tmp) {
+				    		        		  	case "jpg":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/jpeg";
+				    		        		  		break;
+				    		        		  	case "jpeg":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	case "png":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	case "bmp":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	default:
+				    		        		  		break;
+				    		        		  }
+				    		        		  switch (myFileType) {
+				    		        		  	case "":
+						    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+						    		        		DigiWebApp.CameraController.set("fileType", null);
+							    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+							    		                title: M.I18N.l('error')
+							    		              , message: M.I18N.l('noPicLoaded')
+							    		            });
+				    		        		  		break;
+				    		        		  	default:
+				    		        		  		DigiWebApp.CameraController.set("fileType", myFileType);
+			    		        					if (imgData.indexOf("data:") === 0) {
+			    		        						DigiWebApp.CameraController.set("loadedPicture", imgData);
+			    		        					} else {
+							    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + myFileType + ',' + imgData);
+			    		        					}
+			    		        					DigiWebApp.NavigationController.toCameraPageTransition();
+			    		        					break;
+				    		        		  }
 				    		        	} else {
 				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+				    		        		DigiWebApp.CameraController.set("fileType", null);
 					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
 					    		                title: M.I18N.l('error')
 					    		              , message: M.I18N.l('noPicLoaded')
@@ -17357,7 +17453,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3428'
+              value: 'Build: 3429'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22857,7 +22953,7 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 					var reader = new FileReader();
 					reader.onload = function() {
 						//console.log(this);
-						DigiWebApp.FileChooserPage.successCallback(this.result);
+						DigiWebApp.FileChooserPage.successCallback(this.result, file.name);
 					}
 					reader.onerror = function() {
 						DigiWebApp.FileChooserPage.successCallback(null);
