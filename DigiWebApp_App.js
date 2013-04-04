@@ -6523,7 +6523,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3427
+    , softwareVersion: 3428
 
 
     /**
@@ -17357,7 +17357,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3427'
+              value: 'Build: 3428'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22848,12 +22848,15 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 	        //  target: DigiWebApp.EditPicturePageController
 	        //, action: 'init'
 			action: function() {
-				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).change(function(evt) { 
+				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).val("");
+				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).unbind("change");
+				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).bind("change", function(evt) { 
 					var files = evt.target.files;
 					var file = files[0];
+					console.log(file);
 					var reader = new FileReader();
 					reader.onload = function() {
-						//console.log(this.result);
+						//console.log(this);
 						DigiWebApp.FileChooserPage.successCallback(this.result);
 					}
 					reader.onerror = function() {
