@@ -4699,8 +4699,8 @@ DigiWebApp.CameraController = M.Controller.extend({
     	var myPositionName = M.I18N.l('notDefined');
     	var myActivityName = M.I18N.l('notDefined');
     	try {
-			var myO_id = myMediaFile.oId;
-			var myHO_id = myMediaFile.hoId;
+			var myO_id = myMediaFile.get("orderId");
+			var myHO_id = myMediaFile.get("handOrderId");
     		if (myO_id !== null || myHO_id != null) {
         		var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
         			if (o) {
@@ -4717,10 +4717,10 @@ DigiWebApp.CameraController = M.Controller.extend({
     		}
     	} catch(e) {}
     	try {
-    		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: myMediaFile.pId}})[0].get('name');
+    		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("positionId")}})[0].get('name');
     	} catch(e) {}
     	try {
-    		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: myMediaFile.aId}})[0].get('name');
+    		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("activityId")}})[0].get('name');
     	} catch(e) {}
 	    myMediaFile.set('orderName', myOrderName);
 	    myMediaFile.set('positionName', myPositionName);
@@ -6575,7 +6575,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3429
+    , softwareVersion: 3430
 
 
     /**
@@ -9075,7 +9075,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
   , deleteMediaFileFromLocalStorage: function() {
 	  var that = this;
 	  var myMediaFile = DigiWebApp.EditPicturePageController.myMediaFile;
-	  console.log(myMediaFile);
+	  //console.log(myMediaFile);
 	  try {
 		  myMediaFile.del();
 	  } catch(e) {}
@@ -17453,7 +17453,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3429'
+              value: 'Build: 3430'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22949,7 +22949,7 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 				$("#" + DigiWebApp.FileChooserPage.content.inputfile.id).bind("change", function(evt) { 
 					var files = evt.target.files;
 					var file = files[0];
-					console.log(file);
+					//console.log(file);
 					var reader = new FileReader();
 					reader.onload = function() {
 						//console.log(this);
