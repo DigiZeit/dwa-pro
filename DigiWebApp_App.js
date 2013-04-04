@@ -5329,20 +5329,20 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeProjektleiter Status: " + request.status);
 
 			// wurde eine Projektleiterliste erhalten?
-			if (typeof(data.projektleiter) === "undefined") {
-				console.error("missing projektleiterliste");
+			if (typeof(data.mitarbeiter) === "undefined") {
+				console.error("missing mitarbeiterliste");
 				return errorCallback();
 			}
 			
 			// enthält die Projektleiterliste Projektleiter?
-			if (data.projektleiter === null) {
+			if (data.mitarbeiter === null) {
 				// ohne Projektleiter geht im Bautagebuch nichts
 				return errorCallback();
 			} else {
 				// ist data.materialliste auch wirklich ein Array?
 				var myLength = null;
 				try {
-					myLength = data.projektleiter.length;
+					myLength = data.mitarbeiter.length;
 				} catch(e) {
 					// ohne Projektleiter geht im Bautagebuch nichts
 					return errorCallback();
@@ -5354,9 +5354,12 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			DigiWebApp.BautagebuchProjektleiter.deleteAll();
 			
 			// die empfangenen Projektleiter mit Model ablegen
-			_.each(data.projektleiter, function(el) {
+			_.each(data.mitarbeiter, function(el) {
 				if (typeof(el.id) === "undefined") {
-					console.error("missing projektleiter id");
+					console.error("missing id");
+					return errorCallback();
+				} else if (typeof(el.projektleiterId) === "undefined") {
+					console.error("missing projektleiterId");
 					return errorCallback();
 				} else if (typeof(el.vorname) === "undefined") {
 					console.error("missing projektleiter vorname");
@@ -5366,8 +5369,10 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					return errorCallback();
 				} else {
 					
-					// projektleiter (el) zur Liste hinzufügen
-					DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
+					if (el.id === el.projektleiterId) {
+						// projektleiter (el) zur Liste hinzufügen
+						DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
+					}
 
 				}
 			});
@@ -5376,7 +5381,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			successCallback();
 		};
 		
-		DigiWebApp.JSONDatenuebertragungController.recieveData("projektleiter", M.I18N.l('BautagebuchLadeProjektleiter'), internalSuccessCallback, errorCallback);
+		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeProjektleiter'), internalSuccessCallback, errorCallback, 'getAll=true&nurKolonne=false');
 		
 	}
 
@@ -5439,7 +5444,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		};
 		// getAll=true  Alle
 		// getAll=false KolonnenMAs
-		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback, 'getAll=true');
+		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", M.I18N.l('BautagebuchLadeMitarbeiter'), internalSuccessCallback, errorCallback, 'getAll=true&nurKolonne=true');
 		
 	}
 	
@@ -6630,7 +6635,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3441
+    , softwareVersion: 3443
 
 
     /**
@@ -17608,7 +17613,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3441'
+              value: 'Build: 3443'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
