@@ -6627,7 +6627,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3434
+    , softwareVersion: 3435
 
 
     /**
@@ -15655,6 +15655,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
     * Which files do we have to display?
     */
     , init: function(isFirstLoad) {
+		var that = this;
 		var items = [];
         if(isFirstLoad) {
             /* do something here, when page is loaded the first time. */
@@ -15663,7 +15664,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
         items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
             return parseInt(mediafile.get('timeStamp'));
         });
-        this.set('items', items.reverse());
+        that.set('items', items.reverse());
 
         if(DigiWebApp.MediaListPage.needsUpdate) {
             var actions = [];
@@ -15696,7 +15697,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
                 , id: 'uploadMediaFiles'
             });
 
-        	this.set('actions', actions);
+        	that.set('actions', actions);
             DigiWebApp.MediaListPage.needsUpdate = false;
         }
 
@@ -17506,7 +17507,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3434'
+              value: 'Build: 3435'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
