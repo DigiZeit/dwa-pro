@@ -288,6 +288,9 @@ M.I18N.en_us = {
 	, notImplemented: "Not yet implemented"
 	, notImplementedMsg: "This feature is yet not implemented!"
 	, newMedia: "Type of new mediafile"
+	, loadMediaFiles: "Load Media-Files ..."
+	, sendSignatures: "Sending Signatures ..."
+	, sendeMedien: "Sending Media-Files ..."
 
 	, library: "Open file"
 	, camera: "Open camera"

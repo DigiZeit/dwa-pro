@@ -290,6 +290,7 @@ M.I18N.de_de = {
 	, newMedia: "Art der neuen Mediendatei"
 	, loadMediaFiles: "Lade Medien-Daten ..."
 	, sendSignatures: "Sende Unterschriften ..."
+	, sendeMedien: "Sende Medien"
 
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"
