@@ -4811,6 +4811,7 @@ DigiWebApp.CameraController = M.Controller.extend({
 
         DigiWebApp.CameraController.myImageObj = new Image();
         DigiWebApp.CameraController.myImageObj.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
+        DigiWebApp.CameraController.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
 
     }
 
@@ -6639,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3446
+    , softwareVersion: 3447
 
 
     /**
@@ -13566,6 +13567,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
     , cameraSuccessBase64: function(imageData) {
     	var that = DigiWebApp.BautagebuchMedienDetailsController;
     	that.set("data", imageData);
+    	that.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
         var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
         image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
         DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
@@ -17633,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3446'
+              value: 'Build: 3447'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
