@@ -289,6 +289,7 @@ M.I18N.de_de = {
 	, notImplementedMsg: "Diese Funktion ist noch nicht implementiert!"
 	, newMedia: "Art der neuen Mediendatei"
 	, loadMediaFiles: "Lade Medien-Daten ..."
+	, sendSignatures: "Sende Unterschriften ..."
 
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"
