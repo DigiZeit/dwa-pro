@@ -6635,7 +6635,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3443
+    , softwareVersion: 3444
 
 
     /**
@@ -9089,7 +9089,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 		//}
 	}
 
-	, recieveDataWithServer: function(webservice, loaderText, successCallback, errorCallback) {
+	, recieveDataWithServer: function(webservice, loaderText, successCallback, errorCallback, additionalQueryParameter) {
 		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/' + webservice + '?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
 		if (additionalQueryParameter) {
 			myURL = myURL + '&' + additionalQueryParameter
@@ -17613,7 +17613,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3443'
+              value: 'Build: 3444'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
