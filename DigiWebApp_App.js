@@ -6149,7 +6149,7 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function() {
+	, deleteNotiz: function() {
 		var that = this;
 		if (that.item.deleteSorted()) {		
 			DigiWebApp.BautagebuchNotizenListeController.set("items", DigiWebApp.BautagebuchNotiz.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3453
+    , softwareVersion: 3454
 
 
     /**
@@ -7806,7 +7806,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function(successCallback, errorCallback) {
+	, deleteBautagesbericht: function(successCallback, errorCallback) {
 		var that = this;
 		that.item.deleteSorted(function() {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
@@ -13196,7 +13196,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function(successcallback, errorcallback) {
+	, deleteBautagesbericht: function(successcallback, errorcallback) {
 		var that = this;
 		if (that.item.deleteSorted()) {
 			DigiWebApp.BautagebuchBautageberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
@@ -13503,7 +13503,7 @@ DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function() {
+	, deleteMedienBuchung: function() {
 		var that = this;
 		if (that.item.deleteSorted() !== false) {		
 			DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
@@ -16213,7 +16213,7 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function() {
+	, deleteMaterialbuchung: function() {
 		var that = this;
 		if (that.item.deleteSorted()) {		
 			DigiWebApp.BautagebuchMaterialienListeController.set("items", DigiWebApp.BautagebuchMaterialBuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
@@ -17284,7 +17284,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchMedienDetailsController
-                    , action: 'delete'
+                    , action: 'deleteMedienBuchung'
                 }
             }
         })
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3453'
+              value: 'Build: 3454'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19226,7 +19226,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchMaterialienDetailsController
-                    , action: 'delete'
+                    , action: 'deleteMaterialbuchung'
                 }
             }
         })
@@ -20789,8 +20789,8 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
             , anchorLocation: M.RIGHT
             , events: {
                 tap: {
-                      target: DigiWebApp.BautagebuchMaterialienDetailsController
-                    , action: 'delete'
+                    //  target: Controller
+                    //, action: 'deleteItem'
                 }
             }
         })
@@ -24817,7 +24817,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
                       //target: DigiWebApp.BautagebuchBautageberichtDetailsController
                     //, action: 'delete'
         			action: function() {
-        				DigiWebApp.BautagebuchBautageberichtDetailsController.delete(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
+        				DigiWebApp.BautagebuchBautageberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
         			}
                 }
             }
@@ -25509,7 +25509,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
                       //target: DigiWebApp.BautagebuchBautageberichtDetailsController
                     //, action: 'delete'
         			action: function() {
-        				DigiWebApp.BautagebuchBautageberichtDetailsController.delete(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
+        				DigiWebApp.BautagebuchBautageberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
         			}
                 }
             }
@@ -26189,7 +26189,7 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchNotizenDetailsController
-                    , action: 'delete'
+                    , action: 'deleteNotiz'
                 }
             }
         })
