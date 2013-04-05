@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3450
+    , softwareVersion: 3451
 
 
     /**
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3450'
+              value: 'Build: 3451'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23908,6 +23908,21 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	, spacer: M.LabelView.design({
 	      cssClass: 'unselectable marginBottom12'
 	    , value: ' '
+	})
+	
+	, abgeschlossen: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: NO
+	  , computedValue: {
+	        valuePattern: '<%= abgeschlossen %>'
+	      , operation: function(v) {
+					if (parseBool(v)) {
+						return M.I18N.l('BautagebuchAbgeschlossen');
+					} else {
+						return "";
+					}
+	          }
+	  }
 	})
 	
 	, datum: M.LabelView.design({
