@@ -400,6 +400,8 @@ M.I18N.en_us = {
 	, BautagebuchKeineEinheitMsg: "No quantity unit given!"
 	, BautagebuchKeineMenge: "No Amount"
 	, BautagebuchKeineMengeMsg: "No amount given!"
+	, BautagebuchUngueltigeMenge: "Invalid Amount"
+	, BautagebuchUngueltigeMengeMsg: "No valid amount given!"
     // Ende::Bautagebuch
 
 };

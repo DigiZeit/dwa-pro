@@ -402,6 +402,8 @@ M.I18N.de_de = {
 	, BautagebuchKeineEinheitMsg: "Sie haben keine Mengeneinheit angegeben!"
 	, BautagebuchKeineMenge: "Keine Menge"
 	, BautagebuchKeineMengeMsg: "Sie haben keine Menge angegeben!"
+	, BautagebuchUngueltigeMenge: "Ungültige Menge"
+	, BautagebuchUngueltigeMengeMsg: "Sie haben keine gültige Menge angegeben!"
     // Ende::Bautagebuch
 	
 };
