@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3451
+    , softwareVersion: 3452
 
 
     /**
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3451'
+              value: 'Build: 3452'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23883,7 +23883,7 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'datum startUhrzeit orderName'
+    , childViews: 'abgeschlossen datum startUhrzeit orderName'
 
     , events: {
         tap: {
@@ -23911,7 +23911,7 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 	})
 	
 	, abgeschlossen: M.LabelView.design({
-	    cssClass: 'normal unselectable'
+	    cssClass: 'bigLabel unselectable'
 	  , isInline: NO
 	  , computedValue: {
 	        valuePattern: '<%= abgeschlossen %>'
