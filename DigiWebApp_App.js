@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3455
+    , softwareVersion: 3456
 
 
     /**
@@ -16180,7 +16180,12 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		//	return false;
 		//}
 		
-		if (that.menge.indexOf(".") !== -1 && that.menge.indexOf(",") !== -1) {
+		if (!that.menge) {
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                title: M.I18N.l('BautagebuchKeineMenge')
+              , message: M.I18N.l('BautagebuchKeineMengeMsg')
+            });
+		} else if (that.menge.indexOf(".") !== -1 && that.menge.indexOf(",") !== -1) {
             DigiWebApp.ApplicationController.nativeAlertDialogView({
                 title: M.I18N.l('ungueltigeZahl')
               , message: M.I18N.l('ungueltigeZahlMsg')
@@ -17641,7 +17646,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3455'
+              value: 'Build: 3456'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

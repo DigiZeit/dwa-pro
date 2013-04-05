@@ -396,6 +396,8 @@ M.I18N.de_de = {
 	, BautagebuchUebertragungsfehlerMsg: "Der Bautagesbericht konnte nicht vollständig übertragen werden."
 	, BautagebuchZeitenAendern: "Zeiten ändern"
 	, BautagebuchAbgeschlossen: "ABGESCHLOSSEN"
+	, BautagebuchKeineMenge: "Keine Menge"
+	, BautagebuchKeineMengeMsg: "Sie haben keine Menge eingegeben!"
     // Ende::Bautagebuch
 	
 };
