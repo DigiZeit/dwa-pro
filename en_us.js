@@ -168,7 +168,7 @@ M.I18N.en_us = {
 	, remarkTooLongMessage: "The remark may be at most 255 characters long!"
 	, open: "open"
 	, now: "now"
-	, oclock: ""
+	, oclock: " "
 	, closeBooking: "Close booking"
 	, logout: "logging out"
 	, exitWebApp: "Exit DIGI-WebApp"

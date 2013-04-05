@@ -2,8 +2,8 @@
 <widget xmlns	= "http://www.w3.org/ns/widgets"
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	id		    = "com.digi.webapppro"
-	versionCode = "3454"
-	version 	= "1.5.0.3454">
+	versionCode = "3455"
+	version 	= "1.5.0.3455">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -32,6 +32,9 @@
 	<preference name="autorotate" value="false" readonly="false" />
 	<preference name="phonegap-version" value="2.3.0" />
 	<preference name="orientation" value="portrait" />
+	<preference name="load-url-timeout" value="60000" />
+	<preference name="splash-screen-duration" value="60000" />
+	
 	
 <!-- smartphone and tablet -->
 	<preference name="target-device" value="universal" />

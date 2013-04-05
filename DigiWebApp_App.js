@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3454
+    , softwareVersion: 3455
 
 
     /**
@@ -11505,6 +11505,12 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 		try {
 		
 			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			
+			try {
+				navigator.splashscreen.hide();
+			} catch(e) {
+				console.log("unable to hide splashscreen");
+			}
 			
 			if ( M.Environment.getPlatform().substr(0,10) === "BlackBerry" ) {
 	    		// unfix header
@@ -17635,7 +17641,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3454'
+              value: 'Build: 3455'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
