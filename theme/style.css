@@ -826,9 +826,9 @@ label.ui-input-text, .ui-controlgroup-label {
  	right: 30px;
 }
 
-.bautagebuchBautageberichtDetailsPage:not(.digiButton) .content [data-role="button"] .ui-btn-inner .ui-btn-corner-all {
-	margin-top: 20px;
-	height: 40px;
+.bigButton {
+	padding-top: 20px;
+	height: 60px;
 }
 
 .detailsGrid .ui-block-a {
