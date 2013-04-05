@@ -394,6 +394,10 @@ M.I18N.en_us = {
 	, BautagebuchUebertragungsfehlerMsg: "The construction record could not get uploaded completely."
 	, BautagebuchZeitenAendern: "Change times"
 	, BautagebuchAbgeschlossen: "CLOSED"
+	, BautagebuchKeinMaterial: "No material"
+	, BautagebuchKeinMaterialMsg: "No material given!"
+	, BautagebuchKeineEinheit: "No quantity unit"
+	, BautagebuchKeineEinheitMsg: "No quantity unit given!"
 	, BautagebuchKeineMenge: "No Amount"
 	, BautagebuchKeineMengeMsg: "No amount given!"
     // Ende::Bautagebuch
