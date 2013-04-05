@@ -6024,7 +6024,7 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 		}
 	}
 	
-	, delete: function() {
+	, deleteZeitbuchung: function() {
 		var that = this;
 		if (that.item.deleteSorted()) {		
 			DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautageberichtDetailsController.item.m_id));
@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3452
+    , softwareVersion: 3453
 
 
     /**
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3452'
+              value: 'Build: 3453'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19766,7 +19766,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchZeitenDetailsController
-                    , action: 'delete'
+                    , action: 'deleteZeitbuchung'
                 }
             }
         })
