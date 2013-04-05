@@ -664,11 +664,6 @@ label.ui-input-text, .ui-controlgroup-label {
 }
 
 
-  .bautagebuchBautageberichtDetailsPage .ui-content .ui-block-a 
-{
-    padding-top: 10px;
-}
-
 .bautagebuchListePage .small
 {
     font-size: 12px;
@@ -829,6 +824,14 @@ label.ui-input-text, .ui-controlgroup-label {
 .bigButton {
 	padding-top: 20px;
 	height: 60px;
+}
+
+.bigButton .left {
+	margin-right: 5px;
+}
+
+.bigButton .right {
+	margin-left: 5px;
 }
 
 .detailsGrid .ui-block-a {

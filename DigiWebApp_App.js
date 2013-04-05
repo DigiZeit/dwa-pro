@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3459
+    , softwareVersion: 3460
 
 
     /**
@@ -17646,7 +17646,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3459'
+              value: 'Build: 3460'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25431,6 +25431,11 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 						$(DigiWebApp.BautagebuchBautageberichtDetailsPage.content.startUhrzeit)[0].enable();
 					}
 			  		
+			  		$('#' + DigiWebApp.BautagebuchBautageberichtDetailsPage.content.zeiten_material_ButtonGrid.zeitenButton.id).addClass("bigButton");
+			  		$('#' + DigiWebApp.BautagebuchBautageberichtDetailsPage.content.zeiten_material_ButtonGrid.materialienButton.id).addClass("bigButton");
+			  		$('#' + DigiWebApp.BautagebuchBautageberichtDetailsPage.content.notizen_medien_ButtonGrid.notizenButton.id).addClass("bigButton");
+			  		$('#' + DigiWebApp.BautagebuchBautageberichtDetailsPage.content.notizen_medien_ButtonGrid.medienButton.id).addClass("bigButton");
+			  		$('#' + DigiWebApp.BautagebuchBautageberichtDetailsPage.content.wetterButton.id).addClass("bigButton");
 			  		
 			}
         }
