@@ -681,6 +681,15 @@ label.ui-input-text, .ui-controlgroup-label {
 	padding-right: 1%;
 }
 
+.tmp-dialog-footer .ui-btn.ui-btn-up-c.ui-btn-corner-all.ui-shadow {
+	height: 60px;
+}
+
+.tmp-dialog-footer .ui-btn-up-c .ui-btn-inner.ui-btn-corner-all
+{
+	margin-top: 10px;
+}
+
   .bautagebuchZeitenDetailsPage input.ui-input-text
 , .bautagebuchBautageberichtDetailsPage input.ui-input-text
 {
