@@ -676,6 +676,9 @@ label.ui-input-text, .ui-controlgroup-label {
 {
     padding-top: 10px;
     padding-bottom: 20px;
+	width: 47.5%;
+	padding-left: 1%;
+	padding-right: 1%;
 }
 
   .bautagebuchZeitenDetailsPage input.ui-input-text
