@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3465
+    , softwareVersion: 3466
 
 
     /**
@@ -16224,6 +16224,9 @@ DigiWebApp.BautagebuchMaterialienDetailsController = M.Controller.extend({
 		} else {
 			that.set("menge", that.menge.replace(",","."));
 		}
+		
+		// jetzt noch die menge endgültig als number casten 
+		that.set("menge", parseFloat(that.menge));
 
 		that.item.set("positionId", that.positionId);
 		that.item.set("positionName", that.positionName);
@@ -17670,7 +17673,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3465'
+              value: 'Build: 3466'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
