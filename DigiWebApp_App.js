@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3448
+    , softwareVersion: 3449
 
 
     /**
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3448'
+              value: 'Build: 3449'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19138,12 +19138,12 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED material");
 				    	} else {    
-							if (DigiWebApp.BautagebuchMaterialienDetailsController.materialId) {
+							if (DigiWebApp.BautagebuchMaterialienDetailsController.materialId && DigiWebApp.BautagebuchMaterialienDetailsController.materialId !== "0" && DigiWebApp.BautagebuchMaterialienDetailsController.materialId !== null) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.materialId);
 	                			$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).hide();
 							} else {
 								$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.materialInput.id).show();
-	                			M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'materialInput').setValue(DigiWebApp.BautagebuchMaterialienDetailsController.einheit);
+	                			M.ViewManager.getView('bautagebuchMaterialienDetailsPage', 'materialInput').setValue(DigiWebApp.BautagebuchMaterialienDetailsController.artikel);
 							}
 				            return o;
 				    	}
@@ -19164,7 +19164,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 				    	if ( typeof(o) === "undefined" ) {
 				    		console.log("UNDEFINED mengeneinheit");
 				    	} else {    
-							if (DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId) {
+							if (DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId && DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId !== "0" && DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId !== null) {
 								o.isSelected = (o.value === DigiWebApp.BautagebuchMaterialienDetailsController.mengeneinheitId);				    			
 	                			$('#' + DigiWebApp.BautagebuchMaterialienDetailsPage.content.mengeneinheitInput.id).hide();
 							} else {
