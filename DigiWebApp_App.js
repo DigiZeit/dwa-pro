@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3469
+    , softwareVersion: 3471
 
 
     /**
@@ -17673,7 +17673,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3469'
+              value: 'Build: 3471'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25248,7 +25248,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 
 		            		  label: M.I18N.l('signature') + ":"
 
-		            		, canvasWidth: 450
+		            		, canvasWidth: 550
 		                    , canvasHeight: 320
 		                	
 		                    , render: function() {

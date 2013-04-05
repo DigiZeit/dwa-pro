@@ -83,7 +83,7 @@
 .sigPad2 {
   margin: 0;
   padding: 0;
-  width: 454px;
+  width: 554px;
 }
 
 .sigPad2 label {
@@ -225,7 +225,7 @@
 /* Bautagebuch::Start */
 .sigWrapper2 {
   clear: both;
-  height: 320px;
+  height: 322px;
 
   border: 1px solid #ccc;
 }
