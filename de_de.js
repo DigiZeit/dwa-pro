@@ -396,7 +396,7 @@ M.I18N.de_de = {
 	, BautagebuchUebertragungsfehlerMsg: "Der Bautagesbericht konnte nicht vollständig übertragen werden."
 	, BautagebuchZeitenAendern: "Zeiten ändern"
 	, BautagebuchAbgeschlossen: "ABGESCHLOSSEN"
-	, BautagebuchKeinMaterial: "Keine Material"
+	, BautagebuchKeinMaterial: "Kein Material"
 	, BautagebuchKeinMaterialMsg: "Sie haben kein Material angegeben!"
 	, BautagebuchKeineEinheit: "Keine Mengeneinheit"
 	, BautagebuchKeineEinheitMsg: "Sie haben keine Mengeneinheit angegeben!"
