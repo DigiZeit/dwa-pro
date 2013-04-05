@@ -4065,8 +4065,10 @@ DigiWebApp.BautagebuchMedienListeController = M.Controller.extend({
     	M.DialogView.actionSheet({
 	          title: M.I18N.l('newMedia')
 	        , cancelButtonValue: M.I18N.l('cancel')
-	        , otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
-	        , otherButtonTags: ["audio", "photo", "video", "other"]
+	        //, otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
+	        //, otherButtonTags: ["audio", "photo", "video", "other"]
+	        , otherButtonValues: [M.I18N.l('photo')]
+	        , otherButtonTags: ["photo"]
 	        , callbacks: {
   				  other: {action: function(buttonTag) {
 	  			    switch(buttonTag) {
@@ -6640,7 +6642,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3472
+    , softwareVersion: 3473
 
 
     /**
@@ -15798,8 +15800,10 @@ DigiWebApp.MediaListController = M.Controller.extend({
     	M.DialogView.actionSheet({
 	          title: M.I18N.l('newMedia')
 	        , cancelButtonValue: M.I18N.l('cancel')
-	        , otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
-	        , otherButtonTags: ["audio", "photo", "video", "other"]
+	        //, otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
+	        //, otherButtonTags: ["audio", "photo", "video", "other"]
+	        , otherButtonValues: [M.I18N.l('photo')]
+	        , otherButtonTags: ["photo"]
 	        , callbacks: {
   				  other: {action: function(buttonTag) {
 	  			    switch(buttonTag) {
@@ -17673,7 +17677,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3472'
+              value: 'Build: 3473'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
