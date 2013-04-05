@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3449
+    , softwareVersion: 3450
 
 
     /**
@@ -17635,7 +17635,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3449'
+              value: 'Build: 3450'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24723,10 +24723,12 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide();
 					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).show();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).hide();
 				} else {
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show();
-					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).hide();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
 					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).hide();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).show()
 				}
 				$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).addClass("zeitenAendernButton");
         		// Feature 405 (Unterschrift)
