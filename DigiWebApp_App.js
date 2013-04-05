@@ -6640,7 +6640,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3467
+    , softwareVersion: 3468
 
 
     /**
@@ -17673,7 +17673,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3467'
+              value: 'Build: 3468'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25977,7 +25977,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 						        , otherButtonValues: [M.I18N.l('save'), M.I18N.l('BautagebuchBautageberichtAbschliessen')]
 						        , otherButtonTags: ["save","finish"]
 						        , callbacks: {
-					    			, other: {action: function(buttonTag) {
+					    			  other: {action: function(buttonTag) {
 					    			    switch(buttonTag) {
 						    		        case 'save':
 						    		        	DigiWebApp.BautagebuchBautageberichtDetailsController.save(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
