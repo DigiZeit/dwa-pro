@@ -254,6 +254,10 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-top: 10px;
 }
 
+/* Feierabend-Icon oben rechts */
+.bookTimePage .ui-btn-right .ui-btn-inner.ui-btn-corner-all { height: 13px; }
+.bookTimePage .ui-btn-right .ui-icon.ui-icon-home.ui-icon-shadow { margin-left: 5px; }
+
 /* mediaListPage */
 .actionsList .ui-content {
     background: url('images/arrow_white.png') 100% 50% no-repeat !important;
