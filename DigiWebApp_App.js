@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3498
+    , softwareVersion: 3499
 
 
     /**
@@ -8740,7 +8740,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     , closeDay: function() {
         if(this.currentBooking) {
 	        // Start::Bemerkungsfeld (403)
-			if (DigiWebApp.SettingsController.featureAvailable('403')) {
+			if (DigiWebApp.SettingsController.featureAvailable('403') && !DigiWebApp.SettingsController.getSetting('remarkIsOptional')) {
 				// if remark-feature active: go to remarkpage
 	        	this.refreshCurrentBooking(false);
 	        	DigiWebApp.NavigationController.toRemarkPage(function() {
@@ -17771,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3498'
+              value: 'Build: 3499'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
