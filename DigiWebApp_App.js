@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3496
+    , softwareVersion: 3497
 
 
     /**
@@ -17771,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3496'
+              value: 'Build: 3497'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17971,9 +17971,38 @@ DigiWebApp.BookingPage = M.PageView.design({
     , cssClass: 'bookTimePage'
 
     , header: M.ToolbarView.design({
-          cssClass: 'header unselectable'
+          childViews: 'title feierabendButton'
+        , cssClass: 'header unselectable'
         , isFixed: YES
-        , value: M.I18N.l('timeRegistration')
+        , pauseButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+        			action: function() {
+        				// TODO: schnelle Pause implementieren
+						//DigiWebApp.BookingController.closeDay();
+					}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('timeRegistration')
+            , anchorLocation: M.CENTER
+        })
+        , feierabendButton: M.ButtonView.design({
+              value: ''
+            , icon: 'home'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+        			action: function() {
+        				DigiWebApp.BookingController.closeDay();
+					}
+                }
+            }
+        })
         , anchorLocation: M.TOP
     })
 
