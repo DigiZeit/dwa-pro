@@ -78,7 +78,7 @@ body {
 .w1536 { background: url('images/1536x2048_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .w5000 { background: url('images/5000x5000_90_DIGI-WebApp.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 
-/* SCHOLPP-Branding */
+/* SCHOLPP-Branding (Grafiken vorerst wieder aus der WebApp entfernt) 
 .SCHOLPP_w320 { background: url('images/320x480_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .SCHOLPP_w480 { background: url('images/480x800_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .SCHOLPP_w640 { background: url('images/640x960_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
@@ -87,6 +87,7 @@ body {
 .SCHOLPP_w1080 { background: url('images/1080x1920_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .SCHOLPP_w1536 { background: url('images/1536x2048_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
 .SCHOLPP_w5000 { background: url('images/5000x5000_90_SCHOLPP.png'); background-position:right bottom !important; background-repeat:repeat-y !important; background-attachment:fixed !important;}
+*/
 
 .infoLabel a, 
 .infoLabel a:hover, 
