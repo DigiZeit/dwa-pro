@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3499
+    , softwareVersion: 3500
 
 
     /**
@@ -14858,7 +14858,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 , datatransfer_min_delay: DigiWebApp.SettingsController.defaultsettings.get('datatransfer_min_delay')
                 , branding: DigiWebApp.SettingsController.defaultsettings.get('branding')
                 , GPSTimeOut: DigiWebApp.SettingsController.defaultsettings.get('GPSTimeOut')
-                , silentLoader: igiWebApp.SettingsController.defaultsettings.get('silentLoader')
+                , silentLoader: DigiWebApp.SettingsController.defaultsettings.get('silentLoader')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -17771,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3499'
+              value: 'Build: 3500'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
