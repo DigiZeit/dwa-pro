@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3500
+    , softwareVersion: 3501
 
 
     /**
@@ -17771,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3500'
+              value: 'Build: 3501'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17964,6 +17964,11 @@ DigiWebApp.BookingPage = M.PageView.design({
         , pageshow: {
         	action: function() {
         		DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem1);
+        		if (DigiWebApp.SettingsController.featureAvailable('415')) {
+        			$('#' + DigiWebApp.BookingPage.header.feierabendButton.id).show(); 			
+        		} else {
+        			$('#' + DigiWebApp.BookingPage.header.feierabendButton.id).hide()
+        		}
         	}
         }
     }
