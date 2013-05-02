@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3492
+    , softwareVersion: 3493
 
 
     /**
@@ -11239,14 +11239,14 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 		 *
 		 */
 
-		  loaderMessage: ""
+		  loaderMessage: " "
 
 		, isVisible: function() { 
 			return M.LoaderView.refCount !== 0;
 		} 
 
 		, hide: function() {
-			this.loaderMessage = ""; 
+			this.loaderMessage = " "; 
 			return M.LoaderView.hide(true);
 		}
 
@@ -17767,7 +17767,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3492'
+              value: 'Build: 3493'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
