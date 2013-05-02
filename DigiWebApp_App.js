@@ -896,6 +896,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , remarkIsMandatory: M.Model.attr('Boolean')
 
+    , remarkIsOptional: M.Model.attr('Boolean')
+
     , useTransitionsSetting: M.Model.attr('Boolean')
     
     , daysToHoldBookingsOnDevice: M.Model.attr('String')
@@ -905,6 +907,8 @@ DigiWebApp.Settings = M.Model.create({
     , datatransfer_min_delay: M.Model.attr('String')
 
     , branding: M.Model.attr('String')
+
+    , GPSTimeOut: M.Model.attr('Integer')
 
 }, M.DataProviderLocalStorage);
 
@@ -6649,7 +6653,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3487
+    , softwareVersion: 3489
 
 
     /**
@@ -17761,7 +17765,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3487'
+              value: 'Build: 3489'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
