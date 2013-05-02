@@ -909,6 +909,8 @@ DigiWebApp.Settings = M.Model.create({
     , branding: M.Model.attr('String')
 
     , GPSTimeOut: M.Model.attr('Integer')
+    
+    , silentLoader: M.Model.attr('Boolean')
 
 }, M.DataProviderLocalStorage);
 
@@ -6653,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3489
+    , softwareVersion: 3490
 
 
     /**
@@ -17765,7 +17767,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3489'
+              value: 'Build: 3490'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
