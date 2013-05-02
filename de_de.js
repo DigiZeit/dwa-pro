@@ -291,6 +291,7 @@ M.I18N.de_de = {
 	, loadMediaFiles: "Lade Medien-Daten ..."
 	, sendSignatures: "Sende Unterschriften ..."
 	, sendeMedien: "Sende Medien"
+	, remarkIsOptional: "Bemerkung ist rein optional"
 
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"

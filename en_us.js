@@ -291,6 +291,7 @@ M.I18N.en_us = {
 	, loadMediaFiles: "Load Media-Files ..."
 	, sendSignatures: "Sending Signatures ..."
 	, sendeMedien: "Sending Media-Files ..."
+	, remarkIsOptional: "Remark is optional"
 
 	, library: "Open file"
 	, camera: "Open camera"

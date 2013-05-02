@@ -6649,7 +6649,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3486
+    , softwareVersion: 3487
 
 
     /**
@@ -8014,8 +8014,8 @@ DigiWebApp.BookingController = M.Controller.extend({
 		if (this.checkBooking()) { // checkBooking checks for all booking-problems
 			if (this.currentBooking) {
 				// Start::Bemerkungsfeld (403)
-				if (DigiWebApp.SettingsController.featureAvailable('403')) {
-						// if remark-feature active: go to remarkpage
+				if (DigiWebApp.SettingsController.featureAvailable('403') && !DigiWebApp.SettingsController.getSetting('remarkIsOptional')) {
+						// if remark-feature active and not optional: go to remarkpage
 						this.refreshCurrentBooking(false);
 						DigiWebApp.NavigationController.toRemarkPage(function() {
 		    		        DigiWebApp.BookingController.set('isBackFromRemarkPage', YES);
@@ -8082,7 +8082,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             		maximumAge: 0, 
             		timeout: 240000 
             	};*/
-            var getLocationOptions =  { enableHighAccuracy: true, timeout: 240000 };
+            var getLocationOptions =  { enableHighAccuracy: true, timeout: DigiWebApp.SettingsController.getSetting('GPSTimeOut') };
 
             M.LocationManager.getLocation(that, successCallback, function(error) {
             	//if (DigiWebApp.SettingsController.globalDebugMode) console.error("error=" + error + ", error.code="+error.code + ", error.message=" + error.message);
@@ -11250,7 +11250,9 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 				this.hide(); 
 			}
 		
-			this.loaderMessage = title;
+			if (DigiWebApp.SettingsController.getSetting('silentLoader') !== YES) {
+				this.loaderMessage = title;
+			}
 
 			return M.LoaderView.show(this.loaderMessage);
 		}
@@ -14591,11 +14593,14 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , autoSaveGPSData: false
         , GPSDataIsMandatory: false
         , remarkIsMandatory: false
+        , remarkIsOptional: false
         , useTransitionsSetting: true
         , daysToHoldBookingsOnDevice: '10'
         , bautagebuchLimit_autoStartUhrzeit: false
         , datatransfer_min_delay: 30000
         , branding: ''
+        , GPSTimeOut: 240000
+        , silentLoader: false
     }
 
     , defaultsettings: null
@@ -14644,8 +14649,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
         // Start::Bemerkungsfeld (403)
         if (DigiWebApp.SettingsController.featureAvailable('403')) {
         	$('#' + DigiWebApp.SettingsPage.content.remarkIsMandatory.id).show();
+        	$('#' + DigiWebApp.SettingsPage.content.remarkIsOptional.id).show();
         } else {
         	$('#' + DigiWebApp.SettingsPage.content.remarkIsMandatory.id).hide();
+        	$('#' + DigiWebApp.SettingsPage.content.remarkIsOptional.id).hide();
         }
         // End::Bemerkungsfeld
         
@@ -14760,6 +14767,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
                     , label: M.I18N.l('remarkIsMandatory')
                     , isSelected: record.get('remarkIsMandatory')
                 }]
+                , remarkIsOptional: [{
+	                   value: record.get('remarkIsOptional')
+	                 , label: M.I18N.l('remarkIsOptional')
+	                 , isSelected: record.get('remarkIsOptional')
+	            }]
                 , useTransitionsSetting: [{
                       value: record.get('useTransitionsSetting')
                     , label: M.I18N.l('useTransitionsSetting')
@@ -14767,6 +14779,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 }]
                 , datatransfer_min_delay: record.get('datatransfer_min_delay')
                 , branding: record.get('branding')
+                , GPSTimeOut: record.get('GPSTimeOut')
+                , silentLoader: record.get('silentLoader')
             };
         /* default values */
         } else {
@@ -14823,12 +14837,18 @@ DigiWebApp.SettingsController = M.Controller.extend({
                       value: DigiWebApp.SettingsController.defaultsettings.get("remarkIsMandatory")
                     , label: M.I18N.l('remarkIsMandatory')
                 }]
+	            , remarkIsOptional: [{
+	                  value: DigiWebApp.SettingsController.defaultsettings.get("remarkIsOptional")
+	                , label: M.I18N.l('remarkIsOptional')
+	            }]
                 , useTransitionsSetting: [{
                       value: DigiWebApp.SettingsController.defaultsettings.get("useTransitionsSetting")
                     , label: M.I18N.l('useTransitionsSetting')
                 }]
                 , datatransfer_min_delay: DigiWebApp.SettingsController.defaultsettings.get('datatransfer_min_delay')
                 , branding: DigiWebApp.SettingsController.defaultsettings.get('branding')
+                , GPSTimeOut: DigiWebApp.SettingsController.defaultsettings.get('GPSTimeOut')
+                , silentLoader: igiWebApp.SettingsController.defaultsettings.get('silentLoader')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -14879,6 +14899,14 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	remarkIsMandatory = $('#' + M.ViewManager.getView('settingsPage', 'remarkIsMandatory').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
 
+        var remarkIsOptional = NO;
+        if (M.ViewManager.getView('settingsPage', 'remarkIsOptional') !== null) {
+        	remarkIsOptional = $('#' + M.ViewManager.getView('settingsPage', 'remarkIsOptional').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        	if (remarkIsOptional === YES) {
+        		remarkIsMandatory = NO;
+        	}
+        }
+
         var GPSDataIsMandatory = NO;
         if (M.ViewManager.getView('settingsPage', 'GPSDataIsMandatory') !== null) {
         	GPSDataIsMandatory = $('#' + M.ViewManager.getView('settingsPage', 'GPSDataIsMandatory').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
@@ -14891,6 +14919,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
         
         var datatransfer_min_delay      = DigiWebApp.SettingsController.getSetting('datatransfer_min_delay');
         var branding                    = DigiWebApp.SettingsController.getSetting('branding');
+        var GPSTimeOut                  = DigiWebApp.SettingsController.getSetting('GPSTimeOut');
+        var silentLoader                = DigiWebApp.SettingsController.getSetting('silentLoader');
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -14978,9 +15008,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                                     record.set('remarkIsMandatory', remarkIsMandatory);
+                                                    record.set('remarkIsOptional', remarkIsOptional);
                                                     record.set('useTransitionsSetting', useTransitionsSetting);
                                                     record.set('datatransfer_min_delay', datatransfer_min_delay);
                                                     record.set('branding', branding);
+                                                    record.set('GPSTimeOut', GPSTimeOut);
+                                                    record.set('silentLoader', silentLoader);
                 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -15031,9 +15064,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                     record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                     record.set('remarkIsMandatory', remarkIsMandatory);
+                                    record.set('remarkIsOptional', remarkIsOptional);
                                     record.set('useTransitionsSetting', useTransitionsSetting);
                                     record.set('datatransfer_min_delay', datatransfer_min_delay);
                                     record.set('branding', branding);
+                                    record.set('GPSTimeOut', GPSTimeOut);
+                                    record.set('silentLoader', silentLoader);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -15062,9 +15098,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
+                                record.set('remarkIsOptional', remarkIsOptional);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
                                 record.set('datatransfer_min_delay', datatransfer_min_delay);
                                 record.set('branding', branding);
+                                record.set('GPSTimeOut', GPSTimeOut);
+                                record.set('silentLoader', silentLoader);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -15093,9 +15132,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('bautagebuchLimit_autoStartUhrzeit', bautagebuchLimit_autoStartUhrzeit);
                                 record.set('GPSDataIsMandatory', GPSDataIsMandatory);
                                 record.set('remarkIsMandatory', remarkIsMandatory);
+                                record.set('remarkIsOptional', remarkIsOptional);
                                 record.set('useTransitionsSetting', useTransitionsSetting);
                                 record.set('datatransfer_min_delay', datatransfer_min_delay);
                                 record.set('branding', branding);
+                                record.set('GPSTimeOut', GPSTimeOut);
+                                record.set('silentLoader', silentLoader);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -15126,9 +15168,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , GPSDataIsMandatory: GPSDataIsMandatory
                                 , bautagebuchLimit_autoStartUhrzeit: bautagebuchLimit_autoStartUhrzeit
                                 , remarkIsMandatory: remarkIsMandatory
+                                , remarkIsOptional: remarkIsOptional
                                 , useTransitionsSetting: useTransitionsSetting
                                 , datatransfer_min_delay: datatransfer_min_delay
                                 , branding: branding
+                                , GPSTimeOut: GPSTimeOut
+                                , silentLoader: silentLoader
                             });
 
                             /* now save */
@@ -17716,7 +17761,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3486'
+              value: 'Build: 3487'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18265,6 +18310,14 @@ DigiWebApp.SettingsPage = M.PageView.design({
             , contentBinding: {
                   target: DigiWebApp.SettingsController
                 , property: 'settings.remarkIsMandatory'
+            }
+        })
+        , remarkIsOptional: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            //, cssClass: 'invisibleSetting',
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.remarkIsOptional'
             }
         })
         , useTransitionsSetting: M.SelectionListView.design({
