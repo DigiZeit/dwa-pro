@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3494
+    , softwareVersion: 3495
 
 
     /**
@@ -12752,6 +12752,10 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	            }
                 DigiWebApp.ApplicationController.triggerUpdate = YES;
             });
+            // zueinander inkompatible Einstellungen korrigieren
+            if (DigiWebApp.SettingsController.getSetting('remarkIsOptional')) {
+            	DigiWebApp.SettingsController.setSetting('remarkIsMandatory', false);
+            }
             if (DigiWebApp.ApplicationController.triggerUpdate) {
             	DigiWebApp.DashboardPage.needsUpdate = true;
                 DigiWebApp.MediaListPage.needsUpdate = true;
@@ -17767,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3494'
+              value: 'Build: 3495'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
