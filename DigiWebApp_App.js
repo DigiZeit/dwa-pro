@@ -14,7 +14,7 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchMengeneinheit'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
     
@@ -929,7 +929,7 @@ DigiWebApp.BautagebuchMaterial = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchMaterial'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
     
@@ -1169,7 +1169,7 @@ DigiWebApp.BautagebuchMaterialBuchung = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchMaterialBuchung'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
     
@@ -1308,7 +1308,7 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchZeitbuchung'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
     
@@ -1599,7 +1599,7 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchProjektleiter'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
 
@@ -1801,7 +1801,7 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
         isRequired: NO
     })
 
-    , projektleiterId: M.Model.attr('String', {
+    , projektleiterId: M.Model.attr('Number', {
         isRequired: NO
     })
 
@@ -5387,9 +5387,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					if (el.id === el.projektleiterId) {
 						// projektleiter (el) zur Liste hinzufügen
 						// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-						var found = false;
-						_.each(DigiWebApp.BautagebuchProjektleiter.find(), function(el) { if (el.get("id") === el.id) {found = true;} })
-						if (!found) {
+						if (DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
 							DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
 						}
 					}
@@ -5454,9 +5452,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				} else {
 					
 					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-					var found = false;
-					_.each(DigiWebApp.BautagebuchMitarbeiter.find(), function(el) { if (el.get("id") === el.id) {found = true;} })
-					if (!found) {
+					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
 						DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
 					}
 
@@ -5541,9 +5537,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		
 		var items = [];
-		var relevanteZeitbuchungen = [];// = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}});
-		_.each(DigiWebApp.BautagebuchZeitbuchung.find(), function(el) { if (el.get("bautagesberichtId") === item.m_id) {relevanteZeitbuchungen.push(el);} });
-
+		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}); 
 		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
             return parseInt(z.get('_createdAt'));
         });
@@ -5588,7 +5582,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}}), function(el) {
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}), function(el) {
 			var tmp = el.record;
 			tmp.menge = parseInt(tmp.menge);
 			items.push(tmp);
@@ -5615,7 +5609,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		
 		var that = this;
 		var items = [];
-		_.each(DigiWebApp.BautagebuchNotiz.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}}), function(el) {
+		_.each(DigiWebApp.BautagebuchNotiz.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}}), function(el) {
 			items.push(el.record);
 		});
 		
@@ -5668,7 +5662,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 			}
     	}
 
-		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}});
+		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.m_id}});
 		var mediaFilesLength = mediaFiles.length;
     	var mediaFilesIndex = 0;
     	
@@ -6661,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3513
+    , softwareVersion: 3514
 
 
     /**
@@ -13358,9 +13352,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		var zeitbuchungenList = [];
 		if (parseBool(that.item.get("abgeschlossen")) || !DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
 			// Zeitbuchungen wurden bereits berechnet oder es wird nicht in Stunden gebucht (sondern mit Von/Bis)
-			//var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}); 
-			var relevanteZeitbuchungen = [];
-			_.each(DigiWebApp.BautagebuchZeitbuchung.find(), function(el) { if (el.get("bautagesberichtId") === that.bautagesberichtId) {relevanteZeitbuchungen.push(el);} });
+			var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}); 
 			zeitbuchungenList = _.sortBy(relevanteZeitbuchungen , function(z) {
 	            return parseInt(z.get('von'));
 	        });
@@ -17779,7 +17771,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3513'
+              value: 'Build: 3514'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25069,9 +25061,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        , value: ''
 						        , operation: function(v) {
 						        	// projekleiterName nachladen
-						        	try {
-						        		var myProjektleiter = DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
-						        	} catch(e) {};
+					        		var myProjektleiter = DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 					        		if (typeof myProjektleiter !== "undefined") {
 					        			return M.I18N.l('BautagebuchProjektleiter') + ": " + myProjektleiter.vollername();
 						        	} else {
