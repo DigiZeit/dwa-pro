@@ -5454,7 +5454,11 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					
 					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
 					console.log(typeof(el.id));
-					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: new String(el.id)}}).length === 0) {
+					var s = new String(el.id);
+					var n = parseInt(el.id);
+					console.log(s);
+					console.log(n);
+					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: s}}).length === 0) {
 						DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
 					}
 
@@ -6657,7 +6661,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3508
+    , softwareVersion: 3509
 
 
     /**
@@ -17773,7 +17777,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3508'
+              value: 'Build: 3509'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
