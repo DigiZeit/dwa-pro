@@ -5454,11 +5454,6 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				} else {
 					
 					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-					console.log(typeof(el.id));
-					var s = new String(el.id);
-					var n = parseInt(el.id);
-					console.log(typeof(s));
-					console.log(typeof(n));
 					var found = false;
 					_.each(DigiWebApp.BautagebuchMitarbeiter.find(), function(el) { if (el.get("id") === el.id) {found = true;} })
 					if (!found) {
@@ -5546,7 +5541,9 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 		var that = this;
 		
 		var items = [];
-		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}}); 
+		var relevanteZeitbuchungen = [];// = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: "" + item.m_id}});
+		_.each(DigiWebApp.BautagebuchZeitbuchung.find(), function(el) { if (el.get("bautagesberichtId") === item.m_id) {relevanteZeitbuchungen.push(el);} });
+
 		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
             return parseInt(z.get('_createdAt'));
         });
@@ -6664,7 +6661,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3511
+    , softwareVersion: 3512
 
 
     /**
@@ -13361,7 +13358,9 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		var zeitbuchungenList = [];
 		if (parseBool(that.item.get("abgeschlossen")) || !DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
 			// Zeitbuchungen wurden bereits berechnet oder es wird nicht in Stunden gebucht (sondern mit Von/Bis)
-			var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}); 
+			//var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId}}); 
+			var relevanteZeitbuchungen = [];
+			_.each(DigiWebApp.BautagebuchZeitbuchung.find(), function(el) { if (el.get("bautagesberichtId") === that.bautagesberichtId) {relevanteZeitbuchungen.push(el);} });
 			zeitbuchungenList = _.sortBy(relevanteZeitbuchungen , function(z) {
 	            return parseInt(z.get('von'));
 	        });
@@ -17780,7 +17779,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3511'
+              value: 'Build: 3512'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
