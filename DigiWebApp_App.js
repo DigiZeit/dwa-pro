@@ -1781,7 +1781,7 @@ DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
     /* Define the name of your model. Do not delete this property! */
     __name__: 'BautagebuchMitarbeiter'
 
-    , id: M.Model.attr('String', {
+    , id: M.Model.attr('Number', {
         isRequired: NO
     })
 
@@ -6661,7 +6661,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3512
+    , softwareVersion: 3513
 
 
     /**
@@ -17779,7 +17779,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3512'
+              value: 'Build: 3513'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
