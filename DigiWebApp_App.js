@@ -4783,10 +4783,10 @@ DigiWebApp.CameraController = M.Controller.extend({
     		}
     	} catch(e) {}
     	try {
-    		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: "" + myMediaFile.get("positionId")}})[0].get('name');
+    		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("positionId")}})[0].get('name');
     	} catch(e) {}
     	try {
-    		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: "" + myMediaFile.get("activityId")}})[0].get('name');
+    		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("activityId")}})[0].get('name');
     	} catch(e) {}
 	    myMediaFile.set('orderName', myOrderName);
 	    myMediaFile.set('positionName', myPositionName);
@@ -5387,7 +5387,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 					if (el.id === el.projektleiterId) {
 						// projektleiter (el) zur Liste hinzufügen
 						// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-						if (DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: "" + el.id}}).length === 0) {
+						if (DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
 							DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
 						}
 					}
@@ -5452,7 +5452,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 				} else {
 					
 					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: "" + el.id}}).length === 0) {
+					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
 						DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
 					}
 
@@ -8386,10 +8386,10 @@ DigiWebApp.BookingController = M.Controller.extend({
     		}
     	} catch(e) {}
     	try {
-    		if (obj.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: "" + obj.pId}})[0].get('name');
+    		if (obj.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.pId}})[0].get('name');
     	} catch(e) {}
     	try {
-    		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: "" + obj.aId}})[0].get('name');
+    		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
     	} catch(e) {}
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : '0'
@@ -8439,21 +8439,21 @@ DigiWebApp.BookingController = M.Controller.extend({
                         myOrderName = order.get('name');
                     }
         		}
-        		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('orderId')}})[0].get('name');    		
+        		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: obj.get('orderId')}})[0].get('name');    		
         	} catch(e) {}
     	}
     	if (typeof(obj.get('positionName')) !== "undefined") {
     		myPositionName = obj.get('positionName');
     	} else {
         	try {
-	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('positionId')}})[0].get('name');
+	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.get('positionId')}})[0].get('name');
     		} catch(e) {}
     	}
     	if (typeof(obj.get('activityName')) !== "undefined") {
     		myActivityName = obj.get('activityName');
     	} else {
         	try {
-	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('activityId')}})[0].get('name');
+	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.get('activityId')}})[0].get('name');
     		} catch(e) {}
     	}
     	
@@ -8509,7 +8509,7 @@ DigiWebApp.BookingController = M.Controller.extend({
                         myOrderName = order.get('name');
                     }
         		}
-        		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('orderId')}})[0].get('name');    		
+        		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: obj.get('orderId')}})[0].get('name');    		
         	} catch(e) {}
     	}
 
@@ -8517,7 +8517,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 			myPositionName = obj.get('positionName');
     	} else {
         	try {
-	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('positionId')}})[0].get('name');
+	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.get('positionId')}})[0].get('name');
     		} catch(e) {}
     	}
 
@@ -8525,7 +8525,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 			myActivityName = obj.get('activityName');
     	} else {
         	try {
-	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: "" + obj.get('activityId')}})[0].get('name');
+	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.get('activityId')}})[0].get('name');
     		} catch(e) {}
     	}
     	
@@ -13362,7 +13362,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 		_.each(zeitbuchungenList, function(m) {
 			  var zeitbuchungMAIds = JSON.parse(m.get("mitarbeiterIds"));
 			  _.each(zeitbuchungMAIds, function(el) {
-	        		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: "" + el}})[0];
+	        		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el}})[0];
 	        		if (typeof myMitarbeiter !== "undefined") {
 		        		var found = NO;
 	        			_.each(MAList, function(MAListEntry) {
@@ -21419,7 +21419,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemVi
 //		  , computedValue: {
 //		        valuePattern: '<%= id %>'
 //		      , operation: function(v) {
-//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: "" + v}})[0];
+//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 //				    		if (typeof myMitarbeiter !== "undefined") {
 //				    			return myMitarbeiter.vollername();
 //				        	} else {
@@ -25061,7 +25061,9 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
 						        , value: ''
 						        , operation: function(v) {
 						        	// projekleiterName nachladen
-					        		var myProjektleiter = DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: "" + v}})[0];
+						        	try {
+						        		var myProjektleiter = DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
+						        	} catch(e) {};
 					        		if (typeof myProjektleiter !== "undefined") {
 					        			return M.I18N.l('BautagebuchProjektleiter') + ": " + myProjektleiter.vollername();
 						        	} else {
@@ -26284,7 +26286,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterZeitenTemplateView = M.ListItemV
 	  , computedValue: {
 	        valuePattern: '<%= id %>'
 	      , operation: function(v) {
-			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: "" + v}})[0];
+			    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 			    		if (typeof myMitarbeiter !== "undefined") {
 			    			return myMitarbeiter.vollername();
 			        	} else {
@@ -26315,7 +26317,7 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterZeitenTemplateView = M.ListItemV
 //		  , computedValue: {
 //		        valuePattern: '<%= id %>'
 //		      , operation: function(v) {
-//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: "" + v}})[0];
+//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
 //				    		if (typeof myMitarbeiter !== "undefined") {
 //				    			return myMitarbeiter.vollername();
 //				        	} else {
@@ -26819,8 +26821,9 @@ window.newAppVersionAvailable = NO;
 M.Application.useTransitions = NO;
 
 var DigiWebApp  = DigiWebApp || {};
+
 /*
-function trackError(ex) {
+ function trackError(ex) {
 	var exceptionAlert = "";
 	//exceptionAlert = "Es trat leider eine unbehandelte Ausnahme auf:" + "\n\n";
 	try {
@@ -26855,11 +26858,12 @@ function trackError(ex) {
 	}
 	return true;
 }
-*/
+
 window.onerror = function (msg, url, line) {
 	trackError('Error: ' + msg + '\nURL: ' + url + '\nLine Number: ' + line);
 	return true;
 }
+*/
 
 ////override jQuery.fn.bind to wrap every provided function in try/catch
 //var jQueryBind = jQuery.fn.bind;
