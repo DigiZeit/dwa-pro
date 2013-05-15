@@ -292,6 +292,8 @@ M.I18N.de_de = {
 	, sendSignatures: "Sende Unterschriften ..."
 	, sendeMedien: "Sende Medien"
 	, remarkIsOptional: "Bemerkung ist rein optional"
+	, transmitFirst: "Fehlende Datenübertragung"
+	, transmitFirstMsg: "Zunächst müssen noch nicht übertragene Zeitbuchungen zum Server übertragen werden!"
 
 	, library: "Datei öffnen"
 	, camera: "Kamera öffnen"

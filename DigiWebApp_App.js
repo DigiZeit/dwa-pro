@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3515
+    , softwareVersion: 3516
 
 
     /**
@@ -8064,11 +8064,17 @@ DigiWebApp.BookingController = M.Controller.extend({
     	
     	// EmployeeSelection (Kolonne)
 		if(DigiWebApp.EmployeeController.getEmployeeState() == 1) {
+            DigiWebApp.ApplicationController.DigiLoaderView.hide();
             var employeeString = localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKey);
-            if(!employeeString) {
+            if(!employeeString && (DigiWebApp.Booking.find().length === 0)) {
                 DigiWebApp.NavigationController.toEmployeePage();
-                return;
+            } else {
+            	DigiWebApp.ApplicationController.nativeAlertDialogView({
+                    title: M.I18N.l('noOrderSelected')
+                  , message: M.I18N.l('noOrderSelectedMsg')
+                });
             }
+            return;
         }
         
 		this.getBookingLocation(this.proceedBooking);
@@ -8398,8 +8404,6 @@ DigiWebApp.BookingController = M.Controller.extend({
             , handOrderName: obj.hoName ? obj.hoName : '0'
             , latitude: obj.lat ? obj.lat : '0'
             , longitude: obj.lon ? obj.lon : '0'
-            , latitude_bis: obj.lat ? obj.lat : '0'
-            , longitude_bis: obj.lon ? obj.lon : '0'
             , positionId: obj.pId ? obj.pId : '0'
             , positionName: myPositionName
             , activityId: obj.aId ? obj.aId : '0'
@@ -17771,7 +17775,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3515'
+              value: 'Build: 3516'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

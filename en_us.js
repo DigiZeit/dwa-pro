@@ -292,6 +292,8 @@ M.I18N.en_us = {
 	, sendSignatures: "Sending Signatures ..."
 	, sendeMedien: "Sending Media-Files ..."
 	, remarkIsOptional: "Remark is optional"
+	, transmitFirst: "Missing Transmission"
+	, transmitFirstMsg: "There are untransmitted Bookings on this device which need to be transmitted first!"
 
 	, library: "Open file"
 	, camera: "Open camera"
