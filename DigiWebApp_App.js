@@ -6655,7 +6655,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3518
+    , softwareVersion: 3519
 
 
     /**
@@ -8070,8 +8070,8 @@ DigiWebApp.BookingController = M.Controller.extend({
                 DigiWebApp.NavigationController.toEmployeePage();
             } else {
             	DigiWebApp.ApplicationController.nativeAlertDialogView({
-                    title: M.I18N.l('noOrderSelected')
-                  , message: M.I18N.l('noOrderSelectedMsg')
+                    title: M.I18N.l('transmitFirst')
+                  , message: M.I18N.l('transmitFirstMsg')
                 });
             }
             return;
@@ -17775,7 +17775,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3518'
+              value: 'Build: 3519'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
