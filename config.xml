@@ -2,8 +2,8 @@
 <widget xmlns	= "http://www.w3.org/ns/widgets"
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	id		    = "com.digi.webapppro"
-	versionCode = "3525"
-	version 	= "1.5.0.3525">
+	versionCode = "3526"
+	version 	= "1.5.0.3526">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -95,7 +95,7 @@ screen -->
 	<gap:splash src="theme/images/200x320_90_DIGI-WebApp_mitLogo.png" gap:platform="android" gap:density="ldpi" />
 	<gap:splash src="theme/images/320x480_90_DIGI-WebApp_mitLogo.png" gap:platform="android" gap:density="mdpi" />
 	<gap:splash src="theme/images/480x800_90_DIGI-WebApp_mitLogo.png" gap:platform="android" gap:density="hdpi" />
-    <gap:splash src="theme/images/720x1028_90_DIGI-WebApp_mitLogo.png" gap:platform="android" gap:density="xhdpi" />
+    <gap:splash src="theme/images/720x1280_90_DIGI-WebApp_mitLogo.png" gap:platform="android" gap:density="xhdpi" />
     
 <!-- iOS requires specific dimensions for splash screens; classic iPhone screens, Retina 
 Screens, and iPad screen respectively --> 
