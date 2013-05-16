@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.5.0.3520 beta, Timestamp:1368687584521
+#Application:DigiWebApp, Version:1.5.0.3521, Timestamp:1368689027809
 
 
 # Explicitly cached entries
@@ -16,10 +16,10 @@ bootstrap.js
 jquery.xml2json_1.1.js
 jstz.js
 jquery_mobile.js
-ui.js
 jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+ui.js
 childbrowser.js
 cordova.js
 core.js
@@ -97,7 +97,6 @@ DigiWebApp_App.js
 NETWORK:
 phonegap.js
 Handy2WebServices
-RemoteMediaFile
 *
 
 # Fallback resources 
