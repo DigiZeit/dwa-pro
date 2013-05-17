@@ -103,6 +103,7 @@ Screens, and iPad screen respectively -->
 	<gap:splash src="theme/images/768x1024_90_DIGI-WebApp_mitLogo.png" gap:platform="ios" width="768" height="1024" />
 	<gap:splash src="theme/images/320x480_90_DIGI-WebApp_mitLogo.png" gap:platform="ios" width="320" height="480" />
 	<gap:splash src="theme/images/640x960_90_DIGI-WebApp_mitLogo.png" gap:platform="ios" width="640" height="960" />
+	<gap:splash src="theme/images/640x1136_90_DIGI-WebApp_mitLogo.png" gap:platform="ios" width="640" height="1136" />
 
 <!-- Windows Phone 7 requires a specific dimension or platform attribute -->
 	<gap:splash src="theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg" gap:platform="winphone" />
