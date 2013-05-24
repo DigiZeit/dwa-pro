@@ -2506,9 +2506,9 @@ DigiWebApp.MediaFile = M.Model.create({
 		try {
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-			if (typeof(window.webkitStorageInfo) !== "undefined") {
-				//alert("using window.webkitStorageInfo");
-				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+				//alert("using navigator.webkitPersistentStorage");
+				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2620,9 +2620,9 @@ DigiWebApp.MediaFile = M.Model.create({
 		try {
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-			if (typeof(window.webkitStorageInfo) !== "undefined") {
-				//alert("using window.webkitStorageInfo");
-				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+				//alert("using navigator.webkitPersistentStorage");
+				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2722,8 +2722,8 @@ DigiWebApp.MediaFile = M.Model.create({
 		try {
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
-			if (typeof(window.webkitStorageInfo) !== "undefined") {
-				window.webkitStorageInfo.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
 					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -6659,7 +6659,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3531
+    , softwareVersion: 3532
 
 
     /**
@@ -17783,7 +17783,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3531'
+              value: 'Build: 3532'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
