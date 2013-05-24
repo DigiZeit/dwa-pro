@@ -2079,7 +2079,7 @@ DigiWebApp.Booking = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2192,7 +2192,7 @@ DigiWebApp.Booking = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2294,7 +2294,7 @@ DigiWebApp.Booking = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2508,7 +2508,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
 				//alert("using navigator.webkitPersistentStorage");
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2622,7 +2622,7 @@ DigiWebApp.MediaFile = M.Model.create({
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
 				//alert("using navigator.webkitPersistentStorage");
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2723,7 +2723,7 @@ DigiWebApp.MediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -2919,7 +2919,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -3031,7 +3031,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -3133,7 +3133,7 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -3602,7 +3602,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				    	
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -3715,7 +3715,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 				    window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 				
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -3817,7 +3817,7 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 			var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
 		    // open filesystem
 			if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-				navigator.webkitPersistentStorage.requestQuota(PERSISTENT, myQuota, function(grantedBytes) {
+				navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
 					window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
 						
 				    	// get dataDirectory from filesystem (create if not exists)
@@ -6659,7 +6659,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3535
+    , softwareVersion: 3536
 
 
     /**
@@ -17783,7 +17783,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3535'
+              value: 'Build: 3536'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
