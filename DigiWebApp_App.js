@@ -6659,7 +6659,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3538
+    , softwareVersion: 3539
 
 
     /**
@@ -9627,7 +9627,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 			handOrderName = _.select(DigiWebApp.HandOrder.findSorted(), function(ord) {
 			    if (ord) return ord.get('id') === orderId || ord.get('name') === orderId;
 			})[0].get('name');
-			orderId = null;
+			orderId = handOrderId;
 	
 			// a hand order has no position
 			posId = null;
@@ -17783,7 +17783,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3538'
+              value: 'Build: 3539'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
