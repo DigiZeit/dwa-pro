@@ -6659,7 +6659,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3541
+    , softwareVersion: 3542
 
 
     /**
@@ -11309,7 +11309,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 
         DigiWebApp.ApplicationController.setImageClass();
         
-        //M.I18N.defaultLanguage = "de_de";
+        M.I18N.defaultLanguage = "de_de";
 
 		if(isFirstLoad) {
 			
@@ -14625,7 +14625,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
     , init: function() {
     	
-    	//M.I18N.defaultLanguage = "de_de";
+    	M.I18N.defaultLanguage = "de_de";
     	
     	DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem2);
     	
@@ -17783,7 +17783,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3541'
+              value: 'Build: 3542'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
