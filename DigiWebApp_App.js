@@ -6659,7 +6659,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3546
+    , softwareVersion: 3547
 
 
     /**
@@ -16137,8 +16137,8 @@ DigiWebApp.MediaListController = M.Controller.extend({
 				
 				_.each(mediaFiles, function(mf){
 					var rec = JSON.parse(JSON.stringify(mf)); // clone to new Object
-					if (rec.get("handOrderId") !== null) {
-						rec.set("orderId", null);
+					if (rec.record.handOrderId !== null) {
+						rec.record.orderId = null;
 					}
 					items.push(rec.record);
 				});
@@ -17787,7 +17787,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3546'
+              value: 'Build: 3547'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
