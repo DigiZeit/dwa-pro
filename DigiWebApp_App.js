@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3599
+    , softwareVersion: 3600
 
 
     /**
@@ -17531,7 +17531,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
     }
 
 	, buttonLeft: M.ButtonView.design({
-		cssClass: 'scholppButton'
+		cssClass: 'scholppButton scholppButtonLeft'
       , computedValue: {
 	        valuePattern: '<%= button0 %>'
 	        , operation: function(v) {
@@ -17552,7 +17552,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	})
 
 	, buttonRight: M.ButtonView.design({
-		cssClass: 'scholppButton'
+		cssClass: 'scholppButton scholppButtonRight'
       , computedValue: {
 	        valuePattern: '<%= button1 %>'
 	        , operation: function(v) {
@@ -18322,7 +18322,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3599'
+              value: 'Build: 3600'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

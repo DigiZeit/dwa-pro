@@ -329,6 +329,19 @@ label.ui-input-text, .ui-controlgroup-label {
     margin-top: 10px;
 }
 
+.buttonDashboardPage .ui-content {
+    overflow: hidden;
+}
+.buttonDashboardPage .ui-content li {
+    border:  none;
+    padding: 0px;
+    margin: 0px;
+    min-height: 45px;
+    height: 45px;
+    text-shadow: none;
+    background: none;
+}
+
 /* Feierabend-Icon oben rechts */
 .bookTimePage .ui-btn-right .ui-btn-inner.ui-btn-corner-all { height: 13px; }
 .bookTimePage .ui-btn-right .ui-icon.ui-icon-home.ui-icon-shadow { margin-left: 5px; }
