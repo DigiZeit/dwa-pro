@@ -6693,7 +6693,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3591
+    , softwareVersion: 3592
 
 
     /**
@@ -17530,7 +17530,8 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
     }
 
 	, grid: M.GridView.design({
-		  childViews: 'icon_left icon_right'
+		  //childViews: 'icon_left icon_right'
+		  childViews: 'label_left label_right'
         , layout: M.TWO_COLUMNS
         , icon_left: M.ImageView.design({
 	    	cssClass: 'unselectable'
@@ -17550,13 +17551,27 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	            }
 	        }
 	    })
+	    , label_left: M.LabelView.design({
+	    	cssClass: 'unselectable'
+            , computedValue: {
+	            valuePattern: '<%= button_0 %>'
+	            , operation: function(v) {
+	                return v.label;
+	            }
+	        }
+	    })
+	    , label_right: M.LabelView.design({
+	    	cssClass: 'unselectable'
+            , computedValue: {
+	            valuePattern: '<%= button_1 %>'
+	            , operation: function(v) {
+	                return v.label;
+	            }
+	        }
+	    })
 
 	})
 
-    , label: M.LabelView.design({
-    	cssClass: 'unselectable'
-        , valuePattern: '<%= label %>'
-    })
 
 });
 
@@ -18220,7 +18235,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3591'
+              value: 'Build: 3592'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
