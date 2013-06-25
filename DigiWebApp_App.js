@@ -6697,7 +6697,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3588
+    , softwareVersion: 3589
 
 
     /**
@@ -17557,16 +17557,6 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 
 	})
 
-    , icon: M.ImageView.design({
-    	cssClass: 'unselectable'
-        , computedValue: {
-            valuePattern: '<%= icon %>'
-            , operation: function(v) {
-                return 'theme/images/' + v;
-            }
-        }
-    })
-
     , label: M.LabelView.design({
     	cssClass: 'unselectable'
         , valuePattern: '<%= label %>'
@@ -18234,7 +18224,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3588'
+              value: 'Build: 3589'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19010,7 +19000,7 @@ DigiWebApp.ButtonDashboardPage = M.PageView.design({
         , list: M.ListView.design({
             contentBinding: {
                 target: DigiWebApp.DashboardController,
-                property: 'items'
+                property: 'itemsButtons'
             }
             , listItemTemplateView: DigiWebApp.ButtonDashboardTemplateView
         })
