@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.5.0.3549, Timestamp:1369757886695
+#Application:DigiWebApp, Version:1.5.1.3588 beta, Timestamp:1372164785264
 
 
 # Explicitly cached entries
@@ -9,15 +9,15 @@ nl_nl.js
 de_de.js
 es_es.js
 en_us.js
-underscore-min.js
-d8-0.1.3.min.js
 theme/tmp.css
-bootstrap.js
+underscore-min.js
 jquery.xml2json_1.1.js
+d8-0.1.3.min.js
+bootstrap.js
 jstz.js
 jquery_mobile.js
-ui.js
 jquery-1.6.4.min.js
+ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 childbrowser.js
@@ -45,6 +45,7 @@ theme/images/icon_handApplication.png
 theme/images/tile-icon-winphone.jpg
 theme/images/icon_settings.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
+theme/images/48x48_plain_wrench.png
 theme/images/icon_media.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/logo_blackred.png
@@ -58,6 +59,7 @@ theme/images/640x960_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_72.png
 theme/images/arrow_grey.png
 theme/images/ajax-loader.png
+theme/images/48x48_plain_minibus_green.png
 theme/images/icon_ios_114.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/Icon_2x.png
@@ -79,9 +81,12 @@ theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_bookTime.png
 theme/images/ic_launcher_mdpi.png
+theme/images/48x48_plain_cup.png
 theme/images/Auftrag.png
+theme/images/48x48_plain_clock_pause.png
 theme/images/splash.png
 theme/images/icon_stop.png
+theme/images/48x48_plain_home.png
 theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/icon_timeData.png
@@ -101,6 +106,7 @@ DigiWebApp_App.js
 NETWORK:
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 

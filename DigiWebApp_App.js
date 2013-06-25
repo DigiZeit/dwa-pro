@@ -2029,7 +2029,7 @@ DigiWebApp.Booking = M.Model.create({
 		    		el.del();
 		    	}
 		    });
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
     }
 	
 	, hasFileName: function() {
@@ -4781,13 +4781,13 @@ DigiWebApp.CameraController = M.Controller.extend({
                     myOrderName = order.get('name');
                 }
     		}
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
     	try {
     		if (myMediaFile.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("positionId")}})[0].get('name');
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
     	try {
     		if (myMediaFile.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: myMediaFile.get("activityId")}})[0].get('name');
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
 	    myMediaFile.set('orderName', myOrderName);
 	    myMediaFile.set('positionName', myPositionName);
 	    myMediaFile.set('activityName', myActivityName);
@@ -4861,6 +4861,8 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
       items: null
     
+    , itemsButtons: null
+
     , itemsWithoutUpdate: null
 
     , latestId: null
@@ -4872,7 +4874,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 			if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
 				return true;
 			} else if (DigiWebApp.ApplicationController.timeouthappened && window.applicationCache.status !== window.applicationCache.UNCACHED) {
-				try { window.applicationCache.update(); } catch(e) {};
+				try { window.applicationCache.update(); } catch(e) { console.error(e); };
 				return (window.applicationCache.status == window.applicationCache.UPDATEREADY);
 			} else {
 				return (window.applicationCache.status == window.applicationCache.UPDATEREADY);
@@ -4881,7 +4883,32 @@ DigiWebApp.DashboardController = M.Controller.extend({
 			return false;
 		}
 	}
-    
+
+	, initButtons: function(isFirstLoad) {
+		var that = this;
+		that.init(isFirstLoad);
+		
+		// aus that.items that.itemsButtons bauen
+		var myButtonItem = {};
+		that.itemsButtons = [];
+		for (i=0;i<items.length;i++) {
+			console.log(i);
+			console.log(items[i]);
+			myButtonItem["button_" + i % 2] = JSON.parse(JSON.stringify(items[i]));
+			console.log(myButtonItem);
+			if (i % 2 === 0 && i === items.length - 1) {
+				myButtonItem["button_" + 1] = {};
+			}
+			if (i % 2 === 1 || i === items.length - 1) {
+				console.log("myButtonItem", myButtonItem);
+				that.itemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
+				myButtonItem = {};
+			}
+		};
+		
+		
+	}
+
     , init: function(isFirstLoad) {
     	if(DigiWebApp.DashboardPage.needsUpdate || isFirstLoad || this.appCacheUpdateReady()) {
         	var ChefToolOnly = (DigiWebApp.SettingsController.featureAvailable('409'));
@@ -5032,6 +5059,12 @@ DigiWebApp.DashboardController = M.Controller.extend({
                 id: 'info'
             });
             
+            items.push({
+                label: "ButtonMenu",
+                icon: 'icon_info.png',
+                id: 'buttonMenu'
+            });
+
             this.set('items', items);
             this.set('itemsWithoutUpdate', items);
             DigiWebApp.DashboardPage.needsUpdate = false;
@@ -5071,7 +5104,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 //	            perspective: '20px',
 //	            rotateX: '+=360deg'
 //	        }, 500);
-//        } catch(e) {}
+//        } catch(e) { console.error(e); }
 
         this.latestId = id;
 
@@ -5176,6 +5209,11 @@ DigiWebApp.DashboardController = M.Controller.extend({
 	, bautagebuch: function() {
 	    DigiWebApp.NavigationController.toBautagebuchBautageberichteListePageTransition();
 	}
+	
+	, buttonMenu: function() {
+		DigiWebApp.NavigationController.toButtonsDashboardPageFlipTransition();
+	}
+	
 });
 
 // ==========================================================================
@@ -6563,8 +6601,8 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 	   	var phoneNumbers = [];
 	   	var myTel = '';
 	   	var myFax = '';
-	   	try { myTel = item.positionTelefon } catch(e) {}
-	   	try { myFax = item.positionFax } catch(e) {}
+	   	try { myTel = item.positionTelefon } catch(e) { console.error(e); }
+	   	try { myFax = item.positionFax } catch(e) { console.error(e); }
 	   	phoneNumbers[0] = new ContactField('work', myTel, true);
 	   	phoneNumbers[1] = new ContactField('fax', myFax, false);
 	   	myContact.phoneNumbers = phoneNumbers;
@@ -6572,7 +6610,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 		//emails: An array of all the contact's email addresses. (ContactField[])
 	   	var eMail = [];
 	   	var myemail = '';
-	   	try { myemail = item.positionEmail } catch(e) {}
+	   	try { myemail = item.positionEmail } catch(e) { console.error(e); }
 	   	eMail[0] = new ContactField('work', myemail, true);
 	   	myContact.emails = eMail;
 
@@ -6659,7 +6697,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3549
+    , softwareVersion: 3588
 
 
     /**
@@ -8137,11 +8175,15 @@ DigiWebApp.BookingController = M.Controller.extend({
         }
    	}
     
-    , checkBooking: function() {
+    , checkBooking: function(skipSelection) {
         //var booking = null;
 
         // check if order chosen
-        var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection();
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            var orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection();
+    	} else {
+            var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection();
+    	}
         if(!orderId || (orderId && orderId === "0")) {
             //M.DialogView.alert({
             DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -8183,44 +8225,54 @@ DigiWebApp.BookingController = M.Controller.extend({
                 }
             } // else of: if(!this.isHandOrder(orderId))
                         
-            var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
-            var posId = posObj ? posObj.value : null;
-
-            var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
-            var actId = actObj ? actObj.value : null;
-
-            // check if open booking
-            if(this.currentBooking) {
-                var curBookingOrderId = this.currentBooking.get('orderId');
-                var curBookingHandOrderId = this.currentBooking.get('handOrderId');
-                var curBookingPosId = this.currentBooking.get('positionId');
-                var curBookingActId = this.currentBooking.get('activityId');
-
-                if(curBookingOrderId === orderId || curBookingHandOrderId === orderId) {
-
-                    if((!this.isHandOrder(orderId)) && (curBookingPosId === posId) && (curBookingActId === actId)) {
-                        //M.DialogView.alert({
-                        DigiWebApp.ApplicationController.nativeAlertDialogView({
-                              title: M.I18N.l('doubleBooking')
-                            , message: M.I18N.l('doubleBookingMsg')
-                        });
-                        return false;
-                    }
-
-                    if(this.isHandOrder(orderId) && (curBookingActId === actId)) {
-                        //M.DialogView.alert({
-                        DigiWebApp.ApplicationController.nativeAlertDialogView({
-                              title: M.I18N.l('doubleBooking')
-                            , message: M.I18N.l('doubleBookingMsg')
-                        });
-                        return false;
-                    }
-
-                } // if(curBookingOrderId === orderId || curBookingHandOrderId === orderId)
-
-                return true;
-
-            } // if(this.currentBooking)
+            if (typeof(skipSelection) === "undefined") {
+	        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+	                var posObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
+	        	} else {
+	                var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+	        	}
+	            var posId = posObj ? posObj.value : null;
+	
+	        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+	                var actObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection(YES);
+	        	} else {
+	                var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
+	        	}
+	            var actId = actObj ? actObj.value : null;
+	
+	            // check if open booking
+	            if(this.currentBooking) {
+	                var curBookingOrderId = this.currentBooking.get('orderId');
+	                var curBookingHandOrderId = this.currentBooking.get('handOrderId');
+	                var curBookingPosId = this.currentBooking.get('positionId');
+	                var curBookingActId = this.currentBooking.get('activityId');
+	
+	                if(curBookingOrderId === orderId || curBookingHandOrderId === orderId) {
+	
+	                    if((!this.isHandOrder(orderId)) && (curBookingPosId === posId) && (curBookingActId === actId)) {
+	                        //M.DialogView.alert({
+	                        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                              title: M.I18N.l('doubleBooking')
+	                            , message: M.I18N.l('doubleBookingMsg')
+	                        });
+	                        return false;
+	                    }
+	
+	                    if(this.isHandOrder(orderId) && (curBookingActId === actId)) {
+	                        //M.DialogView.alert({
+	                        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                              title: M.I18N.l('doubleBooking')
+	                            , message: M.I18N.l('doubleBookingMsg')
+	                        });
+	                        return false;
+	                    }
+	
+	                } // if(curBookingOrderId === orderId || curBookingHandOrderId === orderId)
+	
+	                return true;
+	
+	            } // if(this.currentBooking)
+            }
 
 	    return true;
 		
@@ -8246,12 +8298,24 @@ DigiWebApp.BookingController = M.Controller.extend({
         DigiWebApp.ApplicationController.DigiLoaderView.hide();
         //var booking = null;
 
-		var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection();
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		var orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection();
+    	} else {
+    		var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection();
+    	}
 	
-		var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		var posObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
+    	} else {
+    		var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+    	}
 		var posId = posObj ? posObj.value : null;
 	
-		var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		var actObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection(YES);
+    	} else {
+    		var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
+    	}
 		var actId = actObj ? actObj.value : null;
 
 	    // close open booking 
@@ -8299,7 +8363,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    // reset remark
 	    try {
 	    	M.ViewManager.getView('remarkPage', 'remarkInput').value = '';
-	    } catch(e) {}
+	    } catch(e) { console.error(e); }
 	    remarkStr = '';
 
 	    that.set('currentBooking', that.openBooking({
@@ -8326,17 +8390,19 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    	that.sendCurrentBookings();
 	    } else {
 			//M.DialogView.alert({
-			DigiWebApp.ApplicationController.nativeAlertDialogView({
-			      title: M.I18N.l('bookingSaved')
-			    , message: M.I18N.l('bookingSavedMsg')
-			    , callbacks: {
-	                confirm: {
-	                      target: DigiWebApp.NavigationController
-	                    , action: 'backToBookTimePagePOP'
-	                }
-	            }
-			});
-			try { $.mobile.fixedToolbars.show(); } catch(e) {}; // this line is for pre TMP 1.1
+	    	if (!DigiWebApp.SettingsController.featureAvailable("416")) {
+				DigiWebApp.ApplicationController.nativeAlertDialogView({
+				      title: M.I18N.l('bookingSaved')
+				    , message: M.I18N.l('bookingSavedMsg')
+				    , callbacks: {
+		                confirm: {
+		                      target: DigiWebApp.NavigationController
+		                    , action: 'backToBookTimePagePOP'
+		                }
+		            }
+				});
+	    	}
+			try { $.mobile.fixedToolbars.show(); } catch(e) { console.error(e); }; // this line is for pre TMP 1.1
 	    }
     }
 
@@ -8394,13 +8460,13 @@ DigiWebApp.BookingController = M.Controller.extend({
                     myOrderName = order.get('name');
                 }
     		}
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
     	try {
     		if (obj.pId !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.pId}})[0].get('name');
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
     	try {
     		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
-    	} catch(e) {}
+    	} catch(e) { console.error(e); }
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : '0'
             , orderName: myOrderName
@@ -8448,21 +8514,21 @@ DigiWebApp.BookingController = M.Controller.extend({
                     }
         		}
         		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: obj.get('orderId')}})[0].get('name');    		
-        	} catch(e) {}
+        	} catch(e) { console.error(e); }
     	}
     	if (typeof(obj.get('positionName')) !== "undefined") {
     		myPositionName = obj.get('positionName');
     	} else {
         	try {
 	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.get('positionId')}})[0].get('name');
-    		} catch(e) {}
+    		} catch(e) { console.error(e); }
     	}
     	if (typeof(obj.get('activityName')) !== "undefined") {
     		myActivityName = obj.get('activityName');
     	} else {
         	try {
 	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.get('activityId')}})[0].get('name');
-    		} catch(e) {}
+    		} catch(e) { console.error(e); }
     	}
     	
         return DigiWebApp.SentBooking.createRecord({
@@ -8518,7 +8584,7 @@ DigiWebApp.BookingController = M.Controller.extend({
                     }
         		}
         		//if (obj.get('orderId') !== 0) myOrderName = DigiWebApp.Order.find({query:{identifier: 'id', operator: '=', value: obj.get('orderId')}})[0].get('name');    		
-        	} catch(e) {}
+        	} catch(e) { console.error(e); }
     	}
 
 		if (typeof(obj.get('positionName')) !== "undefined") {
@@ -8526,7 +8592,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     	} else {
         	try {
 	    		if (obj.get('positionId') !== 0) myPositionName = DigiWebApp.Position.find({query:{identifier: 'id', operator: '=', value: obj.get('positionId')}})[0].get('name');
-    		} catch(e) {}
+    		} catch(e) { console.error(e); }
     	}
 
 		if (typeof(obj.get('activityName')) !== "undefined") {
@@ -8534,7 +8600,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     	} else {
         	try {
 	    		if (obj.get('activityId') !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.get('activityId')}})[0].get('name');
-    		} catch(e) {}
+    		} catch(e) { console.error(e); }
     	}
     	
     	return DigiWebApp.SentBookingArchived.createRecord({
@@ -9181,7 +9247,7 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 	  //console.log(myMediaFile);
 	  try {
 		  myMediaFile.del();
-	  } catch(e) {}
+	  } catch(e) { console.error(e); }
 	  DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	  DigiWebApp.NavigationController.backToMediaListPageTransition();
   }
@@ -10544,6 +10610,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") { DigiWebApp.ScholppBookingController.resetButtons(); }
     }
 
     , setSelectionWithCurrentHandOrderFirst: function() {
@@ -10610,7 +10677,12 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
-        M.ViewManager.getView('bookingPage', 'position').setSelection('0');
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').setSelection('0');
+        	DigiWebApp.ScholppBookingController.resetButtons();
+    	} else {
+            M.ViewManager.getView('bookingPage', 'position').setSelection('0');
+    	}
     }
 
     , setSelectionByCurrentBooking: function() {
@@ -10701,6 +10773,30 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         activityArray = _.compact(activityArray);
         activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		var activitySelection = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection(YES);
+    		if (typeof(activitySelection) !== "undefined") {
+	    		var activitySelected = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: activitySelection.value}})[0];
+	    		if (typeof(activitySelected) === "undefined") {
+	    			DigiWebApp.ScholppBookingController.selectArbeitsende();
+	    		} else {
+		    		var activityName = activitySelected.get("name");
+		    		if (activityName.indexOf("Fahrzeit") >= 0) {
+		    			DigiWebApp.ScholppBookingController.selectFahrzeit();
+		    		} else if (activityName.indexOf("Arbeitszeit") >= 0) {
+		    			DigiWebApp.ScholppBookingController.selectArbeitszeit();
+		    		} else if (activityName.indexOf("Unterbrechung") >= 0) {
+		    			DigiWebApp.ScholppBookingController.selectUnterbrechung();
+		    		} else if (activityName.indexOf("Pause") >= 0) {
+		    			DigiWebApp.ScholppBookingController.selectPause();
+		    		} else {
+		    			DigiWebApp.ScholppBookingController.selectArbeitsende();
+		    		}
+	    		}
+    		} else {
+    			DigiWebApp.ScholppBookingController.selectArbeitsende();
+    		}
+    	}
 
 
         this.resetSelection();
@@ -10708,10 +10804,16 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('orders', orderArray);
         this.set('positions', positionArray);
         this.set('activities', activityArray);
+    	//if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") { DigiWebApp.ScholppBookingController.resetButtons(); }
     }
 
     , setPositions: function() {
-        var orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
+    	var orderId;
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection(YES).value;
+    	} else {
+    		orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
+    	}
         if(!orderId) {
             return;
         }
@@ -10739,7 +10841,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         }
 
 
-        M.ViewManager.getView('bookingPage', 'position').resetSelection();
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').resetSelection();
+    	} else {
+    		M.ViewManager.getView('bookingPage', 'position').resetSelection();
+    	}
         this.set('positions', positions);
         this.setActivities(YES);
 
@@ -10751,7 +10857,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         var posId = null;
 
         if(checkForWorkPlan) {
-            var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+                var posObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
+        	} else {
+                var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+        	}
             if(posObj) {
                 posId = posObj.value;
             }
@@ -10816,8 +10926,14 @@ DigiWebApp.SelectionController = M.Controller.extend({
         }
 
 
-        M.ViewManager.getView('bookingPage', 'activity').resetSelection();
-        this.set('activities', activities);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
+            this.set('activities', activities);
+            DigiWebApp.ScholppBookingController.resetButtons();
+    	} else {
+            M.ViewManager.getView('bookingPage', 'activity').resetSelection();
+            this.set('activities', activities);
+    	}
 
         this.saveSelection();
     }
@@ -10879,23 +10995,40 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('positions', positionArray);
         this.set('activities', activityArray);
         try {
-        	M.ViewManager.getView('bookingPage', 'order').setSelection('0');
-        	M.ViewManager.getView('bookingPage', 'position').setSelection('0');
-        	M.ViewManager.getView('bookingPage', 'activity').setSelection('0');
-    	} catch(e) {}
+        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').setSelection('0');
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').setSelection('0');
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').setSelection('0');
+            	DigiWebApp.ScholppBookingController.resetButtons();
+        	} else {
+            	M.ViewManager.getView('bookingPage', 'order').setSelection('0');
+            	M.ViewManager.getView('bookingPage', 'position').setSelection('0');
+            	M.ViewManager.getView('bookingPage', 'activity').setSelection('0');
+        	}
+    	} catch(e) { console.error(e); }
     }
 
     , resetSelection: function() {
     	try {
-    		M.ViewManager.getView('bookingPage', 'order').resetSelection();
-    		M.ViewManager.getView('bookingPage', 'position').resetSelection();
-    		M.ViewManager.getView('bookingPage', 'activity').resetSelection();
-    	} catch(e) {}
+        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').resetSelection();
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').resetSelection();
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
+        	} else {
+        		M.ViewManager.getView('bookingPage', 'order').resetSelection();
+        		M.ViewManager.getView('bookingPage', 'position').resetSelection();
+        		M.ViewManager.getView('bookingPage', 'activity').resetSelection();
+        	}
+    	} catch(e) { console.error(e); }
     }
 
     , isPositionSelected: function() {
         // implemented adjustment to M.SeletionListView to return null if no item is available
-        var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            var posObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
+    	} else {
+            var posObj = M.ViewManager.getView('bookingPage', 'position').getSelection(YES);
+    	}
         if(posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
             return YES;
         } else {
@@ -10904,7 +11037,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
 
     , isActivitySelected: function() {
-        var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            var actObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection(YES);
+    	} else {
+            var actObj = M.ViewManager.getView('bookingPage', 'activity').getSelection(YES);
+    	}
         if(actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
             return YES;
         } else {
@@ -10913,9 +11050,15 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
 
     , saveSelection: function() {
-        var orderValue = M.ViewManager.getView('bookingPage', 'order').getSelection();
-        var positionValue = M.ViewManager.getView('bookingPage', 'position').getSelection();
-        var activityValue = M.ViewManager.getView('bookingPage', 'activity').getSelection();
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            var orderValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection();
+            var positionValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection();
+            var activityValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection();
+    	} else {
+            var orderValue = M.ViewManager.getView('bookingPage', 'order').getSelection();
+            var positionValue = M.ViewManager.getView('bookingPage', 'position').getSelection();
+            var activityValue = M.ViewManager.getView('bookingPage', 'activity').getSelection();
+    	}
 
         this.selections.order = orderValue;
         this.selections.position = positionValue;
@@ -11168,7 +11311,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 						alert("ERROR: yet unknown button \"" + button + "\" pressed.");
 						return;
 					}
-					try { $.mobile.fixedToolbars.show(); } catch(e) {}; // this line is for pre TMP 1.1
+					try { $.mobile.fixedToolbars.show(); } catch(e) { console.error(e); }; // this line is for pre TMP 1.1
 				} // callback
 				, obj.title						// title
 				, obj.confirmButtonValue			// buttonLabel
@@ -11227,7 +11370,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 							alert("ERROR: yet unknown button \"" + button + "\" pressed.");
 							return;
 					}
-					try { $.mobile.fixedToolbars.show(); } catch(e) {}; // this line is for pre TMP 1.1
+					try { $.mobile.fixedToolbars.show(); } catch(e) { console.error(e); }; // this line is for pre TMP 1.1
 				}  // callback to invoke with index of button pressed
 				, obj.title // title
 				, obj.confirmButtonValue + ',' + obj.cancelButtonValue          // buttonLabels
@@ -11545,7 +11688,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	, fixToobarsIntervalVar: null
 	, devicereadyhandler: function() {
 		
-		try {
+//		try {
 		
 			DigiWebApp.ApplicationController.DigiLoaderView.hide();
 			
@@ -11568,8 +11711,8 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 				});
 	    		//$(document).keydown(DigiWebApp.ApplicationController.keypressedHandler);
 			} else {
-				// refresh fixed toolbars every 5 seconds
-				DigiWebApp.ApplicationController.fixToobarsIntervalVar = setInterval(function() {try { $.mobile.fixedToolbars.show(); } catch(e) {};}, 5000);
+				// refresh fixed toolbars every second
+				DigiWebApp.ApplicationController.fixToobarsIntervalVar = setInterval(function() {try { $.mobile.fixedToolbars.show(); } catch(e) { console.error(e); };}, 1000);
 			}
 	    	
 	    	if (DigiWebApp.ApplicationController.timeoutdeviceready_var !== null) clearTimeout(DigiWebApp.ApplicationController.timeoutdeviceready_var);
@@ -11597,9 +11740,10 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	        
 			//document.addEventListener("pause", DigiWebApp.ApplicationController.closeChildbrowser, false);
 
-		} catch(e) {
-			trackError(e);
-		}
+//		} catch(e) {
+//			//trackError(e);
+//			console.error(e);
+//		}
 	}
 	
 	, closeChildbrowser: function() {
@@ -11697,7 +11841,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         				DigiWebApp.SettingsController.credentialsAlertShown = false;
     					DigiWebApp.ApplicationController.deleteAllData(); 
                     	DigiWebApp.BookingController.currentBooking = null;
-                    	$('#' + DigiWebApp.BookingPage.content.currentBookingLabel.id).html("");
+                    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+                        	$('#' + DigiWebApp.BookingPageWithIconsScholpp.content.currentBookingLabel.id).html("");
+                    	} else {
+                        	$('#' + DigiWebApp.BookingPage.content.currentBookingLabel.id).html("");
+                    	}
                         // reset app by setting location new => like web page reload
                         //location.href = location.protocol + '//' + location.host + location.pathname;
                     	DigiWebApp.SettingsController.showIOSMessage = false;
@@ -12755,6 +12903,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	                	if (el[prefix + 'keyId'] === "410") DigiWebApp.ApplicationController.restartApp = YES;
 	                	if (el[prefix + 'keyId'] === "411") DigiWebApp.ApplicationController.restartApp = YES;
 	                	if (el[prefix + 'keyId'] === "412") DigiWebApp.ApplicationController.restartApp = YES;
+	                	if (el[prefix + 'keyId'] === "416") DigiWebApp.ApplicationController.restartApp = YES;
 	                }
 	                
 	            }
@@ -13136,13 +13285,13 @@ DigiWebApp.ApplicationController = M.Controller.extend({
     , deleteAllData: function() {
 		try {
 			DigiWebApp.Booking.deleteAll();
-		} catch(e) {}
+		} catch(e) { console.error(e); }
 		try {
 			DigiWebApp.MediaFile.deleteAll();
-		} catch(e) {}
+		} catch(e) { console.error(e); }
 		try {
 			localStorage.clear('f');
-		} catch(e) {}
+		} catch(e) { console.error(e); }
     }
     
 });
@@ -13449,6 +13598,188 @@ DigiWebApp.BautagebuchMaterialienListeController = M.Controller.extend({
 	
 	}
 
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: ScholppBookingController
+// ==========================================================================
+
+DigiWebApp.ScholppBookingController = M.Controller.extend({
+
+	  resetButtons: function() {
+		var fahrzeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.fahrzeitButtonGrid.button.id)[0];
+		var arbeitszeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.arbeitszeitButtonGrid.button.id)[0];
+		var unterbrechungButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.unterbrechungButtonGrid.button.id)[0];
+		var pauseButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.pauseButtonGrid.button.id)[0];
+		var arbeitsendeButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.arbeitsendeButtonGrid.button.id)[0];
+		fahrzeitButton.classList.remove("buttonSelected");
+		arbeitszeitButton.classList.remove("buttonSelected");
+		unterbrechungButton.classList.remove("buttonSelected");
+		pauseButton.classList.remove("buttonSelected");
+		arbeitsendeButton.classList.remove("buttonSelected");
+	}
+
+	, sleepFor: 500
+
+	, bucheFahrzeitTimeoutvar: null
+	, bucheFahrzeit: function() {
+		if (DigiWebApp.BookingController.checkBooking(YES)) {
+			DigiWebApp.ScholppBookingController.selectFahrzeit();
+			DigiWebApp.ScholppBookingController.bucheFahrzeitTimeoutvar = setTimeout("DigiWebApp.ScholppBookingController.doBucheFahrzeit()",this.sleepFor);
+		}
+	}
+	, doBucheFahrzeit: function() {
+		if (DigiWebApp.ScholppBookingController.bucheFahrzeitTimeoutvar !== null) clearTimeout(DigiWebApp.ScholppBookingController.bucheFahrzeitTimeoutvar);
+		var activities = DigiWebApp.SelectionController.getActivities();
+		var activityArray = _.map(activities, function(act) {
+		        	if ( typeof(act) === "undefined" ) {
+		        		console.log("UNDEFINED ACTIVITY");
+		        		return null;
+		        	} else {
+		        		var obj = null;
+		        		if(act.get('name').indexOf("Fahrzeit") >= 0) {
+		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+		        			itemSelected = YES;
+		        		} else {
+		        			obj = { label: act.get('name'), value: act.get('id') };
+		        		}
+		        		return obj;
+		        	}
+		        });
+		DigiWebApp.SelectionController.set('activities', activityArray);
+		DigiWebApp.BookingController.book();
+	}
+	
+	, bucheArbeitszeitTimeoutvar: null
+	, bucheArbeitszeit: function() {
+		if (DigiWebApp.BookingController.checkBooking(YES)) {
+			DigiWebApp.ScholppBookingController.selectArbeitszeit();
+			DigiWebApp.ScholppBookingController.bucheArbeitszeitTimeoutvar = setTimeout("DigiWebApp.ScholppBookingController.doBucheArbeitszeit()",this.sleepFor);
+		}
+	}
+	, doBucheArbeitszeit: function() {
+		if (DigiWebApp.ScholppBookingController.bucheArbeitszeitTimeoutvar !== null) clearTimeout(DigiWebApp.ScholppBookingController.bucheArbeitszeitTimeoutvar);
+		var activities = DigiWebApp.SelectionController.getActivities();
+		var activityArray = _.map(activities, function(act) {
+		        	if ( typeof(act) === "undefined" ) {
+		        		console.log("UNDEFINED ACTIVITY");
+		        		return null;
+		        	} else {
+		        		var obj = null;
+		        		if(act.get('name').indexOf("Arbeitszeit") >= 0) {
+		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+		        			itemSelected = YES;
+		        		} else {
+		        			obj = { label: act.get('name'), value: act.get('id') };
+		        		}
+		        		return obj;
+		        	}
+		        });
+		DigiWebApp.SelectionController.set('activities', activityArray);
+		DigiWebApp.BookingController.book();
+	}
+
+	, bucheUnterbrechungTimeoutvar: null
+	, bucheUnterbrechung: function() {
+		if (DigiWebApp.BookingController.checkBooking(YES)) {
+			DigiWebApp.ScholppBookingController.selectUnterbrechung();
+			DigiWebApp.ScholppBookingController.bucheUnterbrechungTimeoutvar = setTimeout("DigiWebApp.ScholppBookingController.doBucheUnterbrechung()",this.sleepFor);
+		}
+	}
+	, doBucheUnterbrechung: function() {
+		if (DigiWebApp.ScholppBookingController.bucheUnterbrechungTimeoutvar !== null) clearTimeout(DigiWebApp.ScholppBookingController.bucheUnterbrechungTimeoutvar);
+		var activities = DigiWebApp.SelectionController.getActivities();
+		var activityArray = _.map(activities, function(act) {
+		        	if ( typeof(act) === "undefined" ) {
+		        		console.log("UNDEFINED ACTIVITY");
+		        		return null;
+		        	} else {
+		        		var obj = null;
+		        		if(act.get('name').indexOf("Unterbrechung") >= 0) {
+		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+		        			itemSelected = YES;
+		        		} else {
+		        			obj = { label: act.get('name'), value: act.get('id') };
+		        		}
+		        		return obj;
+		        	}
+		        });
+		DigiWebApp.SelectionController.set('activities', activityArray);
+		DigiWebApp.BookingController.book();
+	}
+	
+	, buchePauseTimeoutvar: null
+	, buchePause: function() {
+		if (DigiWebApp.BookingController.checkBooking(YES)) {
+			DigiWebApp.ScholppBookingController.selectPause();
+			DigiWebApp.ScholppBookingController.buchePauseTimeoutvar = setTimeout("DigiWebApp.ScholppBookingController.doBuchePause()",this.sleepFor);
+		}
+	}
+	, doBuchePause: function() {
+		if (DigiWebApp.ScholppBookingController.buchePauseTimeoutvar !== null) clearTimeout(DigiWebApp.ScholppBookingController.buchePauseTimeoutvar);
+		var activities = DigiWebApp.SelectionController.getActivities();
+		var activityArray = _.map(activities, function(act) {
+		        	if ( typeof(act) === "undefined" ) {
+		        		console.log("UNDEFINED ACTIVITY");
+		        		return null;
+		        	} else {
+		        		var obj = null;
+		        		if(act.get('name').indexOf("Pause") >= 0) {
+		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
+		        			itemSelected = YES;
+		        		} else {
+		        			obj = { label: act.get('name'), value: act.get('id') };
+		        		}
+		        		return obj;
+		        	}
+		        });
+		DigiWebApp.SelectionController.set('activities', activityArray);
+		DigiWebApp.BookingController.book();
+	}
+
+	, bucheArbeitsendeTimeoutvar: null
+	, bucheArbeitsende: function() {
+		DigiWebApp.ScholppBookingController.selectArbeitsende();
+		DigiWebApp.ScholppBookingController.bucheArbeitsendeTimeoutvar = setTimeout("DigiWebApp.ScholppBookingController.doBucheArbeitsende()",this.sleepFor);
+	}
+	, doBucheArbeitsende: function() {
+		if (DigiWebApp.ScholppBookingController.bucheArbeitsendeTimeoutvar !== null) clearTimeout(DigiWebApp.ScholppBookingController.bucheArbeitsendeTimeoutvar);
+		DigiWebApp.BookingController.closeDay();
+	}
+	
+	, selectFahrzeit: function() {
+		DigiWebApp.ScholppBookingController.resetButtons();
+		var fahrzeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.fahrzeitButtonGrid.button.id)[0];
+		fahrzeitButton.classList.add("buttonSelected");
+	}
+	
+	, selectArbeitszeit: function() {
+		DigiWebApp.ScholppBookingController.resetButtons();
+		var arbeitszeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.arbeitszeitButtonGrid.button.id)[0];
+		arbeitszeitButton.classList.add("buttonSelected");
+	}
+
+	, selectUnterbrechung: function() {
+		DigiWebApp.ScholppBookingController.resetButtons();
+		var unterbrechungButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.unterbrechungButtonGrid.button.id)[0];
+		unterbrechungButton.classList.add("buttonSelected");
+	}
+	
+	, selectPause: function() {
+		DigiWebApp.ScholppBookingController.resetButtons();
+		var pauseButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.pauseButtonGrid.button.id)[0];
+		pauseButton.classList.add("buttonSelected");
+	}
+
+	, selectArbeitsende: function() {
+		DigiWebApp.ScholppBookingController.resetButtons();
+		var arbeitsendeButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.arbeitsendeButtonGrid.button.id)[0];
+		arbeitsendeButton.classList.add("buttonSelected");
+	}
 });
 
 // ==========================================================================
@@ -14017,22 +14348,6 @@ DigiWebApp.NavigationController = M.Controller.extend({
 		DigiWebApp.NavigationController.switchToPage('splashView', M.TRANSITION.FADE, NO);
 	}
 
-    , backToDashboardPage: function() {
-    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.SLIDEUP, YES);
-    }
-
-    , backToDashboardPagePOP: function() {
-    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.POP, YES);
-    }
-
-    , backToDashboardPageFlipTransition: function() {
-    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.FLIP, YES);
-    }
-
-    , toDashboardPageFlipTransition: function() {
-    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.FLIP, NO);
-    }
-
     , toInfoPage: function() {
     	DigiWebApp.NavigationController.switchToPage('infoPage', M.TRANSITION.NONE, NO);
     }
@@ -14051,8 +14366,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		//DigiWebApp.NavigationController.backToDashboardPage();
     	} else {
     		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.SLIDEUP, YES);
-    		} catch(e) {}
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.SLIDEUP, YES);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.SLIDEUP, YES);
+    			}
+    		} catch(e) { console.error(e); }
     	}
     }
 
@@ -14066,8 +14385,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		//DigiWebApp.NavigationController.backToDashboardPagePOP();
     	} else {
     		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.POP, YES);
-    		} catch(e) {}
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.POP, YES);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.POP, YES);
+    			}
+    		} catch(e) { console.error(e); }
     	}
     }
 
@@ -14080,9 +14403,13 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		DigiWebApp.ApplicationController.useSplashJustForFade = 0;
     		//DigiWebApp.NavigationController.toDashboardPage();
     	} else {
-    		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.NONE, NO);
-    		} catch(e) {}
+    		//try {
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.NONE, NO);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.NONE, NO);
+    			}
+    		//} catch(e) { console.error(e); }
     	}
     }
 
@@ -14096,8 +14423,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		//DigiWebApp.NavigationController.toDashboardPageTransition();
     	} else {
     		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.SLIDEUP, NO);
-    		} catch(e) {}
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.SLIDEUP, NO);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.SLIDEUP, NO);
+    			}
+    		} catch(e) { console.error(e); }
     	}
     }
 
@@ -14111,8 +14442,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		//DigiWebApp.NavigationController.toDashboardPageFlipTransition();
     	} else {
     		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.FLIP, YES);
-    		} catch(e) {}
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.FLIP, YES);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.FLIP, YES);
+    			}
+    		} catch(e) { console.error(e); }
     	}
     }
 
@@ -14126,8 +14461,12 @@ DigiWebApp.NavigationController = M.Controller.extend({
     		//DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
     	} else {
     		try {
-    			DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.FLIP, NO);
-    		} catch(e) {}
+    			if (DigiWebApp.SettingsController.featureAvailable('416')) {
+    				DigiWebApp.NavigationController.switchToPage('bookingPageWithIconsScholpp', M.TRANSITION.FLIP, NO);
+    			} else {
+    				DigiWebApp.NavigationController.switchToPage('bookingPage', M.TRANSITION.FLIP, NO);
+    			}
+    		} catch(e) { console.error(e); }
     	}
     }
 
@@ -14191,6 +14530,22 @@ DigiWebApp.NavigationController = M.Controller.extend({
 
     , toDashboardPageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.SLIDEUP, NO);
+    }
+
+    , backToDashboardPage: function() {
+    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.SLIDEUP, YES);
+    }
+
+    , backToDashboardPagePOP: function() {
+    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.POP, YES);
+    }
+
+    , backToDashboardPageFlipTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.FLIP, YES);
+    }
+
+    , toDashboardPageFlipTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('dashboard', M.TRANSITION.FLIP, NO);
     }
 
     , toOrderInfoPage: function() {
@@ -14480,6 +14835,32 @@ DigiWebApp.NavigationController = M.Controller.extend({
     , toFileChooserPageTransition: function() {
     	DigiWebApp.NavigationController.switchToPage('fileChooserPage', M.TRANSITION.POP, NO);
     }
+
+    // Start::ButtonsDashboardPage   
+    , toButtonsDashboardPage: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.NONE, NO);
+    }
+
+    , toButtonsDashboardPageTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.SLIDEUP, NO);
+    }
+
+    , backToButtonsDashboardPage: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.SLIDEUP, YES);
+    }
+
+    , backToButtonsDashboardPagePOP: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.POP, YES);
+    }
+
+    , backToButtonsDashboardPageFlipTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.FLIP, YES);
+    }
+
+    , toButtonsDashboardPageFlipTransition: function() {
+    	DigiWebApp.NavigationController.switchToPage('buttonsDashboard', M.TRANSITION.FLIP, NO);
+    }
+    // Ende::ButtonsDashboardPage   
 
 });
 
@@ -15217,7 +15598,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
         if(reloadApplication) {
 			DigiWebApp.ApplicationController.deleteAllData(); 
         	DigiWebApp.BookingController.currentBooking = null;
-        	$('#' + DigiWebApp.BookingPage.content.currentBookingLabel.id).html("");
+        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            	$('#' + DigiWebApp.BookingPageWithIconsScholpp.content.currentBookingLabel.id).html("");
+        	} else {
+            	$('#' + DigiWebApp.BookingPage.content.currentBookingLabel.id).html("");
+        	}
         }
 
         if(record.save()) {
@@ -15324,20 +15709,20 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	DigiWebApp.Anwesenheitsliste.find({urlParams:{},callbacks: {success: { action: function(records) {
         		try { 
         			_.each(records, function(record) {
-        				try { if (record.get("geraeteId") === MitarbeiterWebAppID) DigiWebApp.SettingsController.mitarbeiterNameVorname = record.get("nameVorname");} catch(e) {}
+        				try { if (record.get("geraeteId") === MitarbeiterWebAppID) DigiWebApp.SettingsController.mitarbeiterNameVorname = record.get("nameVorname");} catch(e) { console.error(e); }
         			}); 
         			if (callback) {
         				callback();
         			}
-        		} catch(e) {}
+        		} catch(e) { console.error(e); }
         	}}, error: { action: function(){}}}});
-        } catch(e) {}
+        } catch(e) { console.error(e); }
 	}
 
     , sendConfiguration: function() {
         var settings = DigiWebApp.Settings.find();    		
     	var MitarbeiterWebAppID = "0"
-    	try { MitarbeiterWebAppID = settings[0].get("workerId"); } catch(e) {}
+    	try { MitarbeiterWebAppID = settings[0].get("workerId"); } catch(e) { console.error(e); }
         DigiWebApp.RequestController.sendConfiguration({
               settings: settings
             , success: {
@@ -15744,7 +16129,7 @@ DigiWebApp.HandOrderController = M.Controller.extend({
                 if (typeof(myLocalStorageString) === "string") {
                 	try {
                 		hIds = JSON.parse(myLocalStorageString);
-                	} catch(e) {}
+                	} catch(e) { console.error(e); }
                 } else {
                     // no handorderKeys in localstorage
                 }
@@ -15866,7 +16251,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 	                $(this).removeClass('selected');
 	            });
 	        }
-		} catch(e) {}
+		} catch(e) { console.error(e); }
 
         
         try {
@@ -15876,7 +16261,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 	                $(this).removeClass('selected');
 	            });
 	        }
-        } catch(e) {}
+        } catch(e) { console.error(e); }
 
 	}
 
@@ -16644,7 +17029,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 				) {
 					c.renderUpdate();
 				}
-			} catch(e) {} 
+			} catch(e) { console.error(e); } 
 		})									
 	}
 
@@ -17126,6 +17511,68 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 
 });
 
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: ButtonDashboardTemplateView
+// ==========================================================================
+
+DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
+
+    isSelectable: NO
+
+    , childViews: 'grid'
+
+    , events: {
+        tap: {
+            target: DigiWebApp.DashboardController,
+            action: 'itemSelected'
+        }
+    }
+
+	, grid: M.GridView.design({
+		  childViews: 'icon_left icon_right'
+        , layout: M.TWO_COLUMNS
+        , icon_left: M.ImageView.design({
+	    	cssClass: 'unselectable'
+	        , computedValue: {
+	            valuePattern: '<%= button_0 %>'
+	            , operation: function(v) {
+	                return 'theme/images/' + v.icon;
+	            }
+	        }
+	    })
+        , icon_right: M.ImageView.design({
+	    	cssClass: 'unselectable'
+	        , computedValue: {
+	            valuePattern: '<%= button_1 %>'
+	            , operation: function(v) {
+	                return 'theme/images/' + v.icon;
+	            }
+	        }
+	    })
+
+	})
+
+    , icon: M.ImageView.design({
+    	cssClass: 'unselectable'
+        , computedValue: {
+            valuePattern: '<%= icon %>'
+            , operation: function(v) {
+                return 'theme/images/' + v;
+            }
+        }
+    })
+
+    , label: M.LabelView.design({
+    	cssClass: 'unselectable'
+        , valuePattern: '<%= label %>'
+    })
+
+});
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -17665,7 +18112,7 @@ DigiWebApp.InfoPage = M.PageView.design({
 			        	DigiWebApp.SettingsController.mitarbeiterNameVorname = "";
 				        var settings = DigiWebApp.Settings.find();    		
 				    	var MitarbeiterWebAppID = "0"
-				    	try { MitarbeiterWebAppID = settings[0].get("workerId"); } catch(e) {}
+				    	try { MitarbeiterWebAppID = settings[0].get("workerId"); } catch(e) { console.error(e); }
 						DigiWebApp.SettingsController.refreshMitarbeiterNameVorname(MitarbeiterWebAppID, DigiWebApp.InfoPage.pagebeforeshowFunction);
 					}
                 }
@@ -17724,7 +18171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
                   value: ''
                 , operation: function(v) {
                 	var myCompanyId = "";
-                	try { myCompanyId = DigiWebApp.Settings.find()[0].get("company"); } catch(e) {}
+                	try { myCompanyId = DigiWebApp.Settings.find()[0].get("company"); } catch(e) { /*console.error(e);*/ }
                     return M.I18N.l('company') + ': ' + myCompanyId;
                 }
             }
@@ -17736,7 +18183,7 @@ DigiWebApp.InfoPage = M.PageView.design({
                   value: ''
                 , operation: function(v) {
                 	var myWorkerId = "";
-                	try { myWorkerId = DigiWebApp.Settings.find()[0].get("workerId"); } catch(e) {}
+                	try { myWorkerId = DigiWebApp.Settings.find()[0].get("workerId"); } catch(e) { /*console.error(e);*/ }
                     var outString = M.I18N.l('configuredUser') + ': ' + myWorkerId;
                     if (typeof(DigiWebApp.SettingsController.mitarbeiterNameVorname) !== "undefined" && DigiWebApp.SettingsController.mitarbeiterNameVorname !== null && DigiWebApp.SettingsController.mitarbeiterNameVorname !== "") {
                     	outString = outString + ' (' + DigiWebApp.SettingsController.mitarbeiterNameVorname + ')';
@@ -17787,7 +18234,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3549'
+              value: 'Build: 3588'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -17974,8 +18421,15 @@ DigiWebApp.BookingPage = M.PageView.design({
 
     , events: {
 		  pagebeforeshow: {
-              target: DigiWebApp.BookingController
-            , action: 'init'
+            //  target: DigiWebApp.BookingController
+            //, action: 'init'
+			action: function() {
+				if (DigiWebApp.SettingsController.featureAvailable("416")) {
+					DigiWebApp.NavigationController.toBookTimePage(); // zum Scholpp-Custom-BookingScreen
+				} else {
+					DigiWebApp.BookingController.init();
+				}
+			}
         }
         , pageshow: {
         	action: function() {
@@ -18136,6 +18590,429 @@ DigiWebApp.BookingPage = M.PageView.design({
                     }
                 }
             }
+        })
+    })
+
+    , tabBar: DigiWebApp.TabBar
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BookingPage
+// ==========================================================================
+
+m_require('app/views/TabBar.js');
+
+DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
+
+      childViews: 'header content tabBar'
+
+    , events: {
+		  pagebeforeshow: {
+              target: DigiWebApp.BookingController
+            , action: 'init'
+        }
+        , pageshow: {
+        	action: function() {
+        		DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem1);
+        		//if (DigiWebApp.SettingsController.featureAvailable('415')) {
+        		//	$('#' + DigiWebApp.BookingPageWithIconsScholpp.header.feierabendButton.id).show(); 			
+        		//} else {
+        			$('#' + DigiWebApp.BookingPageWithIconsScholpp.header.feierabendButton.id).hide()
+        		//}
+        		//$('#' + DigiWebApp.BookingPageWithIconsScholpp.header.feierabendButton.id).addClass("feierabendButton")
+        		$('#' + DigiWebApp.BookingPageWithIconsScholpp.content.activity.id + "_container").hide()
+        	}
+        }
+    }
+
+    , cssClass: 'bookTimePageWithIcons'
+
+    , header: M.ToolbarView.design({
+          childViews: 'title feierabendButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , pauseButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+        			action: function() {
+        				// TODO: schnelle Pause implementieren
+						//DigiWebApp.BookingController.closeDay();
+					}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('timeRegistration')
+            , anchorLocation: M.CENTER
+        })
+        , feierabendButton: M.ButtonView.design({
+              value: ''
+            , icon: 'home'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+        			action: function() {
+        				DigiWebApp.BookingController.closeDay();
+					}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+	, content: M.ScrollView.design({
+          //childViews: 'order position activity grid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
+          childViews: 'order position activity activityLabel fahrzeit_arbeitszeit_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
+        , cssClass: 'unselectable'
+        	
+        , activityLabel: M.LabelView.design({
+        	  value: M.I18N.l('activity')
+        	, cssClass: 'whiteLabel16px'
+        })
+
+        , unterbrechung_pause_arbeitsende_ButtonGrid: M.GridView.design({
+        		childViews: 'unterbrechungButtonGrid pauseButtonGrid arbeitsendeButtonGrid'
+              , layout: M.THREE_COLUMNS
+              , arbeitsendeButtonGrid: M.GridView.design({
+                  childViews: 'button icon'
+                , layout: {
+                      cssClass: 'scholppButton'
+                    , columns: {
+                          0: 'button'
+                        , 1: 'icon'
+                    }
+                }
+                , button: M.ButtonView.design({
+                      value: "Arbeitsende"
+                    , cssClass: 'scholppButton'
+                    , anchorLocation: M.RIGHT
+                    , events: {
+                        tap: {
+		    				action: function() {
+                				DigiWebApp.ScholppBookingController.bucheArbeitsende();
+		        			}
+                        }
+                    }
+                })
+                , icon: M.ImageView.design({
+                      value: 'theme/images/48x48_plain_home.png'
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  					DigiWebApp.ScholppBookingController.bucheArbeitsende();
+		          				}
+		                  }
+		            }
+                })
+            })
+
+            , unterbrechungButtonGrid: M.GridView.design({
+                  childViews: 'button icon'
+                , layout: {
+                      cssClass: 'scholppButton'
+                    , columns: {
+                          0: 'button'
+                        , 1: 'icon'
+                    }
+                }
+                , button: M.ButtonView.design({
+                      value: "Unterbrechung"
+                    , cssClass: 'scholppButton'
+                    , anchorLocation: M.RIGHT
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  					DigiWebApp.ScholppBookingController.bucheUnterbrechung();
+		          				}
+		                  }
+		            }
+                })
+                , icon: M.ImageView.design({
+                      value: 'theme/images/48x48_plain_clock_pause.png'
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  					DigiWebApp.ScholppBookingController.bucheUnterbrechung();
+		          				}
+		                  }
+		            }
+                })
+            })
+
+            , pauseButtonGrid: M.GridView.design({
+                  childViews: 'button icon'
+                , layout: {
+                      cssClass: 'scholppButton'
+                    , columns: {
+                          0: 'button'
+                        , 1: 'icon'
+                    }
+                }
+                , button: M.ButtonView.design({
+                      value: "Pause"
+                    , cssClass: 'scholppButton'
+                    , anchorLocation: M.RIGHT
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				DigiWebApp.ScholppBookingController.buchePause();
+		          				}
+		                  }
+		            }
+                })
+                , icon: M.ImageView.design({
+                      value: 'theme/images/48x48_plain_cup.png'
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				DigiWebApp.ScholppBookingController.buchePause();
+		          				}
+		                  }
+		            }
+                })
+            })
+        })
+        
+        , fahrzeit_arbeitszeit_ButtonGrid: M.GridView.design({
+        	  childViews: 'fahrzeitButtonGrid arbeitszeitButtonGrid'
+            , layout: M.TWO_COLUMNS
+
+            , fahrzeitButtonGrid: M.GridView.design({
+                childViews: 'button icon'
+              , layout: {
+                    cssClass: 'scholppButton'
+                  , columns: {
+                        0: 'button'
+                      , 1: 'icon'
+                  }
+              }
+              , button: M.ButtonView.design({
+                    value: "Fahrzeit"
+                  , cssClass: 'scholppButton'
+                  , anchorLocation: M.RIGHT
+                  , events: {
+                      tap: {
+		    				action: function() {
+            	  				DigiWebApp.ScholppBookingController.bucheFahrzeit();
+              				}
+                      }
+                  }
+              })
+              , icon: M.ImageView.design({
+                    value: 'theme/images/48x48_plain_minibus_green.png'
+                  , events: {
+	                  tap: {
+		    				action: function() {
+            	  				DigiWebApp.ScholppBookingController.bucheFahrzeit();
+	          				}
+	                  }
+	              }
+              })
+            })
+            , arbeitszeitButtonGrid: M.GridView.design({
+                  childViews: 'button icon'
+                , layout: {
+                      cssClass: 'scholppButton'
+                    , columns: {
+                          0: 'button'
+                        , 1: 'icon'
+                    }
+                }
+                , button: M.ButtonView.design({
+                      value: "Arbeitszeit"
+                    , cssClass: 'scholppButton'
+                    , anchorLocation: M.RIGHT
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				DigiWebApp.ScholppBookingController.bucheArbeitszeit();
+		          				}
+		                  }
+		            }
+                })
+                , icon: M.ImageView.design({
+                      value: 'theme/images/48x48_plain_wrench.png'
+                    , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				DigiWebApp.ScholppBookingController.bucheArbeitszeit();
+		          				}
+		                  }
+		            }
+                })
+            })
+        })
+
+        , order: M.SelectionListView.design({
+                  selectionMode: M.SINGLE_SELECTION_DIALOG
+                , initialText: M.I18N.l('noData')
+                , label: M.I18N.l('order')
+                //, cssClass: 'unselectable'
+                , applyTheme: NO
+                , contentBinding: {
+                      target: DigiWebApp.SelectionController
+                    , property: 'orders'
+                }
+                , events: {
+                    change: {
+                          target: DigiWebApp.SelectionController
+                        , action: function() {
+                            this.setPositions();
+                        }
+                    }
+                }
+        })
+            
+        , position: M.SelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , label: M.I18N.l('position')
+            , initialText: M.I18N.l('noData')
+            //, cssClass: 'unselectable'
+            , applyTheme: NO
+            , contentBinding: {
+                  target: DigiWebApp.SelectionController
+                , property: 'positions'
+            }
+            , events: {
+                change: {
+                      target: DigiWebApp.SelectionController
+                    , action: function() {
+                        this.setActivities(YES);
+                    }
+                }
+            }
+        })
+
+        , activity: M.SelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , label: M.I18N.l('activity')
+            , initialText: M.I18N.l('noData')
+            //, cssClass: 'unselectable'
+            , applyTheme: NO
+            , contentBinding: {
+                  target: DigiWebApp.SelectionController
+                , property: 'activities'
+            }
+            , events: {
+                change: {
+                      target: DigiWebApp.SelectionController
+                    , action: function() {
+                        this.saveSelection();
+                    }
+                }
+            }
+        })
+
+        , grid: M.GridView.design({
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'marginTop40 digiButton'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('book2')
+                , cssClass: 'digiButton'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+                          target: DigiWebApp.BookingController
+                        , action: 'book'
+            			    					
+ 						/*, action: function() {
+				                DigiWebApp.BookingController.book();
+						}*/
+                    }
+                }
+            })
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        })
+
+        , currentBookingLabel: M.LabelView.design({
+              cssClass: 'marginTop25 whiteLabel unselectable'
+            , computedValue: {
+                  contentBinding: {
+                      target: DigiWebApp.BookingController
+                    , property: 'currentBookingStr'
+                }
+                , value: ''
+                , operation: function(v) {
+                	if (v !== "") {
+                    	return M.I18N.l('bookingRunningSince') + ' &nbsp;' + v;
+                    } else {
+                    	return '';
+                    }
+                }
+            }
+        })
+    })
+
+    , tabBar: DigiWebApp.TabBar
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: DashboardPage
+// ==========================================================================
+
+m_require('app/views/TabBar.js');
+m_require('app/views/ButtonDashboardTemplateView.js');
+
+DigiWebApp.ButtonDashboardPage = M.PageView.design({
+
+    childViews: 'header content tabBar'
+
+    , cssClass: 'dashboardPage unselectable'
+
+    , events: {
+		  pagebeforeshow: {
+            target: DigiWebApp.DashboardController,
+            action: 'initButtons'
+        }
+        , pageshow: {
+        	action: function() {
+        		DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem2);
+        	}
+        }
+    }
+    
+    , needsUpdate: true
+
+    , header: M.ToolbarView.design({
+        value: M.I18N.l('menu')
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+
+        childViews: 'list'
+
+        , list: M.ListView.design({
+            contentBinding: {
+                target: DigiWebApp.DashboardController,
+                property: 'items'
+            }
+            , listItemTemplateView: DigiWebApp.ButtonDashboardTemplateView
         })
     })
 
@@ -22838,7 +23715,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                action: function(buttonid, ev) {
-	    				try { ev.preventDefault(); } catch(e) {};
+	    				try { ev.preventDefault(); } catch(e) { console.error(e); };
 						var country = DigiWebApp.OrderInfoController.items[0].positionCountryCode;
 						var zip = DigiWebApp.OrderInfoController.items[0].positionPLZ;
 						var city = DigiWebApp.OrderInfoController.items[0].positionOrt;
@@ -27090,6 +27967,11 @@ if ( (searchForFeature(412)) && !(searchForFeature(409)) ) { // Bautagebuch
 	DigiWebAppOrdinaryDesign.bautagebuchWetterPage = DigiWebApp.BautagebuchWetterPage
 	DigiWebAppOrdinaryDesign.bautagebuchZusammenfassungPage = DigiWebApp.BautagebuchZusammenfassungPage
 	DigiWebAppOrdinaryDesign.fileChooserPage = DigiWebApp.FileChooserPage
+}
+
+if ( (searchForFeature(416)) && !(searchForFeature(409)) ) { // Buchungsscreen mit Tätigkeitsicons und ButtonMenü (Scholpp)
+	DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp = DigiWebApp.BookingPageWithIconsScholpp
+	DigiWebAppOrdinaryDesign.buttonsDashboard = DigiWebApp.ButtonDashboardPage
 }
 
 var restartOnBlackBerry = true;
