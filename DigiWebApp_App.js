@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3593
+    , softwareVersion: 3594
 
 
     /**
@@ -17537,7 +17537,11 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	            valuePattern: '<%= button_0 %>'
 	            , operation: function(v) {
-	                return 'theme/images/' + v.icon;
+					if (v === null) {
+						return '';
+					} else {
+		                return 'theme/images/' + v.icon;
+					}
 	            }
 	        }
 	    })
@@ -17546,7 +17550,11 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	            valuePattern: '<%= button_1 %>'
 	            , operation: function(v) {
-	                return 'theme/images/' + v.icon;
+					if (v === null) {
+						return '';
+					} else {
+		                return 'theme/images/' + v.icon;
+					}
 	            }
 	        }
 	    })
@@ -17555,7 +17563,11 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
             , computedValue: {
 	            valuePattern: '<%= button_0 %>'
 	            , operation: function(v) {
-	                return v.label;
+	    			if (v === null) {
+	    				return '';
+	    			} else {
+	    				return v.label;
+	    			}
 	            }
 	        }
 	    })
@@ -17564,7 +17576,11 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
             , computedValue: {
 	            valuePattern: '<%= button_1 %>'
 	            , operation: function(v) {
-	                return v.label;
+					if (v === null) {
+						return '';
+					} else {
+						return v.label;
+					}
 	            }
 	        }
 	    })
@@ -18234,7 +18250,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3593'
+              value: 'Build: 3594'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
