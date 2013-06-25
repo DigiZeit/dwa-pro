@@ -4890,19 +4890,18 @@ DigiWebApp.DashboardController = M.Controller.extend({
 		
 		// aus that.items that.itemsButtons bauen
 		var myButtonItem = {};
-		that.itemsButtons = [];
+		var myitemsButtons = [];
 		for (i=0; i < that.items.length; i++) {
 			myButtonItem["button_" + i % 2] = JSON.parse(JSON.stringify(that.items[i]));
 			if (i % 2 === 0 && i === that.items.length - 1) {
 				myButtonItem["button_" + 1] = {};
 			}
 			if (i % 2 === 1 || i === that.items.length - 1) {
-				that.itemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
+				myitemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
 				myButtonItem = {};
 			}
 		};
-		
-		
+		that.set('itemsButtons', myitemsButtons);		
 	}
 
     , init: function(isFirstLoad) {
@@ -6693,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3592
+    , softwareVersion: 3593
 
 
     /**
@@ -18235,7 +18234,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3592'
+              value: 'Build: 3593'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
