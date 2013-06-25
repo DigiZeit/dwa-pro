@@ -4892,9 +4892,9 @@ DigiWebApp.DashboardController = M.Controller.extend({
 		var myButtonItem = {};
 		var myitemsButtons = [];
 		for (i=0; i < that.items.length; i++) {
-			myButtonItem["button_" + i % 2] = JSON.parse(JSON.stringify(that.items[i]));
+			myButtonItem["button" + i % 2] = JSON.parse(JSON.stringify(that.items[i]));
 			if (i % 2 === 0 && i === that.items.length - 1) {
-				myButtonItem["button_" + 1] = {};
+				myButtonItem["button1"] = {};
 			}
 			if (i % 2 === 1 || i === that.items.length - 1) {
 				myitemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3595
+    , softwareVersion: 3596
 
 
     /**
@@ -17529,16 +17529,16 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
     }
 
 	, grid: M.GridView.design({
-		  //childViews: 'icon_left icon_right'
-		  childViews: 'label_left label_right'
+		  childViews: 'icon_left icon_right'
+		  //childViews: 'label_left label_right'
         , layout: M.TWO_COLUMNS
         , icon_left: M.ImageView.design({
 	    	cssClass: 'unselectable'
 	        , computedValue: {
-	            valuePattern: '<%= button_0 %>'
+	            valuePattern: '<%= button0 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return '';
+						return v;
 					} else {
 		                return 'theme/images/' + v.icon;
 					}
@@ -17548,10 +17548,10 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
         , icon_right: M.ImageView.design({
 	    	cssClass: 'unselectable'
 	        , computedValue: {
-	            valuePattern: '<%= button_1 %>'
+	            valuePattern: '<%= button1 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return '';
+						return v;
 					} else {
 		                return 'theme/images/' + v.icon;
 					}
@@ -17561,10 +17561,10 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	    , label_left: M.LabelView.design({
 	    	cssClass: 'unselectable'
             , computedValue: {
-	            valuePattern: '<%= button_0 %>'
+	            valuePattern: '<%= button0 %>'
 	            , operation: function(v) {
 	    			if (v === null || typeof(v) === "undefined") {
-	    				return '';
+	    				return v;
 	    			} else {
 	    				return v.label;
 	    			}
@@ -17574,10 +17574,10 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	    , label_right: M.LabelView.design({
 	    	cssClass: 'unselectable'
             , computedValue: {
-	            valuePattern: '<%= button_1 %>'
+	            valuePattern: '<%= button1 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return '';
+						return v;
 					} else {
 						return v.label;
 					}
@@ -18250,7 +18250,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3595'
+              value: 'Build: 3596'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18996,7 +18996,7 @@ DigiWebApp.ButtonDashboardPage = M.PageView.design({
 
     childViews: 'header content tabBar'
 
-    , cssClass: 'dashboardPage unselectable'
+    , cssClass: 'buttonDashboardPage unselectable'
 
     , events: {
 		  pagebeforeshow: {
