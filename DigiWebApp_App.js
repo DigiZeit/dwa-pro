@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3597
+    , softwareVersion: 3598
 
 
     /**
@@ -17519,7 +17519,8 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 
     isSelectable: NO
 
-    , childViews: 'grid'
+    //, childViews: 'grid'
+    , childViews: 'label_left label_right'
 
     , events: {
         tap: {
@@ -17527,6 +17528,33 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
             action: 'itemSelected'
         }
     }
+
+	, label_left: M.LabelView.design({
+		cssClass: 'unselectable'
+	    , computedValue: {
+	        valuePattern: '<%= button0 %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return v.label;
+				}
+	        }
+	    }
+	})
+	, label_right: M.LabelView.design({
+		cssClass: 'unselectable'
+	    , computedValue: {
+	        valuePattern: '<%= button1 %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return v.label;
+				}
+	        }
+	    }
+	})
 
 	, grid: M.GridView.design({
 		  //childViews: 'icon_left icon_right'
@@ -18250,7 +18278,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3597'
+              value: 'Build: 3598'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
