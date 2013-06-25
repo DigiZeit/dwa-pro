@@ -4896,7 +4896,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 			if (i % 2 === 0 && i === that.items.length - 1) {
 				myButtonItem["button_" + 1] = {};
 			}
-			if (i % 2 === 1 || i === items.length - 1) {
+			if (i % 2 === 1 || i === that.items.length - 1) {
 				that.itemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
 				myButtonItem = {};
 			}
@@ -6693,7 +6693,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3590
+    , softwareVersion: 3591
 
 
     /**
@@ -18220,7 +18220,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3590'
+              value: 'Build: 3591'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
