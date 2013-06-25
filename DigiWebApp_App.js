@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3596
+    , softwareVersion: 3597
 
 
     /**
@@ -17529,8 +17529,8 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
     }
 
 	, grid: M.GridView.design({
-		  childViews: 'icon_left icon_right'
-		  //childViews: 'label_left label_right'
+		  //childViews: 'icon_left icon_right'
+		  childViews: 'label_left label_right'
         , layout: M.TWO_COLUMNS
         , icon_left: M.ImageView.design({
 	    	cssClass: 'unselectable'
@@ -17538,7 +17538,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	            valuePattern: '<%= button0 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return v;
+						return null;
 					} else {
 		                return 'theme/images/' + v.icon;
 					}
@@ -17551,7 +17551,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	            valuePattern: '<%= button1 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return v;
+						return null;
 					} else {
 		                return 'theme/images/' + v.icon;
 					}
@@ -17564,7 +17564,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	            valuePattern: '<%= button0 %>'
 	            , operation: function(v) {
 	    			if (v === null || typeof(v) === "undefined") {
-	    				return v;
+	    				return null;
 	    			} else {
 	    				return v.label;
 	    			}
@@ -17577,7 +17577,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	            valuePattern: '<%= button1 %>'
 	            , operation: function(v) {
 					if (v === null || typeof(v) === "undefined") {
-						return v;
+						return null;
 					} else {
 						return v.label;
 					}
@@ -18250,7 +18250,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3596'
+              value: 'Build: 3597'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
