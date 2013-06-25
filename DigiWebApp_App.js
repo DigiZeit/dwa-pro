@@ -6692,7 +6692,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3598
+    , softwareVersion: 3599
 
 
     /**
@@ -17520,7 +17520,8 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
     isSelectable: NO
 
     //, childViews: 'grid'
-    , childViews: 'label_left label_right'
+    //, childViews: 'label_left label_right'
+    , childViews: 'buttonLeft buttonRight'
 
     , events: {
         tap: {
@@ -17529,8 +17530,51 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
         }
     }
 
+	, buttonLeft: M.ButtonView.design({
+		cssClass: 'scholppButton'
+      , computedValue: {
+	        valuePattern: '<%= button0 %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return v.label;
+				}
+	        }
+	  }
+//	  , events: {
+//	      tap: {
+//				action: function() {
+//					DigiWebApp.ScholppBookingController.bucheArbeitsende();
+//				}
+//	      }
+//	  }
+	})
+
+	, buttonRight: M.ButtonView.design({
+		cssClass: 'scholppButton'
+      , computedValue: {
+	        valuePattern: '<%= button1 %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return v.label;
+				}
+	        }
+	  }
+//	  , events: {
+//	      tap: {
+//				action: function() {
+//					DigiWebApp.ScholppBookingController.bucheArbeitsende();
+//				}
+//	      }
+//	  }
+	})
+
+
 	, label_left: M.LabelView.design({
-		cssClass: 'unselectable'
+		cssClass: 'unselectable label_left'
 	    , computedValue: {
 	        valuePattern: '<%= button0 %>'
 	        , operation: function(v) {
@@ -17543,7 +17587,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 	    }
 	})
 	, label_right: M.LabelView.design({
-		cssClass: 'unselectable'
+		cssClass: 'unselectable label_right'
 	    , computedValue: {
 	        valuePattern: '<%= button1 %>'
 	        , operation: function(v) {
@@ -18278,7 +18322,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3598'
+              value: 'Build: 3599'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
