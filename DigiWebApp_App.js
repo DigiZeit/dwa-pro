@@ -4901,6 +4901,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 //				myButtonItem = {};
 //			}
 			myButtonItem.label = that.items[i].label;
+			myButtonItem.id = that.items[i].id;
 			    switch(that.items[i].label) {
 			        case M.I18N.l('closingTime'):
 			        	myButtonItem.icon = '48x48_plain_home.png';
@@ -6735,7 +6736,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3603
+    , softwareVersion: 3604
 
 
     /**
@@ -18267,7 +18268,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3603'
+              value: 'Build: 3604'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
