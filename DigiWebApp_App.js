@@ -5149,14 +5149,16 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
         if(m_id && typeof(this[m_id]) === 'function') {
             this[m_id]();
-        } else if {
-        	var myContentBindingList = DigiWebApp.ButtonDashboardPage.content.list.contentBinding.target[DigiWebApp.ButtonDashboardPage.content.list.contentBinding.property];
-        	var myMethod = "";
-        	_.each(myContentBindingList, function(item) {
-        		if (item.label === $('#' + id).html()) {
-        			this[item.id]();
-        		}
-        	})
+        } else {
+        	try {
+            	var myContentBindingList = DigiWebApp.ButtonDashboardPage.content.list.contentBinding.target[DigiWebApp.ButtonDashboardPage.content.list.contentBinding.property];
+            	var myMethod = "";
+            	_.each(myContentBindingList, function(item) {
+            		if (item.label === $('#' + id).html() && typeof(this[item.id]) === 'function') {
+            			this[item.id]();
+            		}
+            	})
+        	} catch(e) {}
         }
     }
     
@@ -6744,7 +6746,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3608
+    , softwareVersion: 3610
 
 
     /**
@@ -18276,7 +18278,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3608'
+              value: 'Build: 3610'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
