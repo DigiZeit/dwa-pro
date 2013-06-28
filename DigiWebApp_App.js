@@ -4938,7 +4938,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 			        case M.I18N.l('info'):
 			        	myButtonItem.icon = '48x48_plain_about.png';
 			            break;
-			        case else:
+			        default:
 			        	myButtonItem.icon = 'icon_info.png';
 			        	break;
 			    }
@@ -6735,7 +6735,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3601
+    , softwareVersion: 3602
 
 
     /**
@@ -18260,7 +18260,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3601'
+              value: 'Build: 3602'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
