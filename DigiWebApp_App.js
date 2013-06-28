@@ -4892,14 +4892,57 @@ DigiWebApp.DashboardController = M.Controller.extend({
 		var myButtonItem = {};
 		var myitemsButtons = [];
 		for (i=0; i < that.items.length; i++) {
-			myButtonItem["button" + i % 2] = JSON.parse(JSON.stringify(that.items[i]));
-			if (i % 2 === 0 && i === that.items.length - 1) {
-				myButtonItem["button1"] = {};
-			}
-			if (i % 2 === 1 || i === that.items.length - 1) {
-				myitemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
-				myButtonItem = {};
-			}
+//			myButtonItem["button" + i % 2] = JSON.parse(JSON.stringify(that.items[i]));
+//			if (i % 2 === 0 && i === that.items.length - 1) {
+//				myButtonItem["button1"] = {};
+//			}
+//			if (i % 2 === 1 || i === that.items.length - 1) {
+//				myitemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
+//				myButtonItem = {};
+//			}
+			myButtonItem.label = that.items[i].label;
+			    switch(that.items[i].label) {
+			        case M.I18N.l('closingTime'):
+			        	myButtonItem.icon = '48x48_plain_home.png';
+			            break;
+			        case M.I18N.l('dataTransfer'):
+			        	myButtonItem.icon = '48x48_plain_refresh.png';
+			            break;
+			        case M.I18N.l('handApplications'):
+			        	myButtonItem.icon = '48x48_plain_handauftrag.png';
+			            break;
+			        case M.I18N.l('timeData'):
+			        	myButtonItem.icon = '48x48_plain_note_view.png';
+			            break;
+			        case M.I18N.l('orderInfo'):
+			        	myButtonItem.icon = '48x48_plain_folder_view.png';
+			            break;
+			        case M.I18N.l('media'):
+			        	myButtonItem.icon = '48x48_plain_index.png';
+			            break;
+			        case M.I18N.l('materialPickUp'):
+			        	myButtonItem.icon = '48x48_plain_shelf.png';
+			            break;
+			        case M.I18N.l('dailyChecklist'):
+			        	myButtonItem.icon = '48x48_plain_pda_write.png';
+			            break;
+			        case M.I18N.l('Anwesenheitsliste'):
+			        	myButtonItem.icon = '48x48_plain_text_code.png';
+			            break;
+			        case M.I18N.l('Bautagebuch'):
+			        	myButtonItem.icon = '48x48_plain_graphics-tablet.png';
+			            break;
+			        case M.I18N.l('settings'):
+			        	myButtonItem.icon = '48x48_plain_gears.png';
+			            break;
+			        case M.I18N.l('info'):
+			        	myButtonItem.icon = '48x48_plain_about.png';
+			            break;
+			        case else:
+			        	myButtonItem.icon = 'icon_info.png';
+			        	break;
+			    }
+			myitemsButtons.push(JSON.parse(JSON.stringify(myButtonItem)));
 		};
 		that.set('itemsButtons', myitemsButtons);		
 	}
@@ -6692,7 +6735,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3600
+    , softwareVersion: 3601
 
 
     /**
@@ -17519,9 +17562,7 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 
     isSelectable: NO
 
-    //, childViews: 'grid'
-    //, childViews: 'label_left label_right'
-    , childViews: 'buttonLeft buttonRight'
+    , childViews: 'button icon'
 
     , events: {
         tap: {
@@ -17530,135 +17571,32 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
         }
     }
 
-	, buttonLeft: M.ButtonView.design({
-		cssClass: 'scholppButton scholppButtonLeft'
+	, button: M.ButtonView.design({
+		cssClass: 'scholppButton'
       , computedValue: {
-	        valuePattern: '<%= button0 %>'
+	        valuePattern: '<%= label %>'
 	        , operation: function(v) {
 				if (v === null || typeof(v) === "undefined") {
 					return null;
 				} else {
-					return v.label;
+					return v;
 				}
 	        }
 	  }
-//	  , events: {
-//	      tap: {
-//				action: function() {
-//					DigiWebApp.ScholppBookingController.bucheArbeitsende();
-//				}
-//	      }
-//	  }
 	})
-
-	, buttonRight: M.ButtonView.design({
-		cssClass: 'scholppButton scholppButtonRight'
-      , computedValue: {
-	        valuePattern: '<%= button1 %>'
+    , icon: M.ImageView.design({
+		  cssClass: 'scholppButtonMenuIcon'
+        , computedValue: {
+	          valuePattern: '<%= icon %>'
 	        , operation: function(v) {
 				if (v === null || typeof(v) === "undefined") {
 					return null;
 				} else {
-					return v.label;
+					return 'theme/images/' + v;
 				}
 	        }
 	  }
-//	  , events: {
-//	      tap: {
-//				action: function() {
-//					DigiWebApp.ScholppBookingController.bucheArbeitsende();
-//				}
-//	      }
-//	  }
-	})
-
-
-	, label_left: M.LabelView.design({
-		cssClass: 'unselectable label_left'
-	    , computedValue: {
-	        valuePattern: '<%= button0 %>'
-	        , operation: function(v) {
-				if (v === null || typeof(v) === "undefined") {
-					return null;
-				} else {
-					return v.label;
-				}
-	        }
-	    }
-	})
-	, label_right: M.LabelView.design({
-		cssClass: 'unselectable label_right'
-	    , computedValue: {
-	        valuePattern: '<%= button1 %>'
-	        , operation: function(v) {
-				if (v === null || typeof(v) === "undefined") {
-					return null;
-				} else {
-					return v.label;
-				}
-	        }
-	    }
-	})
-
-	, grid: M.GridView.design({
-		  //childViews: 'icon_left icon_right'
-		  childViews: 'label_left label_right'
-        , layout: M.TWO_COLUMNS
-        , icon_left: M.ImageView.design({
-	    	cssClass: 'unselectable'
-	        , computedValue: {
-	            valuePattern: '<%= button0 %>'
-	            , operation: function(v) {
-					if (v === null || typeof(v) === "undefined") {
-						return null;
-					} else {
-		                return 'theme/images/' + v.icon;
-					}
-	            }
-	        }
-	    })
-        , icon_right: M.ImageView.design({
-	    	cssClass: 'unselectable'
-	        , computedValue: {
-	            valuePattern: '<%= button1 %>'
-	            , operation: function(v) {
-					if (v === null || typeof(v) === "undefined") {
-						return null;
-					} else {
-		                return 'theme/images/' + v.icon;
-					}
-	            }
-	        }
-	    })
-	    , label_left: M.LabelView.design({
-	    	cssClass: 'unselectable'
-            , computedValue: {
-	            valuePattern: '<%= button0 %>'
-	            , operation: function(v) {
-	    			if (v === null || typeof(v) === "undefined") {
-	    				return null;
-	    			} else {
-	    				return v.label;
-	    			}
-	            }
-	        }
-	    })
-	    , label_right: M.LabelView.design({
-	    	cssClass: 'unselectable'
-            , computedValue: {
-	            valuePattern: '<%= button1 %>'
-	            , operation: function(v) {
-					if (v === null || typeof(v) === "undefined") {
-						return null;
-					} else {
-						return v.label;
-					}
-	            }
-	        }
-	    })
-
-	})
-
+    })
 
 });
 
@@ -18322,7 +18260,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3600'
+              value: 'Build: 3601'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -18896,7 +18834,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   }
               })
               , icon: M.ImageView.design({
-                    value: 'theme/images/48x48_plain_minibus_green.png'
+                    value: 'theme/images/48x48_plain_truck_red.png'
                   , events: {
 	                  tap: {
 		    				action: function() {
