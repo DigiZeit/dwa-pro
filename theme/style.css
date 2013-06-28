@@ -234,7 +234,6 @@ img.audioIcon {
 }
 
 .ui-content .scholppButton .icon img 
-, .scholppButtonMenuIcon
 {
     width: 48px;
     margin-left: auto;
@@ -242,6 +241,13 @@ img.audioIcon {
     display: block;
     top: -58px;
     position: relative;
+}
+
+.scholppButtonMenuIcon.ui-li-thumb
+{ 
+    width: 40px;
+    top: 25px;
+    left: 44%;
 }
 
 .ui-content .scholppButton.hack .icon {

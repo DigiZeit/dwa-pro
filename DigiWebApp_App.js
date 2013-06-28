@@ -6735,7 +6735,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3602
+    , softwareVersion: 3603
 
 
     /**
@@ -17583,7 +17583,14 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 				}
 	        }
 	  }
+	    , events: {
+	        tap: {
+	            target: DigiWebApp.DashboardController,
+	            action: 'itemSelected'
+	        }
+	    }
 	})
+	
     , icon: M.ImageView.design({
 		  cssClass: 'scholppButtonMenuIcon'
         , computedValue: {
@@ -18260,7 +18267,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3602'
+              value: 'Build: 3603'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
