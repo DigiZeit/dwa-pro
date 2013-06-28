@@ -5149,7 +5149,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
         if(m_id && typeof(this[m_id]) === 'function') {
             this[m_id]();
-        } else if {
+        } //else if {
     }
     
     , bookTime: function() {
@@ -6736,7 +6736,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3606
+    , softwareVersion: 3607
 
 
     /**
@@ -18268,7 +18268,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3606'
+              value: 'Build: 3607'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
