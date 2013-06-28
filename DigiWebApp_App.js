@@ -5149,7 +5149,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
         if(m_id && typeof(this[m_id]) === 'function') {
             this[m_id]();
-        }
+        } else if {
     }
     
     , bookTime: function() {
@@ -6736,7 +6736,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3605
+    , softwareVersion: 3606
 
 
     /**
@@ -17584,12 +17584,12 @@ DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
 				}
 	        }
 	  }
-	    , events: {
-	        tap: {
-	            target: DigiWebApp.DashboardController,
-	            action: 'itemSelected'
-	        }
-	    }
+//	    , events: {
+//	        tap: {
+//	            target: DigiWebApp.DashboardController,
+//	            action: 'itemSelected'
+//	        }
+//	    }
 	})
 	
     , icon: M.ImageView.design({
@@ -18268,7 +18268,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3605'
+              value: 'Build: 3606'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
