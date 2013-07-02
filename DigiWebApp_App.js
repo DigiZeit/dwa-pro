@@ -1988,6 +1988,19 @@ DigiWebApp.Booking = M.Model.create({
     , unterschrift_breite: M.Model.attr('String', {
         isRequired: NO
     })
+    
+    , genauigkeit: M.Model.attr('Number', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempel: M.Model.attr('Date', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahren: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
 
     , closeBooking: function(location) {
         this.set('timeStampEnd', +new Date());
@@ -6750,7 +6763,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3615
+    , softwareVersion: 3616
 
 
     /**
@@ -18366,7 +18379,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3615'
+              value: 'Build: 3616'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
