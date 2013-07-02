@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3622
+    , softwareVersion: 3623
 
 
     /**
@@ -15489,7 +15489,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         // check for ServiceApp
         if (this.ServiceApp_available === null) {
         	var ServiceAppResult = null;
-        	$.getJSON('http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + ''/', {
+        	$.getJSON('http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/', {
         		  "GET": { 
         				  "buchungen": null
         				, "queryParameter": null
@@ -18521,7 +18521,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3622'
+              value: 'Build: 3623'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
