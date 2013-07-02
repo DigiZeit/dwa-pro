@@ -923,6 +923,12 @@ DigiWebApp.Settings = M.Model.create({
     , GPSTimeOut: M.Model.attr('Integer')
     
     , silentLoader: M.Model.attr('Boolean')
+    
+    , ServiceApp_ermittleGeokoordinate: M.Model.attr('Boolean')
+
+    , ServiceApp_datenUebertragen: M.Model.attr('Boolean')
+
+    , ServiceApp_engeKopplung: M.Model.attr('Boolean')
 
 }, M.DataProviderLocalStorage);
 
@@ -6786,7 +6792,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3618
+    , softwareVersion: 3619
 
 
     /**
@@ -15153,6 +15159,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , branding: ''
         , GPSTimeOut: 240000
         , silentLoader: false
+        , ServiceApp_ermittleGeokoordinate: false
+        , ServiceApp_datenUebertragen: false
+        , ServiceApp_engeKopplung: false
     }
 
     , defaultsettings: null
@@ -15333,6 +15342,21 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 , branding: record.get('branding')
                 , GPSTimeOut: record.get('GPSTimeOut')
                 , silentLoader: record.get('silentLoader')
+                , ServiceApp_ermittleGeokoordinate: [{
+	                   value: record.get('ServiceApp_ermittleGeokoordinate')
+	                 , label: M.I18N.l('ServiceApp_ermittleGeokoordinate')
+	                 , isSelected: record.get('ServiceApp_ermittleGeokoordinate')
+	            }]
+                , ServiceApp_datenUebertragen: [{
+ 	                   value: record.get('ServiceApp_datenUebertragen')
+ 	                 , label: M.I18N.l('ServiceApp_datenUebertragen')
+ 	                 , isSelected: record.get('ServiceApp_datenUebertragen')
+ 	            }]
+               , ServiceApp_engeKopplung: [{
+	                   value: record.get('ServiceApp_engeKopplung')
+	                 , label: M.I18N.l('ServiceApp_engeKopplung')
+	                 , isSelected: record.get('ServiceApp_engeKopplung')
+	            }]
             };
         /* default values */
         } else {
@@ -15401,6 +15425,18 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 , branding: DigiWebApp.SettingsController.defaultsettings.get('branding')
                 , GPSTimeOut: DigiWebApp.SettingsController.defaultsettings.get('GPSTimeOut')
                 , silentLoader: DigiWebApp.SettingsController.defaultsettings.get('silentLoader')
+	            , ServiceApp_ermittleGeokoordinate: [{
+	                  value: DigiWebApp.SettingsController.defaultsettings.get("ServiceApp_ermittleGeokoordinate")
+	                , label: M.I18N.l('ServiceApp_ermittleGeokoordinate')
+	            }]
+	            , ServiceApp_datenUebertragen: [{
+	                  value: DigiWebApp.SettingsController.defaultsettings.get("ServiceApp_datenUebertragen")
+	                , label: M.I18N.l('ServiceApp_datenUebertragen')
+	            }]
+	            , ServiceApp_engeKopplung: [{
+	                  value: DigiWebApp.SettingsController.defaultsettings.get("ServiceApp_engeKopplung")
+	                , label: M.I18N.l('ServiceApp_engeKopplung')
+	            }]
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -15473,6 +15509,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var branding                    = DigiWebApp.SettingsController.getSetting('branding');
         var GPSTimeOut                  = DigiWebApp.SettingsController.getSetting('GPSTimeOut');
         var silentLoader                = DigiWebApp.SettingsController.getSetting('silentLoader');
+
+        var ServiceApp_ermittleGeokoordinate       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_datenUebertragen       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_engeKopplung       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -15566,7 +15606,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('branding', branding);
                                                     record.set('GPSTimeOut', GPSTimeOut);
                                                     record.set('silentLoader', silentLoader);
-                
+                                                    record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
+                                                    record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
+                                                    record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
+
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
                                                     DigiWebApp.SettingsController.saveSettings(record, YES);
@@ -15626,6 +15669,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('branding', branding);
                                     record.set('GPSTimeOut', GPSTimeOut);
                                     record.set('silentLoader', silentLoader);
+                                    record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
+                                    record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
+                                    record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -15660,6 +15706,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('branding', branding);
                                 record.set('GPSTimeOut', GPSTimeOut);
                                 record.set('silentLoader', silentLoader);
+                                record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
+                                record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
+                                record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -15694,6 +15743,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('branding', branding);
                                 record.set('GPSTimeOut', GPSTimeOut);
                                 record.set('silentLoader', silentLoader);
+                                record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
+                                record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
+                                record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -15730,6 +15782,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , branding: branding
                                 , GPSTimeOut: GPSTimeOut
                                 , silentLoader: silentLoader
+                                , ServiceApp_ermittleGeokoordinate: ServiceApp_ermittleGeokoordinate
+                                , ServiceApp_datenUebertragen: ServiceApp_datenUebertragen
+                                , ServiceApp_engeKopplung: ServiceApp_engeKopplung
                             });
 
                             /* now save */
@@ -18402,7 +18457,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3618'
+              value: 'Build: 3619'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 

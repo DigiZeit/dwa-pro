@@ -305,6 +305,10 @@ M.I18N.de_de = {
 	, notActivated: 'Fehlende Freischaltung!'
 	, notActivatedMsg: 'Diese Funktion ist nicht freigeschaltet!'
 		
+    , ServiceApp_ermittleGeokoordinate: 'ServiceApp: Geokoordinaten'
+    , ServiceApp_datenUebertragen: 'ServiceApp: Datenübertragung'
+	, ServiceApp_engeKopplung: 'ServiceApp: enge Kopplung'
+		
 	, second: "Sekunde"
 	, seconds: "Sekunden"
 	, minute: "Minute"

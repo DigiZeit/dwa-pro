@@ -302,6 +302,12 @@ M.I18N.en_us = {
 	, errorWhileRequestingQuota: "Not enough space available!"
 	, ungueltigeZahl : 'Wrong Numberformat'
 	, ungueltigeZahlMsg: 'You cannot use . and , at the same time!'
+	, notActivated: 'Missing feature activation!'
+	, notActivatedMsg: 'This feature has not been activated!'
+
+    , ServiceApp_ermittleGeokoordinate: 'ServiceApp: Geocoordinates'
+    , ServiceApp_datenUebertragen: 'ServiceApp: Datatransfer'
+	, ServiceApp_engeKopplung: 'ServiceApp: tight coupling'
 
 	, second: "Second"
 	, seconds: "Seconds"
