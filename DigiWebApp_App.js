@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3625
+    , softwareVersion: 3626
 
 
     /**
@@ -15209,12 +15209,13 @@ DigiWebApp.SettingsController = M.Controller.extend({
     }
 
     , init: function() {
+    	var that = this;
     	
     	M.I18N.defaultLanguage = "de_de";
     	
     	DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem2);
     	
-        if(this.showCredentialsAlert && !this.credentialsAlertShown) {
+        if(that.showCredentialsAlert && !that.credentialsAlertShown) {
             if (
             	  (    ( M.Environment.getPlatform().substr(0,4) === "iPad"   )
             	    || ( M.Environment.getPlatform().substr(0,6) === "iPhone" )
@@ -15240,10 +15241,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                , message: M.I18N.l('noCredentialsMsg')
 	            });
             }
-            this.credentialsAlertShown = true;
+            that.credentialsAlertShown = true;
         }
     	
-    	this.defaultsettings = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object);
+        that.defaultsettings = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object);
 
         DigiWebApp.Settings.find();        
         
@@ -15484,22 +15485,29 @@ DigiWebApp.SettingsController = M.Controller.extend({
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
         }
                 
-        this.set('settings', settings);
+        that.set('settings', settings);
 
         // check for ServiceApp
-        if (this.ServiceApp_available === null) {
+        if (that.ServiceApp_available === null) {
         	var ServiceAppResult = null;
-        	$.getJSON('http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/', {
-        		  "GET": { 
-        				  "buchungen": null
-        				, "queryParameter": null
+        	$.ajax({
+        		    dataType: "json"
+        		  , url: 'http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
+        		  , data: {
+            		  "GET": { 
+	    				  "buchungen": null
+	    				, "queryParameter": null
+		    		  }
+		    		  , "parameter": {
+		    			  "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_PORT")
+		    			, "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
+		    			, "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
+		    		  }
         		  }
-        		  , "parameter": {
-        			    "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_PORT")
-        			  , "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
-        			  , "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
-        		  }
-        	}, this.ServiceApp_KnockKnock_Result, this.ServiceApp_KnockKnock_Error);
+        		  , success: that.ServiceApp_KnockKnock_Result
+        		  , error: that.ServiceApp_KnockKnock_Error
+        		  , timeout: 500
+        	});
         }
 
 	}
@@ -18521,7 +18529,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3625'
+              value: 'Build: 3626'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
