@@ -246,9 +246,16 @@ img.audioIcon {
 
 .scholppButtonMenuIcon.ui-li-thumb
 { 
-    width: 40px;
-    top: 25px;
-    left: 44%;
+    width: 48px;
+    top: 15px;
+    left: 15px;
+}
+
+.buttonDashboardPage .ui-btn-inner {
+	font-size: 25px;
+	top: 5px;
+	text-align: right;
+	margin-right: 15px;
 }
 
 .ui-content .scholppButton.hack .icon {
