@@ -6792,7 +6792,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3619
+    , softwareVersion: 3621
 
 
     /**
@@ -15165,6 +15165,43 @@ DigiWebApp.SettingsController = M.Controller.extend({
     }
 
     , defaultsettings: null
+    
+    , ServiceApp_available: null
+    
+    , ServiceApp_KnockKnock_Result: function(data) {
+    	var that = this;
+    	
+    	if (data) {
+    		that.ServiceApp_available = true;
+        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
+        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
+        	
+        	// DEBUG ONLY!!!
+        	try {
+            	alert("ServiceApp has " + data.GET.buchungen.length + " bookings in database.");
+        	} catch(e) {
+            	alert(e.message);
+        	}
+        	// DEBUG ONLY!!!
+        	
+    	} else {
+    		that.ServiceApp_KnockKnock_Error()
+    	}
+    }
+
+    , ServiceApp_KnockKnock_Error: function(data) {
+    	var that = this;
+		that.ServiceApp_available = false;
+    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+    	
+    	// DEBUG ONLY!!!
+        alert("No ServiceApp available!");
+    	// DEBUG ONLY!!!
+    	
+    }
 
     , init: function() {
     	
@@ -15205,8 +15242,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         DigiWebApp.Settings.find();        
         
-        //console.log("after Settings.find()");
-        
+        if (this.ServiceApp_available === null) {
+        	var ServiceAppResult = null;
+        	//ServiceApp_KnockKnock_Result, ServiceApp_KnockKnock_Error
+        }
+
         // Start::Bemerkungsfeld (403)
         if (DigiWebApp.SettingsController.featureAvailable('403')) {
         	$('#' + DigiWebApp.SettingsPage.content.remarkIsMandatory.id).show();
@@ -15441,7 +15481,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
         }
-        
+                
         this.set('settings', settings);
 
 	}
@@ -18457,7 +18497,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3619'
+              value: 'Build: 3621'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19507,6 +19547,30 @@ DigiWebApp.SettingsPage = M.PageView.design({
             , contentBinding: {
                   target: DigiWebApp.SettingsController
                 , property: 'settings.GPSDataIsMandatory'
+            }
+        })
+        , ServiceApp_ermittleGeokoordinate: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            //, cssClass: 'invisibleSetting',
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.ServiceApp_ermittleGeokoordinate'
+            }
+        })
+        , ServiceApp_datenUebertragen: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            //, cssClass: 'invisibleSetting',
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.ServiceApp_datenUebertragen'
+            }
+        })
+        , ServiceApp_engeKopplung: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            //, cssClass: 'invisibleSetting',
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.ServiceApp_engeKopplung'
             }
         })
         , grid: M.GridView.design({
