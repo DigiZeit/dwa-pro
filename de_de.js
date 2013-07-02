@@ -308,6 +308,7 @@ M.I18N.de_de = {
     , ServiceApp_ermittleGeokoordinate: 'ServiceApp: Geokoordinaten'
     , ServiceApp_datenUebertragen: 'ServiceApp: Datenübertragung'
 	, ServiceApp_engeKopplung: 'ServiceApp: enge Kopplung'
+	, ServiceApp_PORT: 'ServiceApp: Port'
 		
 	, second: "Sekunde"
 	, seconds: "Sekunden"

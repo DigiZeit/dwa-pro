@@ -929,6 +929,8 @@ DigiWebApp.Settings = M.Model.create({
     , ServiceApp_datenUebertragen: M.Model.attr('Boolean')
 
     , ServiceApp_engeKopplung: M.Model.attr('Boolean')
+    
+    , ServiceApp_PORT: M.Model.attr('String')
 
 }, M.DataProviderLocalStorage);
 
@@ -6792,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3621
+    , softwareVersion: 3622
 
 
     /**
@@ -15162,6 +15164,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , ServiceApp_ermittleGeokoordinate: false
         , ServiceApp_datenUebertragen: false
         , ServiceApp_engeKopplung: false
+        , ServiceApp_PORT: 2000
     }
 
     , defaultsettings: null
@@ -15176,6 +15179,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
+        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
         	
         	// DEBUG ONLY!!!
         	try {
@@ -15196,6 +15200,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
     	
     	// DEBUG ONLY!!!
         alert("No ServiceApp available!");
@@ -15242,11 +15247,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         DigiWebApp.Settings.find();        
         
-        if (this.ServiceApp_available === null) {
-        	var ServiceAppResult = null;
-        	//ServiceApp_KnockKnock_Result, ServiceApp_KnockKnock_Error
-        }
-
         // Start::Bemerkungsfeld (403)
         if (DigiWebApp.SettingsController.featureAvailable('403')) {
         	$('#' + DigiWebApp.SettingsPage.content.remarkIsMandatory.id).show();
@@ -15397,6 +15397,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                 , label: M.I18N.l('ServiceApp_engeKopplung')
 	                 , isSelected: record.get('ServiceApp_engeKopplung')
 	            }]
+               , ServiceApp_PORT: record.get('ServiceApp_PORT')
             };
         /* default values */
         } else {
@@ -15477,12 +15478,29 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                  value: DigiWebApp.SettingsController.defaultsettings.get("ServiceApp_engeKopplung")
 	                , label: M.I18N.l('ServiceApp_engeKopplung')
 	            }]
+	            , ServiceApp_PORT: DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_PORT')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
         }
                 
         this.set('settings', settings);
+
+        // check for ServiceApp
+        if (this.ServiceApp_available === null) {
+        	var ServiceAppResult = null;
+        	$.getJSON('http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + ''/', {
+        		  "GET": { 
+        				  "buchungen": null
+        				, "queryParameter": null
+        		  }
+        		  , "parameter": {
+        			    "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_PORT")
+        			  , "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
+        			  , "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
+        		  }
+        	}, that.ServiceApp_KnockKnock_Result, that.ServiceApp_KnockKnock_Error);
+        }
 
 	}
 	
@@ -15550,9 +15568,10 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var GPSTimeOut                  = DigiWebApp.SettingsController.getSetting('GPSTimeOut');
         var silentLoader                = DigiWebApp.SettingsController.getSetting('silentLoader');
 
-        var ServiceApp_ermittleGeokoordinate       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var ServiceApp_datenUebertragen       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var ServiceApp_engeKopplung       = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_ermittleGeokoordinate = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_datenUebertragen      = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_engeKopplung          = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var ServiceApp_PORT                  = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput').id).val();
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -15649,6 +15668,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
+                                                    record.set('ServiceApp_PORT', ServiceApp_PORT);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -15712,6 +15732,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
+                                    record.set('ServiceApp_PORT', ServiceApp_PORT);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -15749,6 +15770,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
+                                record.set('ServiceApp_PORT', ServiceApp_PORT);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -15786,6 +15808,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
+                                record.set('ServiceApp_PORT', ServiceApp_PORT);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -15825,7 +15848,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , ServiceApp_ermittleGeokoordinate: ServiceApp_ermittleGeokoordinate
                                 , ServiceApp_datenUebertragen: ServiceApp_datenUebertragen
                                 , ServiceApp_engeKopplung: ServiceApp_engeKopplung
-                            });
+                                , ServiceApp_PORT: ServiceApp_PORT;
+                          });
 
                             /* now save */
                             //alert("saveSettings (createNewOne)");
@@ -18497,7 +18521,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3621'
+              value: 'Build: 3622'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19480,7 +19504,6 @@ DigiWebApp.SettingsPage = M.PageView.design({
                       target: DigiWebApp.SettingsController
                     , property: 'settings.workerId'
                 }
-            	, initialText: M.I18N.l('GeraetekennungDesMA')
             })
         })
         , autoSyncAfterBookTimeCheck: M.SelectionListView.design({
@@ -19573,6 +19596,20 @@ DigiWebApp.SettingsPage = M.PageView.design({
                 , property: 'settings.ServiceApp_engeKopplung'
             }
         })
+        , ServiceApp_PORTGrid: M.GridView.design({
+              childViews: 'ServiceApp_PORTLabel ServiceApp_PORTInput'
+            , layout: M.TWO_COLUMNS
+            , ServiceApp_PORTLabel: M.LabelView.design({
+                value: M.I18N.l('ServiceApp_PORT')
+            })
+            , ServiceApp_PORTInput: M.TextFieldView.design({
+                  contentBinding: {
+                      target: DigiWebApp.SettingsController
+                    , property: 'settings.ServiceApp_PORT'
+                }
+            })
+        })
+
         , grid: M.GridView.design({
               childViews: 'button icon'
             , layout: {
