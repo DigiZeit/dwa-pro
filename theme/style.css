@@ -251,7 +251,7 @@ img.audioIcon {
     left: 15px;
 }
 
-.buttonDashboardPage .ui-btn-inner {
+.buttonDashboardPage [data-theme="scholppButton"] span.ui-btn-inner {
 	font-size: 25px;
 	top: 5px;
 	text-align: right;
