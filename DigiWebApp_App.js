@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3623
+    , softwareVersion: 3624
 
 
     /**
@@ -15499,7 +15499,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         			  , "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
         			  , "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
         		  }
-        	}, that.ServiceApp_KnockKnock_Result, that.ServiceApp_KnockKnock_Error);
+        	}, this.ServiceApp_KnockKnock_Result, this.ServiceApp_KnockKnock_Error);
         }
 
 	}
@@ -18521,7 +18521,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3623'
+              value: 'Build: 3624'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
