@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3629
+    , softwareVersion: 3630
 
 
     /**
@@ -15576,10 +15576,22 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var GPSTimeOut                  = DigiWebApp.SettingsController.getSetting('GPSTimeOut');
         var silentLoader                = DigiWebApp.SettingsController.getSetting('silentLoader');
 
-        var ServiceApp_ermittleGeokoordinate = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var ServiceApp_datenUebertragen      = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var ServiceApp_engeKopplung          = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id       + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var ServiceApp_PORT                  = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput').id).val();
+        var ServiceApp_ermittleGeokoordinate = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_ermittleGeokoordinate');
+        if (M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate') !== null) {
+        	ServiceApp_ermittleGeokoordinate = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        }
+        var ServiceApp_datenUebertragen      = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_datenUebertragen');
+        if (M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen') !== null) {
+        	ServiceApp_datenUebertragen = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        }
+        var ServiceApp_engeKopplung          = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_engeKopplung');
+        if (M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung') !== null) {
+        	ServiceApp_engeKopplung = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        }
+        var ServiceApp_PORT                  = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_PORT');
+        if (M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput') !== null) {
+        	ServiceApp_PORT = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput').id).val();
+        }
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -18529,7 +18541,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3629'
+              value: 'Build: 3630'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
