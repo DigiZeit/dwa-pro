@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3645
+    , softwareVersion: 3646
 
 
     /**
@@ -15516,7 +15516,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         		    dataType: "json"
         		  , type: "POST"
         		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
-        		  , data: {
+        		  , data: JSON.stringify({
             		  "GET": { 
 	    				  "buchungen": null
 	    				, "queryParameter": null
@@ -15526,7 +15526,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 		    			, "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
 		    			, "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
 		    		  }
-        		  }
+        		  })
         		  , success: that.ServiceApp_KnockKnock_Result
         		  , error: that.ServiceApp_KnockKnock_Error
         		  , timeout: 5000
@@ -18564,7 +18564,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3645'
+              value: 'Build: 3646'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
