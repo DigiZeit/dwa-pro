@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3653
+    , softwareVersion: 3654
 
 
     /**
@@ -15185,7 +15185,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , ServiceApp_ermittleGeokoordinate: false
         , ServiceApp_datenUebertragen: false
         , ServiceApp_engeKopplung: false
-        , ServiceApp_PORT: '2000'
+        , ServiceApp_PORT: '60000'
     }
 
     , defaultsettings: null
@@ -15530,7 +15530,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         		  })
         		  , success: that.ServiceApp_KnockKnock_Result
         		  , error: that.ServiceApp_KnockKnock_Error
-        		  , timeout: 5000
+        		  , timeout: 1000
         	});
         }
 
@@ -18565,7 +18565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3653'
+              value: 'Build: 3654'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
