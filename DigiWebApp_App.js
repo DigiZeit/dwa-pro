@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3638
+    , softwareVersion: 3639
 
 
     /**
@@ -6891,10 +6891,9 @@ DigiWebApp.RequestController = M.Controller.extend({
                 xhr.setRequestHeader('Cache-Control', 'no-cache');
             }
             , onSuccess: function(xmldata, msg, xhr) {
-            	alert("RequestStatus: " + DigiWebApp.RequestController.myRequest.request.status);
             	alert("xmldata: " + xmldata);
             	alert("msg: " + msg);
-            	alert("xhr: " + xhr.status);
+            	alert("xhr.status: " + xhr.status);
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
@@ -6966,8 +6965,6 @@ DigiWebApp.RequestController = M.Controller.extend({
 				DigiWebApp.ApplicationController.proceedWithLocalData("getDatabaseServer");
 			}
         });
-
-		DigiWebApp.RequestController.myRequest = req;
 
         req.send();
 		
@@ -15512,11 +15509,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
         that.set('settings', settings);
 
         // check for ServiceApp
-        if (that.ServiceApp_available === null && false) {
+        if (that.ServiceApp_available === null) {
         	var ServiceAppResult = null;
         	$.ajax({
         		    dataType: "json"
-        		  , url: 'http://localhost:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
+        		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
         		  , data: {
             		  "GET": { 
 	    				  "buchungen": null
@@ -18565,7 +18562,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3638'
+              value: 'Build: 3639'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
