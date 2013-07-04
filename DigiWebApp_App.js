@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3634
+    , softwareVersion: 3635
 
 
     /**
@@ -6891,7 +6891,9 @@ DigiWebApp.RequestController = M.Controller.extend({
                 xhr.setRequestHeader('Cache-Control', 'no-cache');
             }
             , onSuccess: function(xmldata, msg, xhr) {
-            	alert(xmldata);
+            	alert("xmldata: " + xmldata);
+            	alert("msg: " + msg);
+            	alert("xhr: " + xhr);
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
@@ -15505,7 +15507,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         that.set('settings', settings);
 
         // check for ServiceApp
-        if (that.ServiceApp_available === null) {
+        if (that.ServiceApp_available === null && false) {
         	var ServiceAppResult = null;
         	$.ajax({
         		    dataType: "json"
@@ -18558,7 +18560,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3634'
+              value: 'Build: 3635'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
