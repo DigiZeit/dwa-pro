@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3627
+    , softwareVersion: 3628
 
 
     /**
@@ -15499,7 +15499,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	    				, "queryParameter": null
 		    		  }
 		    		  , "parameter": {
-		    			  "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_PORT")
+		    			  "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
 		    			, "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
 		    			, "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
 		    		  }
@@ -18529,7 +18529,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3627'
+              value: 'Build: 3628'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
