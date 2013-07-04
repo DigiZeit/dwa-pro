@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3654
+    , softwareVersion: 3655
 
 
     /**
@@ -15516,7 +15516,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	$.ajax({
         		    dataType: "json"
         		  , type: "POST"
-        		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
+    			  , crossDomain: true
+    			  , processData: false
+    			  , async: true
+    			  , contentType: 'application/json'
+        		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
         		  , data: JSON.stringify({
             		  "GET": { 
 	    				  "buchungen": null
@@ -15530,9 +15534,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
         		  })
         		  , success: that.ServiceApp_KnockKnock_Result
         		  , error: that.ServiceApp_KnockKnock_Error
-        		  , timeout: 1000
+        		  , timeout: 2000
         	});
-        }
+        	}
 
 	}
 	
@@ -18565,7 +18569,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3654'
+              value: 'Build: 3655'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
