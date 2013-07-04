@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3650
+    , softwareVersion: 3651
 
 
     /**
@@ -15225,7 +15225,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
     	
     	// DEBUG ONLY!!!
-        alert("No ServiceApp available! (Status: " + xhr.status + ", Error:" + err +  ") (" + a + "")");
+        alert("No ServiceApp available! (Status: " + xhr.status + ", Error:" + err +  ") (" + a + ")");
         console.log(xhr.getAllResponseHeaders());
     	// DEBUG ONLY!!!
     	
@@ -18565,7 +18565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3650'
+              value: 'Build: 3651'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
