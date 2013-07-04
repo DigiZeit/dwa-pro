@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3636
+    , softwareVersion: 3637
 
 
     /**
@@ -6894,7 +6894,7 @@ DigiWebApp.RequestController = M.Controller.extend({
             	alert("RequestStatus: " + DigiWebApp.RequestController.myRequest.request.status);
             	alert("xmldata: " + xmldata);
             	alert("msg: " + msg);
-            	alert("xhr: " + xhr);
+            	alert("xhr: " + xhr.request.status);
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
@@ -18565,7 +18565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3636'
+              value: 'Build: 3637'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
