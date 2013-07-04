@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3641
+    , softwareVersion: 3642
 
 
     /**
@@ -6879,7 +6879,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 		//	console.log('using: http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
 		//}
 
-		alert('http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
+		//alert('http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
 		
         var req = M.Request.init({
         
@@ -6891,9 +6891,9 @@ DigiWebApp.RequestController = M.Controller.extend({
                 xhr.setRequestHeader('Cache-Control', 'no-cache');
             }
             , onSuccess: function(xmldata, msg, xhr) {
-            	alert("xmldata: " + xmldata);
-            	alert("msg: " + msg);
-            	alert("xhr.status: " + xhr.status);
+            	//alert("xmldata: " + xmldata);
+            	//alert("msg: " + msg);
+            	//alert("xhr.status: " + xhr.status);
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
@@ -6959,7 +6959,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 				}
             }
             , onError: function(xhr, err) {
-            	alert("Error in getDatabaseServer: " + err.message);
+            	//alert("Error in getDatabaseServer: " + err.message);
             	console.error("Error in getDatabaseServer: " + err);
                 DigiWebApp.ApplicationController.DigiLoaderView.hide();
 				DigiWebApp.ApplicationController.proceedWithLocalData("getDatabaseServer");
@@ -18563,7 +18563,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3641'
+              value: 'Build: 3642'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
