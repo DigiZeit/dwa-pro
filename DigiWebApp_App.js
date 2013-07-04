@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3635
+    , softwareVersion: 3636
 
 
     /**
@@ -6891,6 +6891,7 @@ DigiWebApp.RequestController = M.Controller.extend({
                 xhr.setRequestHeader('Cache-Control', 'no-cache');
             }
             , onSuccess: function(xmldata, msg, xhr) {
+            	alert("RequestStatus: " + DigiWebApp.RequestController.myRequest.request.status);
             	alert("xmldata: " + xmldata);
             	alert("msg: " + msg);
             	alert("xhr: " + xhr);
@@ -6966,8 +6967,12 @@ DigiWebApp.RequestController = M.Controller.extend({
 			}
         });
 
+		DigiWebApp.RequestController.myRequest = req;
+
         req.send();
+		
     }
+    , myRequest: null
     
     /**
      * Prepares the authenticate call and calls makeRequest with the corresponding params.
@@ -18560,7 +18565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3635'
+              value: 'Build: 3636'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
