@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3632
+    , softwareVersion: 3633
 
 
     /**
@@ -8572,6 +8572,9 @@ DigiWebApp.BookingController = M.Controller.extend({
     	try {
     		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
     	} catch(e) { console.error(e); }
+    	
+    	// 
+    	
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : '0'
             , orderName: myOrderName
@@ -18549,7 +18552,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3632'
+              value: 'Build: 3633'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
