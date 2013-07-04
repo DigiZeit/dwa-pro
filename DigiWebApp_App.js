@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3633
+    , softwareVersion: 3634
 
 
     /**
@@ -6878,6 +6878,8 @@ DigiWebApp.RequestController = M.Controller.extend({
         //if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
 		//	console.log('using: http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
 		//}
+
+		alert('http://' + myGatewayServer + DigiWebApp.RequestController.handy2WebServicesUrl + '/empfangeUrl?firmenId=' + firmenId + '&modus=0&requestTimestamp=' + M.Date.now().date.valueOf());
 		
         var req = M.Request.init({
         
@@ -6889,6 +6891,7 @@ DigiWebApp.RequestController = M.Controller.extend({
                 xhr.setRequestHeader('Cache-Control', 'no-cache');
             }
             , onSuccess: function(xmldata, msg, xhr) {
+            	alert(xmldata);
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
             	var data = DigiWebApp.RequestController.transformResultToJson(xmldata);
 		    	if ( typeof(data['return']) === "undefined" && typeof(data['ns:return']) !== "undefined" ) data['return'] = data['ns:return'];
@@ -6954,6 +6957,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 				}
             }
             , onError: function(xhr, err) {
+            	alert("Error in getDatabaseServer: " + err.message);
             	console.error("Error in getDatabaseServer: " + err);
                 DigiWebApp.ApplicationController.DigiLoaderView.hide();
 				DigiWebApp.ApplicationController.proceedWithLocalData("getDatabaseServer");
@@ -6985,7 +6989,9 @@ DigiWebApp.RequestController = M.Controller.extend({
         var geraeteId = DigiWebApp.SettingsController.getSetting('workerId'); //1; // 1: ein einzelner mitarbeiter, 2: kolonne
         var geraeteTyp = 2; // fixed => 2 stands for app
         //var softwareVersion = M.Application.getConfig('version');
-
+        
+		alert('firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' + '&geraeteTyp=' + geraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf());
+		
         var params = {
               url: 'authentifizieren'
             , urlParams: 'firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' +
@@ -18552,7 +18558,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3633'
+              value: 'Build: 3634'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
