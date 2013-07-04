@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3628
+    , softwareVersion: 3629
 
 
     /**
@@ -15179,7 +15179,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
+        	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
         	
         	// DEBUG ONLY!!!
         	try {
@@ -15200,7 +15200,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
+    	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
     	
     	// DEBUG ONLY!!!
         alert("No ServiceApp available!");
@@ -18529,7 +18529,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3628'
+              value: 'Build: 3629'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
