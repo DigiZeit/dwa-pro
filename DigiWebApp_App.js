@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3626
+    , softwareVersion: 3627
 
 
     /**
@@ -15164,7 +15164,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , ServiceApp_ermittleGeokoordinate: false
         , ServiceApp_datenUebertragen: false
         , ServiceApp_engeKopplung: false
-        , ServiceApp_PORT: 2000
+        , ServiceApp_PORT: '2000'
     }
 
     , defaultsettings: null
@@ -18529,7 +18529,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3626'
+              value: 'Build: 3627'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
