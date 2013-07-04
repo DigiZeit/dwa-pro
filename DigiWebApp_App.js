@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3631
+    , softwareVersion: 3632
 
 
     /**
@@ -8038,6 +8038,11 @@ DigiWebApp.BookingController = M.Controller.extend({
     , currentBookingStr: ''
 
     /**
+     * TimezoneOffset 
+     */
+    , currentTimezoneOffset: null
+
+    /**
      * Flag indicating whether a switch to the bookingPage is back from employee selection page
      *
      * Important for determing whether to re-set selection lists or not
@@ -8430,6 +8435,9 @@ DigiWebApp.BookingController = M.Controller.extend({
 			that.currentBooking.save();
 			//if (DigiWebApp.SettingsController.globalDebugMode) console.log('saving open ' + that.currentBooking.get('orderId'));
 			that.currentBookingClosed = that.currentBooking;
+	    } else {
+	    	// no currentBooking: remember TimezoneOffset
+	    	that.currentTimezoneOffset = new Date().getTimezoneOffset();
 	    }
 
 	    // setup new booking
@@ -15172,7 +15180,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     , ServiceApp_available: null
     
     , ServiceApp_KnockKnock_Result: function(data) {
-    	var that = this;
+    	var that = DigiWebApp.SettingsController;
     	
     	if (data) {
     		that.ServiceApp_available = true;
@@ -15195,7 +15203,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     }
 
     , ServiceApp_KnockKnock_Error: function(data) {
-    	var that = this;
+    	var that = DigiWebApp.SettingsController;
 		that.ServiceApp_available = false;
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
@@ -15209,7 +15217,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     }
 
     , init: function() {
-    	var that = this;
+    	var that = DigiWebApp.SettingsController;
     	
     	M.I18N.defaultLanguage = "de_de";
     	
@@ -18541,7 +18549,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3631'
+              value: 'Build: 3632'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
