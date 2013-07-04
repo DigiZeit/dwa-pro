@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3639
+    , softwareVersion: 3640
 
 
     /**
@@ -15211,7 +15211,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	// DEBUG ONLY!!!
         	
     	} else {
-    		that.ServiceApp_KnockKnock_Error()
+    		alert("success ohne daten");
+    		that.ServiceApp_KnockKnock_Error();
     	}
     }
 
@@ -18562,7 +18563,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3639'
+              value: 'Build: 3640'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
