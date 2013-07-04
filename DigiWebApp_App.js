@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3648
+    , softwareVersion: 3649
 
 
     /**
@@ -15216,7 +15216,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	}
     }
 
-    , ServiceApp_KnockKnock_Error: function(xhr,err) {
+    , ServiceApp_KnockKnock_Error: function(xhr,err,a,b,c) {
     	var that = DigiWebApp.SettingsController;
 		that.ServiceApp_available = false;
     	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
@@ -15225,8 +15225,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
     	
     	// DEBUG ONLY!!!
-        alert("No ServiceApp available! (" + xhr.status + ", " + err.message +  ")");
-        console.log(request.getAllResponseHeaders());
+        alert("No ServiceApp available! (Status: " + xhr.status + ", Error:" + err +  ")");
+        console.log(xhr.getAllResponseHeaders());
     	// DEBUG ONLY!!!
     	
     }
@@ -18565,7 +18565,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3648'
+              value: 'Build: 3649'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
