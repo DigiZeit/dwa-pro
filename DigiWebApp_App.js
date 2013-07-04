@@ -2034,7 +2034,10 @@ DigiWebApp.Booking = M.Model.create({
     })
 
     , closeBooking: function(location) {
-        this.set('timeStampEnd', +new Date());
+		var timeEnd = new D8();
+		timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.BookingController.currentTimezoneOffset));
+	
+        this.set('timeStampEnd', timeEnd.getTimestamp());
         if (location) {
         	this.set('latitude_bis',  location.latitude);
         	this.set('longitude_bis', location.longitude);
@@ -6794,7 +6797,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3655
+    , softwareVersion: 3656
 
 
     /**
@@ -8585,6 +8588,9 @@ DigiWebApp.BookingController = M.Controller.extend({
     	
     	// 
     	
+    	var timeStart = new D8();
+    	timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.BookingController.currentTimezoneOffset));
+    	
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : '0'
             , orderName: myOrderName
@@ -8597,7 +8603,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityId: obj.aId ? obj.aId : '0'
             , activityName: myActivityName
             , remark: obj.remark ? obj.remark : ''
-            , timeStampStart: +new Date()
+            , timeStampStart: timeStart.getTimestamp()
             , timeStampEnd: '0'
         });
     }
@@ -15514,29 +15520,41 @@ DigiWebApp.SettingsController = M.Controller.extend({
         if (that.ServiceApp_available === null) {
         	var ServiceAppResult = null;
         	$.ajax({
-        		    dataType: "json"
-        		  , type: "POST"
-    			  , crossDomain: true
-    			  , processData: false
-    			  , async: true
-    			  , contentType: 'application/json'
-        		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
-        		  , data: JSON.stringify({
-            		  "GET": { 
-	    				  "buchungen": null
-	    				, "queryParameter": null
-		    		  }
-		    		  , "parameter": {
-		    			  "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
-		    			, "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
-		    			, "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
-		    		  }
-        		  })
-        		  , success: that.ServiceApp_KnockKnock_Result
-        		  , error: that.ServiceApp_KnockKnock_Error
-        		  , timeout: 2000
-        	});
-        	}
+	    		    dataType: "json"
+	    		  , type: "GET"
+				  , crossDomain: true
+				  , processData: false
+				  , async: true
+				  , contentType: 'application/json'
+	    		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+	    		  , success: that.ServiceApp_KnockKnock_Result
+	    		  , error: that.ServiceApp_KnockKnock_Error
+	    		  , timeout: 2000
+	    	});
+//        	$.ajax({
+//        		    dataType: "json"
+//        		  , type: "POST"
+//    			  , crossDomain: true
+//    			  , processData: false
+//    			  , async: true
+//    			  , contentType: 'application/json'
+//        		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+//        		  , data: JSON.stringify({
+//            		  "GET": { 
+//	    				  "buchungen": null
+//	    				, "queryParameter": null
+//		    		  }
+//		    		  , "parameter": {
+//		    			  "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
+//		    			, "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
+//		    			, "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
+//		    		  }
+//        		  })
+//        		  , success: that.ServiceApp_KnockKnock_Result
+//        		  , error: that.ServiceApp_KnockKnock_Error
+//        		  , timeout: 2000
+//        	});
+    	}
 
 	}
 	
@@ -18569,7 +18587,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3655'
+              value: 'Build: 3656'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
