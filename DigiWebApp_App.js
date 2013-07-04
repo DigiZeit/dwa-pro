@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3643
+    , softwareVersion: 3644
 
 
     /**
@@ -15514,6 +15514,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	var ServiceAppResult = null;
         	$.ajax({
         		    dataType: "json"
+        		  , type: "POST"
         		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/?callback=DigiWebApp.SettingsController.ServiceApp_KnockKnock_Result'
         		  , data: {
             		  "GET": { 
@@ -18563,7 +18564,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3643'
+              value: 'Build: 3644'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
