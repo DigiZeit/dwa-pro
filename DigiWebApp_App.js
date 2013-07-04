@@ -6794,7 +6794,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3642
+    , softwareVersion: 3643
 
 
     /**
@@ -6994,7 +6994,7 @@ DigiWebApp.RequestController = M.Controller.extend({
         var geraeteTyp = 2; // fixed => 2 stands for app
         //var softwareVersion = M.Application.getConfig('version');
         
-		alert('firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' + '&geraeteTyp=' + geraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf());
+		//alert('firmenId=' + firmenId + '&kennwort=' + kennwort + '&geraeteId=' + geraeteId + '' + '&geraeteTyp=' + geraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf());
 		
         var params = {
               url: 'authentifizieren'
@@ -18563,7 +18563,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3642'
+              value: 'Build: 3643'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
