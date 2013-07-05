@@ -2049,7 +2049,7 @@ DigiWebApp.Booking = M.Model.create({
 
     , closeBooking: function(location) {
 		var timeEnd = new D8();
-		timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"));
+		timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
 	
         this.set('timeStampEnd', timeEnd.getTimestamp());
         if (location) {
@@ -6811,7 +6811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3658
+    , softwareVersion: 3659
 
 
     /**
@@ -18618,7 +18618,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3658'
+              value: 'Build: 3659'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
