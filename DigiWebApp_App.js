@@ -6823,7 +6823,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3667
+    , softwareVersion: 3668
 
 
     /**
@@ -8795,7 +8795,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.Booking.find();
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd'));
+	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
 	
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -18633,7 +18633,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3667'
+              value: 'Build: 3668'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19783,11 +19783,11 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 var date1 = M.Date.create(dateStart.getTime());
                 var date2 = null;
                 if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 	date2 = M.Date.create(dateEnd.getTime());
                 }
                 if(date2) {
@@ -22064,11 +22064,11 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 var date1 = M.Date.create(dateStart.getTime());
                 var date2 = null;
                 if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 	date2 = M.Date.create(dateEnd.getTime());
                 }
                 if(date2) {
@@ -24777,11 +24777,11 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 var date1 = M.Date.create(dateStart.getTime());
                 var date2 = null;
                 if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 	date2 = M.Date.create(dateEnd.getTime());
                 }
                 if(date2) {
