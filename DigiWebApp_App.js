@@ -542,6 +542,10 @@ DigiWebApp.SentBooking = M.Model.create({
         isRequired: NO
     })
 
+    , timezoneOffset: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , timeStampStart: M.Model.attr('String', {
         isRequired: NO
     })
@@ -1068,6 +1072,10 @@ DigiWebApp.SentBookingArchived = M.Model.create({
     })
 
     , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , timezoneOffset: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -1956,6 +1964,10 @@ DigiWebApp.Booking = M.Model.create({
     })
 
     , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , timezoneOffset: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -6811,7 +6823,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3665
+    , softwareVersion: 3666
 
 
     /**
@@ -8616,6 +8628,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , genauigkeit: null
             , gps_zeitstempel: null
             , ermittlungsverfahren: null
+            , timezoneOffset: DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")
             , timeStampStart: timeStart.getTime()
             , timeStampEnd: '0'
         });
@@ -8686,6 +8699,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , genauigkeit: obj.get('genauigkeit')
             , gps_zeitstempel: obj.get('gps_zeitstempel')
             , ermittlungsverfahren: obj.get('ermittlungsverfahren')
+            , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
             , isCurrent: false
@@ -8762,6 +8776,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , genauigkeit: obj.get('genauigkeit')
             , gps_zeitstempel: obj.get('gps_zeitstempel')
             , ermittlungsverfahren: obj.get('ermittlungsverfahren')
+            , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
             , tagLabel: myTagLabel
@@ -18618,7 +18633,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3665'
+              value: 'Build: 3666'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -19766,8 +19781,15 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
             //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
             , operation: function(v) {
                 v = v.split(',');
-                var date1 = M.Date.create(Number(v[0]));
-                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                //var date1 = M.Date.create(Number(v[0]));
+                //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var date1 = M.Date.create(dateStart.getTime());
+                var date2 = null;
+                if (v[1] !== "0") {
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	date2 = M.Date.create(dateEnd.getTime());
+                }
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
                     date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
@@ -22040,8 +22062,15 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
             //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
             , operation: function(v) {
                 v = v.split(',');
-                var date1 = M.Date.create(Number(v[0]));
-                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                //var date1 = M.Date.create(Number(v[0]));
+                //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var date1 = M.Date.create(dateStart.getTime());
+                var date2 = null;
+                if (v[1] !== "0") {
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	date2 = M.Date.create(dateEnd.getTime());
+                }
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
                     date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
@@ -24745,8 +24774,15 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
             //, value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
             , operation: function(v) {
                 v = v.split(',');
-                var date1 = M.Date.create(Number(v[0]));
-                var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                //var date1 = M.Date.create(Number(v[0]));
+                //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                var date1 = M.Date.create(dateStart.getTime());
+                var date2 = null;
+                if (v[1] !== "0") {
+                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+                	date2 = M.Date.create(dateEnd.getTime());
+                }
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
                     date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
