@@ -6811,7 +6811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3664
+    , softwareVersion: 3665
 
 
     /**
@@ -8617,7 +8617,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , gps_zeitstempel: null
             , ermittlungsverfahren: null
             , timeStampStart: timeStart.getTime()
-            , timeStampEnd: null
+            , timeStampEnd: '0'
         });
     }
 
@@ -18618,7 +18618,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3664'
+              value: 'Build: 3665'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
