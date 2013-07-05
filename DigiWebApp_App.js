@@ -2048,10 +2048,10 @@ DigiWebApp.Booking = M.Model.create({
     })
 
     , closeBooking: function(location) {
-		var timeEnd = new D8();
+		var timeEnd = new Date(new Date().getTime() + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
 		//timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
 	
-        this.set('timeStampEnd', timeEnd.getTimestamp());
+        this.set('timeStampEnd', timeEnd.getTime());
         if (location) {
         	this.set('latitude_bis',  location.latitude);
         	this.set('longitude_bis', location.longitude);
@@ -6811,7 +6811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3663
+    , softwareVersion: 3664
 
 
     /**
@@ -8597,7 +8597,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     	
     	// 
     	
-    	var timeStart = new D8();
+    	var timeStart = new Date(new Date().getTime() + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
     	//timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
     	
         return DigiWebApp.Booking.createRecord({
@@ -8616,7 +8616,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , genauigkeit: null
             , gps_zeitstempel: null
             , ermittlungsverfahren: null
-            , timeStampStart: timeStart.getTimestamp()
+            , timeStampStart: timeStart.getTime()
             , timeStampEnd: null
         });
     }
@@ -18618,7 +18618,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3663'
+              value: 'Build: 3664'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
