@@ -6811,7 +6811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3659
+    , softwareVersion: 3660
 
 
     /**
@@ -8598,7 +8598,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     	// 
     	
     	var timeStart = new D8();
-    	timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"));
+    	timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
     	
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : null
@@ -18618,7 +18618,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3659'
+              value: 'Build: 3660'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
