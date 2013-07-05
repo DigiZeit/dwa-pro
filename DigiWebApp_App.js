@@ -6823,7 +6823,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3668
+    , softwareVersion: 3669
 
 
     /**
@@ -15980,7 +15980,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         });
     }
 
-    , saveSettings: function(record, reloadApplication, silent) {
+    , saveSettings: function(record, reloadApplication, silent, superSilent) {
 
         /* clear the LS if its a reload */
         if(reloadApplication) {
@@ -15997,54 +15997,56 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	DigiWebApp.SettingsController.mitarbeiterNameVorname = "";
         	//console.log("record saved");
         	//console.log(record);
-            if(!reloadApplication) {
-                // switch back to dashboard
-            	if (silent) {
-                    if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
-                    	if (DigiWebApp.ApplicationController.syncRunning !== YES) {
-							if (DigiWebApp.SettingsController.featureAvailable('404')) {
-                                DigiWebApp.NavigationController.backToButtonDashboardPage();
-							} else {
-                                DigiWebApp.NavigationController.backToDashboardPage();
-							}
-                    	}
-                    }
-            	} else {
-	                //DialogView.alert with action
+        	if (!superSilent) {
+	            if(!reloadApplication) {
+	                // switch back to dashboard
+	            	if (silent) {
+	                    if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
+	                    	if (DigiWebApp.ApplicationController.syncRunning !== YES) {
+								if (DigiWebApp.SettingsController.featureAvailable('404')) {
+	                                DigiWebApp.NavigationController.backToButtonDashboardPage();
+								} else {
+	                                DigiWebApp.NavigationController.backToDashboardPage();
+								}
+	                    	}
+	                    }
+	            	} else {
+		                //DialogView.alert with action
+		                //M.DialogView.alert({
+		                DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                      title: M.I18N.l('hint')
+		                    , message: M.I18N.l('settingsSaveDone')
+		                    , callbacks: {
+		                        confirm: {
+		                            action: function() {
+										if (DigiWebApp.SettingsController.featureAvailable('404')) {
+				                            DigiWebApp.NavigationController.backToButtonDashboardPage();
+										} else {
+				                            DigiWebApp.NavigationController.backToDashboardPage();
+										}
+		                            }
+		                        }
+		                    }
+		                });
+	            	}
+	            } else {
+	            	//DialogView.alert with action
 	                //M.DialogView.alert({
 	                DigiWebApp.ApplicationController.nativeAlertDialogView({
 	                      title: M.I18N.l('hint')
-	                    , message: M.I18N.l('settingsSaveDone')
+	                    , message: M.I18N.l('settingsSaveDoneReloadApp')
 	                    , callbacks: {
 	                        confirm: {
 	                            action: function() {
-									if (DigiWebApp.SettingsController.featureAvailable('404')) {
-			                            DigiWebApp.NavigationController.backToButtonDashboardPage();
-									} else {
-			                            DigiWebApp.NavigationController.backToDashboardPage();
-									}
-	                            }
+	                                //location.href = location.protocol + '//' + location.host + location.pathname;
+	                				DigiWebApp.SettingsController.showCredentialsAlert = NO;
+	                				DigiWebApp.ApplicationController.init(true);
+	                			}
 	                        }
 	                    }
 	                });
-            	}
-            } else {
-            	//DialogView.alert with action
-                //M.DialogView.alert({
-                DigiWebApp.ApplicationController.nativeAlertDialogView({
-                      title: M.I18N.l('hint')
-                    , message: M.I18N.l('settingsSaveDoneReloadApp')
-                    , callbacks: {
-                        confirm: {
-                            action: function() {
-                                //location.href = location.protocol + '//' + location.host + location.pathname;
-                				DigiWebApp.SettingsController.showCredentialsAlert = NO;
-                				DigiWebApp.ApplicationController.init(true);
-                			}
-                        }
-                    }
-                });
-            }
+	            }
+        	}
         } else {
             //M.DialogView.alert({
             DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -16074,7 +16076,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	try {
         		setting.set(prop, value);
     		} catch(e) { console.error("ERROR: setting.set for prop=" + prop); }
-        	DigiWebApp.SettingsController.saveSettings(setting, NO, YES);
+        	if (prop === "currentTimezoneOffset") {
+        		// be superSilent
+        		DigiWebApp.SettingsController.saveSettings(setting, NO, YES, YES);
+        	} else {
+        		DigiWebApp.SettingsController.saveSettings(setting, NO, YES);
+        	}
         }
     }
       
@@ -18633,7 +18640,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3668'
+              value: 'Build: 3669'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
