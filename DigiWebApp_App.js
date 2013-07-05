@@ -606,6 +606,10 @@ DigiWebApp.SentBooking = M.Model.create({
         isRequired: NO
     })
 
+    , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
     , genauigkeit: M.Model.attr('String', {
     	isRequired: NO
     })
@@ -932,6 +936,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , ServiceApp_PORT: M.Model.attr('String')
 
+    , currentTimezoneOffset: M.Model.attr('String')
+    
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -1133,6 +1139,10 @@ DigiWebApp.SentBookingArchived = M.Model.create({
         isRequired: NO
     })
 
+    , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
     , genauigkeit: M.Model.attr('String', {
     	isRequired: NO
     })
@@ -2021,6 +2031,10 @@ DigiWebApp.Booking = M.Model.create({
         isRequired: NO
     })
     
+    , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
     , genauigkeit: M.Model.attr('String', {
     	isRequired: NO
     })
@@ -2035,7 +2049,7 @@ DigiWebApp.Booking = M.Model.create({
 
     , closeBooking: function(location) {
 		var timeEnd = new D8();
-		timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.BookingController.currentTimezoneOffset));
+		timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"));
 	
         this.set('timeStampEnd', timeEnd.getTimestamp());
         if (location) {
@@ -6797,7 +6811,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3657
+    , softwareVersion: 3658
 
 
     /**
@@ -8051,11 +8065,6 @@ DigiWebApp.BookingController = M.Controller.extend({
     , currentBookingStr: ''
 
     /**
-     * TimezoneOffset 
-     */
-    , currentTimezoneOffset: null
-
-    /**
      * Flag indicating whether a switch to the bookingPage is back from employee selection page
      *
      * Important for determing whether to re-set selection lists or not
@@ -8450,7 +8459,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 			that.currentBookingClosed = that.currentBooking;
 	    } else {
 	    	// no currentBooking: remember TimezoneOffset
-	    	that.currentTimezoneOffset = new Date().getTimezoneOffset();
+	    	DigiWebApp.SettingsController.setSetting("currentTimezoneOffset", new Date().getTimezoneOffset());
 	    }
 
 	    // setup new booking
@@ -8589,22 +8598,26 @@ DigiWebApp.BookingController = M.Controller.extend({
     	// 
     	
     	var timeStart = new D8();
-    	timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.BookingController.currentTimezoneOffset));
+    	timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"));
     	
         return DigiWebApp.Booking.createRecord({
-              orderId: obj.oId ? obj.oId : '0'
+              orderId: obj.oId ? obj.oId : null
             , orderName: myOrderName
-            , handOrderId: obj.hoId ? obj.hoId : '0'
-            , handOrderName: obj.hoName ? obj.hoName : '0'
-            , latitude: obj.lat ? obj.lat : '0'
-            , longitude: obj.lon ? obj.lon : '0'
-            , positionId: obj.pId ? obj.pId : '0'
+            , handOrderId: obj.hoId ? obj.hoId : null
+            , handOrderName: obj.hoName ? obj.hoName : null
+            , latitude: obj.lat ? obj.lat : null
+            , longitude: obj.lon ? obj.lon : null
+            , positionId: obj.pId ? obj.pId : null
             , positionName: myPositionName
-            , activityId: obj.aId ? obj.aId : '0'
+            , activityId: obj.aId ? obj.aId : null
             , activityName: myActivityName
             , remark: obj.remark ? obj.remark : ''
+            , istFeierabend: false
+            , genauigkeit: null
+            , gps_zeitstempel: null
+            , ermittlungsverfahren: null
             , timeStampStart: timeStart.getTimestamp()
-            , timeStampEnd: '0'
+            , timeStampEnd: null
         });
     }
 
@@ -8669,6 +8682,10 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityId: obj.get('activityId')
             , activityName: myActivityName
             , remark: obj.get('remark')
+            , istFeierabend: obj.get('istFeierabend')
+            , genauigkeit: obj.get('genauigkeit')
+            , gps_zeitstempel: obj.get('gps_zeitstempel')
+            , ermittlungsverfahren: obj.get('ermittlungsverfahren')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
             , isCurrent: false
@@ -8741,6 +8758,10 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityId: obj.get('activityId')
             , activityName: myActivityName
             , remark: obj.get('remark')
+            , istFeierabend: obj.get('istFeierabend')
+            , genauigkeit: obj.get('genauigkeit')
+            , gps_zeitstempel: obj.get('gps_zeitstempel')
+            , ermittlungsverfahren: obj.get('ermittlungsverfahren')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
             , tagLabel: myTagLabel
@@ -8968,11 +8989,13 @@ DigiWebApp.BookingController = M.Controller.extend({
     	var that = DigiWebApp.BookingController;
         // close current booking
         if(that.currentBooking) {
+        	that.currentBooking.set("istFeierabend", true);
         	that.currentBooking.closeBooking(location);
         	that.currentBooking.removeAsCurrent();
         	that.currentBooking.save();
         	that.currentBookingClosed = that.currentBooking;
         	that.currentBooking = null;
+        	DigiWebApp.SettingsController.setSetting("currentTimezoneOffset", null);
         } else {
             //M.DialogView.alert({
     		DigiWebApp.ApplicationController.DigiLoaderView.hide();
@@ -15188,6 +15211,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , branding: ''
         , GPSTimeOut: 240000
         , silentLoader: false
+        , currentTimezoneOffset: null
         , ServiceApp_ermittleGeokoordinate: false
         , ServiceApp_datenUebertragen: false
         , ServiceApp_engeKopplung: false
@@ -15196,45 +15220,45 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
     , defaultsettings: null
     
-    , ServiceApp_available: null
-    
-    , ServiceApp_KnockKnock_Result: function(data) {
-    	var that = DigiWebApp.SettingsController;
-    	
-    	if (data) {
-    		that.ServiceApp_available = true;
-        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
-        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
-        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-        	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
-        	
-        	// DEBUG ONLY!!!
-        	try {
-            	alert("ServiceApp has " + data.GET.buchungen.length + " bookings in database.");
-        	} catch(e) {
-            	alert(e.message);
-        	}
-        	// DEBUG ONLY!!!
-        	
-    	} else {
-    		alert("success ohne daten");
-    		that.ServiceApp_KnockKnock_Error();
-    	}
-    }
-
-    , ServiceApp_KnockKnock_Error: function(jqXHR, textStatus, errorThrown) {
-    	var that = DigiWebApp.SettingsController;
-		that.ServiceApp_available = false;
-    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
-    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
-    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-    	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
-    	
-    	// DEBUG ONLY!!!
-        alert("No ServiceApp available! (Status: " + jqXHR.status + ", textStatus: " + textStatus +  ", errorThrown: " + errorThrown + ")");
-    	// DEBUG ONLY!!!
-    	
-    }
+//    , ServiceApp_available: null
+//    
+//    , ServiceApp_KnockKnock_Result: function(data) {
+//    	var that = DigiWebApp.SettingsController;
+//    	
+//    	if (data) {
+//    		that.ServiceApp_available = true;
+//        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
+//        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+//        	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
+//        	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
+//        	
+//        	// DEBUG ONLY!!!
+//        	try {
+//            	alert("ServiceApp has " + data.GET.buchungen.length + " bookings in database.");
+//        	} catch(e) {
+//            	alert(e.message);
+//        	}
+//        	// DEBUG ONLY!!!
+//        	
+//    	} else {
+//    		alert("success ohne daten");
+//    		that.ServiceApp_KnockKnock_Error();
+//    	}
+//    }
+//
+//    , ServiceApp_KnockKnock_Error: function(jqXHR, textStatus, errorThrown) {
+//    	var that = DigiWebApp.SettingsController;
+//		that.ServiceApp_available = false;
+//    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+//    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+//    	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+//    	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
+//    	
+//    	// DEBUG ONLY!!!
+//        alert("No ServiceApp available! (Status: " + jqXHR.status + ", textStatus: " + textStatus +  ", errorThrown: " + errorThrown + ")");
+//    	// DEBUG ONLY!!!
+//    	
+//    }
 
     , init: function() {
     	var that = DigiWebApp.SettingsController;
@@ -15411,6 +15435,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 , branding: record.get('branding')
                 , GPSTimeOut: record.get('GPSTimeOut')
                 , silentLoader: record.get('silentLoader')
+                , currentTimezoneOffset: record.get('currentTimezoneOffset')
                 , ServiceApp_ermittleGeokoordinate: [{
 	                   value: record.get('ServiceApp_ermittleGeokoordinate')
 	                 , label: M.I18N.l('ServiceApp_ermittleGeokoordinate')
@@ -15495,6 +15520,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 , branding: DigiWebApp.SettingsController.defaultsettings.get('branding')
                 , GPSTimeOut: DigiWebApp.SettingsController.defaultsettings.get('GPSTimeOut')
                 , silentLoader: DigiWebApp.SettingsController.defaultsettings.get('silentLoader')
+                , currentTimezoneOffset: DigiWebApp.SettingsController.defaultsettings.get('currentTimezoneOffset')
 	            , ServiceApp_ermittleGeokoordinate: [{
 	                  value: DigiWebApp.SettingsController.defaultsettings.get("ServiceApp_ermittleGeokoordinate")
 	                , label: M.I18N.l('ServiceApp_ermittleGeokoordinate')
@@ -15515,21 +15541,21 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 
         that.set('settings', settings);
 
-        // check for ServiceApp
-        if (that.ServiceApp_available === null) {
-        	var ServiceAppResult = null;
-        	$.ajax({
-	    		    dataType: "json"
-	    		  , type: "GET"
-				  , crossDomain: true
-				  , processData: false
-				  , async: true
-				  , contentType: 'application/json'
-	    		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
-	    		  , success: that.ServiceApp_KnockKnock_Result
-	    		  , error: that.ServiceApp_KnockKnock_Error
-	    		  , timeout: 2000
-	    	});
+//        // check for ServiceApp
+//        if (that.ServiceApp_available === null) {
+//        	var ServiceAppResult = null;
+//        	$.ajax({
+//	    		    dataType: "json"
+//	    		  , type: "GET"
+//				  , crossDomain: true
+//				  , processData: false
+//				  , async: true
+//				  , contentType: 'application/json'
+//	    		  , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+//	    		  , success: that.ServiceApp_KnockKnock_Result
+//	    		  , error: that.ServiceApp_KnockKnock_Error
+//	    		  , timeout: 2000
+//	    	});
 //        	$.ajax({
 //        		    dataType: "json"
 //        		  , type: "POST"
@@ -15620,6 +15646,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var branding                    = DigiWebApp.SettingsController.getSetting('branding');
         var GPSTimeOut                  = DigiWebApp.SettingsController.getSetting('GPSTimeOut');
         var silentLoader                = DigiWebApp.SettingsController.getSetting('silentLoader');
+    	var currentTimezoneOffset       = DigiWebApp.SettingsController.getSetting('currentTimezoneOffset');
 
         var ServiceApp_ermittleGeokoordinate = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_ermittleGeokoordinate');
         if (M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate') !== null) {
@@ -15730,6 +15757,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('branding', branding);
                                                     record.set('GPSTimeOut', GPSTimeOut);
                                                     record.set('silentLoader', silentLoader);
+                                                    record.set('currentTimezoneOffset', currentTimezoneOffset);
                                                     record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
@@ -15794,6 +15822,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('branding', branding);
                                     record.set('GPSTimeOut', GPSTimeOut);
                                     record.set('silentLoader', silentLoader);
+                                    record.set('currentTimezoneOffset', currentTimezoneOffset);
                                     record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
@@ -15832,6 +15861,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('branding', branding);
                                 record.set('GPSTimeOut', GPSTimeOut);
                                 record.set('silentLoader', silentLoader);
+                                record.set('currentTimezoneOffset', currentTimezoneOffset);
                                 record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
@@ -15870,6 +15900,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('branding', branding);
                                 record.set('GPSTimeOut', GPSTimeOut);
                                 record.set('silentLoader', silentLoader);
+                                record.set('currentTimezoneOffset', currentTimezoneOffset);
                                 record.set('ServiceApp_ermittleGeokoordinate', ServiceApp_ermittleGeokoordinate);
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
@@ -15910,6 +15941,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , branding: branding
                                 , GPSTimeOut: GPSTimeOut
                                 , silentLoader: silentLoader
+                                , currentTimezoneOffset: currentTimezoneOffset
                                 , ServiceApp_ermittleGeokoordinate: ServiceApp_ermittleGeokoordinate
                                 , ServiceApp_datenUebertragen: ServiceApp_datenUebertragen
                                 , ServiceApp_engeKopplung: ServiceApp_engeKopplung
@@ -18586,7 +18618,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3657'
+              value: 'Build: 3658'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
