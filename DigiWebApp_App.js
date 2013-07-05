@@ -6823,7 +6823,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3666
+    , softwareVersion: 3667
 
 
     /**
@@ -18633,7 +18633,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3666'
+              value: 'Build: 3667'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -24773,6 +24773,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
               valuePattern: '<%= date %>'
             //, value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h',
             , operation: function(v) {
+				console.log(v);
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
