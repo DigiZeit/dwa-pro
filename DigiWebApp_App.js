@@ -6934,7 +6934,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3685
+    , softwareVersion: 3686
 
 
     /**
@@ -7004,7 +7004,13 @@ DigiWebApp.RequestController = M.Controller.extend({
     }
 
     , getDatabaseServer: function(myFunc, obj) {
-    	console.log("getDatabaseServer");
+		if (!DigiWebApp.RequestController.DatabaseServer || (DigiWebApp.RequestController.DatabaseServerTimestamp && (DigiWebApp.RequestController.DatabaseServerTimestamp - new Date().getTime() > 60000))) {
+		  	// get it ...
+	    	console.log("getDatabaseServer");
+		} else {
+			// use previously fetched DatabaseServer
+			return myFunc(obj);
+		}
     
     	DigiWebApp.RequestController.DatabaseServer = "";
     	
@@ -9553,7 +9559,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	  consoleLogOutput: YES
 
 	, sendData: function(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter) {
-	if (!DigiWebApp.RequestController.DatabaseServer || (DigiWebApp.RequestController.DatabaseServerTimestamp && (DigiWebApp.RequestController.DatabaseServerTimestamp - new Date().getTime() > 60000))) {
+		if (!DigiWebApp.RequestController.DatabaseServer || (DigiWebApp.RequestController.DatabaseServerTimestamp && (DigiWebApp.RequestController.DatabaseServerTimestamp - new Date().getTime() > 60000))) {
 		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
 		  		DigiWebApp.JSONDatenuebertragungController.sendDataWithServer(data, webservice, loaderText, successCallback, errorCallback, additionalQueryParameter);
 		  	}, null);
@@ -18983,7 +18989,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3685'
+              value: 'Build: 3686'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
