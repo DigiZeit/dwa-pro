@@ -6858,7 +6858,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3677
+    , softwareVersion: 3678
 
 
     /**
@@ -9318,6 +9318,8 @@ DigiWebApp.BookingController = M.Controller.extend({
 	                        message: M.I18N.l('sendDataFailMsg')
 	                    });
 	              }
+        		  , isClosingDay
+        		  , doSync
         	);
 
 //		Alte XML-Übertragungsvariante:        	
@@ -9535,7 +9537,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 		}).send();
 	}
 	
-	, sendeZeitdaten: function(buchungen, successCallback, errorCallback) {
+	, sendeZeitdaten: function(buchungen, successCallback, errorCallback, isClosingDay, doSync) {
 		var that = this;
 		
 		var items = [];
@@ -18864,7 +18866,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3677'
+              value: 'Build: 3678'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
