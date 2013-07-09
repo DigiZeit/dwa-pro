@@ -6873,7 +6873,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3679
+    , softwareVersion: 3680
 
 
     /**
@@ -9601,7 +9601,10 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 						zeitbuch.set(prop, el.get(prop));
 					}
 				}
-				zeitbuch.set("employees", maId);
+				if (zeitbuch.get("timeStampEnd") === "0") {
+					zeitbuch.set("timeStampEnd", null);
+				}
+				zeitbuch.set("mitarbeiterId", maId);
 				items.push(zeitbuch.record);
 			});
 		});
@@ -18895,7 +18898,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3679'
+              value: 'Build: 3680'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
