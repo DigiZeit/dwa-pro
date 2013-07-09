@@ -6873,7 +6873,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3680
+    , softwareVersion: 3681
 
 
     /**
@@ -8538,8 +8538,8 @@ DigiWebApp.BookingController = M.Controller.extend({
 			posId = null;
 	    }
 	    
-	    var lat = '0';
-	    var lon = '0';
+	    var lat = null;
+	    var lon = null;
 	    if(location) {
 			if (location.latitude) {
 			    lat = location.latitude;
@@ -8678,6 +8678,8 @@ DigiWebApp.BookingController = M.Controller.extend({
             , handOrderName: obj.hoName ? obj.hoName : null
             , latitude: obj.lat ? obj.lat : null
             , longitude: obj.lon ? obj.lon : null
+            , latitude_bis: null
+    		, longitude_bis: null
             , positionId: obj.pId ? obj.pId : null
             , positionName: myPositionName
             , activityId: obj.aId ? obj.aId : null
@@ -9603,6 +9605,17 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 				}
 				if (zeitbuch.get("timeStampEnd") === "0") {
 					zeitbuch.set("timeStampEnd", null);
+					
+					// compability
+					zeitbuch.set("longitude_bis", "0");
+					zeitbuch.set("latitude_bis", "0");
+					
+					if (!zeitbuch.get("longitude")) {
+						zeitbuch.set("longitude", "0");
+					}
+					if (!zeitbuch.get("latitude")) {
+						zeitbuch.set("latitude", "0");
+					}
 				}
 				zeitbuch.set("mitarbeiterId", maId);
 				items.push(zeitbuch.record);
@@ -18898,7 +18911,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3680'
+              value: 'Build: 3681'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
