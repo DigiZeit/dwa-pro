@@ -2061,8 +2061,9 @@ DigiWebApp.Booking = M.Model.create({
 
     , closeBooking: function(location) {
 		//= timestamp - (1000 * 60  * (origOffset - localOffset))
-		var timeEnd = new Date(new Date().getTime() - (1000 * 60 * (this.get("timezoneOffset") - new Date().getTimezoneOffset())));
+		//var timeEnd = new Date(new Date().getTime() - (1000 * 60 * (this.get("timezoneOffset") - new Date().getTimezoneOffset())));
 		//timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
+		var timeEnd = new Date();
 	
         this.set('timeStampEnd', timeEnd.getTime());
         if (location) {
@@ -6824,7 +6825,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3672
+    , softwareVersion: 3673
 
 
     /**
@@ -8608,8 +8609,9 @@ DigiWebApp.BookingController = M.Controller.extend({
     		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
     	} catch(e) { console.error(e); }
     	
-    	var timeStart = new Date(new Date().getTime() - (1000 * 60 * (DigiWebApp.SettingsController.getSetting("currentTimezoneOffset") - new Date().getTimezoneOffset())));
+    	//var timeStart = new Date(new Date().getTime() - (1000 * 60 * (DigiWebApp.SettingsController.getSetting("currentTimezoneOffset") - new Date().getTimezoneOffset())));
     	//timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
+    	var timeStart = new Date();
     	
         return DigiWebApp.Booking.createRecord({
               orderId: obj.oId ? obj.oId : null
@@ -18641,7 +18643,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3672'
+              value: 'Build: 3673'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
