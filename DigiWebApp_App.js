@@ -6934,7 +6934,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3687
+    , softwareVersion: 3688
 
 
     /**
@@ -15608,6 +15608,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
          that.readFromFile(that.ServiceApp_requestFileName, function(data) {
                 window.clearInterval(that.ServiceApp_readFile_IntervalVar);
                 that.ServiceApp_available = true;
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
                 //console.log("(" + new Date().getTime() + ")");
                 //console.log(JSON.parse(data).GET.buchungen.length + " Buchungen (" + new Date().getTime() + ")");
                 that.deleteFile(that.ServiceApp_requestFileName, function(){
@@ -15618,6 +15621,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 });
          }, function(err) {
              	that.ServiceApp_available = false;
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+             	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
                 console.error(err);
          });          
     }
@@ -16081,8 +16087,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
         that.set('settings', settings);
 
         // check for ServiceApp
-        if (that.ServiceApp_available === null) {
+        if (DigiWebApp.SettingsController.featureAvailable('417')) {
              var ServiceAppResult = null;
+          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
              that.ServiceApp_requestFileName = "" + new Date().getTime() + ".response.json"
              $.ajax({
                         dataType: "json"
@@ -16108,6 +16115,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
                       , error: that.ServiceApp_KnockKnock_Handler
                       , timeout: 1000
               });
+        } else {
+         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
         }
 	}
 	
@@ -19153,7 +19165,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3687'
+              value: 'Build: 3688'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
