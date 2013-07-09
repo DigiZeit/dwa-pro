@@ -2060,7 +2060,8 @@ DigiWebApp.Booking = M.Model.create({
     })
 
     , closeBooking: function(location) {
-		var timeEnd = new Date(new Date().getTime() + (1000 * 60 * (new Date().getTimezoneOffset() - this.get("timezoneOffset"))));
+		//= timestamp - (1000 * 60  * (origOffset - localOffset))
+		var timeEnd = new Date(new Date().getTime() - (1000 * 60 * (this.get("timezoneOffset") - new Date().getTimezoneOffset())));
 		//timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
 	
         this.set('timeStampEnd', timeEnd.getTime());
@@ -6823,7 +6824,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3670
+    , softwareVersion: 3671
 
 
     /**
@@ -8607,9 +8608,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
     	} catch(e) { console.error(e); }
     	
-    	// 
-    	
-    	var timeStart = new Date(new Date().getTime() + (1000 * 60 * (new Date().getTimezoneOffset() - DigiWebApp.SettingsController.getSetting("currentTimezoneOffset"))));
+    	var timeStart = new Date(new Date().getTime() - (1000 * 60 * (DigiWebApp.SettingsController.getSetting("currentTimezoneOffset") - new Date().getTimezoneOffset())));
     	//timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
     	
         return DigiWebApp.Booking.createRecord({
@@ -18640,7 +18639,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3670'
+              value: 'Build: 3671'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
