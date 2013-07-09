@@ -574,6 +574,22 @@ DigiWebApp.SentBooking = M.Model.create({
         isRequired: NO
     })
 
+    , gpsLaengeVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeBis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteBis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , handOrderName: M.Model.attr('String', {
         isRequired: NO
     })
@@ -1125,6 +1141,22 @@ DigiWebApp.SentBookingArchived = M.Model.create({
     })
 
     , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeBis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteBis: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -2030,6 +2062,22 @@ DigiWebApp.Booking = M.Model.create({
     })
 
     , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteVon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeBis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsBreiteBis: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -6873,7 +6921,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3681
+    , softwareVersion: 3682
 
 
     /**
@@ -9603,6 +9651,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 						zeitbuch.set(prop, el.get(prop));
 					}
 				}
+				
 				if (zeitbuch.get("timeStampEnd") === "0") {
 					zeitbuch.set("timeStampEnd", null);
 					
@@ -9616,7 +9665,14 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 					if (!zeitbuch.get("latitude")) {
 						zeitbuch.set("latitude", "0");
 					}
+					
 				}
+				
+				zeitbuch.set("gpsLaengeVon",zeitbuch.get("longitude"));
+				zeitbuch.set("gpsBreiteVon",zeitbuch.get("latitude"));
+				zeitbuch.set("gpsLaengeBis",zeitbuch.get("longitude_bis"));
+				zeitbuch.set("gpsBreiteBis",zeitbuch.get("latitude_bis"));
+
 				zeitbuch.set("mitarbeiterId", maId);
 				items.push(zeitbuch.record);
 			});
@@ -18911,7 +18967,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3681'
+              value: 'Build: 3682'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
