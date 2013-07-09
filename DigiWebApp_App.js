@@ -614,15 +614,27 @@ DigiWebApp.SentBooking = M.Model.create({
     	isRequired: NO
     })
     
-    , genauigkeit: M.Model.attr('String', {
+    , genauigkeitVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , gps_zeitstempel: M.Model.attr('String', {
+    , gps_zeitstempelVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , ermittlungsverfahren: M.Model.attr('String', {
+    , ermittlungsverfahrenVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , genauigkeitBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenBis: M.Model.attr('String', {
     	isRequired: NO
     })
 
@@ -1151,15 +1163,27 @@ DigiWebApp.SentBookingArchived = M.Model.create({
     	isRequired: NO
     })
     
-    , genauigkeit: M.Model.attr('String', {
+    , genauigkeitVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , gps_zeitstempel: M.Model.attr('String', {
+    , gps_zeitstempelVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , ermittlungsverfahren: M.Model.attr('String', {
+    , ermittlungsverfahrenVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , genauigkeitBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenBis: M.Model.attr('String', {
     	isRequired: NO
     })
 
@@ -2047,22 +2071,31 @@ DigiWebApp.Booking = M.Model.create({
     	isRequired: NO
     })
     
-    , genauigkeit: M.Model.attr('String', {
+    , genauigkeitVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , gps_zeitstempel: M.Model.attr('String', {
+    , gps_zeitstempelVon: M.Model.attr('String', {
     	isRequired: NO
     })
 
-    , ermittlungsverfahren: M.Model.attr('String', {
+    , ermittlungsverfahrenVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , genauigkeitBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenBis: M.Model.attr('String', {
     	isRequired: NO
     })
 
     , closeBooking: function(location) {
-		//= timestamp - (1000 * 60  * (origOffset - localOffset))
-		//var timeEnd = new Date(new Date().getTime() - (1000 * 60 * (this.get("timezoneOffset") - new Date().getTimezoneOffset())));
-		//timeEnd = timeEnd.addMinutes(timeEnd.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
 		var timeEnd = new Date();
 	
         this.set('timeStampEnd', timeEnd.getTime());
@@ -6825,7 +6858,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3674
+    , softwareVersion: 3676
 
 
     /**
@@ -8609,8 +8642,6 @@ DigiWebApp.BookingController = M.Controller.extend({
     		if (obj.aId !== 0) myActivityName = DigiWebApp.Activity.find({query:{identifier: 'id', operator: '=', value: obj.aId}})[0].get('name');
     	} catch(e) { console.error(e); }
     	
-    	//var timeStart = new Date(new Date().getTime() - (1000 * 60 * (DigiWebApp.SettingsController.getSetting("currentTimezoneOffset") - new Date().getTimezoneOffset())));
-    	//timeStart = timeStart.addMinutes(timeStart.date.getTimezoneOffset()).addMinutes(-(DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")));
     	var timeStart = new Date();
     	
         return DigiWebApp.Booking.createRecord({
@@ -9171,111 +9202,222 @@ DigiWebApp.BookingController = M.Controller.extend({
 
         if(bookings.length > 0) {
         	
-            DigiWebApp.RequestController.sendData({
-                  bookings: bookings
-                , success: {
-                    target: this,
-                    action: function() {
-            			var CurrentAvailable = false
-                        _.each(DigiWebApp.Booking.find(), function(el) {
-                            if(el.get('isCurrent')) {
-                            	CurrentAvailable = true;
-                            }
-                        });
-            			
-            			// no current booking: after closing-time
-            			if (!CurrentAvailable) {
-            				DigiWebApp.SentBooking.deleteAll();
-            			}
-            			
-        				// Feature 411 : Zeitbuchungen für X Tage auf Gerät belassen
-        				if (DigiWebApp.SettingsController.featureAvailable('411')) {
-        					try {
-	            				// move Bookings to SentBookingArchived
-	                            _.each(DigiWebApp.Booking.find(), function(el) {
-	                                if(!el.get('isCurrent')) {
-	                            		  var sentBookingArchivedEl = DigiWebApp.BookingController.sentBookingArchived(el);
-	                            		  sentBookingArchivedEl.save();
-	                            		  // check if that day is already in archive
-	                            		  var dayFound = NO;
-	                            		  var dayToFind = D8.create(el.get('timeStampStart')).format("dd.mm.yyyy");
-	                            		  _.each(DigiWebApp.SentTimeDataDays.find(), function(day){
-	                            			  if (day.get('tagLabel') === dayToFind) {
-	                            				  dayFound = YES;
-	                            			  }
-	                            		  });
-	                            		  if (dayFound === NO) {
-	                            			  var dayRecord = DigiWebApp.SentTimeDataDays.createRecord({
-	                            				  tagLabel: dayToFind
-	                            			  });
-	                            			  dayRecord.save();
-	                            		  }
-	                                }
-	                            });
-                            
-	                            // veraltete Buchungen aus Archiv entfernen
-	                            DigiWebApp.SentBookingArchived.deleteOld();
-	                            DigiWebApp.SentTimeDataDays.deleteOld();
+        	DigiWebApp.JSONDatenuebertragungController.sendeZeitdaten(
+        		  bookings
+        		, function() {
+        			  var CurrentAvailable = false;
+        			  _.each(DigiWebApp.Booking.find(), function(el) {
+        				  if(el.get('isCurrent')) {
+        					  CurrentAvailable = true;
+        				  }
+    				  });
 
-        					} catch(e) {
-        			            DigiWebApp.ApplicationController.nativeAlertDialogView({
-        			                  title: M.I18N.l('error')
-        			                , message: M.I18N.l('errorWhileArchivingBookings')
-        			            });
-        					}
+        			  // no current booking: after closing-time
+        			  if (!CurrentAvailable) {
+        				  DigiWebApp.SentBooking.deleteAll();
+        			  }
+      			
+						// Feature 411 : Zeitbuchungen für X Tage auf Gerät belassen
+						if (DigiWebApp.SettingsController.featureAvailable('411')) {
+							try {
+								// move Bookings to SentBookingArchived
+							      _.each(DigiWebApp.Booking.find(), function(el) {
+							          if(!el.get('isCurrent')) {
+							      		  var sentBookingArchivedEl = DigiWebApp.BookingController.sentBookingArchived(el);
+							      		  sentBookingArchivedEl.save();
+							      		  // check if that day is already in archive
+							      		  var dayFound = NO;
+							      		  var dayToFind = D8.create(el.get('timeStampStart')).format("dd.mm.yyyy");
+							      		  _.each(DigiWebApp.SentTimeDataDays.find(), function(day){
+							      			  if (day.get('tagLabel') === dayToFind) {
+							      				  dayFound = YES;
+							      			  }
+							      		  });
+							      		  if (dayFound === NO) {
+							      			  var dayRecord = DigiWebApp.SentTimeDataDays.createRecord({
+							      				  tagLabel: dayToFind
+							      			  });
+							      			  dayRecord.save();
+							      		  }
+							          }
+							      });
+							  
+							      // veraltete Buchungen aus Archiv entfernen
+							      DigiWebApp.SentBookingArchived.deleteOld();
+							      DigiWebApp.SentTimeDataDays.deleteOld();
+							
+							} catch(e) {
+							    DigiWebApp.ApplicationController.nativeAlertDialogView({
+							          title: M.I18N.l('error')
+							        , message: M.I18N.l('errorWhileArchivingBookings')
+							        });
+							}
+							
+						}
+						// Feature 411 : End
 
-        				}
-        				// Feature 411 : End
+						// Buchungen aufräumen
+		  				_.each(DigiWebApp.Booking.find(), function(el) {
+		                    if(!el.get('isCurrent')) {
+		                  	  if (CurrentAvailable) {
+			                  		  try {
+			                      		  // save booking as sentBooking for later view in sentBookingsListView
+			                      		  var sentBookingEl = DigiWebApp.BookingController.sentBooking(el);
+			                          	  sentBookingEl.save();
+			                  		  } catch(e) {
+			        			            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			        			                  title: M.I18N.l('error')
+			        			                , message: M.I18N.l('errorWhileBackingUpBookings')
+			        			            });
+			                  		  }
+			                  }
+		                      el.del();
+		                    }
+		                  });
 
-        				_.each(DigiWebApp.Booking.find(), function(el) {
-                          if(!el.get('isCurrent')) {
-                        	  if (CurrentAvailable) {
-                        		  try {
-	                        		  // save booking as sentBooking for later view in sentBookingsListView
-	                        		  var sentBookingEl = DigiWebApp.BookingController.sentBooking(el);
-	                            	  sentBookingEl.save();
-                        		  } catch(e) {
-              			            DigiWebApp.ApplicationController.nativeAlertDialogView({
-	          			                  title: M.I18N.l('error')
-	          			                , message: M.I18N.l('errorWhileBackingUpBookings')
-	          			            });
-                        		  }
-                        	  }
-                              el.del();
+		  				  // Buchungsselektion erneuern
+		                  DigiWebApp.SelectionController.resetSelection();
+		                  if(this.currentBooking) {
+		                      DigiWebApp.SelectionController.setSelectionByCurrentBooking();
+		                  } else {
+		                      DigiWebApp.SelectionController.initSelection();
+		                  }
+
+		                  // falls Feierabend gebucht wurde: aufräumen
+		                  if(isClosingDay) {
+		                      this.set('currentBookingStr', '');
+		
+		                      if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
+		                          DigiWebApp.EmployeeController.setEmployeeState(1);
+		                      }
+		                      // clear employee selection
+		                      localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
+		                      localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+		                  }
+                          DigiWebApp.ApplicationController.DigiLoaderView.hide();
+
+                          // now call startsync again
+                          if (DigiWebApp.SettingsController.getSetting('autoSyncAfterBookTime') || doSync === true) {
+                          	DigiWebApp.ApplicationController.startsync(YES);
                           }
-                        });
-                        
-                        DigiWebApp.SelectionController.resetSelection();
-                        if(this.currentBooking) {
-                            DigiWebApp.SelectionController.setSelectionByCurrentBooking();
-                        } else {
-                            DigiWebApp.SelectionController.initSelection();
-                        }
+                  
+        		  }
+        		  , function() {
+	              		// die Buchung(en) konnte(n) nicht gesendet werden
+	                    DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                        title: M.I18N.l('sendDataFail'),
+	                        message: M.I18N.l('sendDataFailMsg')
+	                    });
+	              }
+        	);
 
-                        if(isClosingDay) {
-                            this.set('currentBookingStr', '');
+//		Alte XML-Übertragungsvariante:        	
+//            DigiWebApp.RequestController.sendData({
+//                  bookings: bookings
+//                , success: {
+//                    target: this,
+//                    action: function() {
+//            			var CurrentAvailable = false
+//                        _.each(DigiWebApp.Booking.find(), function(el) {
+//                            if(el.get('isCurrent')) {
+//                            	CurrentAvailable = true;
+//                            }
+//                        });
+//            			
+//            			// no current booking: after closing-time
+//            			if (!CurrentAvailable) {
+//            				DigiWebApp.SentBooking.deleteAll();
+//            			}
+//            			
+//        				// Feature 411 : Zeitbuchungen für X Tage auf Gerät belassen
+//        				if (DigiWebApp.SettingsController.featureAvailable('411')) {
+//        					try {
+//	            				// move Bookings to SentBookingArchived
+//	                            _.each(DigiWebApp.Booking.find(), function(el) {
+//	                                if(!el.get('isCurrent')) {
+//	                            		  var sentBookingArchivedEl = DigiWebApp.BookingController.sentBookingArchived(el);
+//	                            		  sentBookingArchivedEl.save();
+//	                            		  // check if that day is already in archive
+//	                            		  var dayFound = NO;
+//	                            		  var dayToFind = D8.create(el.get('timeStampStart')).format("dd.mm.yyyy");
+//	                            		  _.each(DigiWebApp.SentTimeDataDays.find(), function(day){
+//	                            			  if (day.get('tagLabel') === dayToFind) {
+//	                            				  dayFound = YES;
+//	                            			  }
+//	                            		  });
+//	                            		  if (dayFound === NO) {
+//	                            			  var dayRecord = DigiWebApp.SentTimeDataDays.createRecord({
+//	                            				  tagLabel: dayToFind
+//	                            			  });
+//	                            			  dayRecord.save();
+//	                            		  }
+//	                                }
+//	                            });
+//                            
+//	                            // veraltete Buchungen aus Archiv entfernen
+//	                            DigiWebApp.SentBookingArchived.deleteOld();
+//	                            DigiWebApp.SentTimeDataDays.deleteOld();
+//
+//        					} catch(e) {
+//        			            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//        			                  title: M.I18N.l('error')
+//        			                , message: M.I18N.l('errorWhileArchivingBookings')
+//        			            });
+//        					}
+//
+//        				}
+//        				// Feature 411 : End
+//
+//        				_.each(DigiWebApp.Booking.find(), function(el) {
+//                          if(!el.get('isCurrent')) {
+//                        	  if (CurrentAvailable) {
+//                        		  try {
+//	                        		  // save booking as sentBooking for later view in sentBookingsListView
+//	                        		  var sentBookingEl = DigiWebApp.BookingController.sentBooking(el);
+//	                            	  sentBookingEl.save();
+//                        		  } catch(e) {
+//              			            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//	          			                  title: M.I18N.l('error')
+//	          			                , message: M.I18N.l('errorWhileBackingUpBookings')
+//	          			            });
+//                        		  }
+//                        	  }
+//                              el.del();
+//                          }
+//                        });
+//                        
+//                        DigiWebApp.SelectionController.resetSelection();
+//                        if(this.currentBooking) {
+//                            DigiWebApp.SelectionController.setSelectionByCurrentBooking();
+//                        } else {
+//                            DigiWebApp.SelectionController.initSelection();
+//                        }
+//
+//                        if(isClosingDay) {
+//                            this.set('currentBookingStr', '');
+//
+//                            if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
+//                                DigiWebApp.EmployeeController.setEmployeeState(1);
+//                            }
+//                            // clear employee selection
+//                            localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
+//                            localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+//                        }
+//                        
+//                    }
+//                }
+//                , error: {
+//                      target: this
+//                    , action: function() {
+//                		// die Buchung(en) konnte(n) nicht gesendet werden
+//                        DigiWebApp.ApplicationController.nativeAlertDialogView({
+//                            title: M.I18N.l('sendDataFail'),
+//                            message: M.I18N.l('sendDataFailMsg')
+//                        });
+//                    }
+//                }
+//            }, isClosingDay, doSync); // is closingDay is passed to request controller.sendData to check whether local Storage remove of emp selection tmp shall be proceed
 
-                            if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
-                                DigiWebApp.EmployeeController.setEmployeeState(1);
-                            }
-                            // clear employee selection
-                            localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
-                            localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
-                        }
-                        
-                    }
-                }
-                , error: {
-                      target: this
-                    , action: function() {
-                		// die Buchung(en) konnte(n) nicht gesendet werden
-                        DigiWebApp.ApplicationController.nativeAlertDialogView({
-                            title: M.I18N.l('sendDataFail'),
-                            message: M.I18N.l('sendDataFailMsg')
-                        });
-                    }
-                }
-            }, isClosingDay, doSync); // is closingDay is passed to request controller.sendData to check whether local Storage remove of emp selection tmp shall be proceed
         }
     }
 
@@ -9382,6 +9524,76 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 				errorCallback(request, msg);
 			}
 		}).send();
+	}
+	
+	, sendeZeitdaten: function(buchungen, successCallback, errorCallback) {
+		var that = this;
+		
+		var items = [];
+		var relevanteZeitbuchungen = buchungen;
+		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
+            return parseInt(z.get('_createdAt'));
+        });
+		
+		var employeeIds = localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKey) || localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+		var employeeIdsArray = [];
+		if ((employeeIds) && employeeIds !== "0") {
+			// Kolonne aktiv
+			employeeIdsArray = employeeIds.split(",");
+		} else {
+			employeeIdsArray = [DigiWebApp.SettingsController.getSetting("workerId")];
+		}
+				
+		_.each(relevanteZeitbuchungenSorted, function(el) {
+			
+			_.each(employeeIdsArray, function(maId) {
+				var zeitbuch = DigiWebApp.Booking.createRecord({
+					m_id: el.m_id
+				});
+				for (var prop in el.record) {
+					try {
+						if (typeof(JSON.parse(el.get(prop)).length) !== "undefined") {
+							zeitbuch.set(prop, JSON.parse(el.get(prop)));
+						} else {
+							zeitbuch.set(prop, el.get(prop));
+						}
+					} catch(e) {
+						zeitbuch.set(prop, el.get(prop));
+					}
+				}
+				zeitbuch.set("employees", maId);
+				items.push(zeitbuch.record);
+			});
+		});
+		if (items.length !== 0) {
+			var data = {"zeitdaten": items}
+			
+			var internalSuccessCallback = function(data, msg, request) {
+				// verarbeite empfangene Daten
+				console.log("sendeZeitbuchungen Status: " + request.status);
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			var internalErrorCallback = function() {
+				if(isClosingDay) {
+                    if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
+                        DigiWebApp.EmployeeController.setEmployeeState(1);
+                    }
+                    // clear employee selection
+                    localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKey);
+                    localStorage.removeItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+                }
+		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+		              title: M.I18N.l('connectionError')
+		            , message: M.I18N.l('connectionErrorMsg')
+		        });
+				errorCallback();
+			}
+			DigiWebApp.JSONDatenuebertragungController.sendData(data, "zeitdaten", M.I18N.l('sendDataMsg'), internalSuccessCallback, internalErrorCallback);
+		} else {
+			successCallback();
+		}
 	}
 	
 });
@@ -18643,7 +18855,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3674'
+              value: 'Build: 3676'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
