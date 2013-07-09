@@ -6825,7 +6825,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3673
+    , softwareVersion: 3674
 
 
     /**
@@ -9285,7 +9285,7 @@ DigiWebApp.BookingController = M.Controller.extend({
      */
     , buildBookingStr: function(booking) {
         var bookingStr = '';
-        var myDisplayTimestamp = new Date(new Date().getTime() - (1000 * 60 * (this.currentBooking.get("timezoneOffset") - new Date().getTimezoneOffset()))).getTime();
+        var myDisplayTimestamp = new Date(this.currentBooking.get('timeStampStart') - (1000 * 60 * (this.currentBooking.get("timezoneOffset") - new Date().getTimezoneOffset()))).getTime();
         //bookingStr = M.Date.create(this.currentBooking.get('timeStampStart')).format('dd.mm.yy HH:MM');
         bookingStr = M.Date.create(myDisplayTimestamp).format('dd.mm.yy HH:MM');
         return bookingStr;
@@ -18643,7 +18643,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3673'
+              value: 'Build: 3674'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
