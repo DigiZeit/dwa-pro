@@ -5465,7 +5465,7 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 	  successReturnCallback: function() {}
 	, errorReturnCallback: function() {}
 
-	, consoleLogOutput: YES
+	, consoleLogOutput: NO
 	
 	, empfangen: function(successReturnCallback, errorReturnCallback) {
 		var that = DigiWebApp.BautagebuchDatenuebertragungController;
@@ -6934,7 +6934,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3684
+    , softwareVersion: 3685
 
 
     /**
@@ -7004,6 +7004,7 @@ DigiWebApp.RequestController = M.Controller.extend({
     }
 
     , getDatabaseServer: function(myFunc, obj) {
+    	console.log("getDatabaseServer");
     
     	DigiWebApp.RequestController.DatabaseServer = "";
     	
@@ -9697,7 +9698,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 			
 			var internalSuccessCallback = function(data, msg, request) {
 				// verarbeite empfangene Daten
-				console.log("sendeZeitbuchungen Status: " + request.status);
+				//console.log("sendeZeitbuchungen Status: " + request.status);
 				// weiter in der Verarbeitungskette
 				successCallback();
 				
@@ -18982,7 +18983,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3684'
+              value: 'Build: 3685'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
