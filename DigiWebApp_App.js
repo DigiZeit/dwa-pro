@@ -6858,7 +6858,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3676
+    , softwareVersion: 3677
 
 
     /**
@@ -8657,9 +8657,12 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.remark ? obj.remark : ''
             , istFeierabend: false
-            , genauigkeit: null
-            , gps_zeitstempel: null
-            , ermittlungsverfahren: null
+            , genauigkeitVon: null
+            , gps_zeitstempelVon: null
+            , ermittlungsverfahrenVon: null
+            , genauigkeitBis: null
+            , gps_zeitstempelBis: null
+            , ermittlungsverfahrenBis: null
             , timezoneOffset: DigiWebApp.SettingsController.getSetting("currentTimezoneOffset")
             , timeStampStart: timeStart.getTime()
             , timeStampEnd: '0'
@@ -8728,9 +8731,12 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.get('remark')
             , istFeierabend: obj.get('istFeierabend')
-            , genauigkeit: obj.get('genauigkeit')
-            , gps_zeitstempel: obj.get('gps_zeitstempel')
-            , ermittlungsverfahren: obj.get('ermittlungsverfahren')
+            , genauigkeitVon: obj.get('genauigkeitVon')
+            , gps_zeitstempelVon: obj.get('gps_zeitstempelVon')
+            , ermittlungsverfahrenVon: obj.get('ermittlungsverfahrenVon')
+            , genauigkeitBis: obj.get('genauigkeitBis')
+            , gps_zeitstempelBis: obj.get('gps_zeitstempelBis')
+            , ermittlungsverfahrenBis: obj.get('ermittlungsverfahrenBis')
             , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
@@ -8805,9 +8811,12 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.get('remark')
             , istFeierabend: obj.get('istFeierabend')
-            , genauigkeit: obj.get('genauigkeit')
-            , gps_zeitstempel: obj.get('gps_zeitstempel')
-            , ermittlungsverfahren: obj.get('ermittlungsverfahren')
+            , genauigkeitVon: obj.get('genauigkeitVon')
+            , gps_zeitstempelVon: obj.get('gps_zeitstempelVon')
+            , ermittlungsverfahrenVon: obj.get('ermittlungsverfahrenVon')
+            , genauigkeitBis: obj.get('genauigkeitBis')
+            , gps_zeitstempelBis: obj.get('gps_zeitstempelBis')
+            , ermittlungsverfahrenBis: obj.get('ermittlungsverfahrenBis')
             , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
@@ -18855,7 +18864,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3676'
+              value: 'Build: 3677'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
