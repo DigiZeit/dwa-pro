@@ -606,6 +606,11 @@ DigiWebApp.SentBooking = M.Model.create({
         isRequired: NO
     })
 
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+    
     , remark: M.Model.attr('String', {
         isRequired: NO
     })
@@ -1155,6 +1160,11 @@ DigiWebApp.SentBookingArchived = M.Model.create({
         isRequired: NO
     })
 
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+    
     , remark: M.Model.attr('String', {
         isRequired: NO
     })
@@ -2055,6 +2065,11 @@ DigiWebApp.Booking = M.Model.create({
         isRequired: NO
     })
 
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+    
     , remark: M.Model.attr('String', {
         isRequired: NO
     })
@@ -6858,7 +6873,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3678
+    , softwareVersion: 3679
 
 
     /**
@@ -8540,7 +8555,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    } catch(e) { console.error(e); }
 	    remarkStr = '';
 
-	    that.set('currentBooking', that.openBooking({
+	    var newOpenBooking = that.openBooking({
 			  oId: orderId
 			, hoId: handOrderId
 			, hoName: handOrderName
@@ -8549,7 +8564,19 @@ DigiWebApp.BookingController = M.Controller.extend({
 			, pId: posId
 			, aId: actId
 			, remark: remarkStr
-	    }));
+	    });
+	    
+	    var employeeIds = localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKey) || localStorage.getItem(DigiWebApp.EmployeeController.empSelectionKeyTmp);
+		var employeeIdsArray = [];
+		if ((employeeIds) && employeeIds !== "0") {
+			// Kolonne aktiv
+			employeeIdsArray = employeeIds.split(",");
+		} else {
+			employeeIdsArray = [DigiWebApp.SettingsController.getSetting("workerId")];
+		}
+		
+		newOpenBooking.set('employees', employeeIdsArray.join());
+	    that.set('currentBooking', newOpenBooking);
 
 	    that.currentBooking.setAsCurrent();
 	    //if (DigiWebApp.SettingsController.globalDebugMode) console.log('saving new ' + that.currentBooking.get('orderId'));
@@ -8740,6 +8767,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
+            , employees: obj.get('employees')
             , isCurrent: false
         });
     }
@@ -8820,6 +8848,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , timezoneOffset: obj.get('timezoneOffset')
             , timeStampStart: obj.get('timeStampStart')
             , timeStampEnd: obj.get('timeStampEnd')
+            , employees: obj.get('employees')
             , tagLabel: myTagLabel
             , isCurrent: false
         });
@@ -18866,7 +18895,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3678'
+              value: 'Build: 3679'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
