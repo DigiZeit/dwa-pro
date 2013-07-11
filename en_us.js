@@ -310,6 +310,10 @@ M.I18N.en_us = {
 	, ServiceApp_engeKopplung: 'ServiceApp: tight coupling'
 	, ServiceApp_PORT: 'ServiceApp: Port'
 			
+	, Spesen_Ausloese: 'Expenses'
+	, Spesen: 'Expenses'
+	, Uebernachtung: 'Overnight stay'
+	, SpeichernUndBuchen: 'Save and book'
 
 	, second: "Second"
 	, seconds: "Seconds"

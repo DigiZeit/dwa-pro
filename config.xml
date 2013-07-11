@@ -2,8 +2,8 @@
 <widget xmlns	= "http://www.w3.org/ns/widgets"
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	id		    = "com.digi.webapppro"
-	versionCode = "3692"
-	version 	= "1.5.1.3692">
+	versionCode = "3693"
+	version 	= "1.5.1.3693">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -107,5 +107,8 @@ Screens, and iPad screen respectively -->
 
 <!-- Windows Phone 7 requires a specific dimension or platform attribute -->
 	<gap:splash src="theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg" gap:platform="winphone" />
+	
+	<access origin="*" subdomains="true" />
+	<access origin="http://127.0.0.1*" subdomains="true" />
 	
 </widget>

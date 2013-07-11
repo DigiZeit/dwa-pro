@@ -310,6 +310,11 @@ M.I18N.de_de = {
 	, ServiceApp_engeKopplung: 'ServiceApp: enge Kopplung'
 	, ServiceApp_PORT: 'ServiceApp: Port'
 		
+	, Spesen_Ausloese: 'Spesen/Auslöse'
+	, Spesen: 'Spesen'
+	, Uebernachtung: 'Übernachtung'
+	, SpeichernUndBuchen: 'Speichern und Buchen'
+		
 	, second: "Sekunde"
 	, seconds: "Sekunden"
 	, minute: "Minute"
