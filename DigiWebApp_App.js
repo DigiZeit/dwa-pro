@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3693
+    , softwareVersion: 3694
 
 
     /**
@@ -9380,7 +9380,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		        // End::Bemerkungsfeld
         	}
 
-        	if (DigiWebApp.SettingsController.featureAvailable('418') {
+        	if (DigiWebApp.SettingsController.featureAvailable('418')) {
         		DigiWebApp.NavigationController.toSpesenPage(spesencallback);
         	} else {
         		spesencallback();
@@ -19441,7 +19441,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3693'
+              value: 'Build: 3694'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
