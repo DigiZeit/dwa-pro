@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3695
+    , softwareVersion: 3696
 
 
     /**
@@ -9799,6 +9799,11 @@ DigiWebApp.BookingController = M.Controller.extend({
         bookingStr = M.Date.create(myDisplayTimestamp).format('dd.mm.yy HH:MM');
         return bookingStr;
     }
+    
+    , spesenOptionen: null
+    
+    , uebernachtungOptionen: null
+    
 
 });
 // ==========================================================================
@@ -19441,7 +19446,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3695'
+              value: 'Build: 3696'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21209,9 +21214,9 @@ DigiWebApp.SpesenPage = M.PageView.design({
     /* Use the 'events' property to bind events like 'pageshow' */
       events: {
 		pagebeforeshow: {
-            target: DigiWebApp.SpesenPage
-            //action: 'init'
-			, action: function() {
+            //target: DigiWebApp.BookingController
+            //, action: 'init'
+			action: function() {
 	
 				var i;
 				if (DigiWebApp.SpesenAuswahlOption.find().length === 0) {
@@ -21239,7 +21244,7 @@ DigiWebApp.SpesenPage = M.PageView.design({
 		        	}
 		        });
 		        spesenOptionen = _.compact(spesenOptionen);/* remove falsy values from positions with _.compact() */
-		        this.set("spesenOptionen", spesenOptionen);
+		        DigiWebApp.BookingController.set("spesenOptionen", spesenOptionen);
 
 
 		        var uebernachtungOptionen = DigiWebApp.UebernachtungAuswahlOption.findSorted();
@@ -21253,7 +21258,7 @@ DigiWebApp.SpesenPage = M.PageView.design({
 		        	}
 		        });
 		        uebernachtungOptionen = _.compact(uebernachtungOptionen);/* remove falsy values from positions with _.compact() */
-		        this.set("uebernachtungOptionen", uebernachtungOptionen);
+		        DigiWebApp.BookingController.set("uebernachtungOptionen", uebernachtungOptionen);
 
 			}
         }
@@ -21262,11 +21267,7 @@ DigiWebApp.SpesenPage = M.PageView.design({
     , myCallback: function() {
 
     }
-    
-    , spesenOptionen: null
-    
-    , uebernachtungOptionen: null
-    
+        
     , tab_action_timeoutvar: null    
     
     , tab_action: function() {
@@ -21316,12 +21317,12 @@ DigiWebApp.SpesenPage = M.PageView.design({
                 //, cssClass: 'unselectable'
                 , applyTheme: NO
                 , contentBinding: {
-                      target: DigiWebApp.SpesenPage
+                      target: DigiWebApp.BookingController
                     , property: 'spesenOptionen'
                 }
                 , events: {
                     change: {
-                          target: DigiWebApp.SpesenPage
+                          target: DigiWebApp.BookingController
                         , action: function() {
                             //this.setPositions();
                         }
@@ -21336,12 +21337,12 @@ DigiWebApp.SpesenPage = M.PageView.design({
             //, cssClass: 'unselectable'
             , applyTheme: NO
             , contentBinding: {
-                  target: DigiWebApp.SpesenPage
+                  target: DigiWebApp.BookingController
                 , property: 'uebernachtungOptionen'
             }
             , events: {
                 change: {
-                      target: DigiWebApp.SpesenPage
+                      target: DigiWebApp.BookingController
                     , action: function() {
                         //this.setActivities(YES);
                     }
