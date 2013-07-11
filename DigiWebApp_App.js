@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3696
+    , softwareVersion: 3697
 
 
     /**
@@ -9381,7 +9381,14 @@ DigiWebApp.BookingController = M.Controller.extend({
         	}
 
         	if (DigiWebApp.SettingsController.featureAvailable('418')) {
-        		DigiWebApp.NavigationController.toSpesenPage(spesencallback);
+        		DigiWebApp.NavigationController.toSpesenPage(function() {
+	    			if (DigiWebApp.SettingsController.featureAvailable('404')) {
+		        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
+	    			} else {
+		        		DigiWebApp.NavigationController.backToDashboardPagePOP();
+	    			}
+        			spesencallback();
+        		});
         	} else {
         		spesencallback();
         	}
@@ -19446,7 +19453,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3696'
+              value: 'Build: 3697'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21308,8 +21315,12 @@ DigiWebApp.SpesenPage = M.PageView.design({
     })
 
     , content: M.ScrollView.design({
-          childViews: 'spesenAuswahl uebernachtungAuswahl grid'
+          childViews: 'spesenAuswahl uebernachtungAuswahl spacer grid'
 
+        , spacer: M.LabelView.design({
+            value: '&nbsp;<br />'
+        })
+        
         , spesenAuswahl: M.SelectionListView.design({
                   selectionMode: M.SINGLE_SELECTION_DIALOG
                 , initialText: M.I18N.l('noData')
