@@ -313,7 +313,7 @@ M.I18N.en_us = {
 	, Spesen_Ausloese: 'Expenses'
 	, Spesen: 'Expenses'
 	, Uebernachtung: 'Overnight stay'
-	, SpeichernUndBuchen: 'Save and book'
+	, SpeichernUndBuchen: 'Save and continue'
 
 	, second: "Second"
 	, seconds: "Seconds"

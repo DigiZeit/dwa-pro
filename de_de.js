@@ -313,7 +313,7 @@ M.I18N.de_de = {
 	, Spesen_Ausloese: 'Spesen/Auslöse'
 	, Spesen: 'Spesen'
 	, Uebernachtung: 'Übernachtung'
-	, SpeichernUndBuchen: 'Speichern und Buchen'
+	, SpeichernUndBuchen: 'Speichern und fortfahren'
 		
 	, second: "Sekunde"
 	, seconds: "Sekunden"
