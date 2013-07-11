@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3694
+    , softwareVersion: 3695
 
 
     /**
@@ -19441,7 +19441,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3694'
+              value: 'Build: 3695'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21316,12 +21316,12 @@ DigiWebApp.SpesenPage = M.PageView.design({
                 //, cssClass: 'unselectable'
                 , applyTheme: NO
                 , contentBinding: {
-                      target: this
+                      target: DigiWebApp.SpesenPage
                     , property: 'spesenOptionen'
                 }
                 , events: {
                     change: {
-                          target: this
+                          target: DigiWebApp.SpesenPage
                         , action: function() {
                             //this.setPositions();
                         }
@@ -21336,12 +21336,12 @@ DigiWebApp.SpesenPage = M.PageView.design({
             //, cssClass: 'unselectable'
             , applyTheme: NO
             , contentBinding: {
-                  target: this
+                  target: DigiWebApp.SpesenPage
                 , property: 'uebernachtungOptionen'
             }
             , events: {
                 change: {
-                      target: this
+                      target: DigiWebApp.SpesenPage
                     , action: function() {
                         //this.setActivities(YES);
                     }
