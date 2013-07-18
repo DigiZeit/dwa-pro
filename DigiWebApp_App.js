@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3727
+    , softwareVersion: 3728
 
 
     /**
@@ -16576,17 +16576,17 @@ DigiWebApp.SettingsController = M.Controller.extend({
         that.set('settings', settings);
 
         // check for ServiceApp
+		var cleanDataDirectory = function() {
+			DigiWebApp.ServiceAppController.listDirectory(function(results){
+				_.each(results, function(fileName) {
+					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
+						DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+					}
+				});
+			});
+		}
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
-         	 var cleanDataDirectory = function() {
-         		DigiWebApp.ServiceAppController.listDirectory(function(results){
-         			_.each(results, function(fileName) {
-         				if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
-         					DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
-         				}
-         			};
-         		});
-         	 }
              DigiWebApp.ServiceAppController.knockknock(function(data) {
             				    alert("ServiceApp is available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
@@ -16606,6 +16606,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
+         	cleanDataDirectory();
         }
 	}
 	
@@ -19657,7 +19658,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3727'
+              value: 'Build: 3728'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
