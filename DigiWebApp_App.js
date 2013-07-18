@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3710
+    , softwareVersion: 3711
 
 
     /**
@@ -11959,24 +11959,25 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	this.readFileHandler = function() {
-    	 this._readFile_Interval_Counter++;
-         if (this._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
-        	 window.clearInterval(this._readFile_IntervalVar);
-        	 this._readFile_Interval_Counter = null;
+		var that = this;
+		that._readFile_Interval_Counter++;
+         if (that._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
+        	 window.clearInterval(that._readFile_IntervalVar);
+        	 that._readFile_Interval_Counter = null;
          }
-         this.readFromFile(this._requestFileName, function(data) {
-             window.clearInterval(this._readFile_IntervalVar);
-        	 this.returnData = data;
-             this.available = true;
-             this.deleteFile(this._requestFileName, function(){
+         that.readFromFile(that._requestFileName, function(data) {
+             window.clearInterval(that._readFile_IntervalVar);
+             that.returnData = data;
+             that.available = true;
+             that.deleteFile(that._requestFileName, function(){
                  console.log("erfolgreich gelöscht");
-                 this.callback(this.returnData);
+                 that.callback(this.returnData);
              }, function(){
                  console.log("nicht gelöscht");
-             	this.callback(this.returnData);
+                 that.callback(this.returnData);
              });
          }, function(err) {
-        	 this.available = false;
+        	 that.available = false;
              console.error(err);
          });          
 	}
@@ -19952,7 +19953,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3710'
+              value: 'Build: 3711'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
