@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3721
+    , softwareVersion: 3722
 
 
     /**
@@ -12162,8 +12162,134 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		      }
 		}
 		
+		this.listDataDirectory = function(successCallback, errorCallback) {
+			
+			// check for errorCallback is a function (optional)
+			if (!errorCallback || (typeof errorCallback !== "function")) {
+				var errorCallback = function(evt) {
+					console.error("listDataDirectoryError", evt);
+				};
+			};
+			  
+			// check for successCallback is a function
+			if (typeof successCallback !== "function") {
+				console.error("listDataDirectoryError: successCallback is not a function");
+				return false;
+			};
+	
+	        // check if LocalFileSystem is defined
+	        if (typeof window.requestFileSystem === "undefined") {
+	               console.error("listDataDirectoryError: no LocalFileSystem available");
+	               successCallback("");
+	          return true;
+	      }
+	        
+	        try {
+	            var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+	            // open filesystem
+	               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+	                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+	                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+	                      
+	                             // get dataDirectory from filesystem (create if not exists)
+	                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+	                            	 
+	                            	 // TODO: List Directory
+	                            	 var toArray = function(list) {
+	                            		 return Array.prototype.slice.call(list || [], 0);
+	                            	 }
+
+	                            	 var myDirReader = dataDirectory.createReader();
+	                            	 var readEntries = function() {
+	                            		 myDirReader.readEntries (function(results) {
+	                            			 if (!results.length) {
+	                            				 // alle Verzeichniseinträge geladen
+	                            				 successCallback(entries.sort());
+	                            			 } else {
+	                            				 entries = entries.concat(toArray(results));
+	                            				 readEntries();
+	                            			 }
+	                            		 }, function(){});
+	                            	  };
+
+	                            	  readEntries(); // Start reading dirs.
+	                                                 
+	                             }, errorCallback);         // fileSystem.root.getDirectory
+	                          }, errorCallback);             // window.requestFileSystem
+	                      }, function(e) {
+	                           console.error('Error while requesting Quota', e);
+	                           DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                               title: M.I18N.l('error')
+	                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+	                           });                                                          
+	                      });
+	                      
+	               } else {
+	
+	                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	                             
+	                      // get dataDirectory from filesystem (create if not exists)
+	                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+	                    	  
+	                    	  // TODO: List Directory
+                         	 var toArray = function(list) {
+                        		 return Array.prototype.slice.call(list || [], 0);
+                        	 }
+
+                        	 var myDirReader = dataDirectory.createReader();
+                        	 var readEntries = function() {
+                        		 myDirReader.readEntries (function(results) {
+                        			 if (!results.length) {
+                        				 // alle Verzeichniseinträge geladen
+                        				 successCallback(entries.sort());
+                        			 } else {
+                        				 entries = entries.concat(toArray(results));
+                        				 readEntries();
+                        			 }
+                        		 }, function(){});
+                        	  };
+
+                        	  readEntries(); // Start reading dirs.
+
+	                      }, errorCallback);         // fileSystem.root.getDirectory
+	                   }, errorCallback);             // window.requestFileSystem
+	               }
+	        } catch(e) {
+	               errorCallback(e);
+	        }
+		}
 	}
-    
+
+	, knockknock: function(callback) {
+	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback);
+	    myServiceApp.send();
+	}
+	
+	, getBookings: function(ids, callback) {
+	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
+	    myServiceApp.send();
+	}
+	
+	, putBookings: function(bookings, callback) {
+	    var payloadData = { "PUT": { "buchungen": [] } };
+	    _.each(bookings, function(booking) {
+	    	payloadData.PUT.buchungen.push({"datensatz": booking.record});
+	    });
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
+	    myServiceApp.send();
+	}
+	
+	, postBookings: function(bookings, callback) {
+	    var payloadData = { "POST": { "buchungen": [] } };
+	    _.each(bookings, function(booking) {
+	    	payloadData.PUT.buchungen.push({ "datensatz": booking.record });
+	    });
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
+	    myServiceApp.send();
+	}
+	
 });
 
 // ==========================================================================
@@ -16404,25 +16530,19 @@ DigiWebApp.SettingsController = M.Controller.extend({
         // check for ServiceApp
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
-             var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
-             var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(
-            		   knockknockData
-            		 , function(data) {
+             DigiWebApp.ServiceAppController.knockknock(function(data) {
             			   if (this.available) {
-            				   alert("available");
+            				    alert("available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
             			   } else {
-            				   alert("NOT available");
+            				    alert("NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
             			   }
-            		 });
-             myServiceApp.send();
+            });
         } else {
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
@@ -19479,7 +19599,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3721'
+              value: 'Build: 3722'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
