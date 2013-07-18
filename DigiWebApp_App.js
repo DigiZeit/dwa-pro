@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3724
+    , softwareVersion: 3725
 
 
     /**
@@ -12205,7 +12205,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            		 myDirReader.readEntries (function(results) {
 	                            			 if (!results.length) {
 	                            				 // alle Verzeichniseinträge geladen
-	                            				 successCallback(entries.sort());
+	                            				 var result = [];
+	                            				 _,each(entries.sort(), function(fileEntry) {
+	                            					 result.push(fileEntry.fullPath.split("/")[2]);
+	                            				 });
+	                            				 successCallback(result);
 	                            			 } else {
 	                            				 entries = entries.concat(toArray(results));
 	                            				 readEntries();
@@ -12243,7 +12247,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         		 myDirReader.readEntries (function(results) {
                         			 if (!results.length) {
                         				 // alle Verzeichniseinträge geladen
-                        				 successCallback(entries.sort());
+                        				 var result = [];
+                        				 _,each(entries.sort(), function(fileEntry) {
+                        					 result.push(fileEntry.fullPath.split("/")[2]);
+                        				 });
+                        				 successCallback(result);
                         			 } else {
                         				 entries = entries.concat(toArray(results));
                         				 readEntries();
@@ -19607,7 +19615,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3724'
+              value: 'Build: 3725'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
