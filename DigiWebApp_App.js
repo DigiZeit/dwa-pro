@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3714
+    , softwareVersion: 3715
 
 
     /**
@@ -11930,7 +11930,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json"
 		this.returnData = null;
 		
-		this.availabe = false;
+		this.available = null;
 	
 		this.sendData.parameter = {
 	        "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
@@ -11970,18 +11970,19 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	        	 this.callback(null);
 	         }
 	         this.readFromFile(this._requestFileName, function(data) {
-	             window.clearInterval(this._readFile_IntervalVar);
-	        	 this.returnData = data;
-	             this.available = true;
-	             this.deleteFile(this._requestFileName, function(){
-	                //console.log("erfolgreich gelöscht");
-	                this.callback(this.returnData);
+	        	 var that = this;
+	             window.clearInterval(that._readFile_IntervalVar);
+	             that.returnData = data;
+	             that.available = true;
+	             that.deleteFile(that._requestFileName, function(){
+	                 //console.log("erfolgreich gelöscht");
+	            	 that.callback(that.returnData);
 	             }, function(){
-	                //console.log("nicht gelöscht");
-	             	this.callback(this.returnData);
+	                 //console.log("nicht gelöscht");
+	            	 that.callback(that.returnData);
 	             });
 	         }, function(err) {
-	        	 this.available = false;
+	        	 that.available = false;
 	        	 //console.error(err);
 	         });          
 		}
@@ -19705,7 +19706,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3714'
+              value: 'Build: 3715'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
