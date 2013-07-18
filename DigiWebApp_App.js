@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3728
+    , softwareVersion: 3729
 
 
     /**
@@ -16600,7 +16600,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
             		         	cleanDataDirectory();
             			   }
-            });
+            );
         } else {
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
          	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
@@ -19658,7 +19658,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3728'
+              value: 'Build: 3729'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
