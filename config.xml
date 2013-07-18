@@ -2,8 +2,8 @@
 <widget xmlns	= "http://www.w3.org/ns/widgets"
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	id		    = "com.digi.webapppro"
-	versionCode = "3699"
-	version 	= "1.5.1.3699">
+	versionCode = "3700"
+	version 	= "1.5.1.3700">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -58,9 +58,9 @@ which PhoneGap requires. -->
 	<feature name="http://api.phonegap.com/1.0/contacts" />
 
 <!-- include ChildBrowserPlugIn -->
-	<gap:plugin name="ChildBrowser" version="~3" /> <!-- for Cordova (1.9.0+) -->
-	<!-- <gap:plugin name="ChildBrowser" version="~2" />  for Cordova 1.5.0 - 1.8.1 -->
-	<!-- <feature name="http://plugins.phonegap.com/ChildBrowser/2.0.1" /> -->
+	<gap:plugin name="com.phonegap.plugins.childbrowser" />
+	<gap:plugin name="com.phonegap.plugins.barcodescanner" />
+	<gap:plugin name="com.adobe.plugins.pushplugin" />
 
 <!-- if a single icon is specified then Build will use it for all platforms -->
     <icon src="theme/images/Icon.png" />
