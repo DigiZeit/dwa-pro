@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3709
+    , softwareVersion: 3710
 
 
     /**
@@ -11964,8 +11964,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
         	 window.clearInterval(this._readFile_IntervalVar);
         	 this._readFile_Interval_Counter = null;
          }
-         this.readFromFile(that.ServiceApp_requestFileName, function(data) {
-             window.clearInterval(that.ServiceApp_readFile_IntervalVar);
+         this.readFromFile(this._requestFileName, function(data) {
+             window.clearInterval(this._readFile_IntervalVar);
         	 this.returnData = data;
              this.available = true;
              this.deleteFile(this._requestFileName, function(){
@@ -19952,7 +19952,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3709'
+              value: 'Build: 3710'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
