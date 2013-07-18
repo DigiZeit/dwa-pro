@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3726
+    , softwareVersion: 3727
 
 
     /**
@@ -12271,37 +12271,69 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, listDirectory: function(callback) {
-	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback);
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
 	    myServiceApp.listDataDirectory(callback);
 	}
 	
-	, knockknock: function(callback) {
+	, deleteFile: function(fileName, callback) {
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
+	    myServiceApp.deleteFile(fileName, callback, callback);
+	}
+	
+	, knockknock: function(successCallback, errorCallback) {
 	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   errorCallback();
+			   }
+	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback);
 	    myServiceApp.send();
 	}
 	
-	, getBookings: function(ids, callback) {
+	, getBookings: function(ids, successCallback, errorCallback) {
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   errorCallback();
+			   }
+	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
 	    myServiceApp.send();
 	}
 	
-	, putBookings: function(bookings, callback) {
+	, putBookings: function(bookings, successCallback, errorCallback) {
 	    var payloadData = { "PUT": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({"datensatz": booking.record});
 	    });
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   errorCallback();
+			   }
+	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
 	    myServiceApp.send();
 	}
 	
-	, postBookings: function(bookings, callback) {
+	, postBookings: function(bookings, successCallback, errorCallback) {
 	    var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({ "datensatz": booking.record });
 	    });
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   errorCallback();
+			   }
+	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback);
 	    myServiceApp.send();
 	}
@@ -16546,17 +16578,27 @@ DigiWebApp.SettingsController = M.Controller.extend({
         // check for ServiceApp
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
+         	 var cleanDataDirectory = function() {
+         		DigiWebApp.ServiceAppController.listDirectory(function(results){
+         			_.each(results, function(fileName) {
+         				if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
+         					DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+         				}
+         			};
+         		});
+         	 }
              DigiWebApp.ServiceAppController.knockknock(function(data) {
-            			   if (this.available) {
-            				    alert("available");
+            				    alert("ServiceApp is available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            			   } else {
-            				    alert("NOT available");
+            		         	cleanDataDirectory();
+            			   }, function() {
+            				    alert("ServiceApp is NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+            		         	cleanDataDirectory();
             			   }
             });
         } else {
@@ -19615,7 +19657,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3726'
+              value: 'Build: 3727'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
