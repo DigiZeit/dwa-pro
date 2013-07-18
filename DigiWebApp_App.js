@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3722
+    , softwareVersion: 3723
 
 
     /**
@@ -12160,7 +12160,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		      } catch(e) {
 		             errorCallback(e);
 		      }
-		}
+		};
 		
 		this.listDataDirectory = function(successCallback, errorCallback) {
 			
@@ -12260,6 +12260,12 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		}
 	}
 
+	, listDirectory: function(callback) {
+	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback);
+	    myServiceApp.listDataDirectory(callback);
+	}
+	
 	, knockknock: function(callback) {
 	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback);
@@ -19599,7 +19605,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3722'
+              value: 'Build: 3723'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
