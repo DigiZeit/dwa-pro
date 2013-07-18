@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3706
+    , softwareVersion: 3707
 
 
     /**
@@ -11925,15 +11925,239 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 
 	ServiceAppCommunication: function(data, callback) {
 	
-		this.send = function() {
-			this.callback();
+	this.sendData = data;
+	this.callback = callback;
+	this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json"
+	
+	this.sendData.parameter = {
+        "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
+      , "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
+      , "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
+      , "fileName": this._requestFileName
+	}
+
+	this.send = function() {
+		    $.ajax({
+		        dataType: "json"
+		      , type: "POST"
+		             , crossDomain: true
+		             , processData: false
+		             , async: true
+		             , contentType: 'application/json'
+		      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+		      , data: JSON.stringify(data)
+		      , success: this.ServiceApp_return_Handler
+		      , error: this.ServiceApp_return_Handler
+		      , timeout: 1000
+			});
 		}
 		
-		this.callback = callback;
-		this.sendData = data;
+		this.returnHandler = function(jqXHR, textStatus, errorThrown) {
+			this._readFile_Interval_Counter = 0;
+			this._readFile_IntervalVar = window.setInterval(this.readFileHandler, 200);
+		}
+		
+		this.readFileHandler = function() {
+	    	 this._readFile_Interval_Counter++;
+	         if (this._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
+	        	 window.clearInterval(this._readFile_IntervalVar);
+	        	 this._readFile_Interval_Counter = null;
+	         }
+	         this.readFromFile(that.ServiceApp_requestFileName, function(data) {
+                 window.clearInterval(that.ServiceApp_readFile_IntervalVar);
+	        	 this.returnData = data;
+                 this.available = true;
+                 this.deleteFile(this._requestFileName, function(){
+                     console.log("erfolgreich gelöscht");
+                     this.callback(this.returnData);
+                 }, function(){
+                     console.log("nicht gelöscht");
+                 	this.callback(this.returnData);
+                 });
+	         }, function(err) {
+	        	 this.available = false;
+	             console.error(err);
+	         });          
+		}
+		
 		this.returnData = null;
 		
 		this.availabe = false;
+		
+		this.readFromFile = function(fileName, successCallback, errorCallback) {
+		               
+		        // check for errorCallback is a function (optional)
+		      if (!errorCallback || (typeof errorCallback !== "function")) {
+		         var errorCallback = function(evt) {
+		               console.error("readFromFileError", evt);
+		         };
+		      };
+		      
+		        // check for successCallback is a function
+		        if (typeof successCallback !== "function") {
+		               console.error("readFromFileError: successCallback is not a function");
+		          return false;
+		      };
+		        
+		        // check if fileName is set
+		        if (!fileName || (fileName) && (fileName.length === 0)) {
+		               console.error("readFromFileError: no fileName given");
+		               errorCallback();
+		          return false;
+		      };
+		
+		        // check if LocalFileSystem is defined
+		        if (typeof window.requestFileSystem === "undefined") {
+		               console.error("readFromFileError: no LocalFileSystem available");
+		               successCallback("");
+		          return true;
+		      }
+		        
+		        try {
+		               var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		            // open filesystem
+		               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+		                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+		                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+		                      
+		                             // get dataDirectory from filesystem (create if not exists)
+		                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                                 
+		                                    // get fileEntry from filesystem
+		                                    dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                          
+		                                          // get file from fileEntry
+		                                          fileEntry.file(function(file) {
+		                                                 
+		                                                 // read from file
+		                                                 var reader = new FileReader();
+		                                                 reader.onloadend = function(evt) {
+		                                                 
+		                                                 // return content via successCallback
+		                                                        successCallback(this.result);
+		                                                        
+		                                            };
+		                                                 reader.readAsText(file);
+		                                            
+		                                          }, errorCallback); // fileEntry.file
+		                                    }, errorCallback);     // dataDirectory.getFile
+		                                 }, errorCallback);         // fileSystem.root.getDirectory
+		                          }, errorCallback);             // window.requestFileSystem
+		                      }, function(e) {
+		                               console.error('Error while requesting Quota', e);
+		                           DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                               title: M.I18N.l('error')
+		                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+		                           });                                                          
+		                      });
+		                      
+		               } else {
+		
+		                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		                             
+		                      // get dataDirectory from filesystem (create if not exists)
+		                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                          
+		                             // get fileEntry from filesystem
+		                             dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                   
+		                                   // get file from fileEntry
+		                                   fileEntry.file(function(file) {
+		                                          
+		                                          // read from file
+		                                          var reader = new FileReader();
+		                                          reader.onloadend = function(evt) {
+		                                          
+		                                          // return content via successCallback
+		                                                 successCallback(evt.target.result);
+		                                                 
+		                                     };
+		                                          reader.readAsText(file);
+		                                     
+		                                   }, errorCallback); // fileEntry.file
+		                             }, errorCallback);     // dataDirectory.getFile
+		                          }, errorCallback);         // fileSystem.root.getDirectory
+		                   }, errorCallback);             // window.requestFileSystem
+		               }
+		        } catch(e) {
+		               errorCallback(e);
+		        }
+		}
+
+		this.deleteFile = function(fileName, successCallback, errorCallback) {
+		      
+		    // check if fileName is set
+		    if (!fileName || (fileName) && (fileName.length === 0)) {
+		    	  console.error("deleteFileError: no fileName given");
+		    	  return false;
+		    };
+			
+		    // check for successCallback is a function
+		    if (typeof successCallback !== "function") {
+		             console.error("deleteFileError: successCallback is not a function");
+		        return false;
+		    };
+		      
+		      // check for errorCallback is a function (optional)
+		    if (!errorCallback || (typeof errorCallback !== "function")) {
+		       var errorCallback = function(evt) {
+		             console.error("deleteFileError", evt);
+		       };
+		    };
+		    
+		    // check if LocalFileSystem is defined
+		    if (typeof window.requestFileSystem === "undefined") {
+		             console.error("deleteFileError: no LocalFileSystem available");
+		             successCallback("");
+		        return true;
+		    }
+		
+		      try {
+		             var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		          // open filesystem
+		             if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+		                    navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+		                           window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+		                                 
+		                           // get dataDirectory from filesystem (create if not exists)
+		                           fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                               
+		                                  // get fileEntry from filesystem
+		                                  dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                        
+		                                        // remove fileEntry
+		                                        fileEntry.remove(successCallback, errorCallback);
+		                                        
+		                                  }, errorCallback);     // dataDirectory.getFile
+		                               }, errorCallback);         // fileSystem.root.getDirectory
+		                        }, errorCallback);             // window.requestFileSystem
+		                    }, function(e) {
+		                             console.error('Error while requesting Quota', e);
+		                         DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                             title: M.I18N.l('error')
+		                           , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+		                         });                                                          
+		                    });
+		             } else {
+		                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		             
+		                    // get dataDirectory from filesystem (create if not exists)
+		                    fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                        
+		                           // get fileEntry from filesystem
+		                           dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                 
+		                                 // remove fileEntry
+		                                 fileEntry.remove(successCallback, errorCallback);
+		                                 
+		                           }, errorCallback);     // dataDirectory.getFile
+		                        }, errorCallback);         // fileSystem.root.getDirectory
+		                 }, errorCallback);             // window.requestFileSystem
+		             }
+		      } catch(e) {
+		             errorCallback(e);
+		      }
+		}
 		
 	}
 
@@ -19727,7 +19951,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3706'
+              value: 'Build: 3707'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
