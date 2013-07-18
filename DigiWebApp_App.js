@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3713
+    , softwareVersion: 3714
 
 
     /**
@@ -11967,6 +11967,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	         if (this._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
 	        	 window.clearInterval(this._readFile_IntervalVar);
 	        	 this._readFile_Interval_Counter = null;
+	        	 this.callback(null);
 	         }
 	         this.readFromFile(this._requestFileName, function(data) {
 	             window.clearInterval(this._readFile_IntervalVar);
@@ -11981,7 +11982,6 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	             });
 	         }, function(err) {
 	        	 this.available = false;
-	        	 this.callback(null);
 	        	 //console.error(err);
 	         });          
 		}
@@ -19705,7 +19705,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3713'
+              value: 'Build: 3714'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
