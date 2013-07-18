@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3723
+    , softwareVersion: 3724
 
 
     /**
@@ -12200,6 +12200,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            	 }
 
 	                            	 var myDirReader = dataDirectory.createReader();
+	                            	 var entries = [];
 	                            	 var readEntries = function() {
 	                            		 myDirReader.readEntries (function(results) {
 	                            			 if (!results.length) {
@@ -12237,6 +12238,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         	 }
 
                         	 var myDirReader = dataDirectory.createReader();
+                        	 var entries = [];
                         	 var readEntries = function() {
                         		 myDirReader.readEntries (function(results) {
                         			 if (!results.length) {
@@ -19605,7 +19607,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3723'
+              value: 'Build: 3724'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
