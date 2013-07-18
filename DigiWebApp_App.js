@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3717
+    , softwareVersion: 3718
 
 
     /**
@@ -16403,6 +16403,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         // check for ServiceApp
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
+         	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
              var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
              var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(
             		   knockknockData
@@ -16411,12 +16412,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
+            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
             			   } else {
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
+            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
             			   }
             		 })
         } else {
@@ -19475,7 +19476,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3717'
+              value: 'Build: 3718'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
