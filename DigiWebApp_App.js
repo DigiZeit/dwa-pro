@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3707
+    , softwareVersion: 3708
 
 
     /**
@@ -11946,8 +11946,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		             , contentType: 'application/json'
 		      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
 		      , data: JSON.stringify(data)
-		      , success: this.ServiceApp_return_Handler
-		      , error: this.ServiceApp_return_Handler
+		      , success: this.returnHandler
+		      , error: this.returnHandler
 		      , timeout: 1000
 			});
 		}
@@ -19951,7 +19951,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3707'
+              value: 'Build: 3708'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
