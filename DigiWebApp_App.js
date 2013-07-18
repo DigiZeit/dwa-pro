@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3708
+    , softwareVersion: 3709
 
 
     /**
@@ -11937,48 +11937,49 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	this.send = function() {
-		    $.ajax({
-		        dataType: "json"
-		      , type: "POST"
-		             , crossDomain: true
-		             , processData: false
-		             , async: true
-		             , contentType: 'application/json'
-		      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
-		      , data: JSON.stringify(data)
-		      , success: this.returnHandler
-		      , error: this.returnHandler
-		      , timeout: 1000
-			});
-		}
-		
-		this.returnHandler = function(jqXHR, textStatus, errorThrown) {
-			this._readFile_Interval_Counter = 0;
-			this._readFile_IntervalVar = window.setInterval(this.readFileHandler, 200);
-		}
-		
-		this.readFileHandler = function() {
-	    	 this._readFile_Interval_Counter++;
-	         if (this._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
-	        	 window.clearInterval(this._readFile_IntervalVar);
-	        	 this._readFile_Interval_Counter = null;
-	         }
-	         this.readFromFile(that.ServiceApp_requestFileName, function(data) {
-                 window.clearInterval(that.ServiceApp_readFile_IntervalVar);
-	        	 this.returnData = data;
-                 this.available = true;
-                 this.deleteFile(this._requestFileName, function(){
-                     console.log("erfolgreich gelöscht");
-                     this.callback(this.returnData);
-                 }, function(){
-                     console.log("nicht gelöscht");
-                 	this.callback(this.returnData);
-                 });
-	         }, function(err) {
-	        	 this.available = false;
-	             console.error(err);
-	         });          
-		}
+		var that = this;
+	    $.ajax({
+	        dataType: "json"
+	      , type: "POST"
+	             , crossDomain: true
+	             , processData: false
+	             , async: true
+	             , contentType: 'application/json'
+	      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+	      , data: JSON.stringify(data)
+	      , success: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
+	      , error: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
+	      , timeout: 1000
+		});
+	}
+	
+	this.returnHandler = function(jqXHR, textStatus, errorThrown) {
+		this._readFile_Interval_Counter = 0;
+		this._readFile_IntervalVar = window.setInterval(this.readFileHandler, 200);
+	}
+	
+	this.readFileHandler = function() {
+    	 this._readFile_Interval_Counter++;
+         if (this._readFile_Interval_Counter > 10) { // if ServiceApp-File has not been found 10 times --> ServiceApp seems to be unavailable 
+        	 window.clearInterval(this._readFile_IntervalVar);
+        	 this._readFile_Interval_Counter = null;
+         }
+         this.readFromFile(that.ServiceApp_requestFileName, function(data) {
+             window.clearInterval(that.ServiceApp_readFile_IntervalVar);
+        	 this.returnData = data;
+             this.available = true;
+             this.deleteFile(this._requestFileName, function(){
+                 console.log("erfolgreich gelöscht");
+                 this.callback(this.returnData);
+             }, function(){
+                 console.log("nicht gelöscht");
+             	this.callback(this.returnData);
+             });
+         }, function(err) {
+        	 this.available = false;
+             console.error(err);
+         });          
+	}
 		
 		this.returnData = null;
 		
@@ -12083,7 +12084,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		               errorCallback(e);
 		        }
 		}
-
+	
 		this.deleteFile = function(fileName, successCallback, errorCallback) {
 		      
 		    // check if fileName is set
@@ -19951,7 +19952,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3708'
+              value: 'Build: 3709'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
