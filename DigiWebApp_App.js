@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3720
+    , softwareVersion: 3721
 
 
     /**
@@ -16409,12 +16409,13 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		   knockknockData
             		 , function(data) {
             			   if (this.available) {
-            				   console.log(data);
+            				   alert("available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
             		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
             			   } else {
+            				   alert("NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
@@ -19478,7 +19479,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3720'
+              value: 'Build: 3721'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
