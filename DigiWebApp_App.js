@@ -7174,7 +7174,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3704
+    , softwareVersion: 3705
 
 
     /**
@@ -11923,7 +11923,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
 DigiWebApp.ServiceAppController = M.Controller.extend({
 
-	ServiceApp: function(data, callback) {
+	ServiceAppCommunication: function(data, callback) {
 	
 		this.send = function() {
 
@@ -19727,7 +19727,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3704'
+              value: 'Build: 3705'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
