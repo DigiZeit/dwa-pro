@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3738
+    , softwareVersion: 3739
 
 
     /**
@@ -12012,10 +12012,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		if (typeof(timeout) !== "undefined") {
 			this.timeout = timeout;
 		} else {
-			this.timeout = 2000;
+			this.timeout = 3000;
 		}
 		//this._requestInterval = this.timeout / 10; // immer zehnmal innerhalb des gewünschten Timeouts nach Antwort der ServiceApp suchen 
-		this._requestInterval = 200; // immer alle 200ms nach Antwort der ServiceApp suchen 
+		this._requestInterval = 300; // immer alle 300ms nach Antwort der ServiceApp suchen 
 		this.sendData = data;
 		this.callback = callback;
 		this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json"
@@ -12381,7 +12381,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, knockknock: function(successCallback, errorCallback, timeout) {
-		alert("in knockknock");
+		//console.log("in knockknock");
 	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12395,7 +12395,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, getBookings: function(ids, successCallback, errorCallback, timeout) {
-		alert("in getBookings");
+		console.log("in getBookings");
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12409,7 +12409,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
-		alert("in pollBookings");
+		console.log("in pollBookings");
 		var datensaetze = [];
 		var internalSuccessCallback = function(data) {
 			try {
@@ -12427,7 +12427,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
-		alert("in putBookings");
+		console.log("in putBookings");
 		var payloadData = { "PUT": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({"datensatz": booking.record});
@@ -12444,7 +12444,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, postBookings: function(bookings, successCallback, errorCallback, timeout) {
-		alert("in postBookings");
+		console.log("in postBookings");
 		var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({ "datensatz": booking.record });
@@ -12461,7 +12461,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, refreshWAITBookings: function(successCallback, errorCallback) {
-		alert("in refreshWAITBookings");
+		console.log("in refreshWAITBookings");
 		var that = this;
 		var bookings = DigiWebApp.Booking.find();
 		var bookingIdsRefresh = [];
@@ -12488,7 +12488,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 							modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempelBis);
 							modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
 							modelBooking.save();
-							alert("refreshWAITBookings: datensatz " + datensatz.m_id + " gespeichert");
+							console.log("refreshWAITBookings: datensatz " + datensatz.m_id + " gespeichert");
 						}
 					}
 					var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
@@ -16762,17 +16762,17 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         // check for ServiceApp
 		var cleanDataDirectory = function() {
-			//alert("clean DataDirectory");
+			console.log("clean DataDirectory");
 			DigiWebApp.ServiceAppController.listDirectory(function(results) {
 				_.each(results, function(fileName) {
 					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
-						//alert("delete " + fileName);
-						//DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+						console.log("delete " + fileName);
+						DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 					}
 				});
-				alert("refreshWAIT");
+				console.log("refreshWAIT");
 				DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
-					alert("refreshWAIT done");
+					console.log("refreshWAIT done");
 					DigiWebApp.BookingController.init(YES);
 				},function(err){console.error(err);});
 			});
@@ -16780,13 +16780,13 @@ DigiWebApp.SettingsController = M.Controller.extend({
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
              DigiWebApp.ServiceAppController.knockknock(function(data) {
-            				    alert("ServiceApp is available");
+            	 				console.log("ServiceApp is available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
             		         	cleanDataDirectory();
             			   }, function() {
-            				    alert("ServiceApp is NOT available");
+            				    console.log("ServiceApp is NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
@@ -19850,7 +19850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3738'
+              value: 'Build: 3739'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
