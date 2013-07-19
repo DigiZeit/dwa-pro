@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3736
+    , softwareVersion: 3737
 
 
     /**
@@ -12066,13 +12066,17 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	             window.clearInterval(that._readFile_IntervalVar);
 	             that.returnData = data;
 	             that.available = true;
-	             that.deleteFile(that._requestFileName, function(){
-	                 //console.log("erfolgreich gelöscht");
+	             if (false) {
+		             that.deleteFile(that._requestFileName, function(){
+		                 //console.log("erfolgreich gelöscht");
+		            	 that.callback(that.returnData);
+		             }, function(){
+		                 //console.log("nicht gelöscht");
+		            	 that.callback(that.returnData);
+		             });
+	             } else {
 	            	 that.callback(that.returnData);
-	             }, function(){
-	                 //console.log("nicht gelöscht");
-	            	 that.callback(that.returnData);
-	             });
+	             }
 	         }, function(err) {
 	        	 that.available = false;
 	        	 //console.error(err);
@@ -16763,7 +16767,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 				_.each(results, function(fileName) {
 					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
 						alert("delete " + fileName);
-						DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+						//DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 					}
 				});
 				alert("refreshWAIT");
@@ -19846,7 +19850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3736'
+              value: 'Build: 3737'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
