@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3732
+    , softwareVersion: 3733
 
 
     /**
@@ -8980,8 +8980,15 @@ DigiWebApp.BookingController = M.Controller.extend({
 			} else {
 				if (that.currentBookingClosed !== null) {
 					var continueFunc = function() {
+						var getWAITFunc = function() {
+							alert("refreshWAIT");
+							DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
+								alert("refreshWAIT done");
+								finishBooking();
+							},function(err){console.error(err);});
+						}
 						alert("put currentBooking");
-						DigiWebApp.ServiceAppController.putBookings([that.currentBooking], finishBooking, finishBooking);
+						DigiWebApp.ServiceAppController.putBookings([that.currentBooking], getWAITFunc, getWAITFunc);
 					}
 					alert("post currentBookingClosed");
 					DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], continueFunc, continueFunc);
@@ -12366,6 +12373,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, knockknock: function(successCallback, errorCallback, timeout) {
+		alert("in knockknock");
 	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12379,6 +12387,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, getBookings: function(ids, successCallback, errorCallback, timeout) {
+		alert("in getBookings");
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12392,6 +12401,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
+		alert("in pollBookings");
 		var datensaetze = [];
 		var internalSuccessCallback = function(data) {
 			try {
@@ -12409,7 +12419,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
-	    var payloadData = { "PUT": { "buchungen": [] } };
+		alert("in putBookings");
+		var payloadData = { "PUT": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({"datensatz": booking.record});
 	    });
@@ -12425,7 +12436,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, postBookings: function(bookings, successCallback, errorCallback, timeout) {
-	    var payloadData = { "POST": { "buchungen": [] } };
+		alert("in postBookings");
+		var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
 	    	payloadData.PUT.buchungen.push({ "datensatz": booking.record });
 	    });
@@ -12441,6 +12453,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, refreshWAITBookings: function(successCallback, errorCallback) {
+		alert("in refreshWAITBookings");
 		var that = this;
 		var bookings = DigiWebApp.Booking.find();
 		var bookingIdsRefresh = [];
@@ -12467,7 +12480,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 							modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempelBis);
 							modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
 							modelBooking.save();
-							alert("datensatz " + datensatz.m_id + " gespeichert");
+							alert("refreshWAITBookings: datensatz " + datensatz.m_id + " gespeichert");
 						}
 					}
 					var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
@@ -16741,13 +16754,17 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         // check for ServiceApp
 		var cleanDataDirectory = function() {
+			alert("clean DataDirectory");
 			DigiWebApp.ServiceAppController.listDirectory(function(results) {
 				_.each(results, function(fileName) {
 					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
+						alert("delete " + fileName);
 						DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 					}
 				});
+				alert("refreshWAIT");
 				DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
+					alert("refreshWAIT done");
 					DigiWebApp.BookingController.init(YES);
 				},function(err){console.error(err);});
 			});
@@ -19825,7 +19842,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3732'
+              value: 'Build: 3733'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
