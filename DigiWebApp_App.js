@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3735
+    , softwareVersion: 3736
 
 
     /**
@@ -12124,15 +12124,15 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		                                          // get file from fileEntry
 		                                          fileEntry.file(function(file) {
 		                                                 
-		                                                 // read from file
-		                                                 var reader = new FileReader();
-		                                                 reader.onloadend = function(evt) {
-		                                                 
-		                                                 // return content via successCallback
-		                                                        successCallback(this.result);
-		                                                        
-		                                            };
-		                                                 reader.readAsText(file);
+			                                          try {
+				                                          // read from file
+				                                          var reader = new FileReader();
+				                                          reader.onloadend = function(evt) {
+				                                        	  // return content via successCallback
+				                                              successCallback(evt.target.result);
+				                                          };
+				                                          reader.readAsText(file);
+			                                          } catch(e) {}
 		                                            
 		                                          }, errorCallback); // fileEntry.file
 		                                    }, errorCallback);     // dataDirectory.getFile
@@ -12158,16 +12158,16 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		                                   
 		                                   // get file from fileEntry
 		                                   fileEntry.file(function(file) {
-		                                          
-		                                          // read from file
-		                                          var reader = new FileReader();
-		                                          reader.onloadend = function(evt) {
-		                                          
-		                                          // return content via successCallback
-		                                                 successCallback(evt.target.result);
-		                                                 
-		                                     };
-		                                          reader.readAsText(file);
+		                                	   
+		                                          try {
+			                                          // read from file
+			                                          var reader = new FileReader();
+			                                          reader.onloadend = function(evt) {
+			                                        	  // return content via successCallback
+			                                              successCallback(evt.target.result);
+			                                          };
+			                                          reader.readAsText(file);
+		                                          } catch(e) {}
 		                                     
 		                                   }, errorCallback); // fileEntry.file
 		                             }, errorCallback);     // dataDirectory.getFile
@@ -12221,7 +12221,9 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		                                  dataDirectory.getFile(fileName, null, function(fileEntry) {
 		                                        
 		                                        // remove fileEntry
-		                                        fileEntry.remove(successCallback, errorCallback);
+		                                	  	try {
+		                                	  		fileEntry.remove(successCallback, errorCallback);
+		                                	  	} catch(e) {}
 		                                        
 		                                  }, errorCallback);     // dataDirectory.getFile
 		                               }, errorCallback);         // fileSystem.root.getDirectory
@@ -12243,7 +12245,9 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		                           dataDirectory.getFile(fileName, null, function(fileEntry) {
 		                                 
 		                                 // remove fileEntry
-		                                 fileEntry.remove(successCallback, errorCallback);
+	                               	  	try {
+	                            	  		fileEntry.remove(successCallback, errorCallback);
+	                            	  	} catch(e) {}
 		                                 
 		                           }, errorCallback);     // dataDirectory.getFile
 		                        }, errorCallback);         // fileSystem.root.getDirectory
@@ -19842,7 +19846,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3735'
+              value: 'Build: 3736'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
