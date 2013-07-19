@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3730
+    , softwareVersion: 3732
 
 
     /**
@@ -8938,7 +8938,6 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    }
 	    
 	    if (DigiWebApp.SettingsController.featureAvailable('417') && DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")) {
-			// hier erstmal gar nichts machen (wird in proceedBooking gemacht, weil erst dort die zu übertragenden Buchungen erzeugt werden)
 			if (DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")) {
 				// put, dann solange GET bis !=WAIT oder GPS-TIMEOUT erreicht
 				var pullBooking = function() {
@@ -8959,7 +8958,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 							modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
 							modelBooking.save();
 							alert("datensatz " + datensatz.m_id + " gespeichert");
-						}
+						});
 						finishBooking();
 					}
 					var idsToPoll = [];
@@ -12468,6 +12467,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 							modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempelBis);
 							modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
 							modelBooking.save();
+							alert("datensatz " + datensatz.m_id + " gespeichert");
 						}
 					}
 					var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
@@ -19825,7 +19825,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3730'
+              value: 'Build: 3732'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
