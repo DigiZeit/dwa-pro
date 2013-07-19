@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3739
+    , softwareVersion: 3740
 
 
     /**
@@ -16762,20 +16762,27 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         // check for ServiceApp
 		var cleanDataDirectory = function() {
-			console.log("clean DataDirectory");
-			DigiWebApp.ServiceAppController.listDirectory(function(results) {
-				_.each(results, function(fileName) {
-					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
-						console.log("delete " + fileName);
-						DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
-					}
-				});
+			var refreshWAIT = function() {
 				console.log("refreshWAIT");
 				DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 					console.log("refreshWAIT done");
 					DigiWebApp.BookingController.init(YES);
 				},function(err){console.error(err);});
-			});
+			}
+			if (false) {
+				console.log("clean DataDirectory");
+				DigiWebApp.ServiceAppController.listDirectory(function(results) {
+					_.each(results, function(fileName) {
+						if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
+							console.log("delete " + fileName);
+							DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+						}
+					});
+					refreshWAIT();
+				});
+			} else {
+				refreshWAIT();
+			}
 		}
         if (DigiWebApp.SettingsController.featureAvailable('417')) {
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
@@ -19850,7 +19857,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3739'
+              value: 'Build: 3740'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
