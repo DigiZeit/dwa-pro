@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3745
+    , softwareVersion: 3746
 
 
     /**
@@ -12430,7 +12430,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		console.log("in putBookings");
 		var payloadData = { "PUT": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
-	    	payloadData.PUT.buchungen.push({"datensatz": booking.record});
+	    	payloadData.PUT.buchungen.push({"datensatz": booking, "status": "WAIT"});
 	    });
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12447,7 +12447,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		console.log("in postBookings");
 		var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
-	    	payloadData.PUT.buchungen.push({ "datensatz": booking.record });
+	    	payloadData.PUT.buchungen.push({ "datensatz": booking, "status": "WAIT" });
 	    });
 	    var callback = function(data) {
 			   if (this.available) {
@@ -12480,16 +12480,16 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 						var datensatz = rBooking.datensatz;
 						var updateModelBooking = function(modelBooking, datensatz) {
 							if (DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")) {
-								modelBooking.set("latitude", datensatz.latitude);
-								modelBooking.set("latitude_bis", datensatz.latitude_bis);
-								modelBooking.set("longitude", datensatz.longitude);
-								modelBooking.set("longitude_bis", datensatz.longitude_bis);
-								modelBooking.set("ermittlungsverfahrenBis", datensatz.ermittlungsverfahrenBis);
-								modelBooking.set("ermittlungsverfahrenVon", datensatz.ermittlungsverfahrenVon);
-								modelBooking.set("genauigkeitBis", datensatz.genauigkeitBis);
-								modelBooking.set("genauigkeitVon", datensatz.genauigkeitVon);
-								modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempelBis);
-								modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
+								modelBooking.set("latitude", datensatz.record.latitude);
+								modelBooking.set("latitude_bis", datensatz.record.latitude_bis);
+								modelBooking.set("longitude", datensatz.record.longitude);
+								modelBooking.set("longitude_bis", datensatz.record.longitude_bis);
+								modelBooking.set("ermittlungsverfahrenBis", datensatz.record.ermittlungsverfahrenBis);
+								modelBooking.set("ermittlungsverfahrenVon", datensatz.record.ermittlungsverfahrenVon);
+								modelBooking.set("genauigkeitBis", datensatz.record.genauigkeitBis);
+								modelBooking.set("genauigkeitVon", datensatz.record.genauigkeitVon);
+								modelBooking.set("gps_zeitstempelBis", datensatz.record.gps_zeitstempelBis);
+								modelBooking.set("gps_zeitstempelVon", datensatz.record.gps_zeitstempelVon);
 								modelBooking.save();
 								console.log("refreshWAITBookings: datensatz " + datensatz.m_id + " gespeichert");
 							}
@@ -19861,7 +19861,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3745'
+              value: 'Build: 3746'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
