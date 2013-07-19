@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3749
+    , softwareVersion: 3750
 
 
     /**
@@ -9167,7 +9167,6 @@ DigiWebApp.BookingController = M.Controller.extend({
             , timeStampEnd: obj.get('timeStampEnd')
             , employees: obj.get('employees')
             , isCurrent: false
-            , isClosingTime: obj.get('isClosingTime')
         });
     }
 
@@ -9250,7 +9249,6 @@ DigiWebApp.BookingController = M.Controller.extend({
             , employees: obj.get('employees')
             , tagLabel: myTagLabel
             , isCurrent: false
-            , isClosingTime: obj.get('isClosingTime')
         });
     }
 
@@ -19861,7 +19859,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3749'
+              value: 'Build: 3750'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
