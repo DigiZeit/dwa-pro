@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3751
+    , softwareVersion: 3752
 
 
     /**
@@ -8916,7 +8916,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    DigiWebApp.SelectionController.useSelections = NO;
 
 	    var finishBooking = function() {
-	    	alert("Kommunikation mit ServiceApp beendet");
+	    	console.log("Kommunikation mit ServiceApp beendet");
 		    if(that.autoSend()) {
 		    	that.sendCurrentBookings();
 		    } else {
@@ -8941,7 +8941,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 			if (DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")) {
 				// put, dann solange GET bis !=WAIT oder GPS-TIMEOUT erreicht
 				var pullBooking = function() {
-					alert("polling for bookinglocations");
+					console.log("polling for bookinglocations");
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
 						_.each(datensaetze, function(datensatz) {
@@ -8957,7 +8957,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 							modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempelBis);
 							modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempelVon);
 							modelBooking.save();
-							alert("datensatz " + datensatz.m_id + " gespeichert");
+							console.log("datensatz " + datensatz.m_id + " gespeichert");
 						});
 						finishBooking();
 					}
@@ -8968,32 +8968,32 @@ DigiWebApp.BookingController = M.Controller.extend({
 				}
 				if (that.currentBookingClosed !== null) {
 					var continueFunc = function() {
-						alert("put currentBooking");
+						console.log("put currentBooking");
 						DigiWebApp.ServiceAppController.putBookings([that.currentBooking], pullBooking, pullBooking);
 					}
-					alert("post currentBookingClosed");
+					console.log("post currentBookingClosed");
 					DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], continueFunc, continueFunc);
 				} else {
-					alert("put currentBooking");
+					console.log("put currentBooking");
 					DigiWebApp.ServiceAppController.putBookings([that.currentBooking], pullBooking, pullBooking);	
 				}
 			} else {
 				if (that.currentBookingClosed !== null) {
 					var continueFunc = function() {
 						var getWAITFunc = function() {
-							alert("refreshWAIT");
+							console.log("refreshWAIT");
 							DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
-								alert("refreshWAIT done");
+								console.log("refreshWAIT done");
 								finishBooking();
 							},function(err){console.error(err);});
 						}
-						alert("put currentBooking");
+						console.log("put currentBooking");
 						DigiWebApp.ServiceAppController.putBookings([that.currentBooking], getWAITFunc, getWAITFunc);
 					}
-					alert("post currentBookingClosed");
+					console.log("post currentBookingClosed");
 					DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], continueFunc, continueFunc);
 				} else {
-					alert("put currentBooking");
+					console.log("put currentBooking");
 					DigiWebApp.ServiceAppController.putBookings([that.currentBooking], finishBooking, finishBooking);	
 				}
 			}
@@ -19859,7 +19859,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3751'
+              value: 'Build: 3752'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
