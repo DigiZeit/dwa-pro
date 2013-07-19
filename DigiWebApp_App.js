@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3737
+    , softwareVersion: 3738
 
 
     /**
@@ -16762,11 +16762,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
         // check for ServiceApp
 		var cleanDataDirectory = function() {
-			alert("clean DataDirectory");
+			//alert("clean DataDirectory");
 			DigiWebApp.ServiceAppController.listDirectory(function(results) {
 				_.each(results, function(fileName) {
 					if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
-						alert("delete " + fileName);
+						//alert("delete " + fileName);
 						//DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 					}
 				});
@@ -19850,7 +19850,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3737'
+              value: 'Build: 3738'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
