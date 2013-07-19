@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3748
+    , softwareVersion: 3749
 
 
     /**
@@ -12447,7 +12447,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		console.log("in postBookings");
 		var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
-	    	payloadData.PUT.buchungen.push({ "datensatz": booking, "status": "WAIT" });
+	    	payloadData.POST.buchungen.push({ "datensatz": booking, "status": "WAIT" });
 	    });
 	    var callback = function(data) {
 			   if (this.available) {
@@ -19861,7 +19861,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3748'
+              value: 'Build: 3749'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
