@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3771
+    , softwareVersion: 3772
 
 
     /**
@@ -12421,9 +12421,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                    	  
 	                    	  // TODO: List Directory
                          	 var toArray = function(list) {
+                         		 console.log("in toArray");
                         		 return Array.prototype.slice.call(list || [], 0);
                         	 }
 
+                         	 var i = 0;
                         	 var myDirReader = dataDirectory.createReader();
                         	 var entries = [];
                         	 var readEntries = function() {
@@ -12432,6 +12434,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         				 // alle Verzeichniseinträge geladen
                         				 var result = [];
                         				 _.each(entries.sort(), function(fileEntry) {
+                        					 console.log(fileEntry.fullPath);
                         					 result.push(fileEntry.fullPath.split("/")[2]);
                         				 });
                         				 console.log("listDirectory result", result);
@@ -12440,7 +12443,12 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         				 console.log("results", results);
                         				 console.log("entries", entries);
                         				 entries = entries.concat(toArray(results));
-                        				 readEntries();
+                        				 i++;
+                        				 if (i < 10) {
+                        					 readEntries();
+                        				 } else {
+                        					 console.log(entries);
+                            			 }
                         			 }
                         		 }, function(err){console.error("error in readEntries:", err);});
                         	  };
@@ -19953,7 +19961,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3771'
+              value: 'Build: 3772'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
