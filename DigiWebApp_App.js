@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3766
+    , softwareVersion: 3767
 
 
     /**
@@ -8951,9 +8951,10 @@ DigiWebApp.BookingController = M.Controller.extend({
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
 						console.log(datensaetze.length + " Datensätze empfangen");
-						_.each(datensaetze, function(datensatz) {
-							console.log("speichere gepullten Datensatz " + datensatz.m_id);
-							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
+						_.each(datensaetze, function(datensatzObj) {
+							console.log("speichere gepullten Datensatz " + datensatzObj.m_id);
+							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatzObj.m_id});
+							var datensatz = datensatzObj.record;
 							console.log("modelBooking: ", modelBooking);
 							console.log("datensatz: ", datensatz);
 							modelBooking.set("latitude", datensatz.latitude);
@@ -9552,9 +9553,10 @@ DigiWebApp.BookingController = M.Controller.extend({
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
 						console.log(datensaetze.length + " Datensätze empfangen");
-						_.each(datensaetze, function(datensatz) {
-							console.log("speichere gepullten Datensatz " + datensatz.m_id);
-							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
+						_.each(datensaetze, function(datensatzObj) {
+							console.log("speichere gepullten Datensatz " + datensatzObj.m_id);
+							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatzObj.m_id});
+							var datensatz = datensatzObj.record;
 							console.log("modelBooking: ", modelBooking);
 							console.log("datensatz: ", datensatz);
 							modelBooking.set("latitude", datensatz.latitude);
@@ -12387,8 +12389,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            				 _.each(entries.sort(), function(fileEntry) {
 	                            					 result.push(fileEntry.fullPath.split("/")[2]);
 	                            				 });
+	                            				 console.log("listDirectory result", result)
 	                            				 successCallback(result);
 	                            			 } else {
+	                            				 console.log("results", results)
+	                            				 console.log("entries", entries)
 	                            				 entries = entries.concat(toArray(results));
 	                            				 readEntries();
 	                            			 }
@@ -19944,7 +19949,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3766'
+              value: 'Build: 3767'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
