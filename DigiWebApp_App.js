@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3761
+    , softwareVersion: 3762
 
 
     /**
@@ -8954,6 +8954,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 						_.each(datensaetze, function(datensatz) {
 							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
+							console.log(modelBooking);
 							modelBooking.set("latitude", datensatz.latitude);
 							modelBooking.set("latitude_bis", datensatz.latitude_bis);
 							modelBooking.set("longitude", datensatz.longitude);
@@ -9553,6 +9554,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 						_.each(datensaetze, function(datensatz) {
 							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
+							console.log(modelBooking);
 							modelBooking.set("latitude", datensatz.latitude);
 							modelBooking.set("latitude_bis", datensatz.latitude_bis);
 							modelBooking.set("longitude", datensatz.longitude);
@@ -19940,7 +19942,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3761'
+              value: 'Build: 3762'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
