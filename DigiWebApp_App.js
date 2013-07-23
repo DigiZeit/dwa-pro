@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3752
+    , softwareVersion: 3753
 
 
     /**
@@ -8567,6 +8567,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     }
 
     , book: function() {
+		console.log("in bookWithRemark");
 		if (this.checkBooking()) { // checkBooking checks for all booking-problems
 			if (this.currentBooking) {
 				// Start::Bemerkungsfeld (403)
@@ -8604,6 +8605,7 @@ DigiWebApp.BookingController = M.Controller.extend({
      * 2) If autoSaveGPSData is active, fetch position first and then proceed booking, otherwise proceed booking immediately
      */
     , bookWithRemark: function() {
+		console.log("in bookWithRemark");
 
         // refresh bookings from localStorage
     	this.setNotBookedBookings(); // this also calls this.setBookedBookings() and this.setArchivedDays()
@@ -8632,6 +8634,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     }
     
     , getBookingLocation: function(successCallback) {
+		console.log("in getBookingLocation");
 
     	var that = DigiWebApp.BookingController;
     	
@@ -8639,6 +8642,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     	if (DigiWebApp.SettingsController.getSetting('autoSaveGPSData')) {
     		if (DigiWebApp.SettingsController.featureAvailable('417') && DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")) {
     			// hier erstmal gar nichts machen (wird in proceedBooking gemacht, weil erst dort die zu übertragenden Buchungen erzeugt werden)
+    			successCallback();
     		} else {
 	            DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('getGPSPositionMsg'));
 	
@@ -8682,13 +8686,14 @@ DigiWebApp.BookingController = M.Controller.extend({
 	                	successCallback();
 	            }, getLocationOptions);
         	}
-
 		} else {
 			successCallback();
 		}
    	}
     
     , checkBooking: function(skipSelection) {
+		console.log("in checkBooking");
+		
         //var booking = null;
 
         // check if order chosen
@@ -8805,7 +8810,8 @@ DigiWebApp.BookingController = M.Controller.extend({
      * @param {Object} location The location object with the coordinates (latitude, longitude) if a location could be retrieved
      */
     , proceedBooking: function(location) {
-    	
+		console.log("in proceedBooking");
+
     	var that = DigiWebApp.BookingController;
     	
         DigiWebApp.ApplicationController.DigiLoaderView.hide();
@@ -19859,7 +19865,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3752'
+              value: 'Build: 3753'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
