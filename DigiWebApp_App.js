@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3760
+    , softwareVersion: 3761
 
 
     /**
@@ -16852,7 +16852,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					DigiWebApp.BookingController.init(YES);
 				},function(err){console.error(err);});
 			}
-			if (false) {
+			if (true) {
 				console.log("clean DataDirectory");
 				DigiWebApp.ServiceAppController.listDirectory(function(results) {
 					_.each(results, function(fileName) {
@@ -19940,7 +19940,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3760'
+              value: 'Build: 3761'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
