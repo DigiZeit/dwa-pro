@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3767
+    , softwareVersion: 3768
 
 
     /**
@@ -12397,7 +12397,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            				 entries = entries.concat(toArray(results));
 	                            				 readEntries();
 	                            			 }
-	                            		 }, function(){});
+	                            		 }, function(err){console.error("error in readEntries:", err);});
 	                            	  };
 
 	                            	  readEntries(); // Start reading dirs.
@@ -19949,7 +19949,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3767'
+              value: 'Build: 3768'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
