@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3772
+    , softwareVersion: 3773
 
 
     /**
@@ -12383,7 +12383,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            	 var entries = [];
 	                            	 var readEntries = function() {
 	                            		 myDirReader.readEntries (function(results) {
-	                            			 if (!results.length) {
+//	                            			 if (!results.length) {
 	                            				 // alle Verzeichniseinträge geladen
 	                            				 var result = [];
 	                            				 _.each(entries.sort(), function(fileEntry) {
@@ -12391,12 +12391,12 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	                            				 });
 	                            				 console.log("listDirectory result", result);
 	                            				 successCallback(result);
-	                            			 } else {
-	                            				 console.log("results", results);
-	                            				 console.log("entries", entries);
-	                            				 entries = entries.concat(toArray(results));
-	                            				 readEntries();
-	                            			 }
+//	                            			 } else {
+//	                            				 console.log("results", results);
+//	                            				 console.log("entries", entries);
+//	                            				 entries = entries.concat(toArray(results));
+//	                            				 readEntries();
+//	                            			 }
 	                            		 }, function(err){console.error("error in readEntries:", err);});
 	                            	  };
 
@@ -12430,7 +12430,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         	 var entries = [];
                         	 var readEntries = function() {
                         		 myDirReader.readEntries (function(results) {
-                        			 if (!results.length) {
+//                        			 if (!results.length) {
                         				 // alle Verzeichniseinträge geladen
                         				 var result = [];
                         				 _.each(entries.sort(), function(fileEntry) {
@@ -12439,17 +12439,17 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
                         				 });
                         				 console.log("listDirectory result", result);
                         				 successCallback(result);
-                        			 } else {
-                        				 console.log("results", results);
-                        				 console.log("entries", entries);
-                        				 entries = entries.concat(toArray(results));
-                        				 i++;
-                        				 if (i < 10) {
-                        					 readEntries();
-                        				 } else {
-                        					 console.log(entries);
-                            			 }
-                        			 }
+//                        			 } else {
+//                        				 console.log("results", results);
+//                        				 console.log("entries", entries);
+//                        				 entries = entries.concat(toArray(results));
+//                        				 i++;
+//                        				 if (i < 10) {
+//                        					 readEntries();
+//                        				 } else {
+//                        					 console.log(entries);
+//                            			 }
+//                        			 }
                         		 }, function(err){console.error("error in readEntries:", err);});
                         	  };
 
@@ -12463,11 +12463,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	        }
 		}
 	}
-	, directoryServiceAppObj: null
+//	, directoryServiceAppObj: null
 	, listDirectory: function(callback) {
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
-	    this.directoryServiceAppObj = myServiceApp;
-	    //myServiceApp.listDataDirectory(callback);
+//	    this.directoryServiceAppObj = myServiceApp;
+	    myServiceApp.listDataDirectory(callback);
 	}
 	
 	, deleteFile: function(fileName, callback) {
@@ -16879,7 +16879,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					_.each(results, function(fileName) {
 						if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
 							console.log("delete " + fileName);
-							//DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+							DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 						}
 					});
 					refreshWAIT();
@@ -19961,7 +19961,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3772'
+              value: 'Build: 3773'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
