@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3759
+    , softwareVersion: 3760
 
 
     /**
@@ -8950,7 +8950,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 					console.log("polling for bookinglocations");
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
-						console.log(datensatze.length + " Datensätze empfangen");
+						console.log(datensaetze.length + " Datensätze empfangen");
 						_.each(datensaetze, function(datensatz) {
 							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
@@ -9549,7 +9549,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 					console.log("polling for bookinglocations");
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
-						console.log(datensatze.length + " Datensätze empfangen");
+						console.log(datensaetze.length + " Datensätze empfangen");
 						_.each(datensaetze, function(datensatz) {
 							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
@@ -19940,7 +19940,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3759'
+              value: 'Build: 3760'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
