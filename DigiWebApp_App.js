@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3781
+    , softwareVersion: 3782
 
 
     /**
@@ -9597,7 +9597,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 					DigiWebApp.ServiceAppController.pollBookings(idsToPoll, checkForOK, finishBooking, DigiWebApp.SettingsController.getSetting('GPSTimeOut'));
 				}
 				console.log("post currentBookingClosed");
-				DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], continueFunc, continueFunc);
+				DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], pullBooking, pullBooking);
 			} else {
 				if (that.currentBookingClosed !== null) {
 					var continueFunc = function() {
@@ -19976,7 +19976,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3781'
+              value: 'Build: 3782'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
