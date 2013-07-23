@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3773
+    , softwareVersion: 3774
 
 
     /**
@@ -12386,7 +12386,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 //	                            			 if (!results.length) {
 	                            				 // alle Verzeichniseinträge geladen
 	                            				 var result = [];
-	                            				 _.each(entries.sort(), function(fileEntry) {
+//	                            				 _.each(entries.sort(), function(fileEntry) {
+	                                		     _.each(results.sort(), function(fileEntry) {
 	                            					 result.push(fileEntry.fullPath.split("/")[2]);
 	                            				 });
 	                            				 console.log("listDirectory result", result);
@@ -12433,7 +12434,8 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 //                        			 if (!results.length) {
                         				 // alle Verzeichniseinträge geladen
                         				 var result = [];
-                        				 _.each(entries.sort(), function(fileEntry) {
+//                        				 _.each(entries.sort(), function(fileEntry) {
+                            		     _.each(results.sort(), function(fileEntry) {
                         					 console.log(fileEntry.fullPath);
                         					 result.push(fileEntry.fullPath.split("/")[2]);
                         				 });
@@ -19961,7 +19963,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3773'
+              value: 'Build: 3774'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
