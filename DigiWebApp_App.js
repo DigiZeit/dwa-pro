@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3755
+    , softwareVersion: 3756
 
 
     /**
@@ -8950,7 +8950,9 @@ DigiWebApp.BookingController = M.Controller.extend({
 					console.log("polling for bookinglocations");
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
+						console.log(datensatze.length + " Datensätze empfangen");
 						_.each(datensaetze, function(datensatz) {
+							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
 							modelBooking.set("latitude", datensatz.latitude);
 							modelBooking.set("latitude_bis", datensatz.latitude_bis);
@@ -9547,7 +9549,9 @@ DigiWebApp.BookingController = M.Controller.extend({
 					console.log("polling for bookinglocations");
 					// getBookings mit timeout
 					var checkForOK = function(datensaetze) {
+						console.log(datensatze.length + " Datensätze empfangen");
 						_.each(datensaetze, function(datensatz) {
+							console.log("speichere gepullten Datensatz " + datensatz.m_id);
 							var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id});
 							modelBooking.set("latitude", datensatz.latitude);
 							modelBooking.set("latitude_bis", datensatz.latitude_bis);
@@ -12469,8 +12473,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
 			   if (this.available) {
+				   console.log("getBookings Success");
 				   successCallback(data);
 			   } else {
+				   console.log("getBookings Error");
 				   errorCallback();
 			   }
 	    };
@@ -12488,8 +12494,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 						datensaetze.push(buchung.datensatz);
 					}
 				})
+				console.log("pollBookings Success");
 				successCallback(datensaetze);
 			} catch(e) {
+				console.error(e);
 				errorCallback(e.message);
 			}
 		}
@@ -19931,7 +19939,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3755'
+              value: 'Build: 3756'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
