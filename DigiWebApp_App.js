@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3782
+    , softwareVersion: 3783
 
 
     /**
@@ -9589,6 +9589,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 							modelBooking.save();
 							console.log("datensatz " + datensatzObj.m_id + " gespeichert");
 						});
+						that.currentBookingClosed = null;
 						finishBooking();
 					}
 					var idsToPoll = [];
@@ -9801,6 +9802,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 						// Feature 411 : End
 
 						// Buchungen aufräumen
+						var deleteBuchungsIds = [];
 		  				_.each(DigiWebApp.Booking.find(), function(el) {
 		                    if(!el.get('isCurrent')) {
 		                  	  if (CurrentAvailable) {
@@ -9815,9 +9817,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 			        			            });
 			                  		  }
 			                  }
+		                  	  deleteBuchungsIds.push(el.m_id);
 		                      el.del();
 		                    }
 		                  });
+		  				  DigiWebApp.ServiceAppController.deleteBookings(deleteBuchungsIds, function(){console.log(" Buchungen wurden in der ServiceApp gelöscht.")}, function(){console.log("Buchungen konnten nicht in der ServiceApp gelöscht werden.")})
 
 		  				  // Buchungsselektion erneuern
 		                  DigiWebApp.SelectionController.resetSelection();
@@ -12110,16 +12114,21 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		this.returnData = null;
 		
 		this.available = null;
+		
+		this.ermittleGeokoordinate = DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate");
+		this.uebertragen = DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen");
+		this.engeKopplung = DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung");
 	
-		this.sendData.parameter = {
-	        "ermittleGeokoordinate": DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")
-	      , "uebertragen": DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")
-	      , "engeKopplung": DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung")
-	      , "fileName": this._requestFileName
-		}
+		this.sendData.parameter = {}
 	
 		this.send = function() {
 			var that = this;
+			that.sendData.parameter = {
+			        "ermittleGeokoordinate": this.ermittleGeokoordinate
+			      , "uebertragen": this.uebertragen
+			      , "engeKopplung": this.engeKopplung
+			      , "fileName": this._requestFileName
+				}
 		    $.ajax({
 		        dataType: "json"
 		      , type: "POST"
@@ -12502,7 +12511,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	    myServiceApp.send();
 	}
 	
-	, getBookings: function(ids, successCallback, errorCallback, timeout) {
+	, getBookings: function(ids, successCallback, errorCallback, timeout, engeKopplungOverride) {
 		console.log("in getBookings");
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
@@ -12515,6 +12524,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 			   }
 	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
 	    myServiceApp.send();
 	}
 	
@@ -12536,7 +12546,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 				errorCallback(e.message);
 			}
 		}
-		this.getBookings(ids, internalSuccessCallback, errorCallback, timeout);
+		this.getBookings(ids, internalSuccessCallback, errorCallback, timeout, true);
 	}
 	
 	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
@@ -12570,6 +12580,23 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 			   }
 	    };
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.send();
+	}
+
+	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
+		console.log("in deleteBookings");
+	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   console.log("deleteBookings Success");
+				   successCallback(data);
+			   } else {
+				   console.log("deleteBookings Error");
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
 	    myServiceApp.send();
 	}
 
@@ -19976,7 +20003,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3782'
+              value: 'Build: 3783'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
