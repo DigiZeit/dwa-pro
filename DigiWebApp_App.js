@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3769
+    , softwareVersion: 3770
 
 
     /**
@@ -12452,10 +12452,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	        }
 		}
 	}
-
+	, directoryServiceAppObj: null
 	, listDirectory: function(callback) {
 	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
-	    myServiceApp.listDataDirectory(callback);
+	    this.directoryServiceAppObj = myServiceApp;
+	    //myServiceApp.listDataDirectory(callback);
 	}
 	
 	, deleteFile: function(fileName, callback) {
@@ -19949,7 +19950,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3769'
+              value: 'Build: 3770'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
