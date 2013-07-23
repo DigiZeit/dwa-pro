@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3775
+    , softwareVersion: 3776
 
 
     /**
@@ -12146,7 +12146,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	             window.clearInterval(that._readFile_IntervalVar);
 	             that.returnData = data;
 	             that.available = true;
-	             if (false) {
+	             if (true) {
 		             that.deleteFile(that._requestFileName, function(){
 		                 //console.log("erfolgreich gelöscht");
 		            	 that.callback(that.returnData);
@@ -19966,7 +19966,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3775'
+              value: 'Build: 3776'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
