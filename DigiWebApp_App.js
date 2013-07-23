@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3768
+    , softwareVersion: 3769
 
 
     /**
@@ -16861,13 +16861,13 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					DigiWebApp.BookingController.init(YES);
 				},function(err){console.error(err);});
 			}
-			if (false) {
+			if (true) {
 				console.log("clean DataDirectory");
 				DigiWebApp.ServiceAppController.listDirectory(function(results) {
 					_.each(results, function(fileName) {
 						if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
 							console.log("delete " + fileName);
-							DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+							//DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 						}
 					});
 					refreshWAIT();
@@ -19949,7 +19949,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3768'
+              value: 'Build: 3769'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
