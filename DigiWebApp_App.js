@@ -7186,7 +7186,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3758
+    , softwareVersion: 3759
 
 
     /**
@@ -12486,10 +12486,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	
 	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
 		console.log("in pollBookings");
-		var datensaetze = [];
 		var internalSuccessCallback = function(data) {
 			try {
 				console.log("pollBookings Success")
+				var datensaetze = [];
 				_.each(JSON.parse(data).GET.buchungen, function(buchung) {
 					if (buchung.status === "OK") {
 						datensaetze.push(buchung.datensatz);
@@ -19940,7 +19940,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3758'
+              value: 'Build: 3759'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
