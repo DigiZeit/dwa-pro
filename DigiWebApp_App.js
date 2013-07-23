@@ -651,6 +651,10 @@ DigiWebApp.SentBooking = M.Model.create({
     	isRequired: NO
     })
     
+    , istKolonnenbuchung: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
     , genauigkeitVon: M.Model.attr('String', {
     	isRequired: NO
     })
@@ -1341,6 +1345,10 @@ DigiWebApp.SentBookingArchived = M.Model.create({
     })
 
     , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , istKolonnenbuchung: M.Model.attr('Boolean', {
     	isRequired: NO
     })
     
@@ -2290,6 +2298,10 @@ DigiWebApp.Booking = M.Model.create({
     })
     
     , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , istKolonnenbuchung: M.Model.attr('Boolean', {
     	isRequired: NO
     })
     
@@ -7186,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3779
+    , softwareVersion: 3780
 
 
     /**
@@ -8904,8 +8916,10 @@ DigiWebApp.BookingController = M.Controller.extend({
 		var employeeIdsArray = [];
 		if ((employeeIds) && employeeIds !== "0") {
 			// Kolonne aktiv
+			newOpenBooking.set('istKolonnenbuchung', true);
 			employeeIdsArray = employeeIds.split(",");
 		} else {
+			newOpenBooking.set('istKolonnenbuchung', false);
 			employeeIdsArray = [DigiWebApp.SettingsController.getSetting("workerId")];
 		}
 		
@@ -9092,6 +9106,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.remark ? obj.remark : ''
             , istFeierabend: false
+            , istKolonnenbuchung: false
             , genauigkeitVon: null
             , gps_zeitstempelVon: null
             , ermittlungsverfahrenVon: null
@@ -9167,6 +9182,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.get('remark')
             , istFeierabend: obj.get('istFeierabend')
+            , istKolonnenbuchung: obj.get('istKolonnenbuchung')
             , genauigkeitVon: obj.get('genauigkeitVon')
             , gps_zeitstempelVon: obj.get('gps_zeitstempelVon')
             , ermittlungsverfahrenVon: obj.get('ermittlungsverfahrenVon')
@@ -9248,6 +9264,7 @@ DigiWebApp.BookingController = M.Controller.extend({
             , activityName: myActivityName
             , remark: obj.get('remark')
             , istFeierabend: obj.get('istFeierabend')
+            , istKolonnenbuchung: obj.get('istKolonnenbuchung')
             , genauigkeitVon: obj.get('genauigkeitVon')
             , gps_zeitstempelVon: obj.get('gps_zeitstempelVon')
             , ermittlungsverfahrenVon: obj.get('ermittlungsverfahrenVon')
@@ -19959,7 +19976,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3779'
+              value: 'Build: 3780'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
