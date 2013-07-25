@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3800
+    , softwareVersion: 3802
 
 
     /**
@@ -16939,7 +16939,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
          	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
              DigiWebApp.ServiceAppController.knockknock(function(data) {
             	 				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is available");
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
             		         	if (JSON.parse(data) !== null) {
@@ -20031,7 +20032,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3800'
+              value: 'Build: 3802'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
