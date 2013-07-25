@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3798
+    , softwareVersion: 3800
 
 
     /**
@@ -16942,22 +16942,30 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            		         	var deleteBookingsInServiceappIDs = [];
-            		         	var allBookings = DigiWebApp.Booking.find();
-            		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
-            		         		var found = false;
-            		         		var datensatzObj = buchung.datensatz;
-            		         		_.each(allBookings, function(modelBooking){
-            		         			if (modelBooking.m_id === datensatzObj.m_id) {
-            		         				found = true;
-            		         			}
-            		         		});
-            		         		if (!found) {
-            		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
+            		         	if (JSON.parse(data) !== null) {
+            		         		try {
+		            		         	var deleteBookingsInServiceappIDs = [];
+		            		         	var allBookings = DigiWebApp.Booking.find();
+		            		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
+		            		         		var found = false;
+		            		         		var datensatzObj = buchung.datensatz;
+		            		         		_.each(allBookings, function(modelBooking){
+		            		         			if (modelBooking.m_id === datensatzObj.m_id) {
+		            		         				found = true;
+		            		         			}
+		            		         		});
+		            		         		if (!found) {
+		            		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
+		            		         		}
+		            		         	});
+		            		         	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("deleteBookingsInServiceappIDs:",deleteBookingsInServiceappIDs);
+		      		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
+            		         		} catch(e) {
+            		         			cleanDataDirectory();
             		         		}
-            		         	});
-            		         	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("deleteBookingsInServiceappIDs:",deleteBookingsInServiceappIDs);
-      		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
+            		         	} else {
+            		         		cleanDataDirectory();
+            		         	}
             			   }, function() {
             				   if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
@@ -20023,7 +20031,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3798'
+              value: 'Build: 3800'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
