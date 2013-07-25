@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3797
+    , softwareVersion: 3798
 
 
     /**
@@ -12918,7 +12918,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 					try { $.mobile.fixedToolbars.show(); } catch(e) { console.error(e); }; // this line is for pre TMP 1.1
 				}  // callback to invoke with index of button pressed
 				, obj.title // title
-				, obj.confirmButtonValue + ',' + obj.cancelButtonValue          // buttonLabels
+				, [obj.confirmButtonValue, obj.cancelButtonValue]          // buttonLabels
 				);
 		}
 	}
@@ -20023,7 +20023,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3797'
+              value: 'Build: 3798'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
