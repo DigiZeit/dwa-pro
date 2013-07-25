@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3789
+    , softwareVersion: 3790
 
 
     /**
@@ -9327,7 +9327,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.SentBooking.find();
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd'));
+	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
 	
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -9377,7 +9377,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		        });
 		        if(bookings.length > 0) {
 		            _.each(bookings, function(booking) {
-		                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd'));
+		                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
 		
 		                // set the handOrderId as orderId for correct display in list item view
 		                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -20020,7 +20020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3789'
+              value: 'Build: 3790'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
