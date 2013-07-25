@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3795
+    , softwareVersion: 3796
 
 
     /**
@@ -16943,7 +16943,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
             		         	var deleteBookingsInServiceappIDs = [];
-            		         	var allBookings = DigiWebApp.Bookings.find();
+            		         	var allBookings = DigiWebApp.Booking.find();
             		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
             		         		var found = false;
             		         		var datensatzObj = buchung.datensatz;
@@ -20023,7 +20023,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3795'
+              value: 'Build: 3796'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
