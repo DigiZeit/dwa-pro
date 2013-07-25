@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3794
+    , softwareVersion: 3795
 
 
     /**
@@ -12118,6 +12118,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		this.ermittleGeokoordinate = DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate");
 		this.uebertragen = DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen");
 		this.engeKopplung = DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung");
+		this.debug = DigiWebApp.SettingsController.getSetting("debug");
 	
 		this.sendData.parameter = {}
 	
@@ -12127,6 +12128,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 			        "ermittleGeokoordinate": this.ermittleGeokoordinate
 			      , "uebertragen": this.uebertragen
 			      , "engeKopplung": this.engeKopplung
+			      , "debug": this.debug
 			      , "fileName": this._requestFileName
 				}
 		    $.ajax({
@@ -20021,7 +20023,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3794'
+              value: 'Build: 3795'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
