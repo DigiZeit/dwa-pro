@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3785
+    , softwareVersion: 3786
 
 
     /**
@@ -9606,7 +9606,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 						DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 							console.log("refreshWAIT done");
 							finishBooking();
-						},function(err){console.error(err);});
+						},function(err){console.error(err);finishBooking()});
 					}
 					console.log("post currentBookingClosed");
 					DigiWebApp.ServiceAppController.postBookings([that.currentBookingClosed], getWAITFunc, getWAITFunc);
@@ -9816,7 +9816,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		                      el.del();
 		                    }
 		                  });
-		  				  DigiWebApp.ServiceAppController.deleteBookings(deleteBuchungsIds, function(){console.log(" Buchungen wurden in der ServiceApp gelöscht.")}, function(){console.log("Buchungen konnten nicht in der ServiceApp gelöscht werden.")})
+		  				  DigiWebApp.ServiceAppController.deleteBookings(deleteBuchungsIds, function(){console.log("Buchungen wurden in der ServiceApp gelöscht.")}, function(){console.log("Buchungen konnten nicht in der ServiceApp gelöscht werden.")})
 
 		  				  // Buchungsselektion erneuern
 		                  DigiWebApp.SelectionController.resetSelection();
@@ -12107,6 +12107,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		this.callback = callback;
 		this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json"
 		this.returnData = null;
+		this.internalCallback = function(data) {
+			var that = this;
+			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			that.callback(data);
+		}
 		
 		this.available = null;
 		
@@ -12164,14 +12169,14 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		            	 that.callback(that.returnData);
 		             }, function(){
 		                 //console.log("nicht gelöscht");
-		            	 that.callback(that.returnData);
+		            	 that.internalCallback(that.returnData);
 		             });
 	             } else {
-	            	 that.callback(that.returnData);
+	            	 that.internalCallback(that.returnData);
 	             }
 	         }, function(err) {
 	        	 that.available = false;
-	        	 //console.error(err);
+	        	 DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	         });          
 		}
 	
@@ -12524,6 +12529,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		console.log("in pollBookings");
 		var internalSuccessCallback = function(data) {
 			try {
@@ -12545,6 +12551,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		console.log("in putBookings");
 		var payloadData = { "PUT": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
@@ -12562,6 +12569,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, postBookings: function(bookings, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		console.log("in postBookings");
 		var payloadData = { "POST": { "buchungen": [] } };
 	    _.each(bookings, function(booking) {
@@ -16932,7 +16940,21 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            		         	cleanDataDirectory();
+            		         	var deleteBookingsInServiceappIDs = [];
+            		         	var allBookings = DigiWebApp.Bookings.find();
+            		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
+            		         		var found = false;
+            		         		var datensatzObj = buchung.datensatz;
+            		         		_.each(allBookings, function(modelBooking){
+            		         			if (modelBooking.m_id === datensatzObj.m_id) {
+            		         				found = true;
+            		         			}
+            		         		});
+            		         		if (!found) {
+            		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
+            		         		}
+            		         	});
+      		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
             			   }, function() {
             				    console.log("ServiceApp is NOT available");
             		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
@@ -19998,7 +20020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3785'
+              value: 'Build: 3786'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23625,10 +23647,12 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                 	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 	date2 = M.Date.create(dateEnd.getTime());
                 }
+                console.log(v, dateStart, date1, date2);
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
                     date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
                     date2 = M.Date.create(date2.format('mm/dd/yyyy HH:MM'));
+                    console.log(date1, date2);
 
                     if(date1.format('mm/dd/yyyy HH:MM') === date2.format('mm/dd/yyyy HH:MM')) { // if booking is closed in the same minute
                         return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', 00:01 h';

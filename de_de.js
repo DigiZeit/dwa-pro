@@ -309,7 +309,8 @@ M.I18N.de_de = {
     , ServiceApp_datenUebertragen: 'ServiceApp: Datenübertragung'
 	, ServiceApp_engeKopplung: 'ServiceApp: enge Kopplung'
 	, ServiceApp_PORT: 'ServiceApp: Port'
-		
+	, ServiceAppKommunikation: 'Kommunikation mit ServiceApp'
+	
 	, Spesen_Ausloese: 'Spesen/Auslöse'
 	, Spesen: 'Spesen'
 	, Uebernachtung: 'Übernachtung'

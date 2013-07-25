@@ -309,7 +309,8 @@ M.I18N.en_us = {
     , ServiceApp_datenUebertragen: 'ServiceApp: Datatransfer'
 	, ServiceApp_engeKopplung: 'ServiceApp: tight coupling'
 	, ServiceApp_PORT: 'ServiceApp: Port'
-			
+	, ServiceAppKommunikation: 'ServiceApp-Communication'
+
 	, Spesen_Ausloese: 'Expenses'
 	, Spesen: 'Expenses'
 	, Uebernachtung: 'Overnight stay'
