@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3788
+    , softwareVersion: 3789
 
 
     /**
@@ -20020,7 +20020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3788'
+              value: 'Build: 3789'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23634,7 +23634,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
 	, date: M.LabelView.design({
           cssClass: 'date unselectable'
         , computedValue: {
-              valuePattern: '<%= dater %>'
+              valuePattern: '<%= date %>'
             //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
             , operation: function(v) {
                 v = v.split(',');
@@ -23687,7 +23687,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
     , order: M.LabelView.design({
           cssClass: 'application unselectable'
         , computedValue: {
-              valuePattern: '<%= orderNamer %>'
+              valuePattern: '<%= orderName %>'
             , operation: function(v) {
     			if (v !== "") {
                 	return M.I18N.l('order') + ': ' + v;
