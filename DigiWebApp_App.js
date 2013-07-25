@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3786
+    , softwareVersion: 3787
 
 
     /**
@@ -20020,7 +20020,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3786'
+              value: 'Build: 3787'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23640,6 +23640,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
+                debugger;
                 var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
                 var date1 = M.Date.create(dateStart.getTime());
                 var date2 = null;
