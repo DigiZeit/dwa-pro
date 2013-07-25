@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3790
+    , softwareVersion: 3791
 
 
     /**
@@ -16954,6 +16954,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
             		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
             		         		}
             		         	});
+            		         	console.log("deleteBookingsInServiceappIDs:",deleteBookingsInServiceappIDs);
       		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
             			   }, function() {
             				    console.log("ServiceApp is NOT available");
@@ -20020,7 +20021,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3790'
+              value: 'Build: 3791'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
