@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3808
+    , softwareVersion: 3809
 
 
     /**
@@ -11485,6 +11485,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
     , showHandOrderFirst: NO
 
+    , uebernachtungskennzeichenScholpp = JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]')
+    , spesenkennzeichenScholpp = JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]')
+    
     /*
     , setSelection: function() {
         var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
@@ -20081,7 +20084,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3808'
+              value: 'Build: 3809'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20474,6 +20477,8 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
         		//}
         		//$('#' + DigiWebApp.BookingPageWithIconsScholpp.header.feierabendButton.id).addClass("feierabendButton")
         		$('#' + DigiWebApp.BookingPageWithIconsScholpp.content.activity.id + "_container").hide()
+        		
+        		$('#' + DigiWebApp.BookingPageWithIconsScholpp.content.spesenkennzeichen.id).attr('disabled', 'disabled');
         	}
         }
     }
@@ -20518,7 +20523,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 
 	, content: M.ScrollView.design({
           //childViews: 'order position activity grid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
-          childViews: 'order position activity uebernachtungskennzeichen fahrzeit_arbeitszeit_spezial_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
+          childViews: 'order position activity uebernachtungskennzeichen spesenkennzeichen fahrzeit_arbeitszeit_spezial_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
         , cssClass: 'unselectable'
         	
         , activityLabel: M.LabelView.design({
@@ -20794,19 +20799,35 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 
         , uebernachtungskennzeichen: M.SelectionListView.design({
               selectionMode: M.SINGLE_SELECTION_DIALOG
-            , label: ''
-            , initialText: M.I18N.l('activity')
             //, cssClass: 'unselectable'
             , applyTheme: NO
             , contentBinding: {
                   target: DigiWebApp.SelectionController
-                , property: 'uebernachtungskennzeichen'
+                , property: 'uebernachtungskennzeichenScholpp'
             }
             , events: {
                 change: {
                       target: DigiWebApp.SelectionController
                     , action: function() {
                         this.saveSelection();
+                    }
+                }
+            }
+        })
+
+        , spesenkennzeichen: M.SelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            //, cssClass: 'unselectable'
+            , applyTheme: NO
+            , contentBinding: {
+                  target: DigiWebApp.SelectionController
+                , property: 'spesenkennzeichenScholpp'
+            }
+            , events: {
+                change: {
+                      target: DigiWebApp.SelectionController
+                    , action: function() {
+                        //this.saveSelection();
                     }
                 }
             }
