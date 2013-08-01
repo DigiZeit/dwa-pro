@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3806
+    , softwareVersion: 3807
 
 
     /**
@@ -11516,7 +11516,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         orderArray = _.compact(orderArray);
         // push "Bitte wählen Option"
-        orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	orderArray.push({label: M.I18N.l('order'), value: '0', isSelected:!itemSelected});
+        } else {
+        	orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
         /**
          * POSITIONS
@@ -11534,7 +11538,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         positionArray = _.compact(positionArray);
         // push "Bitte wählen Option"
-        positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+            positionArray.push({label: M.I18N.l('position'), value: '0', isSelected:!itemSelected});
+        } else {
+            positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
         /**
          * ACTIVITIES
@@ -11554,7 +11562,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         activityArray = _.compact(activityArray);
         // push "Bitte wählen Option"
-        activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	activityArray.push({label: M.I18N.l('activity'), value: '0', isSelected:!itemSelected});
+        } else {
+        	activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
 
         this.resetSelection();
@@ -11593,7 +11605,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         
         orderArray = _.compact(orderArray);
         // push "Bitte wählen Option"
-        orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	orderArray.push({label: M.I18N.l('order'), value: '0', isSelected:!itemSelected});
+        } else {
+        	orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
         /**
          * POSITIONS (none for HandOrder)
@@ -11623,7 +11639,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
             }
         });
         activityArray = _.compact(activityArray);
-        activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	activityArray.push({label: M.I18N.l('activity'), value: '0', isSelected:!itemSelected});
+        } else {
+        	activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
         
         this.resetSelection();
         // set selection arrays to start content binding process
@@ -11666,8 +11686,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         orderArray = _.compact(orderArray);
         // push "Bitte wählen Option"
-        orderArray.push({label: M.I18N.l('selectSomething'), value: '0'});
-
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	orderArray.push({label: M.I18N.l('order'), value: '0', isSelected:!itemSelected});
+        } else {
+        	orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
         
         /**
          * POSITIONS
@@ -11688,8 +11711,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         });
         positionArray = _.compact(positionArray);
         // push "Bitte wählen Option"
-        positionArray.push({label: M.I18N.l('selectSomething'), value: '0'});
-
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	positionArray.push({label: M.I18N.l('position'), value: '0', isSelected:!itemSelected});
+        } else {
+        	positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
         /**
          * ACTIVITIES
@@ -11725,7 +11751,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         	}
         });
         activityArray = _.compact(activityArray);
-        activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        	activityArray.push({label: M.I18N.l('activity'), value: '0', isSelected:!itemSelected});
+        } else {
+        	activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
     	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
     		var activitySelection = M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').getSelection(YES);
     		if (typeof(activitySelection) !== "undefined") {
@@ -11734,7 +11764,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	    			DigiWebApp.ScholppBookingController.selectArbeitsende();
 	    		} else {
 		    		var activityName = activitySelected.get("name");
-		    		if (activityName.indexOf("Fahrzeit") >= 0) {
+		    		if (activityName.indexOf("Reisezeit") >= 0) {
 		    			DigiWebApp.ScholppBookingController.selectFahrzeit();
 		    		} else if (activityName.indexOf("Arbeitszeit") >= 0) {
 		    			DigiWebApp.ScholppBookingController.selectArbeitszeit();
@@ -11873,7 +11903,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
         // new to show this when closing day is pressed (corresponds to a reset)
         if(activities.length > 0) {
-            activities.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:NO});
+            if (DigiWebApp.SettingsController.featureAvailable('419')) {
+            	activities.push({label: M.I18N.l('activity'), value: '0', isSelected:NO});
+            } else {
+            	activities.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:NO});
+            }
         } else {
             activities.push({label: M.I18N.l('noData'), value: '0'});
         }
@@ -11908,7 +11942,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
            });
        }
        // push "Bitte wählen Option"
-       orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+       if (DigiWebApp.SettingsController.featureAvailable('419')) {
+    	   orderArray.push({label: M.I18N.l('order'), value: '0', isSelected:YES});
+       } else {
+    	   orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+       }
 
        /**
         * POSITIONS
@@ -11922,7 +11960,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
            });
        }
        // push "Bitte wählen Option"
-       positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+       if (DigiWebApp.SettingsController.featureAvailable('419')) {
+    	   positionArray.push({label: M.I18N.l('position'), value: '0', isSelected:YES});
+       } else {
+    	   positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+       }
 
        /**
         * ACTIVITIES
@@ -11939,7 +11981,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
            });
        }
        // push "Bitte wählen Option"
-       activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: YES});
+       if (DigiWebApp.SettingsController.featureAvailable('419')) {
+    	   activityArray.push({label: M.I18N.l('activity'), value: '0', isSelected:YES});
+       } else {
+    	   activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+       }
 
 
         this.resetSelection();
@@ -14471,6 +14517,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	                	if (el[prefix + 'keyId'] === "416") DigiWebApp.ApplicationController.restartApp = YES;		// Tätigkeitsicons auf Buchungs-Screen
 	                	//if (el[prefix + 'keyId'] === "417") DigiWebApp.ApplicationController.restartApp = YES;	// DIGI-ServiceApp
 	                	if (el[prefix + 'keyId'] === "418") DigiWebApp.ApplicationController.restartApp = YES;		// Spesen/Auslöse
+	                	if (el[prefix + 'keyId'] === "419") DigiWebApp.ApplicationController.restartApp = YES;		// Scholpp-Spesen
 	                }
 	                
 	            }
@@ -15188,11 +15235,13 @@ DigiWebApp.ScholppBookingController = M.Controller.extend({
 	  resetButtons: function() {
 		var fahrzeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.fahrzeitButtonGrid.button.id)[0];
 		var arbeitszeitButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_ButtonGrid.arbeitszeitButtonGrid.button.id)[0];
+		var spezialButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.fahrzeit_arbeitszeit_spezial_ButtonGrid.spezialButtonGrid.button.id)[0];
 		var unterbrechungButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.unterbrechungButtonGrid.button.id)[0];
 		var pauseButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.pauseButtonGrid.button.id)[0];
 		var arbeitsendeButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.arbeitsendeButtonGrid.button.id)[0];
 		fahrzeitButton.classList.remove("buttonSelected");
 		arbeitszeitButton.classList.remove("buttonSelected");
+		spezialButton.classList.remove("buttonSelected");
 		unterbrechungButton.classList.remove("buttonSelected");
 		pauseButton.classList.remove("buttonSelected");
 		arbeitsendeButton.classList.remove("buttonSelected");
@@ -15216,7 +15265,7 @@ DigiWebApp.ScholppBookingController = M.Controller.extend({
 		        		return null;
 		        	} else {
 		        		var obj = null;
-		        		if(act.get('name').indexOf("Fahrzeit") >= 0) {
+		        		if(act.get('name').indexOf("Reisezeit") >= 0) {
 		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
 		        			itemSelected = YES;
 		        		} else {
@@ -20032,7 +20081,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3806'
+              value: 'Build: 3807'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20469,7 +20518,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 
 	, content: M.ScrollView.design({
           //childViews: 'order position activity grid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
-          childViews: 'order position activity activityLabel fahrzeit_arbeitszeit_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
+          childViews: 'order position activity activityLabel fahrzeit_arbeitszeit_spezial_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
         , cssClass: 'unselectable'
         	
         , activityLabel: M.LabelView.design({
@@ -20580,7 +20629,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
             })
         })
         
-        , fahrzeit_arbeitszeit_ButtonGrid: M.GridView.design({
+        , fahrzeit_arbeitszeit_spezial_ButtonGrid: M.GridView.design({
         	  childViews: 'fahrzeitButtonGrid arbeitszeitButtonGrid'
             , layout: M.TWO_COLUMNS
 
@@ -20594,7 +20643,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   }
               }
               , button: M.ButtonView.design({
-                    value: "Fahrzeit"
+                    value: "Reisezeit"
                   , cssClass: 'scholppButton'
                   , anchorLocation: M.RIGHT
                   , events: {
@@ -20606,7 +20655,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   }
               })
               , icon: M.ImageView.design({
-                    value: 'theme/images/48x48_plain_truck_red.png'
+                    value: 'theme/images/48x48_plain_car_compact_grey.png'
                   , events: {
 	                  tap: {
 		    				action: function() {
@@ -20648,12 +20697,45 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 		            }
                 })
             })
+            , spezialButtonGrid: M.GridView.design({
+                childViews: 'button icon'
+              , layout: {
+                    cssClass: 'scholppButton'
+                  , columns: {
+                        0: 'button'
+                      , 1: 'icon'
+                  }
+              }
+              , button: M.ButtonView.design({
+                    value: ""
+                  , cssClass: 'scholppButton'
+                  , anchorLocation: M.RIGHT
+                  , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				//DigiWebApp.ScholppBookingController.bucheArbeitszeit();
+		          				}
+		                  }
+		            }
+              })
+              , icon: M.ImageView.design({
+                    value: ''
+                  , events: {
+		                  tap: {
+			    				action: function() {
+	          	  				//DigiWebApp.ScholppBookingController.bucheArbeitszeit();
+		          				}
+		                  }
+		            }
+              })
+          })
+
         })
 
         , order: M.SelectionListView.design({
                   selectionMode: M.SINGLE_SELECTION_DIALOG
-                , initialText: M.I18N.l('noData')
-                , label: M.I18N.l('order')
+                , initialText: M.I18N.l('order')
+                , label: ''
                 //, cssClass: 'unselectable'
                 , applyTheme: NO
                 , contentBinding: {
@@ -20672,8 +20754,8 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
             
         , position: M.SelectionListView.design({
               selectionMode: M.SINGLE_SELECTION_DIALOG
-            , label: M.I18N.l('position')
-            , initialText: M.I18N.l('noData')
+            , label: ''
+            , initialText: M.I18N.l('position')
             //, cssClass: 'unselectable'
             , applyTheme: NO
             , contentBinding: {
@@ -20692,8 +20774,8 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 
         , activity: M.SelectionListView.design({
               selectionMode: M.SINGLE_SELECTION_DIALOG
-            , label: M.I18N.l('activity')
-            , initialText: M.I18N.l('noData')
+            , label: ''
+            , initialText: M.I18N.l('activity')
             //, cssClass: 'unselectable'
             , applyTheme: NO
             , contentBinding: {

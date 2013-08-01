@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.0.3806, Timestamp:1375192134005
+#Application:DigiWebApp, Version:1.6.0.3807 beta, Timestamp:1375361694760
 
 
 # Explicitly cached entries
@@ -21,6 +21,7 @@ jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 childbrowser.js
+barcodescanner.js
 cordova.js
 PushNotification.js
 core.js
@@ -73,7 +74,6 @@ theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/ic_launcher_ldpi.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
-theme/images/48x48_plain_truck_red.png
 theme/images/Icon-72.png
 theme/images/icon_info.png
 theme/images/icon-winphone.jpg
@@ -82,6 +82,7 @@ theme/images/48x48_plain_text_code.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
 theme/images/tabSprite.png
 theme/images/48x48_plain_pda_write.png
+theme/images/48x48_plain_car_compact_grey.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/48x48_plain_refresh.png
 theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
@@ -116,9 +117,9 @@ DigiWebApp_App.js
 
 # Resources that require the device/user to be online.
 NETWORK:
-barcodescanner.js
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 
