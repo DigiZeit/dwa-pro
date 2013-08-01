@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3807
+    , softwareVersion: 3808
 
 
     /**
@@ -20081,7 +20081,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3807'
+              value: 'Build: 3808'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20518,7 +20518,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
 
 	, content: M.ScrollView.design({
           //childViews: 'order position activity grid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
-          childViews: 'order position activity activityLabel fahrzeit_arbeitszeit_spezial_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
+          childViews: 'order position activity uebernachtungskennzeichen fahrzeit_arbeitszeit_spezial_ButtonGrid unterbrechung_pause_arbeitsende_ButtonGrid currentBookingLabel' //'gridOrder gridPosition gridActivity grid',
         , cssClass: 'unselectable'
         	
         , activityLabel: M.LabelView.design({
@@ -20631,7 +20631,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
         
         , fahrzeit_arbeitszeit_spezial_ButtonGrid: M.GridView.design({
         	  childViews: 'fahrzeitButtonGrid arbeitszeitButtonGrid'
-            , layout: M.TWO_COLUMNS
+            , layout: M.THREE_COLUMNS
 
             , fahrzeitButtonGrid: M.GridView.design({
                 childViews: 'button icon'
@@ -20781,6 +20781,26 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
             , contentBinding: {
                   target: DigiWebApp.SelectionController
                 , property: 'activities'
+            }
+            , events: {
+                change: {
+                      target: DigiWebApp.SelectionController
+                    , action: function() {
+                        this.saveSelection();
+                    }
+                }
+            }
+        })
+
+        , uebernachtungskennzeichen: M.SelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , label: ''
+            , initialText: M.I18N.l('activity')
+            //, cssClass: 'unselectable'
+            , applyTheme: NO
+            , contentBinding: {
+                  target: DigiWebApp.SelectionController
+                , property: 'uebernachtungskennzeichen'
             }
             , events: {
                 change: {
