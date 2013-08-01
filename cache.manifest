@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.0.3812 beta, Timestamp:1375363493816
+#Application:DigiWebApp, Version:1.6.0.3813 beta, Timestamp:1375366155800
 
 
 # Explicitly cached entries
@@ -54,16 +54,19 @@ theme/images/logo_blackred.png
 theme/images/icon_ios_57.png
 theme/images/Icon.png
 theme/images/48x48_plain_folder_view.png
+theme/images/scholpp_800x1280_90_DIGI-WebApp.png
 theme/images/icon_record.png
 theme/images/logo.png
 theme/images/ic_launcher_hdpi.png
 theme/images/icon_recordAudio.png
+theme/images/scholpp_320x480_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_shelf.png
 theme/images/48x48_plain_about.png
 theme/images/icon_ios_72.png
 theme/images/arrow_grey.png
 theme/images/ajax-loader.png
+theme/images/scholpp_640x960_90_DIGI-WebApp.png
 theme/images/icon_ios_114.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/Icon_2x.png
@@ -77,9 +80,11 @@ theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/Icon-72.png
 theme/images/icon_info.png
 theme/images/icon-winphone.jpg
+theme/images/scholpp_1536x2048_90_DIGI-WebApp.png
 theme/images/icon_dataTransfer.png
 theme/images/48x48_plain_text_code.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
+theme/images/scholpp_1024x1024_90_DIGI-WebApp.png
 theme/images/tabSprite.png
 theme/images/48x48_plain_pda_write.png
 theme/images/48x48_plain_car_compact_grey.png
@@ -90,8 +95,10 @@ theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_bookTime.png
 theme/images/ic_launcher_mdpi.png
 theme/images/48x48_plain_cup.png
+theme/images/scholpp_5000x5000_90_DIGI-WebApp.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/Auftrag.png
+theme/images/scholpp_480x800_90_DIGI-WebApp.png
 theme/images/48x48_plain_clock_pause.png
 theme/images/splash.png
 theme/images/icon_stop.png
@@ -104,6 +111,7 @@ theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/icon_timeData.png
 theme/images/icon_playbackAudio.png
 theme/images/icon_takePicture.png
+theme/images/scholpp_1080x1920_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/800x1280_90_DIGI-WebApp.png

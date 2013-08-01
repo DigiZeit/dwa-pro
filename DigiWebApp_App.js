@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3812
+    , softwareVersion: 3813
 
 
     /**
@@ -8929,6 +8929,14 @@ DigiWebApp.BookingController = M.Controller.extend({
 		}
 		
 		newOpenBooking.set('employees', employeeIdsArray.join());
+		
+		if (DigiWebApp.SettingsController.featureAvailable('419')) { // Scholpp-Spesen: Übrnachtungskennzeichen setzen
+			var uebernachtungAuswahlObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
+			var uebernachtungAuswahl = uebernachtungAuswahlObj ? uebernachtungAuswahlObj.value : 0;
+			newOpenBooking.set("uebernachtungAuswahl", uebernachtungAuswahl);						
+		} else {
+			newOpenBooking.set("uebernachtungAuswahl", 0);
+		}
 	    that.set('currentBooking', newOpenBooking);
 
 	    that.currentBooking.setAsCurrent();
@@ -20089,7 +20097,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3812'
+              value: 'Build: 3813'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
