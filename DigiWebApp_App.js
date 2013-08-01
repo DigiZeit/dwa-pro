@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3809
+    , softwareVersion: 3810
 
 
     /**
@@ -11485,8 +11485,8 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
     , showHandOrderFirst: NO
 
-    , uebernachtungskennzeichenScholpp = JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]')
-    , spesenkennzeichenScholpp = JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]')
+    , uebernachtungskennzeichenScholpp: JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]')
+    , spesenkennzeichenScholpp: JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]')
     
     /*
     , setSelection: function() {
@@ -20084,7 +20084,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3809'
+              value: 'Build: 3810'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
