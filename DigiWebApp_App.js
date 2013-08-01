@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3810
+    , softwareVersion: 3811
 
 
     /**
@@ -8505,7 +8505,12 @@ DigiWebApp.BookingController = M.Controller.extend({
      * first time during this application life cycle
      */
     , init: function(isFirstLoad) {
-
+	
+		if (isFirstLoad) {
+			DigiWebApp.SelectionController.set("uebernachtungskennzeichenScholpp", JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]'));
+			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]'));
+		}
+		
 		var p = M.Environment.getPlatform();
         if (    (p.substr(0,10) !== "BlackBerry")
         	 && (p.substr(0,12) !== "Linux armv7l")
@@ -11485,8 +11490,8 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
     , showHandOrderFirst: NO
 
-    , uebernachtungskennzeichenScholpp: JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]')
-    , spesenkennzeichenScholpp: JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]')
+    , uebernachtungskennzeichenScholpp: null
+    , spesenkennzeichenScholpp: null
     
     /*
     , setSelection: function() {
@@ -20084,7 +20089,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3810'
+              value: 'Build: 3811'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20635,7 +20640,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
         })
         
         , fahrzeit_arbeitszeit_spezial_ButtonGrid: M.GridView.design({
-        	  childViews: 'fahrzeitButtonGrid arbeitszeitButtonGrid'
+        	  childViews: 'fahrzeitButtonGrid arbeitszeitButtonGrid spezialButtonGrid'
             , layout: M.THREE_COLUMNS
 
             , fahrzeitButtonGrid: M.GridView.design({
@@ -20712,7 +20717,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   }
               }
               , button: M.ButtonView.design({
-                    value: ""
+                    value: "&nbsp;"
                   , cssClass: 'scholppButton'
                   , anchorLocation: M.RIGHT
                   , events: {
