@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3822
+    , softwareVersion: 3823
 
 
     /**
@@ -17586,7 +17586,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var setting = DigiWebApp.Settings.find()[0];
         if ( typeof(setting) !== "undefined" ) {
         	var propvalue = setting.get(prop); 
-        	if ( typeof(propvalue) === "undefined" || (typeof(propvalue["xsi:nil"]) !== "undefined" && (propvalue["xsi:nil"] === "true" || propvalue["xsi:nil"] === true)) { 
+        	if ( typeof(propvalue) === "undefined" || (typeof(propvalue["xsi:nil"]) !== "undefined" && (propvalue["xsi:nil"] === "true" || propvalue["xsi:nil"] === true))) { 
         		try {
         			propvalue = DigiWebApp.SettingsController.defaultsettings.get(prop);
         			setting.set(prop, propvalue);
@@ -20166,7 +20166,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3822'
+              value: 'Build: 3823'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
