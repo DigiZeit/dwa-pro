@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3819
+    , softwareVersion: 3820
 
 
     /**
@@ -11595,7 +11595,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        	if ( typeof(ueK) === "undefined" ) {
 	        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
 	        	} else {        	
-	        		var obj = { label: ueK.get('label'), value: ueK.get('value') };
+	        		var obj = { label: ueK.label, value: ueK.value };
 	        		if(obj.value === that.selections.uebernachtungskennzeichenScholpp) {
 	        			obj.isSelected = YES;
 	        			itemSelected = YES;
@@ -11692,7 +11692,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        	if ( typeof(ueK) === "undefined" ) {
 	        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
 	        	} else {        	
-	        		var obj = { label: ueK.get('label'), value: ueK.get('value') };
+	        		var obj = { label: ueK.label, value: ueK.value };
 	        		if(obj.value === that.selections.uebernachtungskennzeichenScholpp) {
 	        			obj.isSelected = YES;
 	        			itemSelected = YES;
@@ -11851,7 +11851,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        	if ( typeof(ueK) === "undefined" ) {
 	        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
 	        	} else {        	
-	        		var obj = { label: ueK.get('label'), value: ueK.get('value') };
+	        		var obj = { label: ueK.label, value: ueK.value };
 	        		if(obj.value === uebernachtungAuswahl) {
 	        			obj.isSelected = YES;
 	        			itemSelected = YES;
@@ -20165,7 +20165,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3819'
+              value: 'Build: 3820'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
