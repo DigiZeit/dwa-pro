@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3826
+    , softwareVersion: 3827
 
 
     /**
@@ -8930,7 +8930,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		
 		newOpenBooking.set('employees', employeeIdsArray.join());
 		
-		if (DigiWebApp.SettingsController.featureAvailable('419')) { // Scholpp-Spesen: Übrnachtungskennzeichen setzen
+		if (DigiWebApp.SettingsController.featureAvailable('419') && (newOpenBooking.get("activityName") === "Reisezeit" || newOpenBooking.get("activityName") === "Fahrzeit")) { // Scholpp-Spesen: Übrnachtungskennzeichen setzen
 			var uebernachtungAuswahlObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES);
 			var uebernachtungAuswahl = uebernachtungAuswahlObj ? uebernachtungAuswahlObj.value : 0;
 			newOpenBooking.set("uebernachtungAuswahl", uebernachtungAuswahl);						
@@ -11824,7 +11824,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	    			DigiWebApp.ScholppBookingController.selectArbeitsende();
 	    		} else {
 		    		var activityName = activitySelected.get("name");
-		    		if (activityName.indexOf("Reisezeit") >= 0) {
+		    		if (activityName.indexOf("Reisezeit") >= 0 || activityName.indexOf("Fahrzeit") >= 0) {
 		    			DigiWebApp.ScholppBookingController.selectFahrzeit();
 		    		} else if (activityName.indexOf("Arbeitszeit") >= 0) {
 		    			DigiWebApp.ScholppBookingController.selectArbeitszeit();
@@ -15350,7 +15350,7 @@ DigiWebApp.ScholppBookingController = M.Controller.extend({
 		        		return null;
 		        	} else {
 		        		var obj = null;
-		        		if(act.get('name').indexOf("Reisezeit") >= 0) {
+		        		if(act.get('name').indexOf("Reisezeit") >= 0 || act.get('name').indexOf("Fahrzeit") >= 0) {
 		        			obj = { label: act.get('name'), value: act.get('id'), isSelected: YES };
 		        			itemSelected = YES;
 		        		} else {
@@ -20166,7 +20166,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3826'
+              value: 'Build: 3827'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
