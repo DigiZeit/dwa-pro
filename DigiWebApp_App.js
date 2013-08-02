@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3820
+    , softwareVersion: 3821
 
 
     /**
@@ -12080,7 +12080,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').setSelection('0');
-            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('4');
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
             	DigiWebApp.ScholppBookingController.resetButtons();
         	} else {
             	M.ViewManager.getView('bookingPage', 'order').setSelection('0');
@@ -12097,6 +12097,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
         	} else {
         		M.ViewManager.getView('bookingPage', 'order').resetSelection();
         		M.ViewManager.getView('bookingPage', 'position').resetSelection();
@@ -20165,7 +20166,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3820'
+              value: 'Build: 3821'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
