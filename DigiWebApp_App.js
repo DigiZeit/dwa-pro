@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3838
+    , softwareVersion: 3839
 
 
     /**
@@ -8949,6 +8949,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    DigiWebApp.SelectionController.useSelections = NO;
 
 	    var finishBooking = function() {
+	    	DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	    	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("Kommunikation mit ServiceApp beendet");
 		    if(that.autoSend()) {
 		    	that.sendCurrentBookings();
@@ -9556,7 +9557,8 @@ DigiWebApp.BookingController = M.Controller.extend({
         DigiWebApp.SelectionController.useSelections = NO;
 
         var finishBooking = function() {
-	        if(DigiWebApp.SettingsController.getSetting('autoTransferAfterClosingDay')) {
+        	DigiWebApp.ApplicationController.DigiLoaderView.hide();
+        	if(DigiWebApp.SettingsController.getSetting('autoTransferAfterClosingDay')) {
 	            DigiWebApp.DashboardController.dataTransfer(YES); // yes means: is closing day
 	        } else {
 	            // clear employee selection, but only if not auto data transfer and save it before to have it while sending the data
@@ -20174,7 +20176,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3838'
+              value: 'Build: 3839'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
