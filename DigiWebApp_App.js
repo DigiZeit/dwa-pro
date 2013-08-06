@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3842
+    , softwareVersion: 3843
 
 
     /**
@@ -20182,7 +20182,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3842'
+              value: 'Build: 3843'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23885,7 +23885,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                     // cut minutes down => 12:05:59 is going to be 12:05:00
                     date1 = M.Date.create(date1.format('mm/dd/yyyy HH:MM'));
                     date2 = M.Date.create(date2.format('mm/dd/yyyy HH:MM'));
-                    console.log(date1, date2);
+                    //console.log(date1, date2);
 
                     if(date1.format('mm/dd/yyyy HH:MM') === date2.format('mm/dd/yyyy HH:MM')) { // if booking is closed in the same minute
                         return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM') + ' - ' + date2.format('HH:MM') + ' ' + M.I18N.l('oclock') + ', 00:01 h';
