@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3829
+    , softwareVersion: 3830
 
 
     /**
@@ -11873,8 +11873,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
 
     , setPositions: function() {
+    	alert("in setPositions");
     	var orderId;
     	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+        	alert("bookingPageWithIconsScholpp");
     		orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection(YES).value;
     		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
     		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
@@ -20169,7 +20171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3829'
+              value: 'Build: 3830'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
