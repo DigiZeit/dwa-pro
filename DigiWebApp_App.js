@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3831
+    , softwareVersion: 3832
 
 
     /**
@@ -11586,7 +11586,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         	activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
         }
 
-		if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        this.resetSelection();
+
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
 	        /**
 	         * Scholpp-Spesen: Übrnachtungskennzeichen 
 	         */
@@ -11606,8 +11608,6 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        uebernachtungskennzeichenScholppArray = _.compact(uebernachtungskennzeichenScholppArray);
 	        this.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
 		}
-
-        this.resetSelection();
         
         // set selection arrays to start content binding process
         this.set('orders', orderArray);
@@ -11683,7 +11683,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         	activityArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
         }
         
-		if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        this.resetSelection();
+
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
 	        /**
 	         * Scholpp-Spesen: Übrnachtungskennzeichen 
 	         */
@@ -11704,7 +11706,6 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        this.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
 		}
 
-        this.resetSelection();
         // set selection arrays to start content binding process
         this.set('orders', orderArray);
         this.set('positions', positionArray);
@@ -11842,7 +11843,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	}
 
 
-		if (DigiWebApp.SettingsController.featureAvailable('419')) {
+        this.resetSelection();
+
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
 	        /**
 	         * Scholpp-Spesen: Übrnachtungskennzeichen 
 	         */
@@ -11862,8 +11865,6 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        uebernachtungskennzeichenScholppArray = _.compact(uebernachtungskennzeichenScholppArray);
 	        this.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
 		}
-
-        this.resetSelection();
         
         // set selection arrays to start content binding process
         this.set('orders', orderArray);
@@ -20171,7 +20172,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3831'
+              value: 'Build: 3832'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
