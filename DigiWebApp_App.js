@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3837
+    , softwareVersion: 3838
 
 
     /**
@@ -12298,13 +12298,14 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	        	 window.clearInterval(this._readFile_IntervalVar);
 	        	 this._readFile_Interval_Counter = null;
 	        	 this.available = false;
+	        	 DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	        	 this.callback(null);
 	         }
 	         this.readFromFile(this._requestFileName, function(data) {
 	             window.clearInterval(that._readFile_IntervalVar);
 	             that.returnData = data;
 	             that.available = true;
-	             if (false) { // nicht direkt löschen (kann zu Lava-Exceptions führen)
+	             if (false) { // nicht direkt löschen (kann zu Java-Exceptions führen)
 		             that.deleteFile(that._requestFileName, function(){
 		                 //console.log("erfolgreich gelöscht");
 		            	 that.internalCallback(that.returnData);
@@ -12317,7 +12318,6 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	             }
 	         }, function(err) {
 	        	 that.available = false;
-	        	 DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	         });          
 		}
 	
@@ -20174,7 +20174,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3837'
+              value: 'Build: 3838'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
