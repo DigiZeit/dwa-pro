@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3836
+    , softwareVersion: 3837
 
 
     /**
@@ -9661,14 +9661,14 @@ DigiWebApp.BookingController = M.Controller.extend({
 						if ( bookingsIndex === bookingsLength ) {
 							// last signature loaded
 				    		//console.log('last booking done (with file)');
-		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
 							successCallback();
 						}
 					}, function() {
 						if ( bookingsIndex === bookingsLength ) {
 							// last signature loaded
 				    		//console.log('last booking done (with file)');
-		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
 							successCallback();
 						}
 					});
@@ -9677,14 +9677,14 @@ DigiWebApp.BookingController = M.Controller.extend({
 					if ( bookingsIndex === bookingsLength ) {
 						// last signature loaded
 			    		//console.log('last booking done (no file)');
-	    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
 						successCallback();
 					}
 	    		}
 	        });
     	} else {
     		//console.log('no bookings');
-			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			//DigiWebApp.ApplicationController.DigiLoaderView.hide();
 			successCallback();
     	}
     }
@@ -9860,6 +9860,7 @@ DigiWebApp.BookingController = M.Controller.extend({
                   
         		  }
         		  , function() {
+                      DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	              		// die Buchung(en) konnte(n) nicht gesendet werden
 	                    DigiWebApp.ApplicationController.nativeAlertDialogView({
 	                        title: M.I18N.l('sendDataFail'),
@@ -20173,7 +20174,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3836'
+              value: 'Build: 3837'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
