@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3832
+    , softwareVersion: 3833
 
 
     /**
@@ -9758,6 +9758,7 @@ DigiWebApp.BookingController = M.Controller.extend({
         	DigiWebApp.JSONDatenuebertragungController.sendeZeitdaten(
         		  bookings
         		, function() {
+        			  var that = DigiWebApp.BookingController;
         			  var CurrentAvailable = false;
         			  _.each(DigiWebApp.Booking.find(), function(el) {
         				  if(el.get('isCurrent')) {
@@ -9776,7 +9777,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 								// move Bookings to SentBookingArchived
 							      _.each(DigiWebApp.Booking.find(), function(el) {
 							          if(!el.get('isCurrent')) {
-							      		  var sentBookingArchivedEl = DigiWebApp.BookingController.sentBookingArchived(el);
+							      		  var sentBookingArchivedEl = that.sentBookingArchived(el);
 							      		  sentBookingArchivedEl.save();
 							      		  // check if that day is already in archive
 							      		  var dayFound = NO;
@@ -9816,7 +9817,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		                  	  if (CurrentAvailable) {
 			                  		  try {
 			                      		  // save booking as sentBooking for later view in sentBookingsListView
-			                      		  var sentBookingEl = DigiWebApp.BookingController.sentBooking(el);
+			                      		  var sentBookingEl = that.sentBooking(el);
 			                          	  sentBookingEl.save();
 			                  		  } catch(e) {
 			        			            DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -9841,7 +9842,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 
 		                  // falls Feierabend gebucht wurde: aufräumen
 		                  if(isClosingDay) {
-		                      this.set('currentBookingStr', '');
+		                	  that.set('currentBookingStr', '');
 		
 		                      if(DigiWebApp.EmployeeController.getEmployeeState() == 2) {
 		                          DigiWebApp.EmployeeController.setEmployeeState(1);
@@ -20172,7 +20173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3832'
+              value: 'Build: 3833'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
