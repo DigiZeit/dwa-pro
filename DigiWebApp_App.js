@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3840
+    , softwareVersion: 3841
 
 
     /**
@@ -12658,6 +12658,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 	
 	, getBookings: function(ids, successCallback, errorCallback, timeout, engeKopplungOverride) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in getBookings");
 	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
@@ -12733,6 +12734,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in deleteBookings");
 	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
@@ -12750,6 +12752,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, refreshWAITBookings: function(successCallback, errorCallback) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in refreshWAITBookings");
 		var that = this;
 		var bookings = DigiWebApp.Booking.find();
@@ -20179,7 +20182,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3840'
+              value: 'Build: 3841'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
