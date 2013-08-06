@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3827
+    , softwareVersion: 3828
 
 
     /**
@@ -11876,6 +11876,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	var orderId;
     	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
     		orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection(YES).value;
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
+    		alert(M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES).value);
     	} else {
     		orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
     	}
@@ -12077,10 +12080,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('activities', activityArray);
         try {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').setSelection('0');
-            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
             	DigiWebApp.ScholppBookingController.resetButtons();
         	} else {
             	M.ViewManager.getView('bookingPage', 'order').setSelection('0');
@@ -12093,11 +12096,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
     , resetSelection: function() {
     	try {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
-        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
         	} else {
         		M.ViewManager.getView('bookingPage', 'order').resetSelection();
         		M.ViewManager.getView('bookingPage', 'position').resetSelection();
@@ -20166,7 +20169,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3827'
+              value: 'Build: 3828'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
