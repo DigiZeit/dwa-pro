@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3839
+    , softwareVersion: 3840
 
 
     /**
@@ -9024,7 +9024,10 @@ DigiWebApp.BookingController = M.Controller.extend({
 							DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 								if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
 								finishBooking();
-							},function(err){console.error(err);});
+							},function(err){
+								DigiWebApp.ApplicationController.DigiLoaderView.hide();
+								console.error(err);
+							});
 						}
 						if (DigiWebApp.SettingsController.getSetting("debug")) console.log("put currentBooking");
 						DigiWebApp.ServiceAppController.putBookings([that.currentBooking], getWAITFunc, getWAITFunc);
@@ -20176,7 +20179,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3839'
+              value: 'Build: 3840'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
