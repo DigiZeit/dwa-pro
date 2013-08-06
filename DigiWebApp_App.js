@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3835
+    , softwareVersion: 3836
 
 
     /**
@@ -8831,7 +8831,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 
     	var that = DigiWebApp.BookingController;
     	
-        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+        //DigiWebApp.ApplicationController.DigiLoaderView.hide();
         //var booking = null;
 
     	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
@@ -20173,7 +20173,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3835'
+              value: 'Build: 3836'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
