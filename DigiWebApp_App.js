@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3833
+    , softwareVersion: 3834
 
 
     /**
@@ -12304,13 +12304,14 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	             that.returnData = data;
 	             that.available = true;
 	             if (true) {
-		             that.deleteFile(that._requestFileName, function(){
-		                 //console.log("erfolgreich gelöscht");
-		            	 that.internalCallback(that.returnData);
-		             }, function(){
-		                 //console.log("nicht gelöscht");
-		            	 that.internalCallback(that.returnData);
-		             });
+//		             that.deleteFile(that._requestFileName, function(){
+//		                 //console.log("erfolgreich gelöscht");
+//		            	 that.internalCallback(that.returnData);
+//		             }, function(){
+//		                 //console.log("nicht gelöscht");
+//		            	 that.internalCallback(that.returnData);
+//		             });
+		             that.internalCallback(that.returnData);
 	             } else {
 	            	 that.internalCallback(that.returnData);
 	             }
@@ -20173,7 +20174,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3833'
+              value: 'Build: 3834'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
