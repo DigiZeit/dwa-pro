@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3830
+    , softwareVersion: 3831
 
 
     /**
@@ -11873,14 +11873,14 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
 
     , setPositions: function() {
-    	alert("in setPositions");
+    	//alert("in setPositions");
     	var orderId;
     	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-        	alert("bookingPageWithIconsScholpp");
+        	//alert("bookingPageWithIconsScholpp");
     		orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection(YES).value;
     		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
     		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
-    		alert(M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES).value);
+    		//alert(M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES).value);
     	} else {
     		orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
     	}
@@ -20171,7 +20171,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3830'
+              value: 'Build: 3831'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
