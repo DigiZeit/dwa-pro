@@ -1,26 +1,27 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.0.3847, Timestamp:1375947935809
+#Application:DigiWebApp, Version:1.6.0.3848 beta, Timestamp:1375948350461
 
 
 # Explicitly cached entries
 CACHE:
+underscore-min.js
+d8-0.1.3.min.js
+theme/tmp.css
+bootstrap.js
 fr_fr.js
 nl_nl.js
 de_de.js
 es_es.js
 en_us.js
-underscore-min.js
-d8-0.1.3.min.js
-theme/tmp.css
-bootstrap.js
 jquery.xml2json_1.1.js
 jstz.js
 jquery_mobile.js
-jquery-1.6.4.min.js
 ui.js
+jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 childbrowser.js
+barcodescanner.js
 cordova.js
 PushNotification.js
 core.js
@@ -124,9 +125,9 @@ DigiWebApp_App.js
 
 # Resources that require the device/user to be online.
 NETWORK:
-barcodescanner.js
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 
