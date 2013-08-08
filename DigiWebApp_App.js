@@ -1003,6 +1003,10 @@ DigiWebApp.Settings = M.Model.create({
     
     , debugDatabaseServer: M.Model.attr('String')
     
+    , mitarbeiterVorname: M.Model.attr('String')
+    
+    , mitarbeiterNachname: M.Model.attr('String')
+    
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -7200,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3853
+    , softwareVersion: 3854
 
 
     /**
@@ -8521,7 +8525,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	
 		if (isFirstLoad) {
 			DigiWebApp.SelectionController.set("uebernachtungskennzeichenScholpp", JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]'));
-			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":"Spesen","value":"1","isSelected":true}]'));
+			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":"","value":"1","isSelected":true}]'));
 		}
 		
 		var p = M.Environment.getPlatform();
@@ -16800,6 +16804,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , ServiceApp_engeKopplung: false
         , ServiceApp_PORT: '60000'
         , debugDatabaseServer: null
+        , mitarbeiterVorname: ""
+        , mitarbeiterNachname: ""
+        
     }
 
     , defaultsettings: null
@@ -16998,6 +17005,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	            }]
                , ServiceApp_PORT: record.get('ServiceApp_PORT')
                , debugDatabaseServer: record.get('debugDatabaseServer')
+               , mitarbeiterVorname: record.get('mitarbeiterVorname')
+               , mitarbeiterNachname: record.get('mitarbeiterNachname')
             };
         /* default values */
         } else {
@@ -17082,6 +17091,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	            }]
 	            , ServiceApp_PORT: DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_PORT')
 	            , debugDatabaseServer: DigiWebApp.SettingsController.defaultsettings.get('debugDatabaseServer')
+	            , mitarbeiterVorname: DigiWebApp.SettingsController.defaultsettings.get('mitarbeiterVorname')
+	            , mitarbeiterNachname: DigiWebApp.SettingsController.defaultsettings.get('mitarbeiterNachname')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -17246,6 +17257,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
         }
 
         var debugDatabaseServer              = DigiWebApp.SettingsController.getSetting('debugDatabaseServer');
+        var mitarbeiterVorname               = DigiWebApp.SettingsController.getSetting('mitarbeiterVorname')
+        var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname')
 
 
         var numberRegex = /^[0-9]+$/;
@@ -17347,6 +17360,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                                     record.set('ServiceApp_PORT', ServiceApp_PORT);
                                                     record.set('debugDatabaseServer', debugDatabaseServer);
+                                                    record.set('mitarbeiterVorname', mitarbeiterVorname);
+                                                    record.set('mitarbeiterNachname', mitarbeiterNachname);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -17414,6 +17429,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                     record.set('ServiceApp_PORT', ServiceApp_PORT);
                                     record.set('debugDatabaseServer', debugDatabaseServer);
+                                    record.set('mitarbeiterVorname', mitarbeiterVorname);
+                                    record.set('mitarbeiterNachname', mitarbeiterNachname);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -17455,6 +17472,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                 record.set('ServiceApp_PORT', ServiceApp_PORT);
                                 record.set('debugDatabaseServer', debugDatabaseServer);
+                                record.set('mitarbeiterVorname', mitarbeiterVorname);
+                                record.set('mitarbeiterNachname', mitarbeiterNachname);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -17496,6 +17515,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                 record.set('ServiceApp_PORT', ServiceApp_PORT);
                                 record.set('debugDatabaseServer', debugDatabaseServer);
+                                record.set('mitarbeiterVorname', mitarbeiterVorname);
+                                record.set('mitarbeiterNachname', mitarbeiterNachname);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -17539,6 +17560,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , ServiceApp_engeKopplung: ServiceApp_engeKopplung
                                 , ServiceApp_PORT: ServiceApp_PORT
                                 , debugDatabaseServer: debugDatabaseServer
+                                , mitarbeiterVorname: mitarbeiterVorname
+                                , mitarbeiterNachname: mitarbeiterNachname
+
                           });
 
                             /* now save */
@@ -17714,11 +17738,19 @@ DigiWebApp.SettingsController = M.Controller.extend({
 		            	DigiWebApp.NavigationController.toBookTimePageTransition();
 		            	//DigiWebApp.NavigationController.toDashboardPageFlipTransition(YES);
 		        	}
-	                // empfange den konfigurierten Mitarbeiternamen mittels Anwesenheitsliste
-		        	if (DigiWebApp.SettingsController.mitarbeiterNameVorname !== "" && DigiWebApp.SettingsController.mitarbeiterNameVorname !== null) {
-		        		DigiWebApp.SettingsController.refreshMitarbeiterNameVorname(MitarbeiterWebAppID);
-		        	}
-                }
+	                // empfange den konfigurierten Mitarbeiternamen
+		        	DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter",M.I18N.l('BautagebuchLadeMitarbeiter'),function(data){
+		        		if (data && data.mitarbeiter && data.mitarbeiter.length > 0) {
+		        			DigiWebApp.SettingsController.setSetting("mitarbeiterVorname", data.mitarbeiter[0].vorname);
+		        			DigiWebApp.SettingsController.setSetting("mitarbeiterNachname", data.mitarbeiter[0].nachname);
+		        		} else {
+		        			DigiWebApp.SettingsController.setSetting("mitarbeiterVorname", "");
+		        			DigiWebApp.SettingsController.setSetting("mitarbeiterNachname", "");
+		        		}
+		        	}, function(error) {
+		        		console.error(error)
+		        	}, "getAll=true&webAppId=" + DigiWebApp.SettingsController.getSetting("workerId"), true);
+        		}
             }
             , error: {
                   target: this
@@ -20169,8 +20201,11 @@ DigiWebApp.InfoPage = M.PageView.design({
                 	var myWorkerId = "";
                 	try { myWorkerId = DigiWebApp.Settings.find()[0].get("workerId"); } catch(e) { /*console.error(e);*/ }
                     var outString = M.I18N.l('configuredUser') + ': ' + myWorkerId;
-                    if (typeof(DigiWebApp.SettingsController.mitarbeiterNameVorname) !== "undefined" && DigiWebApp.SettingsController.mitarbeiterNameVorname !== null && DigiWebApp.SettingsController.mitarbeiterNameVorname !== "") {
-                    	outString = outString + ' (' + DigiWebApp.SettingsController.mitarbeiterNameVorname + ')';
+//                    if (typeof(DigiWebApp.SettingsController.mitarbeiterNameVorname) !== "undefined" && DigiWebApp.SettingsController.mitarbeiterNameVorname !== null && DigiWebApp.SettingsController.mitarbeiterNameVorname !== "") {
+//                    	outString = outString + ' (' + DigiWebApp.SettingsController.mitarbeiterNameVorname + ')';
+//                    }
+                    if (DigiWebApp.SettingsController.getSetting("mitarbeiterVorname") !== "" || DigiWebApp.SettingsController.getSetting("mitarbeiterNachname") !== "") { 
+                    	outString = outString + " (" + DigiWebApp.SettingsController.getSetting("mitarbeiterVorname") + " " + DigiWebApp.SettingsController.getSetting("mitarbeiterNachname") + ")";
                     }
                     return outString;
                 }
@@ -20218,7 +20253,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3853'
+              value: 'Build: 3854'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20678,7 +20713,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     }
                 }
                 , button: M.ButtonView.design({
-                      value: "Arbeitsende"
+                      value: "Ende"
                     , cssClass: 'scholppButton'
                     , anchorLocation: M.RIGHT
                     , events: {
