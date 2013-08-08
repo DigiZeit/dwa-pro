@@ -1001,6 +1001,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , currentTimezone: M.Model.attr('String')
     
+    , debugDatabaseServer: M.Model.attr('String')
+    
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -7198,7 +7200,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3850
+    , softwareVersion: 3851
 
 
     /**
@@ -7268,6 +7270,17 @@ DigiWebApp.RequestController = M.Controller.extend({
     }
 
     , getDatabaseServer: function(myFunc, obj) {
+    	
+    	// debug-ausnahme
+    	if (location.host === "localhost:8080" || DigiWebApp.SettingsController.getSetting("debugDatabaseServer")) {
+    		if (location.host === "localhost:8080") {
+    			DigiWebApp.RequestController.DatabaseServer = "localhost:8080";
+    		} else {
+    			DigiWebApp.RequestController.DatabaseServer = DigiWebApp.SettingsController.getSetting("debugDatabaseServer");
+    		}
+    		return myFunc(obj);
+    	}
+    	
 		if (!DigiWebApp.RequestController.DatabaseServer || (DigiWebApp.RequestController.DatabaseServerTimestamp && (DigiWebApp.RequestController.DatabaseServerTimestamp - new Date().getTime() > 60000))) {
 		  	// get it ...
 	    	console.log("getDatabaseServer");
@@ -16777,6 +16790,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , ServiceApp_datenUebertragen: false
         , ServiceApp_engeKopplung: false
         , ServiceApp_PORT: '60000'
+        , debugDatabaseServer: null
     }
 
     , defaultsettings: null
@@ -16974,6 +16988,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                 , isSelected: record.get('ServiceApp_engeKopplung')
 	            }]
                , ServiceApp_PORT: record.get('ServiceApp_PORT')
+               , debugDatabaseServer: record.get('debugDatabaseServer')
             };
         /* default values */
         } else {
@@ -17057,6 +17072,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                , label: M.I18N.l('ServiceApp_engeKopplung')
 	            }]
 	            , ServiceApp_PORT: DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_PORT')
+	            , debugDatabaseServer: DigiWebApp.SettingsController.defaultsettings.get('debugDatabaseServer')
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -17203,22 +17219,25 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	var currentTimezoneOffset       = DigiWebApp.SettingsController.getSetting('currentTimezoneOffset');
     	var currentTimezone             = DigiWebApp.SettingsController.getSetting('currentTimezone');
 
-        var ServiceApp_ermittleGeokoordinate = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_ermittleGeokoordinate');
+        var ServiceApp_ermittleGeokoordinate = DigiWebApp.SettingsController.getSetting('ServiceApp_ermittleGeokoordinate');
         if (M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate') !== null) {
         	ServiceApp_ermittleGeokoordinate = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_ermittleGeokoordinate').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
-        var ServiceApp_datenUebertragen      = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_datenUebertragen');
+        var ServiceApp_datenUebertragen      = DigiWebApp.SettingsController.getSetting('ServiceApp_datenUebertragen');
         if (M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen') !== null) {
         	ServiceApp_datenUebertragen = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_datenUebertragen').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
-        var ServiceApp_engeKopplung          = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_engeKopplung');
+        var ServiceApp_engeKopplung          = DigiWebApp.SettingsController.getSetting('ServiceApp_engeKopplung');
         if (M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung') !== null) {
         	ServiceApp_engeKopplung = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_engeKopplung').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
         }
-        var ServiceApp_PORT                  = DigiWebApp.SettingsController.defaultsettings.get('ServiceApp_PORT');
+        var ServiceApp_PORT                  = DigiWebApp.SettingsController.getSetting('ServiceApp_PORT');
         if (M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput') !== null) {
         	ServiceApp_PORT = $('#' + M.ViewManager.getView('settingsPage', 'ServiceApp_PORTInput').id).val();
         }
+
+        var debugDatabaseServer              = DigiWebApp.SettingsController.getSetting('debugDatabaseServer');
+
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -17318,6 +17337,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                                     record.set('ServiceApp_PORT', ServiceApp_PORT);
+                                                    record.set('debugDatabaseServer', debugDatabaseServer);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -17384,6 +17404,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                     record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                     record.set('ServiceApp_PORT', ServiceApp_PORT);
+                                    record.set('debugDatabaseServer', debugDatabaseServer);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -17424,6 +17445,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                 record.set('ServiceApp_PORT', ServiceApp_PORT);
+                                record.set('debugDatabaseServer', debugDatabaseServer);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -17464,6 +17486,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('ServiceApp_datenUebertragen', ServiceApp_datenUebertragen);
                                 record.set('ServiceApp_engeKopplung', ServiceApp_engeKopplung);
                                 record.set('ServiceApp_PORT', ServiceApp_PORT);
+                                record.set('debugDatabaseServer', debugDatabaseServer);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -17506,6 +17529,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , ServiceApp_datenUebertragen: ServiceApp_datenUebertragen
                                 , ServiceApp_engeKopplung: ServiceApp_engeKopplung
                                 , ServiceApp_PORT: ServiceApp_PORT
+                                , debugDatabaseServer: debugDatabaseServer
                           });
 
                             /* now save */
@@ -20185,7 +20209,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3850'
+              value: 'Build: 3851'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
