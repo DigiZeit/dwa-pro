@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3856
+    , softwareVersion: 3857
 
 
     /**
@@ -12760,7 +12760,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
-		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in deleteBookings");
 	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
@@ -13706,7 +13706,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         };
         		
         // set settings
-        DigiWebApp.SettingsController.init();
+        DigiWebApp.SettingsController.init(YES);
         
         if (DigiWebApp.SettingsController.getSetting('debug')) { 
         	DigiWebApp.SettingsController.globalDebugMode = YES; 
@@ -16811,7 +16811,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
     , defaultsettings: null
     
-    , init: function() {
+    , init: function(isFirstLoad) {
+    	
     	var that = DigiWebApp.SettingsController;
     	
     	M.I18N.defaultLanguage = "de_de";
@@ -17100,77 +17101,81 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 
         that.set('settings', settings);
 
-        // check for ServiceApp
-		var cleanDataDirectory = function() {
-			var refreshWAIT = function() {
-				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT");
-				DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
-					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
-					DigiWebApp.BookingController.init(YES);
-				}, function(err){console.error(err);});
-			}
-			if (true) {
-				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("clean DataDirectory");
-				DigiWebApp.ServiceAppController.listDirectory(function(results) {
-					_.each(results, function(fileName) {
-						if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
-							if (DigiWebApp.SettingsController.getSetting("debug")) console.log("delete " + fileName);
-							DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
-						}
+        if (isFirstLoad) {
+	        // check for ServiceApp
+			var cleanDataDirectory = function() {
+				var refreshWAIT = function() {
+					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT");
+					DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
+						if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
+						DigiWebApp.BookingController.init(YES);
+					}, function(err){console.error(err);});
+				}
+				if (true) {
+					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("clean DataDirectory");
+					DigiWebApp.ServiceAppController.listDirectory(function(results) {
+						_.each(results, function(fileName) {
+							if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
+								if (DigiWebApp.SettingsController.getSetting("debug")) console.log("delete " + fileName);
+								DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+							}
+						});
+						refreshWAIT();
 					});
+				} else {
 					refreshWAIT();
-				});
-			} else {
-				refreshWAIT();
+				}
 			}
-		}
-        if (DigiWebApp.SettingsController.featureAvailable('417')) {
-         	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
-             DigiWebApp.ServiceAppController.knockknock(function(data) {
-            	 				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is available");
-            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
-            		         	if (JSON.parse(data) !== null) {
-            		         		try {
-		            		         	var deleteBookingsInServiceappIDs = [];
-		            		         	var allBookings = DigiWebApp.Booking.find();
-		            		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
-		            		         		var found = false;
-		            		         		var datensatzObj = buchung.datensatz;
-		            		         		_.each(allBookings, function(modelBooking){
-		            		         			if (modelBooking.m_id === datensatzObj.m_id) {
-		            		         				found = true;
-		            		         			}
-		            		         		});
-		            		         		if (!found) {
-		            		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
-		            		         		}
-		            		         	});
-		            		         	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("deleteBookingsInServiceappIDs:",deleteBookingsInServiceappIDs);
-		      		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
-            		         		} catch(e) {
-            		         			cleanDataDirectory();
-            		         		}
-            		         	} else {
-            		         		cleanDataDirectory();
-            		         	}
-            			   }, function() {
-            				   if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is NOT available");
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
-            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-            		         	cleanDataDirectory();
-            			   }
-            );
-        } else {
-         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
-         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
-         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
-         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
-         	cleanDataDirectory();
+        
+	        if (DigiWebApp.SettingsController.featureAvailable('417')) {
+	         	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
+	             DigiWebApp.ServiceAppController.knockknock(function(data) {
+	            	 				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is available");
+	            		         	//$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).show();
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).show();
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).show();
+	            		         	if (JSON.parse(data) !== null) {
+	            		         		try {
+			            		         	var deleteBookingsInServiceappIDs = [];
+			            		         	var allBookings = DigiWebApp.Booking.find();
+			            		         	_.each(JSON.parse(data).GET.buchungen, function(buchung){
+			            		         		var found = false;
+			            		         		var datensatzObj = buchung.datensatz;
+			            		         		_.each(allBookings, function(modelBooking){
+			            		         			if (modelBooking.m_id === datensatzObj.m_id) {
+			            		         				found = true;
+			            		         			}
+			            		         		});
+			            		         		if (!found) {
+			            		         			deleteBookingsInServiceappIDs.push(datensatzObj.m_id);
+			            		         		}
+			            		         	});
+			            		         	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("deleteBookingsInServiceappIDs:",deleteBookingsInServiceappIDs);
+			      		  				    DigiWebApp.ServiceAppController.deleteBookings(deleteBookingsInServiceappIDs, cleanDataDirectory, cleanDataDirectory)
+	            		         		} catch(e) {
+	            		         			cleanDataDirectory();
+	            		         		}
+	            		         	} else {
+	            		         		cleanDataDirectory();
+	            		         	}
+	            			   }, function() {
+	            				   if (DigiWebApp.SettingsController.getSetting("debug")) console.log("ServiceApp is NOT available");
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+	            		         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+	            		         	cleanDataDirectory();
+	            			   }
+	            );
+	        } else {
+	         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id).hide();
+	         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id).hide();
+	         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id).hide();
+	         	$('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).hide();
+	         	cleanDataDirectory();
+	        }
         }
+
 	}
 	
 	, saveDone: YES 
@@ -20253,7 +20258,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3856'
+              value: 'Build: 3857'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22795,6 +22800,78 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	        }
 	      }
 	    })
+
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: SplashViewPage
+// ==========================================================================
+
+DigiWebApp.SplashViewPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		  pagebeforeshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
+						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
+					} else {
+						DigiWebApp.ApplicationController.regSecEv(YES);	
+					};
+				}
+			}
+        }
+		, pageshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
+				}
+			}
+        }
+
+    }
+
+    , childViews: 'content'
+
+    , cssClass: 'splashViewPage'
+
+    , logo: M.ImageView.design({
+          value:'theme/images/logo.png'
+        , cssClass: 'logoSplashPage'
+    })
+
+    , content: M.ScrollView.design({
+
+          cssClass: 'infoBox'
+
+        , childViews: 'title info'
+
+        , title: M.LabelView.design({
+            //  value: 'DIGI-WebApp'
+              value: ''
+            , cssClass: 'appTitle'
+        })
+
+        , info: M.LabelView.design({
+              value: ''
+            , cssClass: 'infoMsg'
+            , contentBinding: {
+                  target: DigiWebApp.ApplicationController
+                , property: 'infoMsg'
+            }
+        })
 
     })
 
@@ -29965,78 +30042,6 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 //	      })
 //	    })
 	    
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: SplashViewPage
-// ==========================================================================
-
-DigiWebApp.SplashViewPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		  pagebeforeshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
-						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
-					} else {
-						DigiWebApp.ApplicationController.regSecEv(YES);	
-					};
-				}
-			}
-        }
-		, pageshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
-				}
-			}
-        }
-
-    }
-
-    , childViews: 'content'
-
-    , cssClass: 'splashViewPage'
-
-    , logo: M.ImageView.design({
-          value:'theme/images/logo.png'
-        , cssClass: 'logoSplashPage'
-    })
-
-    , content: M.ScrollView.design({
-
-          cssClass: 'infoBox'
-
-        , childViews: 'title info'
-
-        , title: M.LabelView.design({
-            //  value: 'DIGI-WebApp'
-              value: ''
-            , cssClass: 'appTitle'
-        })
-
-        , info: M.LabelView.design({
-              value: ''
-            , cssClass: 'infoMsg'
-            , contentBinding: {
-                  target: DigiWebApp.ApplicationController
-                , property: 'infoMsg'
-            }
-        })
-
     })
 
 });
