@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3855
+    , softwareVersion: 3856
 
 
     /**
@@ -12760,7 +12760,7 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 	}
 
 	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
 		if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in deleteBookings");
 	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
 	    var callback = function(data) {
@@ -17107,7 +17107,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 				DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
 					DigiWebApp.BookingController.init(YES);
-				},function(err){console.error(err);});
+				}, function(err){console.error(err);});
 			}
 			if (true) {
 				if (DigiWebApp.SettingsController.getSetting("debug")) console.log("clean DataDirectory");
@@ -20253,7 +20253,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3855'
+              value: 'Build: 3856'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -22795,78 +22795,6 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 	        }
 	      }
 	    })
-
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: SplashViewPage
-// ==========================================================================
-
-DigiWebApp.SplashViewPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		  pagebeforeshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
-						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
-					} else {
-						DigiWebApp.ApplicationController.regSecEv(YES);	
-					};
-				}
-			}
-        }
-		, pageshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
-				}
-			}
-        }
-
-    }
-
-    , childViews: 'content'
-
-    , cssClass: 'splashViewPage'
-
-    , logo: M.ImageView.design({
-          value:'theme/images/logo.png'
-        , cssClass: 'logoSplashPage'
-    })
-
-    , content: M.ScrollView.design({
-
-          cssClass: 'infoBox'
-
-        , childViews: 'title info'
-
-        , title: M.LabelView.design({
-            //  value: 'DIGI-WebApp'
-              value: ''
-            , cssClass: 'appTitle'
-        })
-
-        , info: M.LabelView.design({
-              value: ''
-            , cssClass: 'infoMsg'
-            , contentBinding: {
-                  target: DigiWebApp.ApplicationController
-                , property: 'infoMsg'
-            }
-        })
 
     })
 
@@ -30037,6 +29965,78 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
 //	      })
 //	    })
 	    
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: SplashViewPage
+// ==========================================================================
+
+DigiWebApp.SplashViewPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		  pagebeforeshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
+						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
+					} else {
+						DigiWebApp.ApplicationController.regSecEv(YES);	
+					};
+				}
+			}
+        }
+		, pageshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
+				}
+			}
+        }
+
+    }
+
+    , childViews: 'content'
+
+    , cssClass: 'splashViewPage'
+
+    , logo: M.ImageView.design({
+          value:'theme/images/logo.png'
+        , cssClass: 'logoSplashPage'
+    })
+
+    , content: M.ScrollView.design({
+
+          cssClass: 'infoBox'
+
+        , childViews: 'title info'
+
+        , title: M.LabelView.design({
+            //  value: 'DIGI-WebApp'
+              value: ''
+            , cssClass: 'appTitle'
+        })
+
+        , info: M.LabelView.design({
+              value: ''
+            , cssClass: 'infoMsg'
+            , contentBinding: {
+                  target: DigiWebApp.ApplicationController
+                , property: 'infoMsg'
+            }
+        })
+
     })
 
 });
