@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3865
+    , softwareVersion: 3856
 
 
     /**
@@ -8524,7 +8524,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     , init: function(isFirstLoad) {
 	
 		if (isFirstLoad) {
-			DigiWebApp.SelectionController.set("uebernachtungskennzeichenScholpp", JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"},{"label":"- -","value":"6"}]'));
+			DigiWebApp.SelectionController.set("uebernachtungskennzeichenScholpp", JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]'));
 			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":" ","value":"1","isSelected":true}]'));
 		}
 		
@@ -11913,7 +11913,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         	//alert("bookingPageWithIconsScholpp");
     		orderId = M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').getSelection(YES).value;
     		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
     		//alert(M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES).value);
     	} else {
     		orderId = M.ViewManager.getView('bookingPage', 'order').getSelection(YES).value;
@@ -12116,7 +12116,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         this.set('activities', activityArray);
         try {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+            	M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').setSelection('0');
             	M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').setSelection('0');
@@ -12133,7 +12133,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	try {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('5');
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'order').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').resetSelection();
         		M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
@@ -17100,7 +17100,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         }
                 
         that.set('settings', settings);
-        
+
         if (interactWithServiceApp) {
 	        // check for ServiceApp
 			var cleanDataDirectory = function() {
@@ -17108,12 +17108,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT");
 					DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 						if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
-						DigiWebApp.ApplicationController.DigiLoaderView.hide();
 						DigiWebApp.BookingController.init(YES);
-					}, function(err){
-						DigiWebApp.ApplicationController.DigiLoaderView.hide();
-						console.error(err);
-					});
+					},function(err){console.error(err);});
 				}
 				if (true) {
 					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("clean DataDirectory");
@@ -17121,9 +17117,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 						_.each(results, function(fileName) {
 							if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
 								if (DigiWebApp.SettingsController.getSetting("debug")) console.log("delete " + fileName);
-								DigiWebApp.ServiceAppController.deleteFile(fileName, function(){
-								}, function(){
-								});
+								DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
 							}
 						});
 						refreshWAIT();
@@ -17132,7 +17126,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					refreshWAIT();
 				}
 			}
-        
 	        if (DigiWebApp.SettingsController.featureAvailable('417')) {
 	         	 $('#' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id).show();
 	             DigiWebApp.ServiceAppController.knockknock(function(data) {
@@ -17181,7 +17174,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	         	cleanDataDirectory();
 	        }
         }
-
 	}
 	
 	, saveDone: YES 
@@ -20264,7 +20256,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3865'
+              value: 'Build: 3856'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -20790,23 +20782,23 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     }
                 }
                 , button: M.ButtonView.design({
-                      value: " "
+                      value: "Pause"
                     , cssClass: 'scholppButton'
                     , anchorLocation: M.RIGHT
                     , events: {
 		                  tap: {
 			    				action: function() {
-	          	  				//DigiWebApp.ScholppBookingController.buchePause();
+	          	  				DigiWebApp.ScholppBookingController.buchePause();
 		          				}
 		                  }
 		            }
                 })
                 , icon: M.ImageView.design({
-                      value: ''
+                      value: 'theme/images/48x48_plain_cup.png'
                     , events: {
 		                  tap: {
 			    				action: function() {
-	          	  				//DigiWebApp.ScholppBookingController.buchePause();
+	          	  				DigiWebApp.ScholppBookingController.buchePause();
 		          				}
 		                  }
 		            }
