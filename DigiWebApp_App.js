@@ -7198,7 +7198,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3845
+    , softwareVersion: 3846
 
 
     /**
@@ -12812,10 +12812,13 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 								errorCallback("getBookings: Unbekannter Status");
 						}
 					});
+					DigiWebApp.ApplicationController.DigiLoaderView.hide();
 				} catch(e) {
+					DigiWebApp.ApplicationController.DigiLoaderView.hide();
 					errorCallback("getBookings: " + e.message);
 				}
 			}, function(){
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
 				errorCallback("getBookings: ServiceApp hat nicht geantwortet!");
 			});
 		}
@@ -20182,7 +20185,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3845'
+              value: 'Build: 3846'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
