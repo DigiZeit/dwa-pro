@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3854
+    , softwareVersion: 3855
 
 
     /**
@@ -8525,7 +8525,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	
 		if (isFirstLoad) {
 			DigiWebApp.SelectionController.set("uebernachtungskennzeichenScholpp", JSON.parse('[{"label":"Keine Übernachtung","value":"1","isSelected":true},{"label":"Pauschal","value":"2"},{"label":"Beleg (Hotel)","value":"3"},{"label":"Heimreise","value":"4"},{"label":"Baustellenwechsel","value":"5"}]'));
-			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":"","value":"1","isSelected":true}]'));
+			DigiWebApp.SelectionController.set("spesenkennzeichenScholpp", JSON.parse('[{"label":" ","value":"1","isSelected":true}]'));
 		}
 		
 		var p = M.Environment.getPlatform();
@@ -20253,7 +20253,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3854'
+              value: 'Build: 3855'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
