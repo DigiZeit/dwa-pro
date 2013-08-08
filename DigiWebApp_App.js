@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3862
+    , softwareVersion: 3863
 
 
     /**
@@ -17108,8 +17108,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
 					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT");
 					DigiWebApp.ServiceAppController.refreshWAITBookings(function(){
 						if (DigiWebApp.SettingsController.getSetting("debug")) console.log("refreshWAIT done");
+						DigiWebApp.ApplicationController.DigiLoaderView.hide();
 						DigiWebApp.BookingController.init(YES);
-					}, function(err){console.error(err);});
+					}, function(err){
+						DigiWebApp.ApplicationController.DigiLoaderView.hide();
+						console.error(err);
+					});
 				}
 				if (true) {
 					if (DigiWebApp.SettingsController.getSetting("debug")) console.log("clean DataDirectory");
@@ -17117,7 +17121,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
 						_.each(results, function(fileName) {
 							if (fileName.search("DigiWebAppServiceApp.*.response.json") === 0) {
 								if (DigiWebApp.SettingsController.getSetting("debug")) console.log("delete " + fileName);
-								DigiWebApp.ServiceAppController.deleteFile(fileName, function(){}, function(){});
+								DigiWebApp.ServiceAppController.deleteFile(fileName, function(){
+								}, function(){
+								});
 							}
 						});
 						refreshWAIT();
@@ -20258,7 +20264,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3862'
+              value: 'Build: 3863'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
