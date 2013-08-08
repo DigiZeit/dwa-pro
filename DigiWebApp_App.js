@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3859
+    , softwareVersion: 3860
 
 
     /**
@@ -13706,7 +13706,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         };
         		
         // set settings
-        DigiWebApp.SettingsController.init(YES);
+        DigiWebApp.SettingsController.init(YES,YES);
         
         if (DigiWebApp.SettingsController.getSetting('debug')) { 
         	DigiWebApp.SettingsController.globalDebugMode = YES; 
@@ -20258,7 +20258,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3859'
+              value: 'Build: 3860'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
