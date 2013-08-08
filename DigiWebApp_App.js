@@ -7204,7 +7204,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3861
+    , softwareVersion: 3862
 
 
     /**
@@ -16811,7 +16811,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
     , defaultsettings: null
     
-    , init: function(i, isFirstLoad) {
+    , init: function(isFirstLoad, interactWithServiceApp) {
     	
     	var that = DigiWebApp.SettingsController;
     	
@@ -17101,8 +17101,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 
         that.set('settings', settings);
         
-        alert(isFirstLoad);
-        if (isFirstLoad) {
+        if (interactWithServiceApp) {
 	        // check for ServiceApp
 			var cleanDataDirectory = function() {
 				var refreshWAIT = function() {
@@ -20259,7 +20258,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3861'
+              value: 'Build: 3862'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
