@@ -7214,7 +7214,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3861
+    , softwareVersion: 3862
 
 
     /**
@@ -11738,7 +11738,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
 	        	} else {        	
 	        		var obj = { label: ueK.label, value: ueK.value };
-	        		if(obj.value === 6) { // select "- -"
+	        		if(parseInt(obj.value) === 6) { // select "- -"
 	        			obj.isSelected = YES;
 	        			itemSelected = YES;
 	        		}
@@ -20266,7 +20266,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3861'
+              value: 'Build: 3862'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
