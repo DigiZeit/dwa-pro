@@ -7214,7 +7214,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3858
+    , softwareVersion: 3859
 
 
     /**
@@ -11660,7 +11660,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
 
     , setSelectionWithCurrentHandOrderFirst: function() {
-        //var that = this;
+        var that = this;
 
         var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
         //var positions = DigiWebApp.Position.findSorted();
@@ -20266,7 +20266,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3858'
+              value: 'Build: 3859'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
