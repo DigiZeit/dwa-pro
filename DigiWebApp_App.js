@@ -7214,7 +7214,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3860
+    , softwareVersion: 3861
 
 
     /**
@@ -11738,7 +11738,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
 	        	} else {        	
 	        		var obj = { label: ueK.label, value: ueK.value };
-	        		if(obj.value === that.selections.uebernachtungskennzeichenScholpp) {
+	        		if(obj.value === 6) { // select "- -"
 	        			obj.isSelected = YES;
 	        			itemSelected = YES;
 	        		}
@@ -11746,7 +11746,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        	}
 	        });
 	        uebernachtungskennzeichenScholppArray = _.compact(uebernachtungskennzeichenScholppArray);
-	        this.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
+	        that.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
 		}
 
         // set selection arrays to start content binding process
@@ -20266,7 +20266,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3860'
+              value: 'Build: 3861'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
