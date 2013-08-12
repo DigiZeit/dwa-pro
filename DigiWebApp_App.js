@@ -2254,6 +2254,14 @@ DigiWebApp.Booking = M.Model.create({
         isRequired: NO
     })
 
+    , handauftragsId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handauftragsBezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
     , positionId: M.Model.attr('String', {
         isRequired: NO
     })
@@ -7214,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3870
+    , softwareVersion: 3871
 
 
     /**
@@ -8958,9 +8966,13 @@ DigiWebApp.BookingController = M.Controller.extend({
 		newOpenBooking.set('employees', employeeIdsArray.join());
 		
 		if (DigiWebApp.SettingsController.featureAvailable('419') && (newOpenBooking.get("activityName") === "Reisezeit" || newOpenBooking.get("activityName") === "Fahrzeit")) { // Scholpp-Spesen: Übrnachtungskennzeichen setzen
-			var uebernachtungAuswahlObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES);
-			var uebernachtungAuswahl = uebernachtungAuswahlObj ? uebernachtungAuswahlObj.value : 0;
-			newOpenBooking.set("uebernachtungAuswahl", uebernachtungAuswahl);						
+			if (newOpenBooking.get("activityName") === "Reisezeit" || newOpenBooking.get("activityName") === "Fahrzeit")) { // Scholpp-Spesen: Übrnachtungskennzeichen setzen
+				var uebernachtungAuswahlObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection(YES);
+				var uebernachtungAuswahl = uebernachtungAuswahlObj ? uebernachtungAuswahlObj.value : 6;
+				newOpenBooking.set("uebernachtungAuswahl", uebernachtungAuswahl);						
+			} else {
+				newOpenBooking.set("uebernachtungAuswahl", 6);
+			}
 		} else {
 			newOpenBooking.set("uebernachtungAuswahl", 0);
 		}
@@ -10188,6 +10200,9 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 				zeitbuch.set("gpsBreiteVon",zeitbuch.get("latitude"));
 				zeitbuch.set("gpsLaengeBis",zeitbuch.get("longitude_bis"));
 				zeitbuch.set("gpsBreiteBis",zeitbuch.get("latitude_bis"));
+
+				zeitbuch.set("handauftragsId",zeitbuch.get("handOrderId"));
+				zeitbuch.set("handauftragsBezeichnung",zeitbuch.get("handOrderName"));
 
 				zeitbuch.set("mitarbeiterId", maId);
 				items.push(zeitbuch.record);
@@ -20266,7 +20281,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3870'
+              value: 'Build: 3871'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
