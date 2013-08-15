@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3877
+    , softwareVersion: 3878
 
 
     /**
@@ -20170,7 +20170,7 @@ DigiWebApp.InfoPage = M.PageView.design({
           childViews: 'logo languageSelection spacer8 companyIdLabel mitarbeiterNameVornameLabel spacer9 versionLabel cordovaVersionLabel companyLabel streetLabel cityLabel emailLabel1 spacer1 emailLabel2 spacer2 spacer3 TMPVersionLabel spacer4 deviceinfo spacer5 connectioninfo spacer6 environmentinfo spacer7 localStorageUsage'
 
         , logo: M.ImageView.design({
-              value: 'theme/images/NeuesLogo2013_transparent-BG_schwarz-DIGI_weiss-Zeiterfassung.png'
+              value: 'theme/images/NeuesLogo2013_transparent-BG_grau-DIGI_weiss-Zeiterfassung.png'
             , cssClass: 'logoInfoPage marginBottom25 unselectable'
         })
 
@@ -20281,7 +20281,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3877'
+              value: 'Build: 3878'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
