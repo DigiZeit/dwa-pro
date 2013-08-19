@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3886
+    , softwareVersion: 3887
 
 
     /**
@@ -17126,7 +17126,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                 
         that.set('settings', settings);
 
-        if (interactWithServiceApp) {
+        if (interactWithServiceApp && DigiWebApp.SettingsController.featureAvailable('417')) {
 	        // check for ServiceApp
 			var cleanDataDirectory = function() {
 				var refreshWAIT = function() {
@@ -20305,7 +20305,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3886'
+              value: 'Build: 3887'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
