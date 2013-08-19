@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3885
+    , softwareVersion: 3886
 
 
     /**
@@ -19464,15 +19464,27 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 						if (longitude === '0.0' && latitude === '0.0') return;
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 							case "OSM":
-								alert(M.I18N.l('showInMapOSMAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapOSMAlert'));
+								}
 								url_byCoordinates = "http://www.openstreetmap.org/index.html?mlat=" + latitude + "&mlon=" + longitude + "&zoom=" + zoom + "&layers=M";
 								break;
 							case "Bing":
-								alert(M.I18N.l('showInMapBingAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapBingAlert'));
+								}
 								url_byCoordinates = "http://www.bing.com/maps/default.aspx?rtp=adr.~pos." + latitude + "_" + longitude + "_&lvl=" + (zoom + 1);
 								break;
 							case "Google":
-								alert(M.I18N.l('showInMapGoogleAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapGoogleAlert'));
+								}
 								url_byCoordinates = "http://maps.google.com/maps?q=" + latitude + "+" + longitude + "&hl=de";
 								break;
 							default:
@@ -19520,15 +19532,27 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 						if (longitude === '0.0' && latitude === '0.0') return;
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 							case "OSM":
-								alert(M.I18N.l('showInMapOSMAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapOSMAlert'));
+								}
 								url_byCoordinates = "http://www.openstreetmap.org/index.html?mlat=" + latitude + "&mlon=" + longitude + "&zoom=" + zoom + "&layers=M";
 								break;
 							case "Bing":
-								alert(M.I18N.l('showInMapBingAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapBingAlert'));
+								}
 								url_byCoordinates = "http://www.bing.com/maps/default.aspx?rtp=adr.~pos." + latitude + "_" + longitude + "_&lvl=" + (zoom + 1);
 								break;
 							case "Google":
-								alert(M.I18N.l('showInMapGoogleAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapGoogleAlert'));
+								}
 								url_byCoordinates = "http://maps.google.com/maps?q=" + latitude + "+" + longitude + "&hl=de";
 								break;
 							default:
@@ -20281,7 +20305,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3885'
+              value: 'Build: 3886'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26100,15 +26124,27 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 						var url_byAddress = '';
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 						case "OSM":
-							alert(M.I18N.l('showInMapOSMAlert'));
+							if (DigiWebApp.SettingsController.featureAvailable('419')) {
+								alert(M.I18N.l('showInMapScholpp'));
+							} else {
+								alert(M.I18N.l('showInMapOSMAlert'));
+							}
 							url_byAddress = "http://nominatim.openstreetmap.org/search/" + country + "/" + city + "/" + street + "/" + housenumber + "?format=html&polygon=1&addressdetails=" + addressdetails;
 							break;
 						case "Bing":
-							alert(M.I18N.l('showInMapBingAlert'));
+							if (DigiWebApp.SettingsController.featureAvailable('419')) {
+								alert(M.I18N.l('showInMapScholpp'));
+							} else {
+								alert(M.I18N.l('showInMapBingAlert'));
+							}
 							url_byAddress = "http://www.bing.com/maps/default.aspx?rtp=~adr." + street + " " + housenumber + " " + zip + " " + city + " " + country;
 							break;
 						case "Google":
-							alert(M.I18N.l('showInMapGoogleAlert'));
+							if (DigiWebApp.SettingsController.featureAvailable('419')) {
+								alert(M.I18N.l('showInMapScholpp'));
+							} else {
+								alert(M.I18N.l('showInMapGoogleAlert'));
+							}
 							url_byAddress = "http://maps.google.com/maps?q=" + street + " " + housenumber + " " + zip + " " + city + " " + country + "&hl=de";
 							break;
 						default:
@@ -26150,15 +26186,27 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 						var url_byCoordinates = "";
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 							case "OSM":
-								alert(M.I18N.l('showInMapOSMAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapOSMAlert'));
+								}
 								url_byCoordinates = "http://www.openstreetmap.org/index.html?mlat=" + latitude + "&mlon=" + longitude + "&zoom=" + zoom + "&layers=M";
 								break;
 							case "Bing":
-								alert(M.I18N.l('showInMapBingAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapBingAlert'));
+								}
 								url_byCoordinates = "http://www.bing.com/maps/default.aspx?rtp=adr.~pos." + latitude + "_" + longitude + "_&lvl=" + (zoom + 1);
 								break;
 							case "Google":
-								alert(M.I18N.l('showInMapGoogleAlert'));
+								if (DigiWebApp.SettingsController.featureAvailable('419')) {
+									alert(M.I18N.l('showInMapScholpp'));
+								} else {
+									alert(M.I18N.l('showInMapGoogleAlert'));
+								}
 								url_byCoordinates = "http://maps.google.com/maps?q=" + latitude + "+" + longitude + "&hl=de";
 								break;
 							default:

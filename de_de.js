@@ -419,5 +419,7 @@ M.I18N.de_de = {
 	, BautagebuchUngueltigeMenge: "Ungültige Menge"
 	, BautagebuchUngueltigeMengeMsg: "Sie haben keine gültige Menge angegeben!"
     // Ende::Bautagebuch
+		
+	, showInMapScholpp: "Sie werden weitergeleitet auf einen unabhängigen Kartendienst. Dies dient ausschließlich Ihrer Information und hat keinerlei Relevanz für Ihre Lohn- oder Reisekostenabrechnung."
 	
 };

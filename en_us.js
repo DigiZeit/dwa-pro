@@ -420,4 +420,6 @@ M.I18N.en_us = {
 	, BautagebuchUngueltigeMengeMsg: "No valid amount given!"
     // Ende::Bautagebuch
 
+	, showInMapScholpp: "Sie werden weitergeleitet auf einen unabhängigen Kartendienst. Dies dient ausschließlich Ihrer Information und hat keinerlei Relevanz für Ihre Lohn- oder Reisekostenabrechnung."
+
 };
