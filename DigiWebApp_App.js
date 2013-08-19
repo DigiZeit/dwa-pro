@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3882
+    , softwareVersion: 3883
 
 
     /**
@@ -20281,7 +20281,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3882'
+              value: 'Build: 3883'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26842,7 +26842,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
     , order: M.LabelView.design({
           cssClass: 'application unselectable'
         , computedValue: {
-              valuePattern: '<%= orderId %>'
+              valuePattern: '<%= orderName %>'
             , operation: function(v) {
                 var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
                     if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
