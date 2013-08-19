@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3887
+    , softwareVersion: 3888
 
 
     /**
@@ -20305,7 +20305,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3887'
+              value: 'Build: 3888'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23668,7 +23668,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= fehlzeitBezeichnung %>'
       , operation: function(v) {
-			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 				return M.I18N.l('fehlzeit') + ': ' + v;
 			} else {
 				return '';
@@ -23747,7 +23747,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= handauftragsBezeichnung %>'
       , operation: function(v) {
-			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 				return M.I18N.l('handApplications') + ': ' + v;
 			} else {
 				return '';
@@ -23803,7 +23803,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
 	, computedValue: {
 	      valuePattern: '<%= auftragsBezeichnung %>'
 	    , operation: function(v) {
-				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 					return M.I18N.l('order') + ': ' + v;
 				} else {
 					return '';
@@ -23818,7 +23818,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= positionsBezeichnung %>'
       , operation: function(v) {
-			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 				return M.I18N.l('position') + ': ' + v;
 			} else {
 				return '';
@@ -23842,7 +23842,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= taetigkeit %>'
       , operation: function(v) {
-			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 				return M.I18N.l('activity') + ': ' + v;
 			} else {
 				return '';
@@ -23877,7 +23877,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= uhrzeit %>'
       , operation: function(v) {
-			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-") {
+			if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "-" && v !== "null" && v !== null) {
 		        return ' ' + v;
 			} else {
 				return "";
