@@ -7222,7 +7222,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3889
+    , softwareVersion: 3890
 
 
     /**
@@ -20305,7 +20305,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3889'
+              value: 'Build: 3890'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -23683,7 +23683,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= gpsBreite %>'
       , operation: function(v) {
-		        if (v != "0.0") { 
+		        if (v != "0.0" && v !== "null" && v !== null) { 
 		        	var str = new Number(v);
 		       		return M.I18N.l('buchungskoordinaten') + ': ' + str.toFixed(4);
 		        } else {
@@ -23699,7 +23699,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= gpsBreitePosition %>'
       , operation: function(v) {
-	        if (v != "0.0") { 
+	        if (v != "0.0" && v !== "null" && v !== null) { 
 	        	var str = new Number(v);
 	       		return M.I18N.l('auftragskoordinaten') + ': ' + str.toFixed(4);
 	        } else {
@@ -23715,7 +23715,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= gpsLaenge %>'
       , operation: function(v) {
-	        if (v != "0.0") { 
+	        if (v != "0.0" && v !== "null" && v !== null) { 
 	        	var str = new Number(v);
 	       		return ', ' + str.toFixed(4);
 	        } else {
@@ -23731,7 +23731,7 @@ DigiWebApp.AnwesenheitslisteTemplateView = M.ListItemView.design({
   , computedValue: {
         valuePattern: '<%= gpsLaengePosition %>'
       , operation: function(v) {
-		        if (v != "0.0") { 
+		        if (v != "0.0" && v !== "null" && v !== null) { 
 		        	var str = new Number(v);
 		       		return ', ' + str.toFixed(4);
 		        } else {
