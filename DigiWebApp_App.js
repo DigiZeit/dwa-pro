@@ -6932,7 +6932,7 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 	        		return null;
 	        	}
 	            var obj = { label: pos.get('name'), value: pos.get('id') };
-            	if (obj.value === obj.value === M.ViewManager.getView('bookingPage', 'position').getSelection()) {
+            	if (obj.value === M.ViewManager.getView('bookingPage', 'position').getSelection()) {
             		obj.isSelected = YES;
             		itemSelected = YES;
             		DigiWebApp.OrderInfoController.set('activePosition', [pos]);
@@ -7263,7 +7263,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3912
+    , softwareVersion: 3913
 
 
     /**
@@ -20403,7 +20403,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3912'
+              value: 'Build: 3913'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
