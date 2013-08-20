@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3908
+    , softwareVersion: 3910
 
 
     /**
@@ -11988,6 +11988,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         }
         
 		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+			if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
+				DigiWebApp.OrderInfoController.init();
+			}
 			M.ViewManager.getView('orderInfoPage', 'order').setSelection(orderId);
 			DigiWebApp.OrderInfoController.setPositions();
 			DigiWebApp.OrderInfoController.setItem();
@@ -12044,6 +12047,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
         }
 
 		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+			if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
+				DigiWebApp.OrderInfoController.init();
+			}
 			M.ViewManager.getView('orderInfoPage', 'position').setSelection(posId);
 			DigiWebApp.OrderInfoController.setItem();
 		}
@@ -16952,6 +16958,14 @@ DigiWebApp.SettingsController = M.Controller.extend({
         }
         // End::Bemerkungsfeld
         
+        // Start::Auftragsinfo (406)
+        if (DigiWebApp.SettingsController.featureAvailable('406')) {
+        	$('#' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id).show();
+        } else {
+        	$('#' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id).hide();
+        }
+        // End::Auftragsinfo
+        
         // Start::Zeitbuchungen für X Tage vorhalten (411)
         if (DigiWebApp.SettingsController.featureAvailable('411')) {
         	$('#' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id).show();
@@ -16959,7 +16973,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         	$('#' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id).hide();
         }
         // End::Zeitbuchungen für X Tage vorhalten
-        
+
         // Start::Bautagebuch (412)
         if (DigiWebApp.SettingsController.featureAvailable('412')) {
         	$('#' + DigiWebApp.SettingsPage.content.bautagebuchLimit_autoStartUhrzeit.id).show();
@@ -20386,7 +20400,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3908'
+              value: 'Build: 3910'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
