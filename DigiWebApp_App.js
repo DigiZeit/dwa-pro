@@ -319,6 +319,9 @@ DigiWebApp.OnlinePosition = M.Model.create({
 
     /* map needs to return record obj which can be handled by createRecord */
     , map: function(obj) {
+    	if (obj === null) {
+    		return null;
+    	} 
     	//console.log(obj);
         return {
 //            , id: M.Model.attr('String',{
@@ -834,6 +837,9 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
 
     /* map needs to return record obj which can be handled by createRecord */
     , map: function(obj) {
+    	if (obj === null) {
+    		return null;
+    	} 
     	//console.log(obj);
         return {
 //    	  	  auftragsBezeichnung: "6657Heim"
@@ -7262,7 +7268,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3923
+    , softwareVersion: 3924
 
 
     /**
@@ -20402,7 +20408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3923'
+              value: 'Build: 3924'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
