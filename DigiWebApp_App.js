@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3907
+    , softwareVersion: 3908
 
 
     /**
@@ -11989,6 +11989,8 @@ DigiWebApp.SelectionController = M.Controller.extend({
         
 		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
 			M.ViewManager.getView('orderInfoPage', 'order').setSelection(orderId);
+			DigiWebApp.OrderInfoController.setPositions();
+			DigiWebApp.OrderInfoController.setItem();
 		}
 
 //        M.ViewManager.getView('bookingPage', 'position').removeSelection(); /* to avoid bug of not setting selected... */
@@ -12043,6 +12045,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
 		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
 			M.ViewManager.getView('orderInfoPage', 'position').setSelection(posId);
+			DigiWebApp.OrderInfoController.setItem();
 		}
 
         var activities = [];
@@ -20383,7 +20386,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3907'
+              value: 'Build: 3908'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
