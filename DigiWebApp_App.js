@@ -320,7 +320,26 @@ DigiWebApp.OnlinePosition = M.Model.create({
     /* map needs to return record obj which can be handled by createRecord */
     , map: function(obj) {
     	if (obj === null) {
-    		return null;
+    		return {
+            	positionsId: null
+	      	  , positionsBezeichnung: null
+	      	  , strasse: null
+	      	  , hausnummer: null
+	      	  , plz: null
+	      	  , ort: null
+	      	  , land: null
+	      	  , countrycode: null
+	      	  , telefon: null
+	      	  , fax: null
+	      	  , email: null
+	      	  , ansprechpartner: null
+	      	  , kundenname: null
+	      	  , longitude: null
+	      	  , latitude: null
+	      	  , positionsBeschreibung: null
+	      	  , orderId: null
+	      	  , auftragsBezeichnung: null
+    		};
     	} 
     	//console.log(obj);
         return {
@@ -838,7 +857,31 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     /* map needs to return record obj which can be handled by createRecord */
     , map: function(obj) {
     	if (obj === null) {
-    		return null;
+    		return {
+        	    auftragsBezeichnung: null
+	      	  , auftragsId: null
+	      	  , bis: null
+	      	  , datum: null
+	      	  , dauer: null
+	      	  , farbeAmpel: null
+	      	  , gpsBreite: null
+	      	  , gpsBreitePosition: null
+	      	  , gpsLaenge: null
+	      	  , gpsLaengePosition: null
+		      , handauftragsBezeichnung: null
+		      , handauftragsId: null
+	      	  , mitarbeiterId: null
+	      	  , name: null
+	      	  , nameVorname: null
+	      	  , positionsBezeichnung: null
+	      	  , positionsId: null
+	      	  , taetigkeit: null
+	      	  , taetigkeitsId: null
+	      	  , taetigkeitsart: null
+	      	  , von: null
+	      	  , vorname: null
+	      	  , remark: null
+    		};
     	} 
     	//console.log(obj);
         return {
@@ -7268,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3924
+    , softwareVersion: 3925
 
 
     /**
@@ -20408,7 +20451,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3924'
+              value: 'Build: 3925'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
