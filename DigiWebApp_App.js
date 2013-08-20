@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3901
+    , softwareVersion: 3902
 
 
     /**
@@ -20374,7 +20374,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3901'
+              value: 'Build: 3902'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26385,7 +26385,8 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 		                    	if (order.get('id') === orderId) {
 		                    		DigiWebApp.OrderInfoController.set('activeOrder', [order]);
 		                    		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-		                    			DigiWebApp.SelectionController.selections.order = M.ViewManager.getView('orderInfoPage', 'order').getSelection();
+		                    			DigiWebApp.SelectionController.set('selections.order', M.ViewManager.getView('orderInfoPage', 'order').getSelection());
+		                    			M.ViewManager.getView('orderInfoPage', 'order').setSelection(M.ViewManager.getView('orderInfoPage', 'order').getSelection())
 		                    			DigiWebApp.SelectionController.setPositions();
 		                    		}
 		                    	}
@@ -26419,7 +26420,8 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 		                    	if (position.get('id') === positionId) {
 		                    		DigiWebApp.OrderInfoController.set('activePosition', [position]);
 		                    		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-		                    			DigiWebApp.SelectionController.selections.order = M.ViewManager.getView('orderInfoPage', 'position').getSelection();
+		                    			DigiWebApp.SelectionController.set('selections.position', M.ViewManager.getView('orderInfoPage', 'position').getSelection());
+		                    			M.ViewManager.getView('orderInfoPage', 'position').setSelection(M.ViewManager.getView('orderInfoPage', 'position').getSelection())
 		                    			DigiWebApp.SelectionController.setActivities(YES);
 		                    		}
 
