@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3922
+    , softwareVersion: 3923
 
 
     /**
@@ -20402,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3922'
+              value: 'Build: 3923'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26218,6 +26218,9 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                action: function(buttonid, ev) {
+	    				if (DigiWebApp.OrderInfoController.items.length === 0) {
+	    					DigiWebApp.OrderInfoController.set('items', DigiWebApp.OrderDetailsController.positionForDetails);
+	    				}
 	    				try { ev.preventDefault(); } catch(e) { console.error(e); };
 						var country = DigiWebApp.OrderInfoController.items[0].positionCountryCode;
 						var zip = DigiWebApp.OrderInfoController.items[0].positionPLZ;
@@ -26284,6 +26287,9 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                action: function() {
+						if (DigiWebApp.OrderInfoController.items.length === 0) {
+							DigiWebApp.OrderInfoController.set('items', DigiWebApp.OrderDetailsController.positionForDetails);
+						}
 						var longitude = DigiWebApp.OrderInfoController.items[0].positionLongitude;
 						var latitude = DigiWebApp.OrderInfoController.items[0].positionLatitude;
 						var zoom = '15';
