@@ -288,7 +288,7 @@ DigiWebApp.OnlinePosition = M.Model.create({
         isRequired: NO
     })
 
-    , description: M.Model.attr('String', {
+    , positionsBeschreibung: M.Model.attr('String', {
         isRequired: NO
     })
 
@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3920
+    , softwareVersion: 3921
 
 
     /**
@@ -11157,7 +11157,7 @@ DigiWebApp.OrderDetailsController = M.Controller.extend({
 			item.positionKundenname = that.loadedPosition[0].get('kundenname');
 			item.positionLongitude = that.loadedPosition[0].get('longitude');
 			item.positionLatitude = that.loadedPosition[0].get('latitude');
-			item.positionBeschreibung = that.loadedPosition[0].get('description');
+			item.positionBeschreibung = that.loadedPosition[0].get('positionsBeschreibung');
 			item.positionCountryCode = that.loadedPosition[0].get('countrycode');
 			item.positionPLZundOrt = item.positionPLZ + " " + item.positionOrt;
 			item.positionStrasseUndHausnummer = item.positionStrasse + " " + item.positionHausnummer;
@@ -20402,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3920'
+              value: 'Build: 3921'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
