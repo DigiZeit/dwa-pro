@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3915
+    , softwareVersion: 3916
 
 
     /**
@@ -20402,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3915'
+              value: 'Build: 3916'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -25645,7 +25645,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= auftragsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "null" && v !== null) {
 					return M.I18N.l('order') + ': ' + v;
 				} else {
 					return '';
@@ -25700,7 +25700,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= dauer %>'
           , operation: function(v) {
-					if (v !== "00:00" && v !== "-") {
+					if (v !== "00:00" && v !== "-" && v !== "null" && v !== null) {
 						return ' (' + v + ')';
 					} else {
 						return '';
@@ -25724,7 +25724,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsBreite %>'
           , operation: function(v) {
-			        if (v != "0.0") { 
+			        if (v != "0.0" && v !== "null" && v !== null) { 
 			        	var str = new Number(v);
 			       		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
 			        } else {
@@ -25740,7 +25740,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsBreitePosition %>'
           , operation: function(v) {
-		        if (v != "0.0") { 
+		        if (v != "0.0" && v !== "null" && v !== null) { 
 		        	var str = new Number(v);
 		       		return M.I18N.l('position') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
 		        } else {
@@ -25756,7 +25756,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsLaenge %>'
           , operation: function(v) {
-		        if (v != "0.0") { 
+		        if (v != "0.0" && v !== "null" && v !== null) { 
 		        	var str = new Number(v);
 		       		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
 		        } else {
@@ -25772,7 +25772,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= gpsLaengePosition %>'
           , operation: function(v) {
-			        if (v != "0.0") { 
+			        if (v != "0.0" && v !== "null" && v !== null) { 
 			        	var str = new Number(v);
 			       		return M.I18N.l('position') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
 			        } else {
@@ -25788,7 +25788,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= handauftragsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "null" && v !== null) {
 					return M.I18N.l('handApplications') + ': ' + v;
 				} else {
 					return '';
@@ -25842,7 +25842,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= positionsBezeichnung %>'
           , operation: function(v) {
-				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "null" && v !== null) {
 					return M.I18N.l('position') + ': ' + v;
 				} else {
 					return '';
@@ -25866,7 +25866,7 @@ DigiWebApp.ZeitbuchungenTemplateView = M.ListItemView.design({
       , computedValue: {
             valuePattern: '<%= taetigkeit %>'
           , operation: function(v) {
-				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined") {
+				if (v !== "" && typeof(v) !== "undefined" && v !== "undefined" && v !== "null" && v !== null) {
 					return M.I18N.l('activity') + ': ' + v;
 				} else {
 					return '';
