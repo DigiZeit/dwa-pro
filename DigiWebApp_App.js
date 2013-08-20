@@ -7002,7 +7002,6 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
     }
     
     , setPositions: function() {
-    	debugger;
         var orderId = M.ViewManager.getView('orderInfoPage', 'order').getSelection(YES).value;
         if(!orderId) {
             return;
@@ -7263,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3913
+    , softwareVersion: 3914
 
 
     /**
@@ -20403,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3913'
+              value: 'Build: 3914'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
