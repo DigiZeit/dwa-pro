@@ -1007,6 +1007,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , mitarbeiterNachname: M.Model.attr('String')
     
+    , auftragsDetailsKoppeln: M.Model.attr('Boolean')
+    
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -6861,48 +6863,86 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
         
         var itemSelected = NO;
 
-        var orderArray = _.map(orders, function(order) {
-        	if (!(order)) return;
-            var obj =  { label: order.get('name'), value: order.get('id') };
-            if ( DigiWebApp.BookingController.currentBooking !== null ) {
-            	if (    (obj.value === DigiWebApp.BookingController.currentBooking.get('orderId'))
-            		 || (obj.value === DigiWebApp.BookingController.currentBooking.get('handOrderId'))
-            	   )
-            	{
+        if (!DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+	        var orderArray = _.map(orders, function(order) {
+	        	if (!(order)) return;
+	            var obj =  { label: order.get('name'), value: order.get('id') };
+	            if ( DigiWebApp.BookingController.currentBooking !== null ) {
+	            	if (    (obj.value === DigiWebApp.BookingController.currentBooking.get('orderId'))
+	            		 || (obj.value === DigiWebApp.BookingController.currentBooking.get('handOrderId'))
+	            	   )
+	            	{
+	            		obj.isSelected = YES;
+	            		itemSelected = YES;
+	            		DigiWebApp.OrderInfoController.set('activeOrder', [order]);
+	            	}
+	            }
+	            return obj;
+	        });
+	        orderArray = _.compact(orderArray);
+	        // push "Bitte wählen Option"
+	        if (itemSelected === NO) orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        
+	        itemSelected = NO;
+	        var positionArray = _.map(positions, function(pos) {
+	        	if (!(pos)) return;
+	        	if (DigiWebApp.OrderInfoController.activeOrder !== null) {
+	        		if (pos.get('orderId') !== DigiWebApp.OrderInfoController.activeOrder[0].get('id')) {
+	        			return null;
+	        		}
+	        	} else {
+	        		return null;
+	        	}
+	            var obj = { label: pos.get('name'), value: pos.get('id') };
+	           	if ( DigiWebApp.BookingController.currentBooking !== null ) {
+	            	if (obj.value === DigiWebApp.BookingController.currentBooking.get('positionId')) {
+	            		obj.isSelected = YES;
+	            		itemSelected = YES;
+	            		DigiWebApp.OrderInfoController.set('activePosition', [pos]);
+	            	}
+	            }
+	        	return obj;
+	        });
+	        positionArray = _.compact(positionArray);
+	        // push "Bitte wählen Option"
+	        if (itemSelected === NO) positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        } else {
+	        var orderArray = _.map(orders, function(order) {
+	        	if (!(order)) return;
+	            var obj =  { label: order.get('name'), value: order.get('id') };
+            	if (obj.value === M.ViewManager.getView('bookingPage', 'order').getSelection()) {
             		obj.isSelected = YES;
             		itemSelected = YES;
             		DigiWebApp.OrderInfoController.set('activeOrder', [order]);
             	}
-            }
-            return obj;
-        });
-        orderArray = _.compact(orderArray);
-        // push "Bitte wählen Option"
-        if (itemSelected === NO) orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
-        
-        itemSelected = NO;
-        var positionArray = _.map(positions, function(pos) {
-        	if (!(pos)) return;
-        	if (DigiWebApp.OrderInfoController.activeOrder !== null) {
-        		if (pos.get('orderId') !== DigiWebApp.OrderInfoController.activeOrder[0].get('id')) {
-        			return null;
-        		}
-        	} else {
-        		return null;
-        	}
-            var obj = { label: pos.get('name'), value: pos.get('id') };
-           	if ( DigiWebApp.BookingController.currentBooking !== null ) {
-            	if (obj.value === DigiWebApp.BookingController.currentBooking.get('positionId')) {
+	            return obj;
+	        });
+	        orderArray = _.compact(orderArray);
+	        // push "Bitte wählen Option"
+	        if (itemSelected === NO) orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        
+	        itemSelected = NO;
+	        var positionArray = _.map(positions, function(pos) {
+	        	if (!(pos)) return;
+	        	if (DigiWebApp.OrderInfoController.activeOrder !== null) {
+	        		if (pos.get('orderId') !== DigiWebApp.OrderInfoController.activeOrder[0].get('id')) {
+	        			return null;
+	        		}
+	        	} else {
+	        		return null;
+	        	}
+	            var obj = { label: pos.get('name'), value: pos.get('id') };
+            	if (obj.value === obj.value === M.ViewManager.getView('bookingPage', 'position').getSelection()) {
             		obj.isSelected = YES;
             		itemSelected = YES;
             		DigiWebApp.OrderInfoController.set('activePosition', [pos]);
             	}
-            }
-        	return obj;
-        });
-        positionArray = _.compact(positionArray);
-        // push "Bitte wählen Option"
-        if (itemSelected === NO) positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        	return obj;
+	        });
+	        positionArray = _.compact(positionArray);
+	        // push "Bitte wählen Option"
+	        if (itemSelected === NO) positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+        }
 
         // set selection arrays to start content binding process
         this.set('orders', orderArray);
@@ -7222,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3898
+    , softwareVersion: 3899
 
 
     /**
@@ -16831,7 +16871,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , debugDatabaseServer: null
         , mitarbeiterVorname: ""
         , mitarbeiterNachname: ""
-        
+        , auftragsDetailsKoppeln: false
     }
 
     , defaultsettings: null
@@ -17033,6 +17073,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                , debugDatabaseServer: record.get('debugDatabaseServer')
                , mitarbeiterVorname: record.get('mitarbeiterVorname')
                , mitarbeiterNachname: record.get('mitarbeiterNachname')
+	           , auftragsDetailsKoppeln: [{
+	                   value: record.get('auftragsDetailsKoppeln')
+	                 , label: M.I18N.l('auftragsDetailsKoppeln')
+	                 , isSelected: record.get('auftragsDetailsKoppeln')
+	           }]
+
             };
         /* default values */
         } else {
@@ -17119,6 +17165,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	            , debugDatabaseServer: DigiWebApp.SettingsController.defaultsettings.get('debugDatabaseServer')
 	            , mitarbeiterVorname: DigiWebApp.SettingsController.defaultsettings.get('mitarbeiterVorname')
 	            , mitarbeiterNachname: DigiWebApp.SettingsController.defaultsettings.get('mitarbeiterNachname')
+	            , auftragsDetailsKoppeln: [{
+	                  value: DigiWebApp.SettingsController.defaultsettings.get("auftragsDetailsKoppeln")
+	                , label: M.I18N.l('auftragsDetailsKoppeln')
+	            }]
+
             };
             
             record = DigiWebApp.Settings.createRecord(DigiWebApp.SettingsController.defaultsettings_object).save();
@@ -17287,7 +17338,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var debugDatabaseServer              = DigiWebApp.SettingsController.getSetting('debugDatabaseServer');
         var mitarbeiterVorname               = DigiWebApp.SettingsController.getSetting('mitarbeiterVorname')
         var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname')
-
+        var auftragsDetailsKoppeln			 = DigiWebApp.SettingsController.getSetting('auftragsDetailsKoppeln');
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -17390,6 +17441,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('debugDatabaseServer', debugDatabaseServer);
                                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
+                                                    record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -17459,6 +17511,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('debugDatabaseServer', debugDatabaseServer);
                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
+                                    record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -17502,6 +17555,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('debugDatabaseServer', debugDatabaseServer);
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
+                                record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -17545,6 +17599,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('debugDatabaseServer', debugDatabaseServer);
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
+                                record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -17590,6 +17645,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , debugDatabaseServer: debugDatabaseServer
                                 , mitarbeiterVorname: mitarbeiterVorname
                                 , mitarbeiterNachname: mitarbeiterNachname
+                                , auftragsDetailsKoppeln: auftragsDetailsKoppeln
 
                           });
 
@@ -20305,7 +20361,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3898'
+              value: 'Build: 3899'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21300,7 +21356,7 @@ DigiWebApp.SettingsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
         //  childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory autoSaveGPSData GPSDataIsMandatory useTransitionsSetting grid'
-          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory remarkIsOptional autoSaveGPSData useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer bautagebuchLimit_autoStartUhrzeit ServiceApp_ermittleGeokoordinate ServiceApp_datenUebertragen ServiceApp_engeKopplung ServiceApp_PORTGrid grid'
+          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory remarkIsOptional autoSaveGPSData useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer bautagebuchLimit_autoStartUhrzeit ServiceApp_ermittleGeokoordinate ServiceApp_datenUebertragen ServiceApp_engeKopplung ServiceApp_PORTGrid auftragsDetailsKoppeln grid'
         , daysToHoldBookingsOnDeviceSliderContainer: M.ContainerView.design({
       	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
 		        , daysToHoldBookingsOnDeviceSlider: M.SliderView.design({
@@ -21471,6 +21527,14 @@ DigiWebApp.SettingsPage = M.PageView.design({
                     , property: 'settings.ServiceApp_PORT'
                 }
             })
+        })
+        , auftragsDetailsKoppeln: M.SelectionListView.design({
+              selectionMode: M.MULTIPLE_SELECTION
+            //, cssClass: 'invisibleSetting',
+            , contentBinding: {
+                  target: DigiWebApp.SettingsController
+                , property: 'settings.auftragsDetailsKoppeln'
+            }
         })
 
         , grid: M.GridView.design({
@@ -26307,6 +26371,10 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 			                _.each(orders, function(order) {
 		                    	if (order.get('id') === orderId) {
 		                    		DigiWebApp.OrderInfoController.set('activeOrder', [order]);
+		                    		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+		                    			DigiWebApp.SelectionController.selections.order = M.ViewManager.getView('orderInfoPage', 'order').getSelection();
+		                    			DigiWebApp.SelectionController.setPositions();
+		                    		}
 		                    	}
 			                });
 			                DigiWebApp.OrderInfoController.setPositions();
@@ -26337,6 +26405,11 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 			                _.each(positions, function(position) {
 		                    	if (position.get('id') === positionId) {
 		                    		DigiWebApp.OrderInfoController.set('activePosition', [position]);
+		                    		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+		                    			DigiWebApp.SelectionController.selections.order = M.ViewManager.getView('orderInfoPage', 'position').getSelection();
+		                    			DigiWebApp.SelectionController.setActivities(YES);
+		                    		}
+
 		                    	}
 			                });
 		                }
