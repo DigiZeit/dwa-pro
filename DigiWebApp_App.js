@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3917
+    , softwareVersion: 3920
 
 
     /**
@@ -19291,7 +19291,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== null) {
       						//$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.infoButton.id).button("enable");
       						return M.I18N.l('order') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung");
       					} else {
@@ -19312,7 +19312,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== null) {
       						//$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.infoButton.id).button("enable");
       						return M.I18N.l('position') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung");
       					} else {
@@ -19361,7 +19361,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== null) {
       						return M.I18N.l('handApplications') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung");
       					} else {
       						return '';
@@ -19379,7 +19379,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== null) {
       						return M.I18N.l('activity') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit");
       					} else {
       						return '';
@@ -19398,7 +19398,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== null) {
       						return ' (' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") + ')';
       					} else {
       						return '';
@@ -19421,7 +19421,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== null) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== "null" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== null) {
       						return M.I18N.l('remark') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark");
       					} else {
       						return '';
@@ -19439,7 +19439,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== 0) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== 0 && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== null) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showBookingCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite"));
       						return M.I18N.l('booking') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
@@ -19461,7 +19461,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== 0) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== 0 && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== null) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showBookingCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge"));
       						return M.I18N.l('booking') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
@@ -19483,7 +19483,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== 0) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== 0 && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== null) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showPositionCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition"));
       						return M.I18N.l('order') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
@@ -19505,7 +19505,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== 0) {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== 0 && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== null) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showPositionCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition"));
       						return M.I18N.l('order') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
@@ -20402,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3917'
+              value: 'Build: 3920'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26017,7 +26017,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	              valuePattern: '<%= positionName %>'
 	            , operation: function(v) {
-					if (v === '') {
+					if (v === '' || v === null) {
 						return M.I18N.l('position') + ": " + M.I18N.l('noData');
 					} else {
 						return M.I18N.l('position') + ": " + v;
@@ -26061,7 +26061,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionTelefon %>'
 	        	, operation: function(v) {
-	    			if (v === '') {
+	    			if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
 	    				return '';
 	    			} else {
 	    				return M.I18N.l('phone') + ": " + v;
@@ -26075,8 +26075,8 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionFax %>'
 	        	, operation: function(v) {
-					if (v === '') {
-						return v;
+					if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
+						return '';
 					} else {
 						return M.I18N.l('fax') + ": " + v;
 					}
@@ -26089,7 +26089,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionEmail %>'
 	        	, operation: function(v) {
-						if (v === '') {
+						if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
 							return '';
 						} else {
 							return M.I18N.l('email') + ": " + v;
@@ -26109,8 +26109,8 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionAnsprechpartner %>'
 	        	, operation: function(v) {
-					if (v === '') {
-						return v;
+					if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
+						return '';
 					} else {
 						return M.I18N.l('ansprechpartner') + ": " + v;
 					}
@@ -26123,8 +26123,8 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionKundenname %>'
 	        	, operation: function(v) {
-					if (v === '') {
-						return v;
+					if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
+						return '';
 					} else {
 						return M.I18N.l('kundenname') + ": " + v;
 					}
@@ -26137,7 +26137,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	    		  valuePattern: '<%= positionLongitude %>'
 	        	, operation: function(v) {
-    				if (v === '0.0') {
+    				if (v === '0.0' || v === 0 || v === null || v === "undefined" || typeof(v) === "undefined") {
     					return '';
     				} else {
     					return M.I18N.l('longitude') + ": " + v;
@@ -26151,7 +26151,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 		          valuePattern: '<%= positionLatitude %>'
 	        	, operation: function(v) {
-					if (v === '0.0') {
+					if (v === '0.0' || v === 0 || v === null || v === "undefined" || typeof(v) === "undefined") {
 						return '';
 					} else {
 						return M.I18N.l('latitude') + ": " + v;
@@ -26165,12 +26165,11 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , computedValue: {
 	        	  valuePattern: '<%= positionBeschreibung %>'
 	        	, operation: function(v) {
-						/*if (v === '') {
-							return v;
+						if (v === '' || v === null || v === "undefined" || typeof(v) === "undefined") {
+							return '';
 						} else {
 							return M.I18N.l('positionDescription') + ":<br />" + v;
-						}*/
-						return v;
+						}
 	        	  }
 	    	  }
 	    })
