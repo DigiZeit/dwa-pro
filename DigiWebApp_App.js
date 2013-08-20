@@ -7311,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3929
+    , softwareVersion: 3931
 
 
     /**
@@ -12960,11 +12960,11 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 								// move to SentBookings
 								if (DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")) {
 									var mySentBooking = DigiWebApp.BookingController.sentBooking(modelBooking).save();
-									modelBooking.delete();
+									modelBooking.del();
 								}
 								break;
 							case "DELETE":
-								modelBooking.delete();
+								modelBooking.del();
 								break;
 							default:
 								errorCallback("getBookings: Unbekannter Status");
@@ -20451,7 +20451,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3929'
+              value: 'Build: 3931'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
