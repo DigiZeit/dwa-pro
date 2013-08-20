@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3904
+    , softwareVersion: 3905
 
 
     /**
@@ -11986,6 +11986,11 @@ DigiWebApp.SelectionController = M.Controller.extend({
         if(!orderId) {
             return;
         }
+        
+		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+			M.ViewManager.getView('orderInfoPage', 'order').setSelection(orderId);
+		}
+
 //        M.ViewManager.getView('bookingPage', 'position').removeSelection(); /* to avoid bug of not setting selected... */
         var positions = DigiWebApp.Position.findSorted();
 
@@ -12025,7 +12030,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     , setActivities: function(checkForWorkPlan) {
         var posId = null;
 
-        if(checkForWorkPlan) {
+		if(checkForWorkPlan) {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
                 var posObj = M.ViewManager.getView('bookingPageWithIconsScholpp', 'position').getSelection(YES);
         	} else {
@@ -12035,6 +12040,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
                 posId = posObj.value;
             }
         }
+
+		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+			M.ViewManager.getView('orderInfoPage', 'position').setSelection(orderId);
+		}
 
         var activities = [];
         //var workPlans = DigiWebApp.WorkPlan.find({query: 'id=' + posId}); // pre TMP-1.0
@@ -20374,7 +20383,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3904'
+              value: 'Build: 3905'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -26428,7 +26437,6 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 		                    			M.ViewManager.getView('bookingPage', 'position').setSelection(M.ViewManager.getView('orderInfoPage', 'position').getSelection())
 		                    			DigiWebApp.SelectionController.setActivities(YES);
 		                    		}
-
 		                    	}
 			                });
 		                }
