@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3916
+    , softwareVersion: 3917
 
 
     /**
@@ -19175,7 +19175,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 				) {
 					c.renderUpdate();
 				}
-			} catch(e) { console.error(e); } 
+			} catch(e) { /*console.error(e);*/ } 
 		})									
 	}
 
@@ -19291,7 +19291,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung")) !== null) {
       						//$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.infoButton.id).button("enable");
       						return M.I18N.l('order') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("auftragsBezeichnung");
       					} else {
@@ -19312,7 +19312,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung")) !== null) {
       						//$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.infoButton.id).button("enable");
       						return M.I18N.l('position') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsBezeichnung");
       					} else {
@@ -19361,7 +19361,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung")) !== null) {
       						return M.I18N.l('handApplications') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("handauftragsBezeichnung");
       					} else {
       						return '';
@@ -19379,7 +19379,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit")) !== null) {
       						return M.I18N.l('activity') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeit");
       					} else {
       						return '';
@@ -19398,7 +19398,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge")) !== null) {
       						return ' (' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("taetigkeitreihenfolge") + ')';
       					} else {
       						return '';
@@ -19421,7 +19421,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "undefined") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "undefined" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== "null" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark")) !== null) {
       						return M.I18N.l('remark') + ': ' + DigiWebApp.ZeitbuchungenController.itemForDetails.get("remark");
       					} else {
       						return '';
@@ -19439,7 +19439,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "0.0") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite") !== 0) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showBookingCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite"));
       						return M.I18N.l('booking') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
@@ -19461,7 +19461,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "0.0") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge") !== 0) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showBookingCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaenge"));
       						return M.I18N.l('booking') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
@@ -19483,7 +19483,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "0.0") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition") !== 0) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showPositionCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition"));
       						return M.I18N.l('order') + '-' + M.I18N.l('latitude') + ': ' + str.toFixed(6);
@@ -19505,7 +19505,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
                 value: ''
               , operation: function(v) {
       	  			if (DigiWebApp.ZeitbuchungenController.itemForDetails !== null) {
-      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "0.0") {
+      					if (DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "" && typeof(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition")) !== "undefined" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== "0.0" && DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition") !== 0) {
       						$('#' + DigiWebApp.ZeitbuchungDetailsPage.content.showPositionCoordinatesInMapButton.id).show()
       						var str = new Number(DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsLaengePosition"));
       						return M.I18N.l('order') + '-' + M.I18N.l('longitude') + ': ' + str.toFixed(6);
@@ -19558,7 +19558,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 						var latitude = DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreite");
 						var zoom = '15';
 						var url_byCoordinates = "";
-						if (longitude === '0.0' && latitude === '0.0') return;
+						if ((longitude === '0.0' && latitude === '0.0') || (longitude === 0 && latitude === 0)) return;
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 							case "OSM":
 								if (DigiWebApp.SettingsController.featureAvailable('419')) {
@@ -19626,7 +19626,7 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
 						var latitude = DigiWebApp.ZeitbuchungenController.itemForDetails.get("gpsBreitePosition");
 						var zoom = '15';
 						var url_byCoordinates = "";
-						if (longitude === '0.0' && latitude === '0.0') return;
+						if ((longitude === '0.0' && latitude === '0.0') || (longitude === 0 && latitude === 0)) return;
 						switch ( DigiWebApp.SettingsController.getSetting('mapType') ) {
 							case "OSM":
 								if (DigiWebApp.SettingsController.featureAvailable('419')) {
@@ -20402,7 +20402,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3916'
+              value: 'Build: 3917'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
