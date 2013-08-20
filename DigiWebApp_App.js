@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3900
+    , softwareVersion: 3901
 
 
     /**
@@ -13809,6 +13809,17 @@ DigiWebApp.ApplicationController = M.Controller.extend({
     	var hideOverride = (DigiWebApp.SettingsController.showCredentialsAlert);
     	//if (debug) console.log("enforcing ChefToolOnly, hideOverride=" + hideOverride);
     	var ChefToolOnly = (DigiWebApp.SettingsController.featureAvailable('409'));
+		if (DigiWebApp.SettingsController.featureAvailable('417')) { 
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id  + ']').each(function() { $(this).show(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id  + ']').each(function() { $(this).show(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id  + ']').each(function() { $(this).show(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id  + ']').each(function() { $(this).show(); });}catch(e){}
+		} else {
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_ermittleGeokoordinate.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_datenUebertragen.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_engeKopplung.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.ServiceApp_PORTGrid.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+		}
 		if (ChefToolOnly || hideOverride) {
 			//if (debug) console.log("enforcing ChefToolOnly, HIDE");
 	    	// hide tabbar
@@ -13820,6 +13831,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			try{$('[id=' + DigiWebApp.SettingsPage.content.remarkIsMandatory.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 			try{$('[id=' + DigiWebApp.SettingsPage.content.autoSaveGPSData.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 			try{$('[id=' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 		} else {
 			//if (debug) console.log("enforcing ChefToolOnly, SHOW");
 	    	// show tabbar
@@ -13835,6 +13847,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			if (DigiWebApp.SettingsController.featureAvailable('411')) { 
 				try{$('[id=' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id  + ']').each(function() { $(this).show(); });}catch(e){}
 			}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).show(); });}catch(e){}
 		}
 		
 
@@ -17338,7 +17351,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var debugDatabaseServer              = DigiWebApp.SettingsController.getSetting('debugDatabaseServer');
         var mitarbeiterVorname               = DigiWebApp.SettingsController.getSetting('mitarbeiterVorname')
         var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname')
-        var auftragsDetailsKoppeln			 = DigiWebApp.SettingsController.getSetting('auftragsDetailsKoppeln');
+        var auftragsDetailsKoppeln			 = $('#' + M.ViewManager.getView('settingsPage', 'auftragsDetailsKoppeln').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -20361,7 +20374,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3900'
+              value: 'Build: 3901'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
