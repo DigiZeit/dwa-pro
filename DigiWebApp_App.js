@@ -7262,7 +7262,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3906
+    , softwareVersion: 3907
 
 
     /**
@@ -12042,7 +12042,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         }
 
 		if (DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-			M.ViewManager.getView('orderInfoPage', 'position').setSelection(orderId);
+			M.ViewManager.getView('orderInfoPage', 'position').setSelection(posId);
 		}
 
         var activities = [];
@@ -20383,7 +20383,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3906'
+              value: 'Build: 3907'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
