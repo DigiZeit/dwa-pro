@@ -7263,7 +7263,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3911
+    , softwareVersion: 3912
 
 
     /**
@@ -12320,7 +12320,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
             		var allActivities = DigiWebApp.Activity.findSorted();
             		_.each(allActivities, function(acti) {
             			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
-            			if (acti.get("positionId") === "1") {
+            			if (act.get("id") === acti.get("id") && acti.get("positionId") === "1") {
             				zugeordnet = YES;
             			}
             		});
@@ -17433,6 +17433,8 @@ DigiWebApp.SettingsController = M.Controller.extend({
                             				)
                             	) {
 
+                            	DigiWebApp.RequestController.DatabaseServer = null;
+                            	
                                 /* check for open bookings */
                                 var bookings = DigiWebApp.Booking.find();
                                 if(bookings.length > 0) {
@@ -20401,7 +20403,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3911'
+              value: 'Build: 3912'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
