@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3962
+    , softwareVersion: 3963
 
 
     /**
@@ -14918,6 +14918,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	                	//if (el[prefix + 'keyId'] === "417") DigiWebApp.ApplicationController.restartApp = YES;	// DIGI-ServiceApp
 	                	if (el[prefix + 'keyId'] === "418") DigiWebApp.ApplicationController.restartApp = YES;		// Spesen/Auslöse
 	                	if (el[prefix + 'keyId'] === "419") DigiWebApp.ApplicationController.restartApp = YES;		// Scholpp-Spesen
+	                	if (el[prefix + 'keyId'] === "421") DigiWebApp.ApplicationController.restartApp = YES;		// PIN-Eingabe
 	                }
 	                
 	            }
@@ -20580,7 +20581,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3962'
+              value: 'Build: 3963'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
