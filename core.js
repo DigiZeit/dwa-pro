@@ -5601,7 +5601,7 @@ M.View = M.Object.extend(
         if(this.childViews) {
             var childViews = this.getChildViewsAsArray();
             for(var i in childViews) {
-                this[childViews[i]].registerEvents();
+           		this[childViews[i]].registerEvents();
             }
         }
     },
@@ -5613,7 +5613,11 @@ M.View = M.Object.extend(
         if(this.childViews) {
             var childViews = this.getChildViewsAsArray();
             for(var i in childViews) {
-                this[childViews[i]].theme();
+            	try {
+            		this[childViews[i]].theme();
+            	} catch(e) {
+            		console.log(this, childViews, i);
+            	}
             }
         }
     },
