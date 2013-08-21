@@ -425,6 +425,7 @@ M.I18N.de_de = {
 	
 	// Start::PIN-Funktion
 	, bittePINeingeben: "Bitte PIN eingeben..."
+	, abmelden: "Abmelden"
 	// Ende::PIN-Funktion
 
 };

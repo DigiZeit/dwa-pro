@@ -424,6 +424,7 @@ M.I18N.en_us = {
 
 	// Start::PIN-Funktion
 	, bittePINeingeben: "Please enter PIN..."
+	, abmelden: "Logout"
 	// Ende::PIN-Funktion
 
 };

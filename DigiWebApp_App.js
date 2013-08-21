@@ -5581,7 +5581,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
         	if ( ( PINAvailable ) && !ChefToolOnly ) {
         		var newItems = [];
         		newItems.push({
-                      label: M.I18N.l('logout')
+                      label: M.I18N.l('abmelden')
                     , icon: 'icon_info.png'
                     , id: 'logout'
                 });
@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3965
+    , softwareVersion: 3966
 
 
     /**
@@ -20581,7 +20581,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3965'
+              value: 'Build: 3966'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
