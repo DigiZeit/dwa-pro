@@ -1063,7 +1063,7 @@ label.ui-input-text, .ui-controlgroup-label {
 .pinPage .ui-btn-right .ui-icon.ui-icon-gear.ui-icon-shadow { margin-left: 5px; }
 
 /* PINPage PIN zentriert
-.pinPage .ui-input-text { text-align: center; font-size: 30px; }
+.pinPage .ui-input-text { text-align: center; font-size: 30px; width: 96%; }
 
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
