@@ -4,6 +4,66 @@
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: Mitarbeiter
+// ==========================================================================
+
+DigiWebApp.Employee = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'Mitarbeiter'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , WebAppId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , WebAppPIN: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e) {
+        	console.error("ERROR in " + this.name + ".findSorted: " + e);
+        }
+
+        var records = [];
+
+        if(keys){
+            _.each(keys, function(k) {
+                records.push(that.find({key:M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: BautagebuchMengeneinheit
 // 
 // zu bestücken mittels WebService
@@ -5515,7 +5575,24 @@ DigiWebApp.DashboardController = M.Controller.extend({
         		items = _.compact(items);
         	}
         	
-            // Start::AuftragsInfo
+            // Start::WebApp mit PIN
+        	var PINAvailable = (DigiWebApp.SettingsController.featureAvailable('421'));
+
+        	if ( ( PINAvailable ) && !ChefToolOnly ) {
+        		var newItems = [];
+        		newItems.push({
+                      label: M.I18N.l('logout')
+                    , icon: 'icon_info.png'
+                    , id: 'logout'
+                });
+        		_.each(items, function(item) {
+        			newItems.push(item);
+        		});
+        		items = newItems;
+            }
+            // End::WebApp mit PIN
+
+        	// Start::AuftragsInfo
         	var AuftragsInfoAvailable = (DigiWebApp.SettingsController.featureAvailable('406'));
 
         	if ( ( AuftragsInfoAvailable ) && !ChefToolOnly ) {
@@ -5688,6 +5765,12 @@ DigiWebApp.DashboardController = M.Controller.extend({
         }
     }
     
+    , logout: function() {
+    	// ausgewählten Mitarbeiter zurücksetzen
+    	// zurück zur PIN-Eingabe
+        DigiWebApp.NavigationController.toPINPageTransition();
+    }
+
     , bookTime: function() {
         DigiWebApp.NavigationController.toBookTimePageTransition(YES);
     }
@@ -7311,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3939
+    , softwareVersion: 3946
 
 
     /**
@@ -12392,6 +12475,39 @@ DigiWebApp.SelectionController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: PINController
+// ==========================================================================
+
+DigiWebApp.PINController = M.Controller.extend({
+	
+	  mitarbeiterListe: null  
+	
+	, init: function(isFirstLoad) {
+		var that = DigiWebApp.PINController;
+		if(that.mitarbeiterListe === null) {
+			DigiWebApp.RequestController.getDatabaseServer(that.initWithServer, isFirstLoad);
+		} else {
+			that.initWithServer(isFirstLoad);
+		}
+	}
+
+    , initWithServer: function(isFirstLoad) {
+    	var that = DigiWebApp.AnwesenheitslisteController;
+		if(that.mitarbeiterListe === null) {
+			//console.log("showing Loader");		
+			DigiWebApp.ApplicationController.DigiLoaderView.show(' ');
+
+        }
+		
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: ServiceAppController
 // ==========================================================================
 
@@ -16805,6 +16921,10 @@ DigiWebApp.NavigationController = M.Controller.extend({
     }
     // Ende::ButtonsDashboardPage   
 
+	, toPINPageTransition: function() {
+		DigiWebApp.NavigationController.switchToPage('pinPage', M.TRANSITION.FADE, NO);
+	}
+
 });
 
 // ==========================================================================
@@ -20452,7 +20572,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3939'
+              value: 'Build: 3946'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27451,6 +27571,230 @@ DigiWebApp.AudioPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: PINPage
+// ==========================================================================
+
+DigiWebApp.PINPage = M.PageView.design({
+
+    events: {
+		pagebeforeshow: {
+              target: DigiWebApp.PINController
+            , action: 'init'
+        }
+    }
+
+    , childViews: 'header content'
+
+    , cssClass: 'pinPage unselectable'
+
+    , header: M.ToolbarView.design({
+        childViews: 'title configButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , title: M.LabelView.design({
+              value: M.I18N.l('bittePINeingeben')
+            , anchorLocation: M.CENTER
+        })
+        , configButton: M.ButtonView.design({
+              value: M.I18N.l('settings')
+            , icon: 'gear'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+        			action: function() {
+        				// to settingsPasswordPage
+					}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: '7_8_9Grid 4_5_6Grid 1_2_3Grid 0Grid textinput'
+        , 7_8_9Grid: M.GridView.design({
+          		childViews: '7Button 8Button 9Button'
+              , layout: M.THREE_COLUMNS
+              , 7button: M.ButtonView.design({
+                    value: "7"
+                  , cssClass: 'PINButton'
+                  , anchorLocation: M.CENTER
+                  , events: {
+                      tap: {
+	    				action: function() {
+              				// add number to textinput
+        	  				// enough numbers entered?
+	        			}
+                      }
+                  }
+              })
+              , 8button: M.ButtonView.design({
+				  value: "8"
+				, cssClass: 'PINButton'
+				, anchorLocation: M.CENTER
+				, events: {
+				    tap: {
+						action: function() {
+							// add number to textinput
+						// enough numbers entered?
+						}
+				    }
+				}
+              })
+              , 9button: M.ButtonView.design({
+				  value: "9"
+				, cssClass: 'PINButton'
+				, anchorLocation: M.CENTER
+				, events: {
+				    tap: {
+						action: function() {
+							// add number to textinput
+						// enough numbers entered?
+						}
+				    }
+				}
+              })
+        })
+        , 4_5_6Grid: M.GridView.design({
+      		childViews: '4Button 5Button 6Button'
+          , layout: M.THREE_COLUMNS
+          , 4button: M.ButtonView.design({
+                value: "4"
+              , cssClass: 'PINButton'
+              , anchorLocation: M.CENTER
+              , events: {
+                  tap: {
+    				action: function() {
+          				// add number to textinput
+    	  				// enough numbers entered?
+        			}
+                  }
+              }
+          })
+          , 5button: M.ButtonView.design({
+			  value: "5"
+			, cssClass: 'PINButton'
+			, anchorLocation: M.CENTER
+			, events: {
+			    tap: {
+					action: function() {
+						// add number to textinput
+					// enough numbers entered?
+					}
+			    }
+			}
+          })
+          , 6button: M.ButtonView.design({
+			  value: "6"
+			, cssClass: 'PINButton'
+			, anchorLocation: M.CENTER
+			, events: {
+			    tap: {
+					action: function() {
+						// add number to textinput
+					// enough numbers entered?
+					}
+			    }
+			}
+          })
+        })
+        , 1_2_3Grid: M.GridView.design({
+      		childViews: '1Button 2Button 3Button'
+          , layout: M.THREE_COLUMNS
+          , 1button: M.ButtonView.design({
+                value: "1"
+              , cssClass: 'PINButton'
+              , anchorLocation: M.CENTER
+              , events: {
+                  tap: {
+    				action: function() {
+          				// add number to textinput
+    	  				// enough numbers entered?
+        			}
+                  }
+              }
+          })
+          , 2button: M.ButtonView.design({
+			  value: "2"
+			, cssClass: 'PINButton'
+			, anchorLocation: M.CENTER
+			, events: {
+			    tap: {
+					action: function() {
+						// add number to textinput
+					// enough numbers entered?
+					}
+			    }
+			}
+          })
+          , 3button: M.ButtonView.design({
+			  value: "3"
+			, cssClass: 'PINButton'
+			, anchorLocation: M.CENTER
+			, events: {
+			    tap: {
+					action: function() {
+						// add number to textinput
+					// enough numbers entered?
+					}
+			    }
+			}
+          })
+          , 0Grid: M.GridView.design({
+        		childViews: 'lButton 0Button rButton'
+            , layout: M.THREE_COLUMNS
+            , lbutton: M.ButtonView.design({
+                  value: "1"
+                , cssClass: 'PINButton'
+                , anchorLocation: M.CENTER
+                , events: {
+                    tap: {
+      				action: function() {
+            				// add number to textinput
+      	  				// enough numbers entered?
+          			}
+                    }
+                }
+            })
+            , 0button: M.ButtonView.design({
+  			  value: "0"
+  			, cssClass: 'PINButton'
+  			, anchorLocation: M.CENTER
+  			, events: {
+  			    tap: {
+  					action: function() {
+  						// add number to textinput
+  					// enough numbers entered?
+  					}
+  			    }
+  			}
+            })
+            , rbutton: M.ButtonView.design({
+  			  value: ""
+  			, cssClass: 'PINButton'
+  			, anchorLocation: M.CENTER
+  			, events: {
+  			    tap: {
+  					action: function() {
+  						// add number to textinput
+  					// enough numbers entered?
+  					}
+  			    }
+  			}
+            })
+        })
+        , textinput: M.TextFieldView.design({
+        })
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: SettingsPasswordPage
 // ==========================================================================
 
@@ -27484,11 +27828,12 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToDashboardPagePOP'
         			action: function() {
-						if (DigiWebApp.SettingsController.featureAvailable('404')) {
-			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
-						} else {
-			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
-						}
+        				window.history.back()
+//						if (DigiWebApp.SettingsController.featureAvailable('404')) {
+//			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
+//						} else {
+//			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
+//						}
         			}
                 }
             }
@@ -30587,6 +30932,10 @@ if ( (searchForFeature(416)) && !(searchForFeature(409)) ) { // Buchungsscreen m
 
 if (searchForFeature(418)) { // Spesen/Auslöse (wird bei Feierabend abgefragt)
 	DigiWebAppOrdinaryDesign.spesenPage = DigiWebApp.SpesenPage
+}
+
+if (searchForFeature(421)) { // PINPage
+	DigiWebAppOrdinaryDesign.pinPage = DigiWebApp.PINPage
 }
 
 var restartOnBlackBerry = true;
