@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3951
+    , softwareVersion: 3952
 
 
     /**
@@ -20572,7 +20572,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3951'
+              value: 'Build: 3952'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27740,6 +27740,7 @@ DigiWebApp.PINPage = M.PageView.design({
 			    }
 			}
           })
+        })
           , a0Grid: M.GridView.design({
         		childViews: 'lButton a0Button rButton'
             , layout: M.THREE_COLUMNS
@@ -27785,7 +27786,6 @@ DigiWebApp.PINPage = M.PageView.design({
         })
         , textinput: M.TextFieldView.design({
         })
-      })
    })
 })
 
