@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3948
+    , softwareVersion: 3949
 
 
     /**
@@ -20572,7 +20572,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3948'
+              value: 'Build: 3949'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27613,9 +27613,9 @@ DigiWebApp.PINPage = M.PageView.design({
     , content: M.ScrollView.design({
           childViews: 'a7_8_9Grid a4_5_6Grid a1_2_3Grid a0Grid textinput'
         , a7_8_9Grid: M.GridView.design({
-          		childViews: '7Button 8Button 9Button'
+          		childViews: 'a7Button a8Button a9Button'
               , layout: M.THREE_COLUMNS
-              , 7button: M.ButtonView.design({
+              , a7button: M.ButtonView.design({
                     value: "7"
                   , cssClass: 'PINButton'
                   , anchorLocation: M.CENTER
@@ -27628,7 +27628,7 @@ DigiWebApp.PINPage = M.PageView.design({
                       }
                   }
               })
-              , 8button: M.ButtonView.design({
+              , a8button: M.ButtonView.design({
 				  value: "8"
 				, cssClass: 'PINButton'
 				, anchorLocation: M.CENTER
@@ -27641,7 +27641,7 @@ DigiWebApp.PINPage = M.PageView.design({
 				    }
 				}
               })
-              , 9button: M.ButtonView.design({
+              , a9button: M.ButtonView.design({
 				  value: "9"
 				, cssClass: 'PINButton'
 				, anchorLocation: M.CENTER
@@ -27656,9 +27656,9 @@ DigiWebApp.PINPage = M.PageView.design({
               })
         })
         , a4_5_6Grid: M.GridView.design({
-      		childViews: '4Button 5Button 6Button'
+      		childViews: 'a4Button a5Button a6Button'
           , layout: M.THREE_COLUMNS
-          , 4button: M.ButtonView.design({
+          , a4button: M.ButtonView.design({
                 value: "4"
               , cssClass: 'PINButton'
               , anchorLocation: M.CENTER
@@ -27671,7 +27671,7 @@ DigiWebApp.PINPage = M.PageView.design({
                   }
               }
           })
-          , 5button: M.ButtonView.design({
+          , a5button: M.ButtonView.design({
 			  value: "5"
 			, cssClass: 'PINButton'
 			, anchorLocation: M.CENTER
@@ -27684,7 +27684,7 @@ DigiWebApp.PINPage = M.PageView.design({
 			    }
 			}
           })
-          , 6button: M.ButtonView.design({
+          , a6button: M.ButtonView.design({
 			  value: "6"
 			, cssClass: 'PINButton'
 			, anchorLocation: M.CENTER
@@ -27699,9 +27699,9 @@ DigiWebApp.PINPage = M.PageView.design({
           })
         })
         , a1_2_3Grid: M.GridView.design({
-      		childViews: '1Button 2Button 3Button'
+      		childViews: 'a1Button a2Button a3Button'
           , layout: M.THREE_COLUMNS
-          , 1button: M.ButtonView.design({
+          , a1button: M.ButtonView.design({
                 value: "1"
               , cssClass: 'PINButton'
               , anchorLocation: M.CENTER
@@ -27714,7 +27714,7 @@ DigiWebApp.PINPage = M.PageView.design({
                   }
               }
           })
-          , 2button: M.ButtonView.design({
+          , a2button: M.ButtonView.design({
 			  value: "2"
 			, cssClass: 'PINButton'
 			, anchorLocation: M.CENTER
@@ -27727,7 +27727,7 @@ DigiWebApp.PINPage = M.PageView.design({
 			    }
 			}
           })
-          , 3button: M.ButtonView.design({
+          , a3button: M.ButtonView.design({
 			  value: "3"
 			, cssClass: 'PINButton'
 			, anchorLocation: M.CENTER
@@ -27741,7 +27741,7 @@ DigiWebApp.PINPage = M.PageView.design({
 			}
           })
           , a0Grid: M.GridView.design({
-        		childViews: 'lButton 0Button rButton'
+        		childViews: 'lButton a0Button rButton'
             , layout: M.THREE_COLUMNS
             , lbutton: M.ButtonView.design({
                   value: "1"
@@ -27756,7 +27756,7 @@ DigiWebApp.PINPage = M.PageView.design({
                     }
                 }
             })
-            , 0button: M.ButtonView.design({
+            , a0button: M.ButtonView.design({
   			  value: "0"
   			, cssClass: 'PINButton'
   			, anchorLocation: M.CENTER
