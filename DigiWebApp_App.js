@@ -7311,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3933
+    , softwareVersion: 3935
 
 
     /**
@@ -9613,24 +9613,25 @@ DigiWebApp.BookingController = M.Controller.extend({
      *  6) If not, the employee selection is cleared
      */
     , closeDay: function() {
-        if (this.currentBooking) {
+    	var that = DigiWebApp.BookingController;
+        if (that.currentBooking) {
         	
         	spesencallback = function() {
 		        // Start::Bemerkungsfeld (403)
 				if (DigiWebApp.SettingsController.featureAvailable('403') && !DigiWebApp.SettingsController.getSetting('remarkIsOptional')) {
 					// if remark-feature active: go to remarkpage
-		        	this.refreshCurrentBooking(false);
+					that.refreshCurrentBooking(false);
 		        	DigiWebApp.NavigationController.toRemarkPage(function() {
 		    			if (DigiWebApp.SettingsController.featureAvailable('404')) {
 			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
 		    			} else {
 			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
 		    			}
-		        		DigiWebApp.BookingController.closeDayWithRemark();           					
+		    			that.closeDayWithRemark();           					
 		            });
 		        } else {
 					// else: bookWithRemark
-	        		DigiWebApp.BookingController.closeDayWithRemark();           					
+		        	that.closeDayWithRemark();           					
 		        }
 		        // End::Bemerkungsfeld
         	}
@@ -9649,7 +9650,7 @@ DigiWebApp.BookingController = M.Controller.extend({
         	}
         
         } else {
-    		DigiWebApp.BookingController.closeDayWithRemark();           					
+        	that.closeDayWithRemark();           					
         }
     }
     
@@ -20451,7 +20452,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3933'
+              value: 'Build: 3935'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
