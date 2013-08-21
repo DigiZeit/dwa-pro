@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3953
+    , softwareVersion: 3954
 
 
     /**
@@ -20572,7 +20572,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3953'
+              value: 'Build: 3954'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27613,7 +27613,7 @@ DigiWebApp.PINPage = M.PageView.design({
     , content: M.ScrollView.design({
           childViews: 'a7_8_9Grid a4_5_6Grid a1_2_3Grid a0Grid textinput'
         , a7_8_9Grid: M.GridView.design({
-          		childViews: 'a7Button a8Button a9Button'
+          		childViews: 'a7button a8button a9button'
               , layout: M.THREE_COLUMNS
               , a7button: M.ButtonView.design({
                     value: "7"
@@ -27656,7 +27656,7 @@ DigiWebApp.PINPage = M.PageView.design({
               })
         })
         , a4_5_6Grid: M.GridView.design({
-      		childViews: 'a4Button a5Button a6Button'
+      		childViews: 'a4button a5button a6button'
           , layout: M.THREE_COLUMNS
           , a4button: M.ButtonView.design({
                 value: "4"
@@ -27699,7 +27699,7 @@ DigiWebApp.PINPage = M.PageView.design({
           })
         })
         , a1_2_3Grid: M.GridView.design({
-      		childViews: 'a1Button a2Button a3Button'
+      		childViews: 'a1button a2button a3button'
           , layout: M.THREE_COLUMNS
           , a1button: M.ButtonView.design({
                 value: "1"
@@ -27742,7 +27742,7 @@ DigiWebApp.PINPage = M.PageView.design({
           })
         })
           , a0Grid: M.GridView.design({
-        		childViews: 'lButton a0Button rButton'
+        		childViews: 'lbutton a0button rbutton'
             , layout: M.THREE_COLUMNS
             , lbutton: M.ButtonView.design({
                   value: "1"

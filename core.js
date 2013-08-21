@@ -5616,7 +5616,7 @@ M.View = M.Object.extend(
             	try {
             		this[childViews[i]].theme();
             	} catch(e) {
-            		console.log(this, childViews, i);
+            		console.error(e, this, childViews, i);
             	}
             }
         }
