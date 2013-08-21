@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3954
+    , softwareVersion: 3956
 
 
     /**
@@ -12501,6 +12501,14 @@ DigiWebApp.PINController = M.Controller.extend({
 		
     }
 
+    , genugZiffern: function() {
+    	var PIN = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
+    	if (PIN.length === 4) {
+    		alert("Login mit " + PIN);
+    		$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
+    	}
+    }
+    
 });
 
 // ==========================================================================
@@ -20572,7 +20580,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3954'
+              value: 'Build: 3956'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27596,7 +27604,7 @@ DigiWebApp.PINPage = M.PageView.design({
             , anchorLocation: M.CENTER
         })
         , configButton: M.ButtonView.design({
-              value: M.I18N.l('settings')
+              value: ' '
             , icon: 'gear'
             , anchorLocation: M.RIGHT
             , events: {
@@ -27611,7 +27619,7 @@ DigiWebApp.PINPage = M.PageView.design({
     })
 
     , content: M.ScrollView.design({
-          childViews: 'a7_8_9Grid a4_5_6Grid a1_2_3Grid a0Grid textinput'
+          childViews: 'a1_2_3Grid a4_5_6Grid a7_8_9Grid a0Grid textinput'
         , a7_8_9Grid: M.GridView.design({
           		childViews: 'a7button a8button a9button'
               , layout: M.THREE_COLUMNS
@@ -27623,7 +27631,9 @@ DigiWebApp.PINPage = M.PageView.design({
                       tap: {
 	    				action: function() {
               				// add number to textinput
+            	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '7');
         	  				// enough numbers entered?
+            	  			DigiWebApp.PINController.genugZiffern();
 	        			}
                       }
                   }
@@ -27636,7 +27646,9 @@ DigiWebApp.PINPage = M.PageView.design({
 				    tap: {
 						action: function() {
 							// add number to textinput
-						// enough numbers entered?
+            	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '8');
+            	  			// enough numbers entered?
+            	  			DigiWebApp.PINController.genugZiffern();
 						}
 				    }
 				}
@@ -27649,7 +27661,9 @@ DigiWebApp.PINPage = M.PageView.design({
 				    tap: {
 						action: function() {
 							// add number to textinput
-						// enough numbers entered?
+  	  						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '9');
+  	  						// enough numbers entered?
+            	  			DigiWebApp.PINController.genugZiffern();
 						}
 				    }
 				}
@@ -27666,7 +27680,9 @@ DigiWebApp.PINPage = M.PageView.design({
                   tap: {
     				action: function() {
           				// add number to textinput
+        	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '4');
     	  				// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
         			}
                   }
               }
@@ -27679,7 +27695,9 @@ DigiWebApp.PINPage = M.PageView.design({
 			    tap: {
 					action: function() {
 						// add number to textinput
-					// enough numbers entered?
+	  					$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '5');
+	  					// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
 					}
 			    }
 			}
@@ -27692,7 +27710,9 @@ DigiWebApp.PINPage = M.PageView.design({
 			    tap: {
 					action: function() {
 						// add number to textinput
-					// enough numbers entered?
+	  					$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '6');
+	  					// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
 					}
 			    }
 			}
@@ -27709,7 +27729,9 @@ DigiWebApp.PINPage = M.PageView.design({
                   tap: {
     				action: function() {
           				// add number to textinput
+						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '1');
     	  				// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
         			}
                   }
               }
@@ -27722,7 +27744,9 @@ DigiWebApp.PINPage = M.PageView.design({
 			    tap: {
 					action: function() {
 						// add number to textinput
-					// enough numbers entered?
+        	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '2');
+        	  			// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
 					}
 			    }
 			}
@@ -27735,7 +27759,9 @@ DigiWebApp.PINPage = M.PageView.design({
 			    tap: {
 					action: function() {
 						// add number to textinput
-					// enough numbers entered?
+						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '3');
+						// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
 					}
 			    }
 			}
@@ -27745,15 +27771,16 @@ DigiWebApp.PINPage = M.PageView.design({
         		childViews: 'lbutton a0button rbutton'
             , layout: M.THREE_COLUMNS
             , lbutton: M.ButtonView.design({
-                  value: "1"
+                  value: "C"
                 , cssClass: 'PINButton'
                 , anchorLocation: M.CENTER
                 , events: {
                     tap: {
       				action: function() {
             				// add number to textinput
-      	  				// enough numbers entered?
-          			}
+            				var a = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
+							$('#' + DigiWebApp.PINPage.content.textinput.id).val(a.substring(0, a.length - 1));
+          				}
                     }
                 }
             })
@@ -27765,20 +27792,22 @@ DigiWebApp.PINPage = M.PageView.design({
   			    tap: {
   					action: function() {
   						// add number to textinput
-  					// enough numbers entered?
+						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '0');
+						// enough numbers entered?
+        	  			DigiWebApp.PINController.genugZiffern();
   					}
   			    }
   			}
             })
             , rbutton: M.ButtonView.design({
-  			  value: ""
+  			  value: "CA"
   			, cssClass: 'PINButton'
   			, anchorLocation: M.CENTER
   			, events: {
   			    tap: {
   					action: function() {
   						// add number to textinput
-  					// enough numbers entered?
+						$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
   					}
   			    }
   			}
