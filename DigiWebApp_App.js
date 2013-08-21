@@ -7311,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3935
+    , softwareVersion: 3936
 
 
     /**
@@ -9060,7 +9060,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 				var uebernachtungAuswahl = uebernachtungAuswahlObj ? uebernachtungAuswahlObj.value : 6;
 				newOpenBooking.set("uebernachtungAuswahl", uebernachtungAuswahl);						
 			} else {
-				newOpenBooking.set("uebernachtungAuswahl", 6);
+				newOpenBooking.set("uebernachtungAuswahl", 0);
 			}
 		} else {
 			newOpenBooking.set("uebernachtungAuswahl", 0);
@@ -20452,7 +20452,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3935'
+              value: 'Build: 3936'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
