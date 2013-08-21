@@ -7394,7 +7394,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3958
+    , softwareVersion: 3959
 
 
     /**
@@ -20580,7 +20580,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3958'
+              value: 'Build: 3959'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27611,6 +27611,7 @@ DigiWebApp.PINPage = M.PageView.design({
                 tap: {
         			action: function() {
         				// to settingsPasswordPage
+        				DigiWebApp.NavigationController.toSettingsPasswordPageTransition();
 					}
                 }
             }
