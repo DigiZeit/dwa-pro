@@ -1062,6 +1062,9 @@ label.ui-input-text, .ui-controlgroup-label {
 .pinPage .ui-btn-right .ui-btn-inner.ui-btn-corner-all { height: 13px; }
 .pinPage .ui-btn-right .ui-icon.ui-icon-gear.ui-icon-shadow { margin-left: 5px; }
 
+/* PINPage PIN zentriert
+.pinPage .ui-input-text { text-align: center; font-size: 30px; }
+
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
     border-color: #0d0d0d;
