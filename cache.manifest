@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.3975, Timestamp:1377158371216
+#Application:DigiWebApp, Version:1.6.1.3976 beta, Timestamp:1377176440484
 
 
 # Explicitly cached entries
@@ -9,19 +9,17 @@ nl_nl.js
 de_de.js
 es_es.js
 en_us.js
-underscore-min.js
-d8-0.1.3.min.js
-theme/tmp.css
 bootstrap.js
-jquery.xml2json_1.1.js
+underscore-min.js
+theme/tmp.css
+d8-0.1.3.min.js
 jstz.js
 jquery_mobile.js
 ui.js
+jquery.xml2json_1.1.js
 jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-childbrowser.js
-cordova.js
 core.js
 theme/jquery.mobile-1.0.min.css
 theme/images/icons-18-white.png
@@ -29,6 +27,9 @@ theme/images/ajax-loader.png
 theme/images/icons-18-black.png
 theme/images/icons-36-white.png
 theme/images/icons-36-black.png
+childbrowser.js
+barcodescanner.js
+cordova.js
 theme/journal.woff
 flashcanvas.swf
 jquery.signaturepad.min.js
@@ -78,7 +79,6 @@ theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/Icon-72.png
 theme/images/icon_info.png
-theme/images/icon-winphone.jpg
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/icon_dataTransfer.png
 theme/images/48x48_plain_text_code.png
@@ -101,6 +101,7 @@ theme/images/48x48_plain_home.png
 theme/images/48x48_plain_index.png
 theme/images/48x48_plain_gears.png
 theme/images/5000x5000_90_DIGI-WebApp.png
+theme/images/icon-winphone.png
 theme/images/48x48_plain_handauftrag.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/icon_timeData.png
@@ -122,10 +123,10 @@ DigiWebApp_App.js
 
 # Resources that require the device/user to be online.
 NETWORK:
-barcodescanner.js
 phonegap.js
 PushNotification.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 
