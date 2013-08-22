@@ -1118,6 +1118,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , auftragsDetailsKoppeln: M.Model.attr('Boolean')
     
+    , PINLaenge: M.Model.attr('String')
+    
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -7394,7 +7396,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3966
+    , softwareVersion: 3967
 
 
     /**
@@ -12503,7 +12505,7 @@ DigiWebApp.PINController = M.Controller.extend({
 
     , genugZiffern: function() {
     	var PIN = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
-    	if (PIN.length === 4) {
+    	if (PIN.length === DigiWebApp.SettingsController.getSetting('PINLaenge')) {
     		alert("Login mit " + PIN);
     		$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
     	}
@@ -17082,6 +17084,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , mitarbeiterVorname: ""
         , mitarbeiterNachname: ""
         , auftragsDetailsKoppeln: false
+        , PINLaenge: '4'
     }
 
     , defaultsettings: null
@@ -17291,11 +17294,12 @@ DigiWebApp.SettingsController = M.Controller.extend({
                , debugDatabaseServer: record.get('debugDatabaseServer')
                , mitarbeiterVorname: record.get('mitarbeiterVorname')
                , mitarbeiterNachname: record.get('mitarbeiterNachname')
-	           , auftragsDetailsKoppeln: [{
+               , auftragsDetailsKoppeln: [{
 	                   value: record.get('auftragsDetailsKoppeln')
 	                 , label: M.I18N.l('auftragsDetailsKoppeln')
 	                 , isSelected: record.get('auftragsDetailsKoppeln')
 	           }]
+    		   , PINLaenge: record.get('PINLaenge')
 
             };
         /* default values */
@@ -17387,6 +17391,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                  value: DigiWebApp.SettingsController.defaultsettings.get("auftragsDetailsKoppeln")
 	                , label: M.I18N.l('auftragsDetailsKoppeln')
 	            }]
+                , PINLaenge: DigiWebApp.SettingsController.defaultsettings.get('PINLaenge')
 
             };
             
@@ -17557,6 +17562,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var mitarbeiterVorname               = DigiWebApp.SettingsController.getSetting('mitarbeiterVorname')
         var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname')
         var auftragsDetailsKoppeln			 = $('#' + M.ViewManager.getView('settingsPage', 'auftragsDetailsKoppeln').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+        var PINLaenge                        = DigiWebApp.SettingsController.getSetting('PINLaenge')
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -17662,6 +17668,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                                    record.set('PINLaenge', PINLaenge);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -17732,6 +17739,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                    record.set('PINLaenge', PINLaenge);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -17776,6 +17784,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                record.set('PINLaenge', PINLaenge);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -17820,6 +17829,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                record.set('PINLaenge', PINLaenge);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -17866,6 +17876,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , mitarbeiterVorname: mitarbeiterVorname
                                 , mitarbeiterNachname: mitarbeiterNachname
                                 , auftragsDetailsKoppeln: auftragsDetailsKoppeln
+                                , PINLaenge: PINLaenge
 
                           });
 
@@ -20581,7 +20592,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3966'
+              value: 'Build: 3967'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
