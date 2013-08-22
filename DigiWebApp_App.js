@@ -7396,7 +7396,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3967
+    , softwareVersion: 3968
 
 
     /**
@@ -12505,7 +12505,7 @@ DigiWebApp.PINController = M.Controller.extend({
 
     , genugZiffern: function() {
     	var PIN = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
-    	if (PIN.length === DigiWebApp.SettingsController.getSetting('PINLaenge')) {
+    	if (PIN.length === parseInt(DigiWebApp.SettingsController.getSetting('PINLaenge'))) {
     		alert("Login mit " + PIN);
     		$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
     	}
@@ -20592,7 +20592,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3967'
+              value: 'Build: 3968'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
