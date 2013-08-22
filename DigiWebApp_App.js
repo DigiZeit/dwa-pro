@@ -7311,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3973
+    , softwareVersion: 3974
 
 
     /**
@@ -9436,7 +9436,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.Booking.find();
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120');
+	            	} else {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	}
 	
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -9472,7 +9476,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.SentBooking.find();
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120');
+	            	} else {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	}
 	
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -9522,7 +9530,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 		        });
 		        if(bookings.length > 0) {
 		            _.each(bookings, function(booking) {
-		                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+		            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
+		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120');
+		            	} else {
+		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+		            	}
 		
 		                // set the handOrderId as orderId for correct display in list item view
 		                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -9552,7 +9564,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = [DigiWebApp.BookingController.currentBooking];
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd'));
+	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120');
+	            	} else {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	}
 	                
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -9579,7 +9595,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = [DigiWebApp.EditTimeDataPage.bookingToEdit];
 	        if(bookings.length > 0) {
 	            _.each(bookings, function(booking) {
-	                booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd'));
+	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120');
+	            	} else {
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset'));
+	            	}
 	                
 	                // set the handOrderId as orderId for correct display in list item view
 	                if(booking.get('orderId') === "0" && booking.get('handOrderId') !== "0") {
@@ -10121,7 +10141,11 @@ DigiWebApp.BookingController = M.Controller.extend({
      */
     , buildBookingStr: function(booking) {
         var bookingStr = '';
-        var myDisplayTimestamp = new Date(this.currentBooking.get('timeStampStart') - (1000 * 60 * (this.currentBooking.get("timezoneOffset") - new Date().getTimezoneOffset()))).getTime();
+        if (typeof(this.currentBooking.get("timezoneOffset")) === "undefined") {
+        	var myDisplayTimestamp = new Date(this.currentBooking.get('timeStampStart')).getTime();
+        } else {
+        	var myDisplayTimestamp = new Date(this.currentBooking.get('timeStampStart') - (1000 * 60 * (this.currentBooking.get("timezoneOffset") - new Date().getTimezoneOffset()))).getTime();
+        }
         //bookingStr = M.Date.create(this.currentBooking.get('timeStampStart')).format('dd.mm.yy HH:MM');
         bookingStr = M.Date.create(myDisplayTimestamp).format('dd.mm.yy HH:MM');
         return bookingStr;
@@ -20452,7 +20476,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3973'
+              value: 'Build: 3974'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
