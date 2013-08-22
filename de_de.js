@@ -423,9 +423,4 @@ M.I18N.de_de = {
 	, showInMapScholpp: "Sie werden weitergeleitet auf einen unabhängigen Kartendienst. Dies dient ausschließlich Ihrer Information und hat keinerlei Relevanz für Ihre Lohn- oder Reisekostenabrechnung."
 	, auftragsDetailsKoppeln: "Buchungsauswahl an Auftragsinfo koppeln" 
 	
-	// Start::PIN-Funktion
-	, bittePINeingeben: "Bitte PIN eingeben..."
-	, abmelden: "Abmelden"
-	// Ende::PIN-Funktion
-
 };

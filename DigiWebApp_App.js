@@ -4,66 +4,6 @@
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: Mitarbeiter
-// ==========================================================================
-
-DigiWebApp.Employee = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'Mitarbeiter'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , vorname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , nachname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , WebAppId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , WebAppPIN: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-    , findSorted: function() {
-        var that = this;
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e) {
-        	console.error("ERROR in " + this.name + ".findSorted: " + e);
-        }
-
-        var records = [];
-
-        if(keys){
-            _.each(keys, function(k) {
-                records.push(that.find({key:M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k}));
-            });
-        }
-        return records;
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Model: BautagebuchMengeneinheit
 // 
 // zu bestücken mittels WebService
@@ -1117,8 +1057,6 @@ DigiWebApp.Settings = M.Model.create({
     , mitarbeiterNachname: M.Model.attr('String')
     
     , auftragsDetailsKoppeln: M.Model.attr('Boolean')
-    
-    , PINLaenge: M.Model.attr('String')
     
 }, M.DataProviderLocalStorage);
 
@@ -5577,24 +5515,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
         		items = _.compact(items);
         	}
         	
-            // Start::WebApp mit PIN
-        	var PINAvailable = (DigiWebApp.SettingsController.featureAvailable('421'));
-
-        	if ( ( PINAvailable ) && !ChefToolOnly ) {
-        		var newItems = [];
-        		newItems.push({
-                      label: M.I18N.l('abmelden')
-                    , icon: 'icon_info.png'
-                    , id: 'logout'
-                });
-        		_.each(items, function(item) {
-        			newItems.push(item);
-        		});
-        		items = newItems;
-            }
-            // End::WebApp mit PIN
-
-        	// Start::AuftragsInfo
+            // Start::AuftragsInfo
         	var AuftragsInfoAvailable = (DigiWebApp.SettingsController.featureAvailable('406'));
 
         	if ( ( AuftragsInfoAvailable ) && !ChefToolOnly ) {
@@ -5767,12 +5688,6 @@ DigiWebApp.DashboardController = M.Controller.extend({
         }
     }
     
-    , logout: function() {
-    	// ausgewählten Mitarbeiter zurücksetzen
-    	// zurück zur PIN-Eingabe
-        DigiWebApp.NavigationController.toPINPageTransition();
-    }
-
     , bookTime: function() {
         DigiWebApp.NavigationController.toBookTimePageTransition(YES);
     }
@@ -7396,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3968
+    , softwareVersion: 3970
 
 
     /**
@@ -12477,47 +12392,6 @@ DigiWebApp.SelectionController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: PINController
-// ==========================================================================
-
-DigiWebApp.PINController = M.Controller.extend({
-	
-	  mitarbeiterListe: null  
-	
-	, init: function(isFirstLoad) {
-		var that = DigiWebApp.PINController;
-		if(that.mitarbeiterListe === null) {
-			DigiWebApp.RequestController.getDatabaseServer(that.initWithServer, isFirstLoad);
-		} else {
-			that.initWithServer(isFirstLoad);
-		}
-	}
-
-    , initWithServer: function(isFirstLoad) {
-    	var that = DigiWebApp.AnwesenheitslisteController;
-		if(that.mitarbeiterListe === null) {
-			//console.log("showing Loader");		
-			DigiWebApp.ApplicationController.DigiLoaderView.show(' ');
-
-        }
-		
-    }
-
-    , genugZiffern: function() {
-    	var PIN = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
-    	if (PIN.length === parseInt(DigiWebApp.SettingsController.getSetting('PINLaenge'))) {
-    		alert("Login mit " + PIN);
-    		$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
-    	}
-    }
-    
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: ServiceAppController
 // ==========================================================================
 
@@ -14920,7 +14794,6 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	                	//if (el[prefix + 'keyId'] === "417") DigiWebApp.ApplicationController.restartApp = YES;	// DIGI-ServiceApp
 	                	if (el[prefix + 'keyId'] === "418") DigiWebApp.ApplicationController.restartApp = YES;		// Spesen/Auslöse
 	                	if (el[prefix + 'keyId'] === "419") DigiWebApp.ApplicationController.restartApp = YES;		// Scholpp-Spesen
-	                	if (el[prefix + 'keyId'] === "421") DigiWebApp.ApplicationController.restartApp = YES;		// PIN-Eingabe
 	                }
 	                
 	            }
@@ -16932,10 +16805,6 @@ DigiWebApp.NavigationController = M.Controller.extend({
     }
     // Ende::ButtonsDashboardPage   
 
-	, toPINPageTransition: function() {
-		DigiWebApp.NavigationController.switchToPage('pinPage', M.TRANSITION.FADE, NO);
-	}
-
 });
 
 // ==========================================================================
@@ -17084,7 +16953,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , mitarbeiterVorname: ""
         , mitarbeiterNachname: ""
         , auftragsDetailsKoppeln: false
-        , PINLaenge: '4'
     }
 
     , defaultsettings: null
@@ -17294,12 +17162,11 @@ DigiWebApp.SettingsController = M.Controller.extend({
                , debugDatabaseServer: record.get('debugDatabaseServer')
                , mitarbeiterVorname: record.get('mitarbeiterVorname')
                , mitarbeiterNachname: record.get('mitarbeiterNachname')
-               , auftragsDetailsKoppeln: [{
+	           , auftragsDetailsKoppeln: [{
 	                   value: record.get('auftragsDetailsKoppeln')
 	                 , label: M.I18N.l('auftragsDetailsKoppeln')
 	                 , isSelected: record.get('auftragsDetailsKoppeln')
 	           }]
-    		   , PINLaenge: record.get('PINLaenge')
 
             };
         /* default values */
@@ -17391,7 +17258,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                  value: DigiWebApp.SettingsController.defaultsettings.get("auftragsDetailsKoppeln")
 	                , label: M.I18N.l('auftragsDetailsKoppeln')
 	            }]
-                , PINLaenge: DigiWebApp.SettingsController.defaultsettings.get('PINLaenge')
 
             };
             
@@ -17562,7 +17428,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var mitarbeiterVorname               = DigiWebApp.SettingsController.getSetting('mitarbeiterVorname')
         var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname')
         var auftragsDetailsKoppeln			 = $('#' + M.ViewManager.getView('settingsPage', 'auftragsDetailsKoppeln').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
-        var PINLaenge                        = DigiWebApp.SettingsController.getSetting('PINLaenge')
 
         var numberRegex = /^[0-9]+$/;
         if(company) {
@@ -17668,7 +17533,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
-                                                    record.set('PINLaenge', PINLaenge);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -17739,7 +17603,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('mitarbeiterVorname', mitarbeiterVorname);
                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
-                                    record.set('PINLaenge', PINLaenge);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -17784,7 +17647,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
-                                record.set('PINLaenge', PINLaenge);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -17829,7 +17691,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterVorname', mitarbeiterVorname);
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
-                                record.set('PINLaenge', PINLaenge);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -17876,7 +17737,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , mitarbeiterVorname: mitarbeiterVorname
                                 , mitarbeiterNachname: mitarbeiterNachname
                                 , auftragsDetailsKoppeln: auftragsDetailsKoppeln
-                                , PINLaenge: PINLaenge
 
                           });
 
@@ -20592,7 +20452,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3968'
+              value: 'Build: 3970'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21829,12 +21689,22 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                var date1 = M.Date.create(dateStart.getTime());
-                var date2 = null;
-                if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                	date2 = M.Date.create(dateEnd.getTime());
+                if (typeof(v[2]) === "undefined" ) {
+                	var dateStart = new Date(Number(v[0])
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
+                } else {
+                	var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
                 }
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
@@ -24299,12 +24169,22 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                var date1 = M.Date.create(dateStart.getTime());
-                var date2 = null;
-                if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                	date2 = M.Date.create(dateEnd.getTime());
+                if (typeof(v[2]) === "undefined" ) {
+                	var dateStart = new Date(Number(v[0])
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
+                } else {
+                	var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
                 }
                 //console.log(v, dateStart, date1, date2);
                 if(date2) {
@@ -27057,12 +26937,22 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                 v = v.split(',');
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
-                var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                var date1 = M.Date.create(dateStart.getTime());
-                var date2 = null;
-                if (v[1] !== "0") {
-                	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
-                	date2 = M.Date.create(dateEnd.getTime());
+                if (typeof(v[2]) === "undefined" ) {
+                	var dateStart = new Date(Number(v[0])
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
+                } else {
+                	var dateStart = new Date(Number(v[0]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    var date1 = M.Date.create(dateStart.getTime());
+                    var date2 = null;
+                    if (v[1] !== "0") {
+                    	var dateEnd = new Date(Number(v[1]) + (1000 * 60 * (new Date().getTimezoneOffset() - Number(v[2]))));
+                    	date2 = M.Date.create(dateEnd.getTime());
+                    }
                 }
                 if(date2) {
                     // cut minutes down => 12:05:59 is going to be 12:05:00
@@ -27591,259 +27481,6 @@ DigiWebApp.AudioPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: PINPage
-// ==========================================================================
-
-DigiWebApp.PINPage = M.PageView.design({
-
-    events: {
-		pagebeforeshow: {
-              target: DigiWebApp.PINController
-            , action: 'init'
-        }
-    }
-
-    , childViews: 'header content'
-
-    , cssClass: 'pinPage unselectable'
-
-    , header: M.ToolbarView.design({
-        childViews: 'title configButton'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , title: M.LabelView.design({
-              value: M.I18N.l('bittePINeingeben')
-            , anchorLocation: M.CENTER
-        })
-        , configButton: M.ButtonView.design({
-              value: ''
-            , icon: 'gear'
-            , anchorLocation: M.RIGHT
-            , events: {
-                tap: {
-        			action: function() {
-        				// to settingsPasswordPage
-        				DigiWebApp.NavigationController.toSettingsPasswordPageTransition();
-					}
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'a1_2_3Grid a4_5_6Grid a7_8_9Grid a0Grid textinput'
-        , a7_8_9Grid: M.GridView.design({
-          		childViews: 'a7button a8button a9button'
-              , layout: M.THREE_COLUMNS
-              , a7button: M.ButtonView.design({
-                    value: "7"
-                  , cssClass: 'PINButton'
-                  , anchorLocation: M.CENTER
-                  , events: {
-                      tap: {
-	    				action: function() {
-              				// add number to textinput
-            	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '7');
-        	  				// enough numbers entered?
-            	  			DigiWebApp.PINController.genugZiffern();
-	        			}
-                      }
-                  }
-              })
-              , a8button: M.ButtonView.design({
-				  value: "8"
-				, cssClass: 'PINButton'
-				, anchorLocation: M.CENTER
-				, events: {
-				    tap: {
-						action: function() {
-							// add number to textinput
-            	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '8');
-            	  			// enough numbers entered?
-            	  			DigiWebApp.PINController.genugZiffern();
-						}
-				    }
-				}
-              })
-              , a9button: M.ButtonView.design({
-				  value: "9"
-				, cssClass: 'PINButton'
-				, anchorLocation: M.CENTER
-				, events: {
-				    tap: {
-						action: function() {
-							// add number to textinput
-  	  						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '9');
-  	  						// enough numbers entered?
-            	  			DigiWebApp.PINController.genugZiffern();
-						}
-				    }
-				}
-              })
-        })
-        , a4_5_6Grid: M.GridView.design({
-      		childViews: 'a4button a5button a6button'
-          , layout: M.THREE_COLUMNS
-          , a4button: M.ButtonView.design({
-                value: "4"
-              , cssClass: 'PINButton'
-              , anchorLocation: M.CENTER
-              , events: {
-                  tap: {
-    				action: function() {
-          				// add number to textinput
-        	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '4');
-    	  				// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-        			}
-                  }
-              }
-          })
-          , a5button: M.ButtonView.design({
-			  value: "5"
-			, cssClass: 'PINButton'
-			, anchorLocation: M.CENTER
-			, events: {
-			    tap: {
-					action: function() {
-						// add number to textinput
-	  					$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '5');
-	  					// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-					}
-			    }
-			}
-          })
-          , a6button: M.ButtonView.design({
-			  value: "6"
-			, cssClass: 'PINButton'
-			, anchorLocation: M.CENTER
-			, events: {
-			    tap: {
-					action: function() {
-						// add number to textinput
-	  					$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '6');
-	  					// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-					}
-			    }
-			}
-          })
-        })
-        , a1_2_3Grid: M.GridView.design({
-      		childViews: 'a1button a2button a3button'
-          , layout: M.THREE_COLUMNS
-          , a1button: M.ButtonView.design({
-                value: "1"
-              , cssClass: 'PINButton'
-              , anchorLocation: M.CENTER
-              , events: {
-                  tap: {
-    				action: function() {
-          				// add number to textinput
-						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '1');
-    	  				// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-        			}
-                  }
-              }
-          })
-          , a2button: M.ButtonView.design({
-			  value: "2"
-			, cssClass: 'PINButton'
-			, anchorLocation: M.CENTER
-			, events: {
-			    tap: {
-					action: function() {
-						// add number to textinput
-        	  			$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '2');
-        	  			// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-					}
-			    }
-			}
-          })
-          , a3button: M.ButtonView.design({
-			  value: "3"
-			, cssClass: 'PINButton'
-			, anchorLocation: M.CENTER
-			, events: {
-			    tap: {
-					action: function() {
-						// add number to textinput
-						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '3');
-						// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-					}
-			    }
-			}
-          })
-        })
-          , a0Grid: M.GridView.design({
-        		childViews: 'lbutton a0button rbutton'
-            , layout: M.THREE_COLUMNS
-            , lbutton: M.ButtonView.design({
-                  value: "C"
-                , cssClass: 'PINButton'
-                , anchorLocation: M.CENTER
-                , events: {
-                    tap: {
-      				action: function() {
-            				// add number to textinput
-            				var a = $('#' + DigiWebApp.PINPage.content.textinput.id).val();
-							$('#' + DigiWebApp.PINPage.content.textinput.id).val(a.substring(0, a.length - 1));
-          				}
-                    }
-                }
-            })
-            , a0button: M.ButtonView.design({
-  			  value: "0"
-  			, cssClass: 'PINButton'
-  			, anchorLocation: M.CENTER
-  			, events: {
-  			    tap: {
-  					action: function() {
-  						// add number to textinput
-						$('#' + DigiWebApp.PINPage.content.textinput.id).val($('#' + DigiWebApp.PINPage.content.textinput.id).val() + '0');
-						// enough numbers entered?
-        	  			DigiWebApp.PINController.genugZiffern();
-  					}
-  			    }
-  			}
-            })
-            , rbutton: M.ButtonView.design({
-  			  value: "CA"
-  			, cssClass: 'PINButton'
-  			, anchorLocation: M.CENTER
-  			, events: {
-  			    tap: {
-  					action: function() {
-  						// add number to textinput
-						$('#' + DigiWebApp.PINPage.content.textinput.id).val('');
-  					}
-  			    }
-  			}
-            })
-        })
-        , textinput: M.TextFieldView.design({
-  			 events: {
-  			    keyup: {
-  					action: function() {
-        				DigiWebApp.PINController.genugZiffern();
-  					}
-  			    }
-  			}
-        })
-   })
-})
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: SettingsPasswordPage
 // ==========================================================================
 
@@ -27877,12 +27514,11 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToDashboardPagePOP'
         			action: function() {
-        				window.history.back()
-//						if (DigiWebApp.SettingsController.featureAvailable('404')) {
-//			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
-//						} else {
-//			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
-//						}
+						if (DigiWebApp.SettingsController.featureAvailable('404')) {
+			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
+						} else {
+			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
+						}
         			}
                 }
             }
@@ -30981,10 +30617,6 @@ if ( (searchForFeature(416)) && !(searchForFeature(409)) ) { // Buchungsscreen m
 
 if (searchForFeature(418)) { // Spesen/Auslöse (wird bei Feierabend abgefragt)
 	DigiWebAppOrdinaryDesign.spesenPage = DigiWebApp.SpesenPage
-}
-
-if (searchForFeature(421)) { // PINPage
-	DigiWebAppOrdinaryDesign.pinPage = DigiWebApp.PINPage
 }
 
 var restartOnBlackBerry = true;
