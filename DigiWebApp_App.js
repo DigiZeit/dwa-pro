@@ -9358,7 +9358,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3985
+    , softwareVersion: 3986
 
 
     /**
@@ -14450,8 +14450,16 @@ DigiWebApp.PINController = M.Controller.extend({
 		var that = DigiWebApp.PINController;
 		DigiWebApp.JSONDatenuebertragungController.recieveData("mitarbeiter", "Lade Mitarbeiter-Zugänge", function(data) {
 			if (data !== null && typeof(data) !== "undefined" && typeof(data.mitarbeiter) !== "undefined") {
+				DigiWebApp.PINMitarbeiter.deleteAll();
 				_.each(data.mitarbeiter, function(m){
-					
+				    var mitarbeiter = DigiWebApp.PINMitarbeiter.createRecord({
+				    	  id: m.id
+					    , vorname: m.vorname
+					    , nachname: m.nachname
+					    , WebAppId: m.webAppId
+					    , WebAppPIN: m.webApp_Pin
+				    }
+				    mitarbeiter.save();
 				});
 			}
 		}, function(err) {
@@ -22548,7 +22556,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3985'
+              value: 'Build: 3986'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
