@@ -7311,7 +7311,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 3970
+    , softwareVersion: 3971
 
 
     /**
@@ -20452,7 +20452,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 3970'
+              value: 'Build: 3971'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -21690,7 +21690,7 @@ DigiWebApp.TimeDataForEditTemplateView = M.ListItemView.design({
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
                 if (typeof(v[2]) === "undefined" ) {
-                	var dateStart = new Date(Number(v[0])
+                	var dateStart = new Date(Number(v[0]));
                     var date1 = M.Date.create(dateStart.getTime());
                     var date2 = null;
                     if (v[1] !== "0") {
@@ -24170,7 +24170,7 @@ DigiWebApp.TimeDataSentTemplateView = M.ListItemView.design({
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
                 if (typeof(v[2]) === "undefined" ) {
-                	var dateStart = new Date(Number(v[0])
+                	var dateStart = new Date(Number(v[0]));
                     var date1 = M.Date.create(dateStart.getTime());
                     var date2 = null;
                     if (v[1] !== "0") {
@@ -26938,7 +26938,7 @@ DigiWebApp.TimeDataTemplateView = M.ListItemView.design({
                 //var date1 = M.Date.create(Number(v[0]));
                 //var date2 = v[1] !== "0" ? M.Date.create(Number(v[1])) : null;
                 if (typeof(v[2]) === "undefined" ) {
-                	var dateStart = new Date(Number(v[0])
+                	var dateStart = new Date(Number(v[0]));
                     var date1 = M.Date.create(dateStart.getTime());
                     var date2 = null;
                     if (v[1] !== "0") {
