@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4021, Timestamp:1377249907719
+#Application:DigiWebApp, Version:1.6.1.4022 beta, Timestamp:1377251676923
 
 
 # Explicitly cached entries
@@ -9,26 +9,21 @@ es_es.js
 de_de.js
 nl_nl.js
 fr_fr.js
+underscore-min.js
 d8-0.1.3.min.js
 theme/tmp.css
 bootstrap.js
 jquery.xml2json_1.1.js
 jstz.js
-underscore-min.js
 jquery_mobile.js
 jquery-1.6.4.min.js
+ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-ui.js
+barcodescanner.js
 childbrowser.js
 cordova.js
 core.js
-theme/jquery.mobile-1.0.min.css
-theme/images/icons-36-white.png
-theme/images/ajax-loader.png
-theme/images/icons-18-black.png
-theme/images/icons-36-black.png
-theme/images/icons-18-white.png
 jquery.signaturepad.min.js
 json2.min.js
 theme/journal.svg
@@ -39,6 +34,12 @@ theme/journal.ttf
 pen.cur
 flashcanvas.swf
 theme/jquery.signaturepad.css
+theme/jquery.mobile-1.0.min.css
+theme/images/icons-36-white.png
+theme/images/ajax-loader.png
+theme/images/icons-18-black.png
+theme/images/icons-36-black.png
+theme/images/icons-18-white.png
 pen.cur
 theme/style.css
 theme/images/48x48_plain_home.png
@@ -60,8 +61,8 @@ theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
 theme/images/icon_info.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/NeuesLogo2013_transparent-BG_weiss-DIGI.png
-theme/images/Icon_2x.png
 theme/images/1024x1024_90_DIGI-WebApp.png
+theme/images/Icon_2x.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
@@ -72,8 +73,8 @@ theme/images/5000x5000_90_SCHOLPP.png
 theme/images/icon_handApplication.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_car_compact_grey.png
-theme/images/tabSprite.png
 theme/images/arrow_white.png
+theme/images/tabSprite.png
 theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_handauftrag.png
 theme/images/ic_launcher_ldpi.png
@@ -122,10 +123,10 @@ DigiWebApp_App.js
 
 # Resources that require the device/user to be online.
 NETWORK:
-barcodescanner.js
 PushNotification.js
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 

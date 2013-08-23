@@ -422,4 +422,9 @@ M.I18N.en_us = {
 
 	, showInMapScholpp: "Sie werden weitergeleitet auf einen unabhängigen Kartendienst. Dies dient ausschließlich Ihrer Information und hat keinerlei Relevanz für Ihre Lohn- oder Reisekostenabrechnung."
 
+	// Start::PIN-Funktion
+	, bittePINeingeben: "Please enter PIN..."
+	, abmelden: "Logout"
+	// Ende::PIN-Funktion
+
 };
