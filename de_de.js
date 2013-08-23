@@ -425,7 +425,10 @@ M.I18N.de_de = {
 	
 	// Start::PIN-Funktion
 	, bittePINeingeben: "Bitte PIN eingeben..."
+	, ladePINMitarbeiter: "Lade Mitarbeiter-Zugänge"
 	, abmelden: "Abmelden"
+	, invalidPIN: "Ungültige PIN"
+	, validPIN: "Gültige PIN"
 	// Ende::PIN-Funktion
 
 };

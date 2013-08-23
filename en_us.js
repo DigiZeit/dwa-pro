@@ -424,7 +424,10 @@ M.I18N.en_us = {
 
 	// Start::PIN-Funktion
 	, bittePINeingeben: "Please enter PIN..."
+	, ladePINMitarbeiter: "Loading employee-admissions"
 	, abmelden: "Logout"
+	, invalidPIN: "Invalid PIN"
+	, validPIN: "Valid PIN"
 	// Ende::PIN-Funktion
 
 };
