@@ -425,6 +425,7 @@ M.I18N.en_us = {
 	// Start::PIN-Funktion
 	, bittePINeingeben: "Please enter PIN..."
 	, ladePINMitarbeiter: "Loading employee-admissions"
+	, anmeldenAls: "Login as"
 	, abmelden: "Logout"
 	, invalidPIN: "Invalid PIN"
 	, validPIN: "Valid PIN"
