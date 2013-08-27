@@ -277,70 +277,6 @@ img.audioIcon {
  
 /* end custom scholppButton */
 
-/* custom PINButton */
-[data-theme="PINButton"] 
-{
-    moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
-    background: #FFFFFF;
-    font-weight: bold;
-    font-size: 30px;
-    color: #333;
-    text-decoration: none;
-    border: 1px solid #000000;
-    height: 70px;
-    opacity: 0.7;
-}
-
-[data-theme="PINButton"] span.ui-btn-inner
-{
-    moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
-    padding-left: 0px;
-    padding-right: 0px;
-}
-
-.ui-content .PINButton {
-    position: relative;
-    height: 60px;
-    padding-bottom: 15px;
-}
-
-.ui-content .PINButton .buttonSelected {
-    background: green;
-    color: #ffffff;
-		/* frei gewaehlter Name*/
-        -webkit-animation-name: white_to_green;   
-        /* Abspieldauer  in Sekunden*/
-        -webkit-animation-duration: .5s;
-        /* Wiederholungen in Zahlen*/   
-        -webkit-iteration-count: 1; 
-        /* Verhalten am Ende bei Wiederholungen mit: normal / reverse / alternate / alternate-reverse */
-        -webkit-animation-direction: normal; 
-        /* Animatioskurve mit: ease / ease-in / ease-out / ease-in-out / liner / bezier */
-        -webkit-animation-timing-function: linear;
-        /* Fill-Mode für den Effekt bei einem Delay sichtbar mit: none / forwards / backwards / both */
-        animation-fill-mode: forwards;
-}
-
-.ui-content .PINButton .icon img 
-{
-    width: 48px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    top: -58px;
-    position: relative;
-}
-
-.ui-content .PINButton.hack .icon {
-    top: -25px;
-}
- 
-/* end custom pinButton */
-
 label.ui-input-text, .ui-controlgroup-label {
 	color: #ffffff;
 }
@@ -1057,13 +993,6 @@ label.ui-input-text, .ui-controlgroup-label {
 	width: 30% !important;
 	text-align: right;
 }
-
-/* PINPage Settings-Icon oben rechts */
-.pinPage .ui-btn-right .ui-btn-inner.ui-btn-corner-all { height: 13px; }
-.pinPage .ui-btn-right .ui-icon.ui-icon-gear.ui-icon-shadow { margin-left: 5px; }
-
-/* PINPage PIN zentriert */
-.pinPage .ui-input-text { text-align: center; font-size: 30px; width: 96%; margin-top: 40px; }
 
 /* IOS LIKE FOOTER / TABBAR */
 .ui-footer {
