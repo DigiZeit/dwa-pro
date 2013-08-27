@@ -1,16 +1,16 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4054, Timestamp:1377615919760
+#Application:DigiWebApp, Version:1.6.1.4055 beta, Timestamp:1377616920875
 
 
 # Explicitly cached entries
 CACHE:
 en_us.js
 es_es.js
+de_de.js
 nl_nl.js
 fr_fr.js
-de_de.js
-underscore-min.js
 d8-0.1.3.min.js
+underscore-min.js
 theme/tmp.css
 bootstrap.js
 jquery.xml2json_1.1.js
@@ -20,6 +20,7 @@ ui.js
 jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+barcodescanner.js
 childbrowser.js
 cordova.js
 core.js
@@ -44,14 +45,14 @@ theme/style.css
 theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
-theme/images/icon_takePicture.png
 theme/images/icon_dataTransfer.png
+theme/images/icon_takePicture.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
+theme/images/48x48_plain_pda_write.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_gears.png
 theme/images/640x960_90_DIGI-WebApp.png
-theme/images/48x48_plain_pda_write.png
 theme/images/Icon.png
 theme/images/640x960_90_SCHOLPP.png
 theme/images/tile-icon-winphone.png
@@ -60,22 +61,22 @@ theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
 theme/images/icon_info.png
 theme/images/NeuesLogo2013_transparent-BG_weiss-DIGI.png
 theme/images/1024x1024_90_DIGI-WebApp.png
+theme/images/ajax-loader_digi-transparent.gif
 theme/images/Icon_2x.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
-theme/images/ajax-loader_digi-transparent.gif
 theme/images/Icon-72.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/1536x2048_90_SCHOLPP.png
-theme/images/5000x5000_90_SCHOLPP.png
-theme/images/icon_handApplication.png
-theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_note_view.png
+theme/images/5000x5000_90_SCHOLPP.png
+theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_car_compact_grey.png
 theme/images/tabSprite.png
 theme/images/arrow_white.png
 theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_handauftrag.png
+theme/images/icon_handApplication.png
 theme/images/ic_launcher_ldpi.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
 theme/images/ic_launcher_mdpi.png
@@ -92,8 +93,8 @@ theme/images/splash.png
 theme/images/arrow_grey.png
 theme/images/icon_ios_72.png
 theme/images/48x48_plain_graphics-tablet.png
-theme/images/Auftrag.png
 theme/images/icon_media.png
+theme/images/Auftrag.png
 theme/images/icon_record.png
 theme/images/48x48_plain_clock_pause.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
@@ -123,10 +124,10 @@ DigiWebApp_App.js
 
 # Resources that require the device/user to be online.
 NETWORK:
-barcodescanner.js
 PushNotification.js
 phonegap.js
 Handy2WebServices
+RemoteMediaFile
 *
 
 # Fallback resources 
