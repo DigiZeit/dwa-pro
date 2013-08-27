@@ -307,334 +307,6 @@ M.TableView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
- * M.Application. A page is the container view for all other views.
- *
- * @extends M.View
- */
-M.PageView = M.View.extend(
-/** @scope M.PageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PageView',
-
-    /**
-     * States whether a page is loaded the first time or not. It is automatically set to NO
-     * once the page was first loaded.
-     *
-     * @type Boolean
-     */
-    isFirstLoad: YES,
-
-    /**
-     * Indicates whether the page has a tab bar or not.
-     *
-     * @type Boolean
-     */
-    hasTabBarView: NO,
-
-    /**
-     * The page's tab bar.
-     *
-     * @type M.TabBarView
-     */
-    tabBarView: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationchange'],
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions. If
-     * there are external handlers specified for the same event, the internal handler is called first.
-     *
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * An associative array containing all list views used in this page. The key for a list view is
-     * its id. We do this to have direct access to a list view, so we can reset its selected item
-     * once the page was hidden.
-     *
-     * @type Object
-     */
-    listList: null,
-
-    /**
-     * This property contains the page's current orientation. This property is only used internally!
-     *
-     * @private
-     * @type Number
-     */
-    orientation: null,
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The page view's html representation.
-     */
-    render: function() {
-        /* store the currently rendered page as a reference for use in child views */
-        M.ViewManager.currentlyRenderedPage = this;
-        
-        this.html += '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        this.writeToDOM();
-        this.theme();
-        this.registerEvents();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for page views and its
-     * internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            pagebeforeshow: {
-                target: this,
-                action: 'pageWillLoad'
-            },
-            pageshow: {
-                target: this,
-                action: 'pageDidLoad'
-            },
-            pagebeforehide: {
-                target: this,
-                action: 'pageWillHide'
-            },
-            pagehide: {
-                target: this,
-                action: 'pageDidHide'
-            },
-            orientationchange: {
-                target: this,
-                action: 'orientationDidChange'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method writes the view's html string into the DOM. M.Page is the only view that does
-     * that. All other views just deliver their html representation to a page view.
-     */
-    writeToDOM: function() {
-    	if (restartOnBlackBerry) {
-    		if (document.readyState === "loading") {
-    			document.write(this.html);
-    		} else if (typeof(jQuery(this.html)[0]) !== undefined) {
-    			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf(jQuery(this.html)[0].id) === -1) {
-    				jQuery("body").append(this.html);
-    			}
-    		}
-		} else {
-			document.write(this.html);
-		}
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillLoad: function(id, event, nextEvent) {
-        /* initialize the tabbar */
-        if(M.Application.isFirstLoad) {
-            M.Application.isFirstLoad = NO;
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage && currentPage.hasTabBarView) {
-                var tabBarView = currentPage.tabBarView;
-
-                if(tabBarView.childViews) {
-                    var childViews = tabBarView.getChildViewsAsArray();
-                    for(var i in childViews) {
-                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
-                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* initialize the loader for later use (if not already done) */
-        if(M.LoaderView) {
-            M.LoaderView.initialize();
-        }
-
-        /* reset the page's title */
-        document.title = M.Application.name;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was loaded. If a onLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidLoad: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-
-        /* call jqm to fix header/footer */
-        $.mobile.fixedToolbars.show();
-
-        this.isFirstLoad = NO;
-    },
-
-    /**
-     * This method is called right before the page is hidden. If a beforeHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillHide: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was hidden. If a onHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidHide: function(id, event, nextEvent) {
-        /* if there is a list on the page, reset it: deactivate possible active list items */
-        if(this.listList) {
-            _.each(this.listList, function(list) {
-                list.resetActiveListItem();
-            });
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the device's orientation did change. If a action for
-     * orientationchange is defined for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    orientationDidChange: function(id, event, nextEvent) {
-        /* get the orientation */
-        var orientation = M.Environment.getOrientation();
-        
-        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
-        if(orientation === this.orientation) {
-            return;
-        }
-
-        /* auto-reposition opened dialogs */
-        $('.tmp-dialog').each(function() {
-            var id = $(this).attr('id');
-            var dialog = M.ViewManager.getViewById(id);
-            var dialogDOM = $(this);
-            window.setTimeout(function() {
-                dialog.positionDialog(dialogDOM);
-                dialog.positionBackground($('.tmp-dialog-background'));
-            }, 500);
-        });
-
-        /* set the current orientation */
-        this.orientation = orientation;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the page.
-     *
-     * @private
-     * @returns {String} The page's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            if(!html) {
-                html += ' class="';
-            }
-            html += this.cssClass;
-        }
-        if(html) {
-            html += '"';
-        }
-        return html;
-    }
-    
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -803,6 +475,489 @@ M.ToggleView = M.View.extend(
 
             $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for horizontal alignment.
+ *
+ * @type String
+ */
+M.HORIZONTAL = 'horizontal';
+
+/**
+ * A constant value for vertical alignment.
+ *
+ * @type String
+ */
+M.VERTICAL = 'vertical';
+
+
+/**
+ * @class
+ *
+ * A button group is a vertically or / and horizontally aligned group of buttons. There
+ * are basically three different types of a button group:
+ *
+ * - horizontally aligned buttons
+ *     1 - 2 - 3
+ *
+ * - vertically aligned buttons
+ *     1
+ *     |
+ *     2
+ *     |
+ *     3
+ *
+ * - horizontally and vertically aligned buttons
+ *     1 - 2
+ *     |   |
+ *     3 - 4
+ * 
+ * @extends M.View
+ */
+M.ButtonGroupView = M.View.extend(
+/** @scope M.ButtonGroupView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonGroupView',
+
+    /**
+     * This property determines whether to render the button group horizontally
+     * or vertically. Default: horizontal.
+     *
+     * Possible values are:
+     * - M.HORIZONTAL: horizontal
+     * - M.VERTICAL: vertical
+     *
+     * @type String
+     */
+    direction: M.HORIZONTAL,
+
+    /**
+     * Determines whether to display the button group view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * Determines whether to display the button group compact, i.e. without top/bottom
+     * margin. This property only is relevant in combination with multiple lines of
+     * buttons (c.p.: buttonsPerLine property).
+     *
+     * @type Boolean
+     */
+    isCompact: YES,
+
+    /**
+     * This property, if set, defines how many buttons are rendered per line. If there
+     * are more buttons defined that fitting into one line, the following buttons are
+     * rendered into a new line. Make sure, the number of your buttons is divisible by
+     * the number of buttons per line, since only full lines are displayed. So if you
+     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
+     * visible.
+     *
+     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
+     * be as follows:
+     *
+     *     1 -- 2
+     *     3 -- 4
+     *
+     * @type Number
+     */
+    buttonsPerLine: null,
+
+    /**
+     * This property is used to internally store the number of lines that are necessary
+     * to render all buttons according to the buttonsPerLine property.
+     *
+     * @private
+     * @type Number
+     */
+    numberOfLines: null,
+
+    /**
+     * This property refers to the currently rendered line, if there is more than one.
+     *
+     * @private
+     * @type Number
+     */
+    currentLine: null,
+
+    /**
+     * This property contains an array of html ids referring to the several lines of grouped
+     * buttons, if there is more than one at all.
+     *
+     * @private
+     * @type Array
+     */
+    lines: null,
+
+    /**
+     * This property contains a reference to the currently selected button.
+     *
+     * @private
+     * @type Object
+     */
+    activeButton: null,
+
+    /**
+     * This property determines whether the buttons of this button group are selectable or not. If
+     * set to YES, a click on one of the buttons will set this button as the currently active button
+     * and automatically change its styling to visualize its selection.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * Renders a button group as a div container and calls the renderChildViews
+     * method to render the included buttons.
+     *
+     * @private
+     * @returns {String} The button group view's html representation.
+     */
+    render: function() {
+        /* check if multiple lines are necessary before rendering */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
+                var numberOfButtons = 0;
+                for(var i in childViews) {
+                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                        numberOfButtons = numberOfButtons + 1;
+                    }
+                }
+                if(this.buttonsPerLine < numberOfButtons) {
+                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
+                }
+            }
+        }
+
+        /* if there are multiple lines, render multiple horizontally aligned button groups */
+        if(this.numberOfLines) {
+            /* set the direction to horizontally, no matter what it was set to before */
+            this.direction = M.HORIZONTAL;
+
+            /* this is a wrapper for the multiple button groups.
+               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
+            this.html += '<div id="' + this.id + '"';
+            this.html += this.style();
+            this.html += '>';
+
+            /* create a button group for every line */
+            this.lines = [];
+            for(var i = 0; i < this.numberOfLines; i++) {
+                this.currentLine = i + 1;
+                /* store current line in lines property for use in renderChildViews() */
+                this.lines.push(this.id + '_' + i);
+
+                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
+
+                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
+                if(!this.isInset || this.isCompact) {
+                    if(i == 0) {
+                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
+                    } else if(i > 0 && i < this.numberOfLines - 1) {
+                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
+                    } else if(i < this.numberOfLines) {
+                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
+                    }
+                }
+
+                this.html += '>';
+
+                /* render the buttons for the current line */
+                this.renderChildViews();
+
+                this.html += '</div>';
+            }
+            this.html += '</div>';
+        } else {
+            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
+
+            this.renderChildViews();
+
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.ButtonGroupView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var currentButtonIndex = 0;
+
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    currentButtonIndex = currentButtonIndex + 1;
+
+                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
+
+                        var button = this[childViews[i]];
+                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
+                        button.html = '';
+
+                        button.parentView = this;
+                        button.internalEvents = {
+                            tap: {
+                                target: this,
+                                action: 'buttonSelected'
+                            }
+                        }
+
+                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
+                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
+                           the right of the button group */
+                        if(this.direction === M.HORIZONTAL) {
+                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
+                        }
+
+                        /* set the button's _name property */
+                        this[childViews[i]]._name = childViews[i];
+
+                        /* finally render the button and add it to the button groups html */
+                        this.html += this[childViews[i]].render();
+                    }
+                } else {
+                    M.Logger.log('childview of button group is no button.', M.WARN);
+                }
+            }
+        }
+    },
+
+    /**
+     * This method themes the button group and activates one of the included buttons
+     * if its isActive property is set.
+     *
+     * @private
+     */
+    theme: function() {
+        /* if there are multiple lines of buttons, it's getting heavy */
+        if(this.numberOfLines) {
+            
+            /* iterate through all lines */
+            for(var line in this.lines) {
+                line = parseInt(line);
+
+                /* style the current line */
+                $('#' + this.lines[line]).controlgroup();
+                var childViews = this.getChildViewsAsArray();
+                var currentButtonIndex = 0;
+                
+                /* if isCompact, iterate through all buttons */
+                if(this.isCompact) {
+                    for(var i in childViews) {
+                        i = parseInt(i);
+                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                            currentButtonIndex = currentButtonIndex + 1;
+                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
+                            var button = this[childViews[i]];
+
+                            /* if the button belongs to the current line adjust its styling according to its position,
+                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
+                            if(line === currentLine) {
+
+                                /* first line */
+                                if(line === 0 && this.numberOfLines > 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tl');
+                                        }
+                                    /* last button */
+                                    } else if(currentButtonIndex === this.buttonsPerLine) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tr');
+                                        }
+                                    }
+                                /* last line */
+                                } else if(line === this.numberOfLines - 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        $('#' + button.id).addClass('ui-corner-bl');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        $('#' + button.id).addClass('ui-corner-br');
+                                    }
+                                /* all other lines */
+                                } else {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        /* if there is only on row, simply style that button group */
+        } else {
+            $('#' + this.id).controlgroup();
+        }
+
+        /* iterate through all buttons and activate on of them, according to the button's isActive property */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    var button = this[childViews[i]];
+                    if(button.isActive) {
+                        this.setActiveButton(button.id);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * This method returns the currently selected button of this button group. If no
+     * button is selected, null is returned.
+     *
+     * @returns {M.ButtonView} The currently active button of this button group.
+     */
+    getActiveButton: function() {
+        return this.activeButton;  
+    },
+
+    /**
+     * This method activates one button within the button group.
+     *
+     * @param {M.ButtonView, String} button The button to be set active or its id.
+     */
+    setActiveButton: function(button) {
+        if(this.isSelectable) {
+            if(this.activeButton) {
+                this.activeButton.removeCssClass('ui-btn-active');
+                this.activeButton.isActive = NO;
+            }
+
+            var obj = M.ViewManager.getViewById(button);
+            if(!obj) {
+                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
+                    obj = button;
+                }
+            }
+            if(obj) {
+                obj.addCssClass('ui-btn-active');
+                obj.isActive = YES;
+                this.activeButton = obj;
+            }
+        }
+    },
+
+    /**
+     * This method activates one button within the button group at the given index.
+     *
+     * @param {Number} index The index of the button to be set active.
+     */
+    setActiveButtonAtIndex: function(index) {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var button = this[childViews[index]];
+            if(button && button.type === 'M.ButtonView') {
+                this.setActiveButton(button);
+            }
+        }
+    },
+
+    /**
+     * This method is called everytime a button is activated / clicked.
+     *
+     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
+     */
+    buttonSelected: function(id, event, nextEvent) {
+        /* if selected button is disabled, do nothing */
+        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
+            return;
+        }
+
+        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
+            if(this.isSelectable) {
+                if(this.activeButton) {
+                    this.activeButton.removeCssClass('ui-btn-active');
+                    this.activeButton.isActive = NO;
+                }
+
+                var button = M.ViewManager.getViewById(id);
+                if(!button) {
+                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
+                        button = id;
+                    }
+                }
+                if(button) {
+                    button.addCssClass('ui-btn-active');
+                    button.isActive = YES;
+                    this.activeButton = button;
+                }
+            }
+
+            /* trigger change event for the button group */
+            $('#' + this.id).trigger('change');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button group.
+     *
+     * @private
+     * @returns {String} The button group's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.numberOfLines && !this.isInset) {
+            html += ' class="ui-listview';
+        }
+        if(this.cssClass) {
+            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
+        }
+        html += '"';
+        return html;
     }
 
 });
@@ -1607,6 +1762,334 @@ M.DatePickerView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
+ * M.Application. A page is the container view for all other views.
+ *
+ * @extends M.View
+ */
+M.PageView = M.View.extend(
+/** @scope M.PageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PageView',
+
+    /**
+     * States whether a page is loaded the first time or not. It is automatically set to NO
+     * once the page was first loaded.
+     *
+     * @type Boolean
+     */
+    isFirstLoad: YES,
+
+    /**
+     * Indicates whether the page has a tab bar or not.
+     *
+     * @type Boolean
+     */
+    hasTabBarView: NO,
+
+    /**
+     * The page's tab bar.
+     *
+     * @type M.TabBarView
+     */
+    tabBarView: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationchange'],
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions. If
+     * there are external handlers specified for the same event, the internal handler is called first.
+     *
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * An associative array containing all list views used in this page. The key for a list view is
+     * its id. We do this to have direct access to a list view, so we can reset its selected item
+     * once the page was hidden.
+     *
+     * @type Object
+     */
+    listList: null,
+
+    /**
+     * This property contains the page's current orientation. This property is only used internally!
+     *
+     * @private
+     * @type Number
+     */
+    orientation: null,
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The page view's html representation.
+     */
+    render: function() {
+        /* store the currently rendered page as a reference for use in child views */
+        M.ViewManager.currentlyRenderedPage = this;
+        
+        this.html += '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
+        this.registerEvents();
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for page views and its
+     * internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            pagebeforeshow: {
+                target: this,
+                action: 'pageWillLoad'
+            },
+            pageshow: {
+                target: this,
+                action: 'pageDidLoad'
+            },
+            pagebeforehide: {
+                target: this,
+                action: 'pageWillHide'
+            },
+            pagehide: {
+                target: this,
+                action: 'pageDidHide'
+            },
+            orientationchange: {
+                target: this,
+                action: 'orientationDidChange'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method writes the view's html string into the DOM. M.Page is the only view that does
+     * that. All other views just deliver their html representation to a page view.
+     */
+    writeToDOM: function() {
+    	if (restartOnBlackBerry) {
+    		if (document.readyState === "loading") {
+    			document.write(this.html);
+    		} else if (typeof(jQuery(this.html)[0]) !== undefined) {
+    			// append only if the page-id isn't already in the body 
+    			if (document.body.innerHTML.indexOf(jQuery(this.html)[0].id) === -1) {
+    				jQuery("body").append(this.html);
+    			}
+    		}
+		} else {
+			document.write(this.html);
+		}
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillLoad: function(id, event, nextEvent) {
+        /* initialize the tabbar */
+        if(M.Application.isFirstLoad) {
+            M.Application.isFirstLoad = NO;
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage && currentPage.hasTabBarView) {
+                var tabBarView = currentPage.tabBarView;
+
+                if(tabBarView.childViews) {
+                    var childViews = tabBarView.getChildViewsAsArray();
+                    for(var i in childViews) {
+                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
+                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* initialize the loader for later use (if not already done) */
+        if(M.LoaderView) {
+            M.LoaderView.initialize();
+        }
+
+        /* reset the page's title */
+        document.title = M.Application.name;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was loaded. If a onLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidLoad: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+
+        /* call jqm to fix header/footer */
+        $.mobile.fixedToolbars.show();
+
+        this.isFirstLoad = NO;
+    },
+
+    /**
+     * This method is called right before the page is hidden. If a beforeHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillHide: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was hidden. If a onHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidHide: function(id, event, nextEvent) {
+        /* if there is a list on the page, reset it: deactivate possible active list items */
+        if(this.listList) {
+            _.each(this.listList, function(list) {
+                list.resetActiveListItem();
+            });
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the device's orientation did change. If a action for
+     * orientationchange is defined for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    orientationDidChange: function(id, event, nextEvent) {
+        /* get the orientation */
+        var orientation = M.Environment.getOrientation();
+        
+        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
+        if(orientation === this.orientation) {
+            return;
+        }
+
+        /* auto-reposition opened dialogs */
+        $('.tmp-dialog').each(function() {
+            var id = $(this).attr('id');
+            var dialog = M.ViewManager.getViewById(id);
+            var dialogDOM = $(this);
+            window.setTimeout(function() {
+                dialog.positionDialog(dialogDOM);
+                dialog.positionBackground($('.tmp-dialog-background'));
+            }, 500);
+        });
+
+        /* set the current orientation */
+        this.orientation = orientation;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the page.
+     *
+     * @private
+     * @returns {String} The page's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            if(!html) {
+                html += ' class="';
+            }
+            html += this.cssClass;
+        }
+        if(html) {
+            html += '"';
+        }
+        return html;
+    }
+    
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -1721,489 +2204,6 @@ M.DashboardItemView = M.View.extend(
         if(this.cssStyle) {
             html += 'style="' + this.cssStyle + '"';
         }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for horizontal alignment.
- *
- * @type String
- */
-M.HORIZONTAL = 'horizontal';
-
-/**
- * A constant value for vertical alignment.
- *
- * @type String
- */
-M.VERTICAL = 'vertical';
-
-
-/**
- * @class
- *
- * A button group is a vertically or / and horizontally aligned group of buttons. There
- * are basically three different types of a button group:
- *
- * - horizontally aligned buttons
- *     1 - 2 - 3
- *
- * - vertically aligned buttons
- *     1
- *     |
- *     2
- *     |
- *     3
- *
- * - horizontally and vertically aligned buttons
- *     1 - 2
- *     |   |
- *     3 - 4
- * 
- * @extends M.View
- */
-M.ButtonGroupView = M.View.extend(
-/** @scope M.ButtonGroupView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonGroupView',
-
-    /**
-     * This property determines whether to render the button group horizontally
-     * or vertically. Default: horizontal.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /**
-     * Determines whether to display the button group view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * Determines whether to display the button group compact, i.e. without top/bottom
-     * margin. This property only is relevant in combination with multiple lines of
-     * buttons (c.p.: buttonsPerLine property).
-     *
-     * @type Boolean
-     */
-    isCompact: YES,
-
-    /**
-     * This property, if set, defines how many buttons are rendered per line. If there
-     * are more buttons defined that fitting into one line, the following buttons are
-     * rendered into a new line. Make sure, the number of your buttons is divisible by
-     * the number of buttons per line, since only full lines are displayed. So if you
-     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
-     * visible.
-     *
-     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
-     * be as follows:
-     *
-     *     1 -- 2
-     *     3 -- 4
-     *
-     * @type Number
-     */
-    buttonsPerLine: null,
-
-    /**
-     * This property is used to internally store the number of lines that are necessary
-     * to render all buttons according to the buttonsPerLine property.
-     *
-     * @private
-     * @type Number
-     */
-    numberOfLines: null,
-
-    /**
-     * This property refers to the currently rendered line, if there is more than one.
-     *
-     * @private
-     * @type Number
-     */
-    currentLine: null,
-
-    /**
-     * This property contains an array of html ids referring to the several lines of grouped
-     * buttons, if there is more than one at all.
-     *
-     * @private
-     * @type Array
-     */
-    lines: null,
-
-    /**
-     * This property contains a reference to the currently selected button.
-     *
-     * @private
-     * @type Object
-     */
-    activeButton: null,
-
-    /**
-     * This property determines whether the buttons of this button group are selectable or not. If
-     * set to YES, a click on one of the buttons will set this button as the currently active button
-     * and automatically change its styling to visualize its selection.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Renders a button group as a div container and calls the renderChildViews
-     * method to render the included buttons.
-     *
-     * @private
-     * @returns {String} The button group view's html representation.
-     */
-    render: function() {
-        /* check if multiple lines are necessary before rendering */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
-                var numberOfButtons = 0;
-                for(var i in childViews) {
-                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                        numberOfButtons = numberOfButtons + 1;
-                    }
-                }
-                if(this.buttonsPerLine < numberOfButtons) {
-                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
-                }
-            }
-        }
-
-        /* if there are multiple lines, render multiple horizontally aligned button groups */
-        if(this.numberOfLines) {
-            /* set the direction to horizontally, no matter what it was set to before */
-            this.direction = M.HORIZONTAL;
-
-            /* this is a wrapper for the multiple button groups.
-               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
-            this.html += '<div id="' + this.id + '"';
-            this.html += this.style();
-            this.html += '>';
-
-            /* create a button group for every line */
-            this.lines = [];
-            for(var i = 0; i < this.numberOfLines; i++) {
-                this.currentLine = i + 1;
-                /* store current line in lines property for use in renderChildViews() */
-                this.lines.push(this.id + '_' + i);
-
-                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
-
-                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
-                if(!this.isInset || this.isCompact) {
-                    if(i == 0) {
-                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
-                    } else if(i > 0 && i < this.numberOfLines - 1) {
-                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
-                    } else if(i < this.numberOfLines) {
-                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
-                    }
-                }
-
-                this.html += '>';
-
-                /* render the buttons for the current line */
-                this.renderChildViews();
-
-                this.html += '</div>';
-            }
-            this.html += '</div>';
-        } else {
-            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
-
-            this.renderChildViews();
-
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonGroupView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var currentButtonIndex = 0;
-
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    currentButtonIndex = currentButtonIndex + 1;
-
-                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
-
-                        var button = this[childViews[i]];
-                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
-                        button.html = '';
-
-                        button.parentView = this;
-                        button.internalEvents = {
-                            tap: {
-                                target: this,
-                                action: 'buttonSelected'
-                            }
-                        }
-
-                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
-                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
-                           the right of the button group */
-                        if(this.direction === M.HORIZONTAL) {
-                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
-                        }
-
-                        /* set the button's _name property */
-                        this[childViews[i]]._name = childViews[i];
-
-                        /* finally render the button and add it to the button groups html */
-                        this.html += this[childViews[i]].render();
-                    }
-                } else {
-                    M.Logger.log('childview of button group is no button.', M.WARN);
-                }
-            }
-        }
-    },
-
-    /**
-     * This method themes the button group and activates one of the included buttons
-     * if its isActive property is set.
-     *
-     * @private
-     */
-    theme: function() {
-        /* if there are multiple lines of buttons, it's getting heavy */
-        if(this.numberOfLines) {
-            
-            /* iterate through all lines */
-            for(var line in this.lines) {
-                line = parseInt(line);
-
-                /* style the current line */
-                $('#' + this.lines[line]).controlgroup();
-                var childViews = this.getChildViewsAsArray();
-                var currentButtonIndex = 0;
-                
-                /* if isCompact, iterate through all buttons */
-                if(this.isCompact) {
-                    for(var i in childViews) {
-                        i = parseInt(i);
-                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                            currentButtonIndex = currentButtonIndex + 1;
-                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
-                            var button = this[childViews[i]];
-
-                            /* if the button belongs to the current line adjust its styling according to its position,
-                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
-                            if(line === currentLine) {
-
-                                /* first line */
-                                if(line === 0 && this.numberOfLines > 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tl');
-                                        }
-                                    /* last button */
-                                    } else if(currentButtonIndex === this.buttonsPerLine) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tr');
-                                        }
-                                    }
-                                /* last line */
-                                } else if(line === this.numberOfLines - 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        $('#' + button.id).addClass('ui-corner-bl');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        $('#' + button.id).addClass('ui-corner-br');
-                                    }
-                                /* all other lines */
-                                } else {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        /* if there is only on row, simply style that button group */
-        } else {
-            $('#' + this.id).controlgroup();
-        }
-
-        /* iterate through all buttons and activate on of them, according to the button's isActive property */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    var button = this[childViews[i]];
-                    if(button.isActive) {
-                        this.setActiveButton(button.id);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
-     * This method returns the currently selected button of this button group. If no
-     * button is selected, null is returned.
-     *
-     * @returns {M.ButtonView} The currently active button of this button group.
-     */
-    getActiveButton: function() {
-        return this.activeButton;  
-    },
-
-    /**
-     * This method activates one button within the button group.
-     *
-     * @param {M.ButtonView, String} button The button to be set active or its id.
-     */
-    setActiveButton: function(button) {
-        if(this.isSelectable) {
-            if(this.activeButton) {
-                this.activeButton.removeCssClass('ui-btn-active');
-                this.activeButton.isActive = NO;
-            }
-
-            var obj = M.ViewManager.getViewById(button);
-            if(!obj) {
-                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
-                    obj = button;
-                }
-            }
-            if(obj) {
-                obj.addCssClass('ui-btn-active');
-                obj.isActive = YES;
-                this.activeButton = obj;
-            }
-        }
-    },
-
-    /**
-     * This method activates one button within the button group at the given index.
-     *
-     * @param {Number} index The index of the button to be set active.
-     */
-    setActiveButtonAtIndex: function(index) {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var button = this[childViews[index]];
-            if(button && button.type === 'M.ButtonView') {
-                this.setActiveButton(button);
-            }
-        }
-    },
-
-    /**
-     * This method is called everytime a button is activated / clicked.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    buttonSelected: function(id, event, nextEvent) {
-        /* if selected button is disabled, do nothing */
-        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
-            return;
-        }
-
-        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
-            if(this.isSelectable) {
-                if(this.activeButton) {
-                    this.activeButton.removeCssClass('ui-btn-active');
-                    this.activeButton.isActive = NO;
-                }
-
-                var button = M.ViewManager.getViewById(id);
-                if(!button) {
-                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
-                        button = id;
-                    }
-                }
-                if(button) {
-                    button.addCssClass('ui-btn-active');
-                    button.isActive = YES;
-                    this.activeButton = button;
-                }
-            }
-
-            /* trigger change event for the button group */
-            $('#' + this.id).trigger('change');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button group.
-     *
-     * @private
-     * @returns {String} The button group's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.numberOfLines && !this.isInset) {
-            html += ' class="ui-listview';
-        }
-        if(this.cssClass) {
-            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
-        }
-        html += '"';
         return html;
     }
 
@@ -5191,6 +5191,127 @@ M.MapView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + '>';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).hide();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).show();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.11.2011
@@ -5860,127 +5981,6 @@ M.ToolbarView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
- * @extends M.View
- */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImageView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
-
-    /**
-     * Renders an image view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The image view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + '>';
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).hide();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).show();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      28.10.11
@@ -6643,542 +6643,6 @@ M.GridView = M.View.extend(
             var html = 'class="' + this.layout.cssClass + '"';
             return html;
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard view displays images and a corresponding text in a grid-like view
- * and serves as the homescreen of an application. By tapping on of the icons, a
- * user can access certain features of an app. By default, there are three icons
- * in a row and three rows per page possible. But you can easily adjust this to
- * your custom needs.
- *
- * @extends M.View
- */
-M.DashboardView = M.View.extend(
-/** @scope M.DashboardView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardView',
-
-    /**
-     * This property can be used to customize the number of items a dashboard
-     * shows per line. By default this is set to three.
-     *
-     * @type Number
-     */
-    itemsPerLine: 3,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This property is used internally for storing the items of a dashboard, when using
-     * the content binding feature.
-     *
-     * @private
-     */
-    items: [],
-
-    /**
-     * This property can be used to specify whether or not the dashboard can be re-arranged
-     * by a user.
-     *
-     * @type Boolean
-     */
-    isEditable: NO,
-
-    /**
-     * This property is used internally to indicate whether the dashboard is currently in
-     * edit mode or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInEditMode: NO,
-
-    /**
-     * This property defines the dashboard's name. This is used internally to identify
-     * the dashboard inside the DOM.
-     *
-     * Note: If you are using more than one dashboard inside your application, make sure
-     * you provide different names.
-     *
-     * @type String
-     */
-    name: 'dashboard',
-
-    /**
-     * This property is used internally to track the position of touch events.
-     *
-     * @private
-     */
-    touchPositions: null,
-
-    /**
-     * This property is used internally to know of what type the latest touch events was.
-     *
-     * @private
-     */
-    latestTouchEventType: null,
-
-    /**
-     * Renders a dashboard.
-     *
-     * @private
-     * @returns {String} The dashboard view's html representation.
-     */
-    render: function() {
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-        this.renderChildViews();
-        this.html += '</div>';
-
-        /* clear floating */
-        this.html += '<div class="tmp-dashboard-line-clear"></div>';
-
-        /* init the touchPositions property */
-        this.touchPositions = {};
-
-        return this.html;
-    },
-
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* lets gather the html together */
-            for(var i in childViews) {
-                /* set the dashboard item's _name and parentView property */
-                this[childViews[i]].parentView = this;
-                this[childViews[i]]._name = childViews[i];
-
-                this.html += this.renderDashboardItemView(this[childViews[i]], i);
-            }
-        }
-    },
-
-    renderUpdate: function() {
-        if(this.contentBinding) {
-            this.removeAllItems();
-
-            /* do we have something in locale storage? */
-            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
-            values = values ? JSON.parse(values) : null;
-
-            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
-            this.items = [];
-            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
-            var html = '';
-
-            /* lets gather the html together */
-            for(var i in items) {
-                html += this.renderDashboardItemView(items[i], i);
-            }
-
-            /* add the items to the DOM */
-            this.addItems(html);
-
-            /* now the items are in DOM, finally register events */
-            for(var i in this.items) {
-                this.items[i].registerEvents();
-            }
-        }
-    },
-
-    /**
-     * This method adds a given html string, contain the dasboard's items, to the DOM.
-     *
-     * @param {String} item The html representation of the dashboard items to be added.
-     */
-    addItems: function(items) {
-        $('#' + this.id).append(items);
-    },
-
-    /**
-     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        $('#' + this.id).empty();
-    },
-
-    renderDashboardItemView: function(item, itemIndex) {
-        if(item && item.value && item.icon) {
-            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
-                value: item.value ? item.value : '',
-                icon: item.icon ? item.icon : '',
-                label: item.label ? item.label : (item.value ? item.value : ''),
-                parentView: this,
-                events: item.events
-            });
-            var html = '';
-
-            /* add item to array for later use */
-            this.items.push(obj);
-
-            /* is new line starting? */
-            if(itemIndex % this.itemsPerLine === 0) {
-                //html += '<div class="tmp-dashboard-line">';
-            }
-
-            /* assign the desired width */
-            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
-
-            /* finally render the dashboard item and add it to the dashboard's html */
-            html += obj.render();
-
-            /* is a line finished? */
-            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
-                //html += '</div><div class="tmp-dashboard-line-clear"></div>';
-            }
-
-            /* return the html */
-            return html;
-        } else {
-            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally for dispatching the tap event for a dashboard view. If the
-     * dashboard view is in edit mode, we do not dispatch the event to the application.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     *
-     * @private
-     */
-    dispatchTapEvent: function(id, event, nextEvent) {
-        /* now first call special handler for this item */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-
-        /* now call global tap-event handler (if set) */
-        if(this.events && this.events.tap) {
-            M.EventDispatcher.callHandler(this.events.tap, event, YES);
-        }
-
-        /* now store timestamp for last tap event to kill a possible false taphold event */
-        this.latestTapEventTimestamp = +new Date();
-    },
-
-    /**
-     * This method is automatically called when a taphold event is triggered for one
-     * of the dashboard's
-     */
-    editDashboard: function(id, event, nextEvent) {
-        this.touchPositions.touchstart = {};
-        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
-            return;
-        }
-
-        if(this.isInEditMode && event) {
-            this.stopEditMode();
-        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
-            M.EventDispatcher.unregisterEvents(this.id);
-            this.isInEditMode = YES;
-            _.each(this.items, function(item) {
-                item.addCssClass('rotate' + M.Math.random(1, 2));
-                M.EventDispatcher.unregisterEvents(item.id);
-                if($.support.touch) {
-                    M.EventDispatcher.registerEvent(
-                        'touchstart',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchStart'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchend',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchEnd'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchmove',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchMove'
-                        },
-                        item.recommendedEvents
-                    );
-                } else {
-                    M.EventDispatcher.registerEvent(
-                        'mousedown',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseDown'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'mouseup',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseUp'
-                        },
-                        item.recommendedEvents
-                    );
-                }
-            });
-        }
-    },
-
-    stopEditMode: function() {
-        this.isInEditMode = NO;
-        _.each(this.items, function(item) {
-            item.removeCssClass('rotate1');
-            item.removeCssClass('rotate2');
-            M.EventDispatcher.unregisterEvents(item.id);
-            item.registerEvents();
-        });
-    },
-
-    setValue: function(items) {
-        this.value = items;
-        var values = [];
-        _.each(items, function(item) {
-            values.push(item.value);
-        });
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
-        }
-    },
-
-    sortItemsByValues: function(items, values) {
-        var itemsSorted = [];
-        _.each(values, function(value) {
-            _.each(items, function(item) {
-                if(item.value === value) {
-                    itemsSorted.push(item);
-                }
-            });
-        });
-        return itemsSorted;
-    },
-
-    editTouchStart: function(id, event) {
-        this.latestTouchEventType = 'touchstart';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        this.touchPositions.touchstart = {
-            x: latest.clientX,
-            y: latest.clientY,
-            date: +new Date()
-        };
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'touchstart') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editTouchMove: function(id, event) {
-        this.latestTouchEventType = 'touchmove';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-
-        if(latest) {
-            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
-            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
-            $('#' + id).css('position', 'absolute');
-            $('#' + id).css('left', left + 'px');
-            $('#' + id).css('top', top + 'px');
-
-            /* if end event is within certain radius of start event and it took a certain time, and editing */
-            /*if(this.touchPositions.touchstart) {
-                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                        this.stopEditMode();
-                        this.editTouchEnd(id, event);
-                    }
-                }
-            }*/
-        }
-    },
-
-    editTouchEnd: function(id, event) {
-        this.latestTouchEventType = 'touchend';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    editMouseDown: function(id, event) {
-        this.latestTouchEventType = 'mousedown';
-
-        this.touchPositions.touchstart = {
-            x: event.clientX,
-            y: event.clientY,
-            date: +new Date()
-        };
-
-        /* enable mouse move for selected item */
-        M.EventDispatcher.registerEvent(
-            'mousemove',
-            id,
-            {
-                target: this,
-                action: 'editMouseMove'
-            },
-            M.ViewManager.getViewById(id).recommendedEvents
-        );
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'mousedown') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editMouseMove: function(id, event) {
-        this.latestTouchEventType = 'mousemove';
-
-        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
-        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
-        $('#' + id).css('position', 'absolute');
-        $('#' + id).css('left', left + 'px');
-        $('#' + id).css('top', top + 'px');
-
-        /* if end event is within certain radius of start event and it took a certain time, and editing */
-        /*if(this.touchPositions.touchstart) {
-            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                    this.stopEditMode();
-                    this.editTouchEnd(id, event);
-                }
-            }
-        }*/
-    },
-
-    editMouseUp: function(id, event) {
-        this.latestTouchEventType = 'mouseup';
-
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-
-                /* disable mouse move for all item */
-                M.EventDispatcher.unregisterEvent('mousemove', item.id);
-
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard view.
-     *
-     * @private
-     * @returns {String} The dashboard's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
     }
 
 });
@@ -8008,6 +7472,542 @@ M.ListView = M.View.extend(
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard view displays images and a corresponding text in a grid-like view
+ * and serves as the homescreen of an application. By tapping on of the icons, a
+ * user can access certain features of an app. By default, there are three icons
+ * in a row and three rows per page possible. But you can easily adjust this to
+ * your custom needs.
+ *
+ * @extends M.View
+ */
+M.DashboardView = M.View.extend(
+/** @scope M.DashboardView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardView',
+
+    /**
+     * This property can be used to customize the number of items a dashboard
+     * shows per line. By default this is set to three.
+     *
+     * @type Number
+     */
+    itemsPerLine: 3,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This property is used internally for storing the items of a dashboard, when using
+     * the content binding feature.
+     *
+     * @private
+     */
+    items: [],
+
+    /**
+     * This property can be used to specify whether or not the dashboard can be re-arranged
+     * by a user.
+     *
+     * @type Boolean
+     */
+    isEditable: NO,
+
+    /**
+     * This property is used internally to indicate whether the dashboard is currently in
+     * edit mode or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInEditMode: NO,
+
+    /**
+     * This property defines the dashboard's name. This is used internally to identify
+     * the dashboard inside the DOM.
+     *
+     * Note: If you are using more than one dashboard inside your application, make sure
+     * you provide different names.
+     *
+     * @type String
+     */
+    name: 'dashboard',
+
+    /**
+     * This property is used internally to track the position of touch events.
+     *
+     * @private
+     */
+    touchPositions: null,
+
+    /**
+     * This property is used internally to know of what type the latest touch events was.
+     *
+     * @private
+     */
+    latestTouchEventType: null,
+
+    /**
+     * Renders a dashboard.
+     *
+     * @private
+     * @returns {String} The dashboard view's html representation.
+     */
+    render: function() {
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+        this.renderChildViews();
+        this.html += '</div>';
+
+        /* clear floating */
+        this.html += '<div class="tmp-dashboard-line-clear"></div>';
+
+        /* init the touchPositions property */
+        this.touchPositions = {};
+
+        return this.html;
+    },
+
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* lets gather the html together */
+            for(var i in childViews) {
+                /* set the dashboard item's _name and parentView property */
+                this[childViews[i]].parentView = this;
+                this[childViews[i]]._name = childViews[i];
+
+                this.html += this.renderDashboardItemView(this[childViews[i]], i);
+            }
+        }
+    },
+
+    renderUpdate: function() {
+        if(this.contentBinding) {
+            this.removeAllItems();
+
+            /* do we have something in locale storage? */
+            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
+            values = values ? JSON.parse(values) : null;
+
+            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
+            this.items = [];
+            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
+            var html = '';
+
+            /* lets gather the html together */
+            for(var i in items) {
+                html += this.renderDashboardItemView(items[i], i);
+            }
+
+            /* add the items to the DOM */
+            this.addItems(html);
+
+            /* now the items are in DOM, finally register events */
+            for(var i in this.items) {
+                this.items[i].registerEvents();
+            }
+        }
+    },
+
+    /**
+     * This method adds a given html string, contain the dasboard's items, to the DOM.
+     *
+     * @param {String} item The html representation of the dashboard items to be added.
+     */
+    addItems: function(items) {
+        $('#' + this.id).append(items);
+    },
+
+    /**
+     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).empty();
+    },
+
+    renderDashboardItemView: function(item, itemIndex) {
+        if(item && item.value && item.icon) {
+            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
+                value: item.value ? item.value : '',
+                icon: item.icon ? item.icon : '',
+                label: item.label ? item.label : (item.value ? item.value : ''),
+                parentView: this,
+                events: item.events
+            });
+            var html = '';
+
+            /* add item to array for later use */
+            this.items.push(obj);
+
+            /* is new line starting? */
+            if(itemIndex % this.itemsPerLine === 0) {
+                //html += '<div class="tmp-dashboard-line">';
+            }
+
+            /* assign the desired width */
+            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
+
+            /* finally render the dashboard item and add it to the dashboard's html */
+            html += obj.render();
+
+            /* is a line finished? */
+            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
+                //html += '</div><div class="tmp-dashboard-line-clear"></div>';
+            }
+
+            /* return the html */
+            return html;
+        } else {
+            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally for dispatching the tap event for a dashboard view. If the
+     * dashboard view is in edit mode, we do not dispatch the event to the application.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     *
+     * @private
+     */
+    dispatchTapEvent: function(id, event, nextEvent) {
+        /* now first call special handler for this item */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+
+        /* now call global tap-event handler (if set) */
+        if(this.events && this.events.tap) {
+            M.EventDispatcher.callHandler(this.events.tap, event, YES);
+        }
+
+        /* now store timestamp for last tap event to kill a possible false taphold event */
+        this.latestTapEventTimestamp = +new Date();
+    },
+
+    /**
+     * This method is automatically called when a taphold event is triggered for one
+     * of the dashboard's
+     */
+    editDashboard: function(id, event, nextEvent) {
+        this.touchPositions.touchstart = {};
+        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
+            return;
+        }
+
+        if(this.isInEditMode && event) {
+            this.stopEditMode();
+        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
+            M.EventDispatcher.unregisterEvents(this.id);
+            this.isInEditMode = YES;
+            _.each(this.items, function(item) {
+                item.addCssClass('rotate' + M.Math.random(1, 2));
+                M.EventDispatcher.unregisterEvents(item.id);
+                if($.support.touch) {
+                    M.EventDispatcher.registerEvent(
+                        'touchstart',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchStart'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchend',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchEnd'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchmove',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchMove'
+                        },
+                        item.recommendedEvents
+                    );
+                } else {
+                    M.EventDispatcher.registerEvent(
+                        'mousedown',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseDown'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'mouseup',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseUp'
+                        },
+                        item.recommendedEvents
+                    );
+                }
+            });
+        }
+    },
+
+    stopEditMode: function() {
+        this.isInEditMode = NO;
+        _.each(this.items, function(item) {
+            item.removeCssClass('rotate1');
+            item.removeCssClass('rotate2');
+            M.EventDispatcher.unregisterEvents(item.id);
+            item.registerEvents();
+        });
+    },
+
+    setValue: function(items) {
+        this.value = items;
+        var values = [];
+        _.each(items, function(item) {
+            values.push(item.value);
+        });
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
+        }
+    },
+
+    sortItemsByValues: function(items, values) {
+        var itemsSorted = [];
+        _.each(values, function(value) {
+            _.each(items, function(item) {
+                if(item.value === value) {
+                    itemsSorted.push(item);
+                }
+            });
+        });
+        return itemsSorted;
+    },
+
+    editTouchStart: function(id, event) {
+        this.latestTouchEventType = 'touchstart';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        this.touchPositions.touchstart = {
+            x: latest.clientX,
+            y: latest.clientY,
+            date: +new Date()
+        };
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'touchstart') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editTouchMove: function(id, event) {
+        this.latestTouchEventType = 'touchmove';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+
+        if(latest) {
+            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
+            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
+            $('#' + id).css('position', 'absolute');
+            $('#' + id).css('left', left + 'px');
+            $('#' + id).css('top', top + 'px');
+
+            /* if end event is within certain radius of start event and it took a certain time, and editing */
+            /*if(this.touchPositions.touchstart) {
+                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                        this.stopEditMode();
+                        this.editTouchEnd(id, event);
+                    }
+                }
+            }*/
+        }
+    },
+
+    editTouchEnd: function(id, event) {
+        this.latestTouchEventType = 'touchend';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    editMouseDown: function(id, event) {
+        this.latestTouchEventType = 'mousedown';
+
+        this.touchPositions.touchstart = {
+            x: event.clientX,
+            y: event.clientY,
+            date: +new Date()
+        };
+
+        /* enable mouse move for selected item */
+        M.EventDispatcher.registerEvent(
+            'mousemove',
+            id,
+            {
+                target: this,
+                action: 'editMouseMove'
+            },
+            M.ViewManager.getViewById(id).recommendedEvents
+        );
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'mousedown') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editMouseMove: function(id, event) {
+        this.latestTouchEventType = 'mousemove';
+
+        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
+        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
+        $('#' + id).css('position', 'absolute');
+        $('#' + id).css('left', left + 'px');
+        $('#' + id).css('top', top + 'px');
+
+        /* if end event is within certain radius of start event and it took a certain time, and editing */
+        /*if(this.touchPositions.touchstart) {
+            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                    this.stopEditMode();
+                    this.editTouchEnd(id, event);
+                }
+            }
+        }*/
+    },
+
+    editMouseUp: function(id, event) {
+        this.latestTouchEventType = 'mouseup';
+
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+
+                /* disable mouse move for all item */
+                M.EventDispatcher.unregisterEvent('mousemove', item.id);
+
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard view.
+     *
+     * @private
+     * @returns {String} The dashboard's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="tmp-dashboard ' + this.cssClass + '"';
+        }
+        return html;
     }
 
 });
