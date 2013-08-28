@@ -636,6 +636,181 @@ M.PageView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      09.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
+ *
+ * @extends M.View
+ */
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ToggleView',
+
+    /**
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
+     *
+     * @type Boolean
+     */
+    isInFirstState: YES,
+
+    /**
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
+     *
+     * @type Boolean
+     */
+    toggleOnClick: NO,
+
+    /**
+     * Contains a reference to the currently displayed view.
+     *
+     * @type M.View
+     */
+    currentView: null,
+
+    /**
+     * Renders a ToggleView and its child views.
+     *
+     * @private
+     * @returns {String} The toggle view's html representation.
+     */
+    render: function() {
+        this.html += '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method renders one child view of the toggle view, based on the isInFirstState
+     * property: YES = first child view, NO = second child view.
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            if(childViews.length !== 2) {
+                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
+            } else {
+                for(var i in childViews) {
+                    if(this[childViews[i]]) {
+                        if(this.toggleOnClick) {
+                            this[childViews[i]].internalEvents = {
+                                tap: {
+                                    target: this,
+                                    action: 'toggleView'
+                                }
+                            }
+                        }
+                        this[childViews[i]]._name = childViews[i];
+                        this[childViews[i]].parentView = this;
+                        
+                        this.html += '<div id="' + this.id + '_' + i + '">';
+                        this.html += this[childViews[i]].render();
+                        this.html += '</div>';
+                    }
+                }
+                this.currentView = this[childViews[0]];
+            }
+        }
+    },
+
+    /**
+     * This method toggles the child views by first emptying the toggle view's content
+     * and then rendering the next child view by calling renderUpdateChildViews().
+     */
+    toggleView: function(id, event, nextEvent) {
+        this.isInFirstState = !this.isInFirstState;
+        var currentViewIndex = this.isInFirstState ? 0 : 1;
+        $('#' + this.id + '_' + currentViewIndex).show();
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+
+        /* set current view */
+        var childViews = this.getChildViewsAsArray();
+        if(this[childViews[currentViewIndex]]) {
+            this.currentView = this[childViews[currentViewIndex]];
+        }
+
+        /* call jqm to fix header/footer */
+        $.mobile.fixedToolbars.show();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
+     * the view, its id or its name.
+     *
+     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
+     * done.
+     *
+     * @param {Object|String} view The corresponding view.
+     */
+    setView: function(view) {
+        if(typeof(view) === 'string') {
+            /* assume a name was given */
+            var childViews = this.getChildViewsAsArray();
+            if(_.indexOf(childViews, view) >= 0) {
+                view = this[view];
+            /* assume an id was given */
+            } else {
+                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
+            }
+        }
+
+        if(view && typeof(view) === 'object' && view.parentView === this) {
+            if(this.currentView !== view) {
+                this.toggleView();
+            }
+        } else {
+            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.currentView) {
+            this.themeChildViews();
+            var currentViewIndex = this.isInFirstState ? 0 : 1;
+
+            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      02.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -1231,181 +1406,6 @@ M.TabBarItemView = M.View.extend(
         return html;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
- * two child views and provides an easy mechanism to toggle between these two views. An
- * easy example would be to define two different button views that can be toggled, a more
- * complex scenario would be to define two content views (M.ScrollView) with own child views
- * and toggle between them.
- *
- * @extends M.View
- */
-M.ToggleView = M.View.extend(
-/** @scope M.ToggleView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToggleView',
-
-    /**
-     * States whether the toggle view currently displays its first child view or its second
-     * child view.
-     *
-     * @type Boolean
-     */
-    isInFirstState: YES,
-
-    /**
-     * Determines whether to toggle the view on click. This might be useful if the child views
-     * are e.g. buttons.
-     *
-     * @type Boolean
-     */
-    toggleOnClick: NO,
-
-    /**
-     * Contains a reference to the currently displayed view.
-     *
-     * @type M.View
-     */
-    currentView: null,
-
-    /**
-     * Renders a ToggleView and its child views.
-     *
-     * @private
-     * @returns {String} The toggle view's html representation.
-     */
-    render: function() {
-        this.html += '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method renders one child view of the toggle view, based on the isInFirstState
-     * property: YES = first child view, NO = second child view.
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            if(childViews.length !== 2) {
-                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
-            } else {
-                for(var i in childViews) {
-                    if(this[childViews[i]]) {
-                        if(this.toggleOnClick) {
-                            this[childViews[i]].internalEvents = {
-                                tap: {
-                                    target: this,
-                                    action: 'toggleView'
-                                }
-                            }
-                        }
-                        this[childViews[i]]._name = childViews[i];
-                        this[childViews[i]].parentView = this;
-                        
-                        this.html += '<div id="' + this.id + '_' + i + '">';
-                        this.html += this[childViews[i]].render();
-                        this.html += '</div>';
-                    }
-                }
-                this.currentView = this[childViews[0]];
-            }
-        }
-    },
-
-    /**
-     * This method toggles the child views by first emptying the toggle view's content
-     * and then rendering the next child view by calling renderUpdateChildViews().
-     */
-    toggleView: function(id, event, nextEvent) {
-        this.isInFirstState = !this.isInFirstState;
-        var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + currentViewIndex).show();
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-
-        /* set current view */
-        var childViews = this.getChildViewsAsArray();
-        if(this[childViews[currentViewIndex]]) {
-            this.currentView = this[childViews[currentViewIndex]];
-        }
-
-        /* call jqm to fix header/footer */
-        $.mobile.fixedToolbars.show();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
-     * the view, its id or its name.
-     *
-     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
-     * done.
-     *
-     * @param {Object|String} view The corresponding view.
-     */
-    setView: function(view) {
-        if(typeof(view) === 'string') {
-            /* assume a name was given */
-            var childViews = this.getChildViewsAsArray();
-            if(_.indexOf(childViews, view) >= 0) {
-                view = this[view];
-            /* assume an id was given */
-            } else {
-                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
-            }
-        }
-
-        if(view && typeof(view) === 'object' && view.parentView === this) {
-            if(this.currentView !== view) {
-                this.toggleView();
-            }
-        } else {
-            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.currentView) {
-            this.themeChildViews();
-            var currentViewIndex = this.isInFirstState ? 0 : 1;
-
-            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        }
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -2447,171 +2447,6 @@ M.DialogView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any alert dialog view. It is derived from M.DialogView
- * and mainly used for implementing a alert dialog view specific render method.
- *
- * @extends M.DialogView
- */
-M.AlertDialogView = M.DialogView.extend(
-/** @scope M.AlertDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.AlertDialogView',
-
-    /**
-     * The default title of an alert dialog.
-     *
-     * @type String
-     */
-    title: 'Alert',
-
-    /**
-     * The default message of an alert dialog.
-     *
-     * @type String
-     */
-    message: '',
-
-    /**
-     * Determines whether the alert dialog gets a default ok button.
-     *
-     * @type Boolean
-     */
-    hasConfirmButton: YES,
-
-    /**
-     * Determines the value of the button, means the text label on it.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an alert dialog as a pop up
-     *
-     * @private
-     * @returns {String} The alert dialog view's html representation.
-     */
-    render: function() {
-        this.html = '<div class="tmp-dialog-background"></div>';
-        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-        this.html += '<div class="tmp-dialog-content">';
-        this.html += this.message;
-        this.html +='</div>';
-        var button;
-        if(this.hasConfirmButton) {
-            this.html += '<div class="tmp-dialog-footer">';
-            var that = this;
-            button = M.ButtonView.design({
-                value: this.confirmButtonValue,
-                cssClass: 'b tmp-dialog-smallerbtn',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            });
-            this.html += button.render();
-            this.html += '</div>';
-        }
-        this.html += '</div>';
-
-        $('body').append(this.html);
-        if(button.type) {
-            button.registerEvents();
-            button.theme();
-        }
-    },
-
-    show: function() {
-        /* call the dialog's render() */
-        this.render();
-        var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background')    ;
-
-        this.positionDialog(dialog);
-        this.positionBackground(background);
-
-        dialog.addClass('pop in');
-    },
-
-    hide: function() {
-        var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background');
-        dialog.addClass('pop out');
-        background.remove();
-        this.destroy();
-
-        /* now wait 100ms and then call the next in the queue */
-        var that = this;
-        window.setTimeout(function() {
-            M.DialogView.isActive = NO;
-            that.dequeue();
-        }, 100);
-    },
-
-    handleCallback: function() {
-        this.hide();
-        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
-            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
-        }
-    },
-
-    positionDialog: function(dialog) {
-        /* position alert in the center of the possibly scrolled viewport */
-        var screenSize = M.Environment.getSize();
-        var scrollYOffset = window.pageYOffset;
-        var scrollXOffset = window.pageXOffset;
-        var dialogHeight = dialog.outerHeight();
-        var dialogWidth = dialog.outerWidth();
-
-        var xPos = scrollXOffset + (screenSize[0]/2);
-        var yPos = scrollYOffset + (screenSize[1]/2);
-
-        dialog.css('position', 'absolute');
-        dialog.css('top', yPos + 'px');
-        dialog.css('left', xPos + 'px');
-        dialog.css('z-index', 10000);
-        dialog.css('margin-top', '-' + (dialogHeight/2) + 'px');
-        dialog.css('margin-left', '-' + (dialogWidth/2) + 'px');
-    },
-
-    positionBackground: function(background) {
-        background.css('height', $(document).height() + 'px');
-        background.css('width', $(document).width() + 'px');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
@@ -2986,6 +2821,171 @@ M.ConfirmDialogView = M.DialogView.extend(
         this.hide();
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.cancel)){
             this.bindToCaller(this.callbacks.cancel.target, this.callbacks.cancel.action)();
+        }
+    },
+
+    positionDialog: function(dialog) {
+        /* position alert in the center of the possibly scrolled viewport */
+        var screenSize = M.Environment.getSize();
+        var scrollYOffset = window.pageYOffset;
+        var scrollXOffset = window.pageXOffset;
+        var dialogHeight = dialog.outerHeight();
+        var dialogWidth = dialog.outerWidth();
+
+        var xPos = scrollXOffset + (screenSize[0]/2);
+        var yPos = scrollYOffset + (screenSize[1]/2);
+
+        dialog.css('position', 'absolute');
+        dialog.css('top', yPos + 'px');
+        dialog.css('left', xPos + 'px');
+        dialog.css('z-index', 10000);
+        dialog.css('margin-top', '-' + (dialogHeight/2) + 'px');
+        dialog.css('margin-left', '-' + (dialogWidth/2) + 'px');
+    },
+
+    positionBackground: function(background) {
+        background.css('height', $(document).height() + 'px');
+        background.css('width', $(document).width() + 'px');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
+ *
+ * @extends M.DialogView
+ */
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.AlertDialogView',
+
+    /**
+     * The default title of an alert dialog.
+     *
+     * @type String
+     */
+    title: 'Alert',
+
+    /**
+     * The default message of an alert dialog.
+     *
+     * @type String
+     */
+    message: '',
+
+    /**
+     * Determines whether the alert dialog gets a default ok button.
+     *
+     * @type Boolean
+     */
+    hasConfirmButton: YES,
+
+    /**
+     * Determines the value of the button, means the text label on it.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an alert dialog as a pop up
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
+     */
+    render: function() {
+        this.html = '<div class="tmp-dialog-background"></div>';
+        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+        this.html += '<div class="tmp-dialog-content">';
+        this.html += this.message;
+        this.html +='</div>';
+        var button;
+        if(this.hasConfirmButton) {
+            this.html += '<div class="tmp-dialog-footer">';
+            var that = this;
+            button = M.ButtonView.design({
+                value: this.confirmButtonValue,
+                cssClass: 'b tmp-dialog-smallerbtn',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            });
+            this.html += button.render();
+            this.html += '</div>';
+        }
+        this.html += '</div>';
+
+        $('body').append(this.html);
+        if(button.type) {
+            button.registerEvents();
+            button.theme();
+        }
+    },
+
+    show: function() {
+        /* call the dialog's render() */
+        this.render();
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background')    ;
+
+        this.positionDialog(dialog);
+        this.positionBackground(background);
+
+        dialog.addClass('pop in');
+    },
+
+    hide: function() {
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background');
+        dialog.addClass('pop out');
+        background.remove();
+        this.destroy();
+
+        /* now wait 100ms and then call the next in the queue */
+        var that = this;
+        window.setTimeout(function() {
+            M.DialogView.isActive = NO;
+            that.dequeue();
+        }, 100);
+    },
+
+    handleCallback: function() {
+        this.hide();
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
+            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
         }
     },
 
@@ -6488,6 +6488,166 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for a two column layout of a grid view.
+ *
+ * @type String
+ */
+M.TWO_COLUMNS = {
+    cssClass: 'ui-grid-a',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b'
+    }
+};
+
+/**
+ * A constant value for a three column layout of a grid view.
+ *
+ * @type String
+ */
+M.THREE_COLUMNS = {
+    cssClass: 'ui-grid-b',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c'
+    }
+};
+
+/**
+ * A constant value for a four column layout of a grid view.
+ *
+ * @type String
+ */
+M.FOUR_COLUMNS = {
+    cssClass: 'ui-grid-c',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c',
+        3: 'ui-block-d'
+    }
+};
+
+/**
+ * @class
+ *
+ * M.GridView defines a prototype of a grid view, that allows you to display several
+ * views horizontally aligned. Therefore you can either use a predefined layout or you
+ * can provide a custom layout.
+ * 
+ * @extends M.View
+ */
+M.GridView = M.View.extend(
+/** @scope M.GridView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.GridView',
+
+    /**
+     * The layout for the grid view. There are two predefined layouts available:
+     * 
+     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
+     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
+     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
+     *
+     * To specify your own layout, you will have to implement some css classes and
+     * then define your layout like:
+     *
+     *     cssClass: 'cssClassForWholeGrid',
+     *     columns: {
+     *         0: 'cssClassForColumn1',
+     *         1: 'cssClassForColumn2',
+     *         2: 'cssClassForColumn3',
+     *         3: 'cssClassForColumn4',
+     *         //........
+     *     }
+     *
+     * @type Object
+     */
+    layout: null,
+
+    /**
+     * Renders a grid view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The grid view's html representation.
+     */
+    render: function() {
+        this.html += '<div id="' + this.id + '" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children and includes some special grid view logic
+     * concerning the rendering of these child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            if(this.layout) {
+                var arr = this.childViews.split(' ');
+                for(var i in this.layout.columns) {
+                    if(this[arr[i]]) {
+                        this.html += '<div class="' + this.layout.columns[i] + '">';
+
+                        this[arr[i]]._name = arr[i];
+                        this.html += this[arr[i]].render();
+
+                        this.html += '</div>';
+                    }
+                }
+            } else {
+                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
+            }
+        }
+    },
+
+    /**
+     * This method themes the grid view, respectively its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the grid view.
+     *
+     * @private
+     * @returns {String} The grid view's styling as html representation.
+     */
+    style: function() {
+        if(this.layout) {
+            var html = 'class="' + this.layout.cssClass + '"';
+            return html;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -8397,167 +8557,6 @@ M.TextFieldView = M.View.extend(
      */
     getValue: function() {
         return this.value;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for a two column layout of a grid view.
- *
- * @type String
- */
-M.TWO_COLUMNS = {
-    cssClass: 'ui-grid-a',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b'
-    }
-};
-
-/**
- * A constant value for a three column layout of a grid view.
- *
- * @type String
- */
-M.THREE_COLUMNS = {
-    cssClass: 'ui-grid-b',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c'
-    }
-};
-
-/**
- * A constant value for a four column layout of a grid view.
- *
- * @type String
- */
-M.FOUR_COLUMNS = {
-    cssClass: 'ui-grid-c',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c',
-        3: 'ui-block-d'
-    }
-};
-
-/**
- * @class
- *
- * M.GridView defines a prototype of a grid view, that allows you to display several
- * views horizontally aligned. Therefore you can either use a predefined layout or you
- * can provide a custom layout.
- * 
- * @extends M.View
- */
-M.GridView = M.View.extend(
-/** @scope M.GridView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.GridView',
-
-    /**
-     * The layout for the grid view. There are two predefined layouts available:
-     * 
-     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
-     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
-     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
-     *
-     * To specify your own layout, you will have to implement some css classes and
-     * then define your layout like:
-     *
-     *     cssClass: 'cssClassForWholeGrid',
-     *     columns: {
-     *         0: 'cssClassForColumn1',
-     *         1: 'cssClassForColumn2',
-     *         2: 'cssClassForColumn3',
-     *         3: 'cssClassForColumn4',
-     *         //........
-     *     }
-     *
-     * @type Object
-     */
-    layout: null,
-
-    /**
-     * Renders a grid view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The grid view's html representation.
-     */
-    render: function() {
-        this.html += '<div id="' + this.id + '" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children and includes some special grid view logic
-     * concerning the rendering of these child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            if(this.layout) {
-                var arr = this.childViews.split(' ');
-                for(var i in this.layout.columns) {
-                    if(this[arr[i]]) {
-                        this.html += '<div class="' + this.layout.columns[i] + '">';
-
-                        this[arr[i]]._name = arr[i];
-                        this.html += this[arr[i]].render();
-
-                        this.html += '</div>';
-                    }
-                }
-            } else {
-                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * This method themes the grid view, respectively its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the grid view.
-     *
-     * @private
-     * @returns {String} The grid view's styling as html representation.
-     */
-    style: function() {
-        if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + '"';
-            return html;
-        }
     }
 
 });
