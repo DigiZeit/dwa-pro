@@ -7977,7 +7977,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         itemSelected = NO;
         var positionArray = _.map(this.get('positions'), function(pos) {
         	if (pos) {
-	            var obj = { label: pos.label, value: pos.value) };
+	            var obj = { label: pos.label, value: pos.value };
 	            if(obj.value === that.selections.position) {
 	                obj.isSelected = YES;
 	                itemSelected = YES;
@@ -11999,7 +11999,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4105
+    , softwareVersion: 4106
 
 
     /**
@@ -26034,7 +26034,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4105'
+              value: 'Build: 4106'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
