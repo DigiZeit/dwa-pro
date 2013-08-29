@@ -1,27 +1,27 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4096 beta, Timestamp:1377763574287
+#Application:DigiWebApp, Version:1.6.1.4097 beta, Timestamp:1377763773324
 
 
 # Explicitly cached entries
 CACHE:
-en_us.js
-es_es.js
 de_de.js
+es_es.js
 nl_nl.js
 fr_fr.js
-underscore-min.js
+en_us.js
 d8-0.1.3.min.js
+underscore-min.js
 theme/tmp.css
 bootstrap.js
 jquery.xml2json_1.1.js
 jstz.js
 jquery_mobile.js
-jquery-1.6.4.min.js
 ui.js
+jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-barcodescanner.js
 childbrowser.js
+barcodescanner.js
 cordova.js
 core.js
 theme/jquery.mobile-1.0.min.css
@@ -44,13 +44,11 @@ pen.cur
 theme/style.css
 theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
-theme/images/icon_recordAudio.png
 theme/images/icon_takePicture.png
 theme/images/icon_dataTransfer.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
-theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_gears.png
 theme/images/640x960_90_DIGI-WebApp.png
 theme/images/Icon.png
@@ -58,6 +56,7 @@ theme/images/640x960_90_SCHOLPP.png
 theme/images/tile-icon-winphone.png
 theme/images/icon-winphone.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.jpg
+theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_info.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/1024x1024_90_DIGI-WebApp.png
@@ -118,6 +117,7 @@ theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/48x48_plain_wrench.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
+theme/images/icon_recordAudio.png
 DigiWebApp_App.js
 
 
