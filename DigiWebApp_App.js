@@ -11999,7 +11999,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4121
+    , softwareVersion: 4122
 
 
     /**
@@ -26034,7 +26034,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4121'
+              value: 'Build: 4122'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
