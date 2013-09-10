@@ -7336,6 +7336,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 		this.uebertragen = DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen");
 		this.engeKopplung = DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung");
 		this.debug = DigiWebApp.SettingsController.getSetting("debug");
+		this.password = DigiWebApp.SettingsController.getSetting("password");
+		this.workerId = DigiWebApp.SettingsController.getSetting("workerId");
+		this.company = DigiWebApp.SettingsController.getSetting("company");
+		this.WebAppVersion = DigiWebApp.app.config.version;
 	
 		this.sendData.parameter = {}
 	
@@ -7347,6 +7351,10 @@ DigiWebApp.ServiceAppController = M.Controller.extend({
 			      , "engeKopplung": this.engeKopplung
 			      , "debug": this.debug
 			      , "fileName": this._requestFileName
+			      , "kennwort": this.password
+			      , "GeraeteId": this.workerId
+			      , "firmenId": this.company
+			      , "WebAppVersion": this.WebAppVersion
 				}
 		    $.ajax({
 		        dataType: "json"
@@ -12063,7 +12071,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4144
+    , softwareVersion: 4145
 
 
     /**
@@ -26129,7 +26137,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4144'
+              value: 'Build: 4145'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
