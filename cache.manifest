@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4160 beta, Timestamp:1378886548367
+#Application:DigiWebApp, Version:1.6.1.4161 beta, Timestamp:1378886680859
 
 
 # Explicitly cached entries
@@ -16,10 +16,10 @@ bootstrap.js
 jquery.xml2json_1.1.js
 jstz.js
 jquery_mobile.js
-ui.js
 jquery-1.6.4.min.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+ui.js
 barcodescanner.js
 childbrowser.js
 cordova.js
@@ -27,13 +27,13 @@ core.js
 theme/jquery.mobile-1.0.min.css
 theme/images/icons-36-white.png
 theme/images/ajax-loader.png
-theme/images/icons-36-black.png
 theme/images/icons-18-black.png
+theme/images/icons-36-black.png
 theme/images/icons-18-white.png
 jquery.signaturepad.min.js
 json2.min.js
-theme/journal.woff
 theme/journal.svg
+theme/journal.woff
 flashcanvas.js
 theme/journal.eot
 theme/journal.ttf
@@ -52,17 +52,17 @@ theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_gears.png
-theme/images/640x960_90_DIGI-WebApp.png
 theme/images/Icon.png
+theme/images/640x960_90_DIGI-WebApp.png
 theme/images/640x960_90_SCHOLPP.png
 theme/images/tile-icon-winphone.png
-theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/icon-winphone.png
+theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_info.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/1024x1024_90_DIGI-WebApp.png
-theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/Icon_2x.png
+theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
@@ -78,8 +78,8 @@ theme/images/tabSprite.png
 theme/images/arrow_white.png
 theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_handauftrag.png
-theme/images/ic_launcher_ldpi.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
+theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
 theme/images/1024x1024_90_SCHOLPP.png
 theme/images/48x48_plain_cup.png
@@ -103,8 +103,8 @@ theme/images/48x48_plain_clock_pause.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_114.png
 theme/images/icon_closingTime.png
-theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_SCHOLPP.png
+theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_index.png
