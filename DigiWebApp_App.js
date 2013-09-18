@@ -2317,13 +2317,13 @@ DigiWebApp.BautagebuchProjektleiter = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: Activity
+// Model: Order
 // ==========================================================================
 
-DigiWebApp.Activity = M.Model.create({
+DigiWebApp.Order = M.Model.create({
 
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'Activity'
+    __name__: 'Order'
 
     , id: M.Model.attr('String', {
         isRequired: NO
@@ -2331,10 +2331,6 @@ DigiWebApp.Activity = M.Model.create({
 
     , name: M.Model.attr('String', {
         isRequired: NO
-    })
-    
-    , positionId: M.Model.attr('String',{
-            isRequired: NO // 0: nicht MA-zugeordnet, 1: MA-zugeordnet
     })
 
     , deleteAll: function() {
@@ -2369,13 +2365,13 @@ DigiWebApp.Activity = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: Order
+// Model: Activity
 // ==========================================================================
 
-DigiWebApp.Order = M.Model.create({
+DigiWebApp.Activity = M.Model.create({
 
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'Order'
+    __name__: 'Activity'
 
     , id: M.Model.attr('String', {
         isRequired: NO
@@ -2383,6 +2379,10 @@ DigiWebApp.Order = M.Model.create({
 
     , name: M.Model.attr('String', {
         isRequired: NO
+    })
+    
+    , positionId: M.Model.attr('String',{
+            isRequired: NO // 0: nicht MA-zugeordnet, 1: MA-zugeordnet
     })
 
     , deleteAll: function() {
@@ -12152,7 +12152,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4177
+    , softwareVersion: 4178
 
 
     /**
@@ -14159,7 +14159,9 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			if (DigiWebApp.SettingsController.featureAvailable('411')) { 
 				try{$('[id=' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id  + ']').each(function() { $(this).show(); });}catch(e){}
 			}
-			try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).show(); });}catch(e){}
+			if (DigiWebApp.SettingsController.featureAvailable('406')) { 
+				try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).show(); });}catch(e){}
+			}
 		}
 		
 
@@ -26226,7 +26228,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4177'
+              value: 'Build: 4178'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
