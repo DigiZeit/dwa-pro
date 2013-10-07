@@ -1,6 +1,69 @@
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html += '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      05.12.11
@@ -237,69 +300,6 @@ M.TableView = M.View.extend(
      */
     removeContentRows: function() {
         $('#' + 'm_3' + ' tr td').parent().remove();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html += '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
     }
 
 });
@@ -2447,6 +2447,220 @@ M.DialogView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any action sheet dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a action sheet dialog view specific render method.
+ *
+ * @extends M.DialogView 
+ */
+M.ActionSheetDialogView = M.DialogView.extend(
+/** @scope M.ActionSheetDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ActionSheetDialogView',
+
+    /**
+     * The default title of an action sheet dialog.
+     *
+     * @type String
+     */
+    title: 'ActionSheet',
+
+    /**
+     * Defines the value of the destructive button (the one button that is showed in red)
+     *
+     * @type String
+     */
+    destructiveButtonValue: null,
+
+    /**
+     * Defines the value of the cancel button
+     *
+     * @type String
+     */
+    cancelButtonValue: null,
+
+    /**
+     * Contains the values of all other buttons as strings
+     *
+     * @type Array
+     */
+    otherButtonValues: null,
+
+    /**
+     * Contains the tags of all other buttons as strings
+     *
+     * @type Array
+     */
+    otherButtonTags: null,
+
+    /**
+     * Delay between action sheet slide out animation finished and deleting it from DOM and deleting the object
+     */
+    deletionDelay: 1000,
+
+    /**
+     * If set, contains the dialog's callbacks in sub objects named 'destruction', 'cancel' and 'other' or as  functions named confirm, cancel and other.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an action sheet dialog as a slide-up.
+     *
+     * @private
+     * @returns {String} The action sheet dialog view's html representation.
+     */
+
+    render: function() {
+        /* render half transparent grey background */
+        this.html = '<div class="tmp-dialog-background"></div>';
+
+        /* render title */
+        this.html += '<div id="' + this.id + '" class="tmp-actionsheet">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+
+        /* render footer that contains all buttons */
+        this.html += '<div class="tmp-dialog-footer">';
+
+        var that = this;
+
+        var buttons = [];
+        if(this.destructiveButtonValue) {
+            buttons.push(M.ButtonView.design({
+                value: this.destructiveButtonValue,
+                tag: 'destruction',
+                cssClass: 'a tmp-actionsheet-destructive-button',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            }));
+        }
+        if(this.otherButtonValues) {
+            if(this.otherButtonTags && !(_.isArray(this.otherButtonTags)) && !(_.isArray(this.otherButtonValues))) {
+                M.Logger.log('Error in Action Sheet: Values and (optional) tags must be passed as string in an array! Rendering will not proceed.', M.WARN);
+                return '';
+            }
+            /* First check if passed number of values matches number of labels passed */
+            /* If not, do not use values, but use incremented buttonNr as value */
+            if(this.otherButtonTags && this.otherButtonTags.length !== this.otherButtonValues.length) {
+                M.Logger.log('Mismatch in Action Sheet: Number of other button\'s tags doesn\'t match number of values. Will not use given values, but use generated numbers as values.', M.WARN);
+                this.otherButtonTags = null;
+            }
+
+            var buttonNr = 0;
+
+            _.each(this.otherButtonValues, function(btn) {
+                buttons.push(M.ButtonView.design({
+                    value: btn,
+                    tag: that.otherButtonTags ? that.otherButtonTags[buttonNr++] : buttonNr++,
+                    events: {
+                        tap: {
+                            target: that,
+                            action: 'handleCallback'
+                        }
+                    }
+                }));
+            });
+        }
+        
+        if(this.cancelButtonValue) {
+            buttons.push(M.ButtonView.design({
+                value: this.cancelButtonValue,
+                tag: 'cancel',
+                cssClass: 'a',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            }));
+        }
+
+
+        /* render each button saved in the buttons array */
+        for(var i in buttons) {
+            this.html += buttons[i].render();
+        };
+
+        this.html += '</div>';
+        this.html += '</div>';
+
+        $('body').append(this.html);
+
+        /* register events for each designed and rendered button and theme it afterwards
+         * must be performed AFTER button has been inserted to DOM
+         */
+        for(var i in buttons) {
+            buttons[i].registerEvents();
+            buttons[i].theme();
+        };
+    },
+
+    show: function() {
+        this.render();
+        var dialog = $('#' + this.id);
+        dialog.removeClass('slideup out reverse');
+        dialog.addClass('slideup in');
+    },
+
+    hide: function() {
+        var dialog = $('#' + this.id);
+        dialog.removeClass('slideup in');
+        dialog.addClass('slideup out reverse');
+        $('.tmp-dialog-background').remove();
+
+        /* destroying the view object and its DOM representation must be performed after the slide animation is finished. */
+        var that = this;
+        window.setTimeout(that.bindToCaller(that, that.destroy), this.deletionDelay);
+
+        /* now wait 100ms (plus the default delay) and then call the next in the queue */
+        var that = this;
+        window.setTimeout(function() {
+            M.DialogView.isActive = NO;
+            that.dequeue();
+        }, this.deletionDelay + 100);
+    },
+
+    handleCallback: function(viewId, event) {
+        this.hide();
+        var button = M.ViewManager.getViewById(viewId);
+        var buttonType = (button.tag === 'destruction' || button.tag === 'cancel') ? button.tag : 'other';
+
+        if(this.callbacks && buttonType && M.EventDispatcher.checkHandler(this.callbacks[buttonType])){
+            this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
+        }
+    }
+
+
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -2798,220 +3012,6 @@ M.ConfirmDialogView = M.DialogView.extend(
         background.css('height', $(document).height() + 'px');
         background.css('width', $(document).width() + 'px');
     }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any action sheet dialog view. It is derived from M.DialogView
- * and mainly used for implementing a action sheet dialog view specific render method.
- *
- * @extends M.DialogView 
- */
-M.ActionSheetDialogView = M.DialogView.extend(
-/** @scope M.ActionSheetDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ActionSheetDialogView',
-
-    /**
-     * The default title of an action sheet dialog.
-     *
-     * @type String
-     */
-    title: 'ActionSheet',
-
-    /**
-     * Defines the value of the destructive button (the one button that is showed in red)
-     *
-     * @type String
-     */
-    destructiveButtonValue: null,
-
-    /**
-     * Defines the value of the cancel button
-     *
-     * @type String
-     */
-    cancelButtonValue: null,
-
-    /**
-     * Contains the values of all other buttons as strings
-     *
-     * @type Array
-     */
-    otherButtonValues: null,
-
-    /**
-     * Contains the tags of all other buttons as strings
-     *
-     * @type Array
-     */
-    otherButtonTags: null,
-
-    /**
-     * Delay between action sheet slide out animation finished and deleting it from DOM and deleting the object
-     */
-    deletionDelay: 1000,
-
-    /**
-     * If set, contains the dialog's callbacks in sub objects named 'destruction', 'cancel' and 'other' or as  functions named confirm, cancel and other.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an action sheet dialog as a slide-up.
-     *
-     * @private
-     * @returns {String} The action sheet dialog view's html representation.
-     */
-
-    render: function() {
-        /* render half transparent grey background */
-        this.html = '<div class="tmp-dialog-background"></div>';
-
-        /* render title */
-        this.html += '<div id="' + this.id + '" class="tmp-actionsheet">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-
-        /* render footer that contains all buttons */
-        this.html += '<div class="tmp-dialog-footer">';
-
-        var that = this;
-
-        var buttons = [];
-        if(this.destructiveButtonValue) {
-            buttons.push(M.ButtonView.design({
-                value: this.destructiveButtonValue,
-                tag: 'destruction',
-                cssClass: 'a tmp-actionsheet-destructive-button',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            }));
-        }
-        if(this.otherButtonValues) {
-            if(this.otherButtonTags && !(_.isArray(this.otherButtonTags)) && !(_.isArray(this.otherButtonValues))) {
-                M.Logger.log('Error in Action Sheet: Values and (optional) tags must be passed as string in an array! Rendering will not proceed.', M.WARN);
-                return '';
-            }
-            /* First check if passed number of values matches number of labels passed */
-            /* If not, do not use values, but use incremented buttonNr as value */
-            if(this.otherButtonTags && this.otherButtonTags.length !== this.otherButtonValues.length) {
-                M.Logger.log('Mismatch in Action Sheet: Number of other button\'s tags doesn\'t match number of values. Will not use given values, but use generated numbers as values.', M.WARN);
-                this.otherButtonTags = null;
-            }
-
-            var buttonNr = 0;
-
-            _.each(this.otherButtonValues, function(btn) {
-                buttons.push(M.ButtonView.design({
-                    value: btn,
-                    tag: that.otherButtonTags ? that.otherButtonTags[buttonNr++] : buttonNr++,
-                    events: {
-                        tap: {
-                            target: that,
-                            action: 'handleCallback'
-                        }
-                    }
-                }));
-            });
-        }
-        
-        if(this.cancelButtonValue) {
-            buttons.push(M.ButtonView.design({
-                value: this.cancelButtonValue,
-                tag: 'cancel',
-                cssClass: 'a',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            }));
-        }
-
-
-        /* render each button saved in the buttons array */
-        for(var i in buttons) {
-            this.html += buttons[i].render();
-        };
-
-        this.html += '</div>';
-        this.html += '</div>';
-
-        $('body').append(this.html);
-
-        /* register events for each designed and rendered button and theme it afterwards
-         * must be performed AFTER button has been inserted to DOM
-         */
-        for(var i in buttons) {
-            buttons[i].registerEvents();
-            buttons[i].theme();
-        };
-    },
-
-    show: function() {
-        this.render();
-        var dialog = $('#' + this.id);
-        dialog.removeClass('slideup out reverse');
-        dialog.addClass('slideup in');
-    },
-
-    hide: function() {
-        var dialog = $('#' + this.id);
-        dialog.removeClass('slideup in');
-        dialog.addClass('slideup out reverse');
-        $('.tmp-dialog-background').remove();
-
-        /* destroying the view object and its DOM representation must be performed after the slide animation is finished. */
-        var that = this;
-        window.setTimeout(that.bindToCaller(that, that.destroy), this.deletionDelay);
-
-        /* now wait 100ms (plus the default delay) and then call the next in the queue */
-        var that = this;
-        window.setTimeout(function() {
-            M.DialogView.isActive = NO;
-            that.dequeue();
-        }, this.deletionDelay + 100);
-    },
-
-    handleCallback: function(viewId, event) {
-        this.hide();
-        var button = M.ViewManager.getViewById(viewId);
-        var buttonType = (button.tag === 'destruction' || button.tag === 'cancel') ? button.tag : 'other';
-
-        if(this.callbacks && buttonType && M.EventDispatcher.checkHandler(this.callbacks[buttonType])){
-            this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
-        }
-    }
-
-
 
 });
 // ==========================================================================
@@ -4436,6 +4436,166 @@ M.MapMarkerView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
+ * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
+ * M.TabBarView can be used the top navigation level for an application since it is always
+ * visible an indicates the currently selected tab.
+ *
+ */
+M.TabBarView = M.View.extend(
+/** @scope M.TabBarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarView',
+    
+     /**
+     * Defines the position of the TabBar. Possible values are:
+     *
+     * - M.BOTTOM => is a footer tab bar
+     * - M.TOP => is a header tab bar
+     * - null / not set ==> a tab bar outside header / footer
+     *
+     * @type String
+     */
+    anchorLocation: null,
+
+    /**
+     * This property defines the tab bar's name. This is used internally to identify
+     * the tab bar inside the DOM.
+     *
+     * @type String
+     */
+    name: 'tab_bar',
+
+    /**
+     * This property holds a reference to the currently active tab.
+     *
+     * @type M.TabBarItemView
+     */
+    activeTab: null,
+
+    /**
+     * This property is used internally to count the number of usages of a tab bar.
+     */
+    usageCounter: 0,
+
+    /**
+     * Renders a tab bar as an unordered list.
+     *
+     * @private
+     * @returns {String} The tab bar view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        this.usageCounter += 1;
+
+        if(this.anchorLocation) {
+            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed"><div data-role="navbar"><ul>';
+        } else {
+            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
+        }
+
+        this.renderChildViews();
+
+        this.html += '</ul></div>';
+
+        if(this.anchorLocation) {
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.TabBarItemView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* pre-process the child views to define which tab is selected */
+            var hasActiveTab = NO;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView' && view.isActive) {
+                    if(!hasActiveTab) {
+                        hasActiveTab = YES;
+                        this.activeTab = view;
+                    } else {
+                        view.isActive = NO;
+                    }
+                }
+            }
+
+            var numTabBarViews = 0;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView') {
+                    numTabBarViews = numTabBarViews + 1;
+
+                    /* set first tab to active tab if nothing else specified */
+                    if(numTabBarViews === 1 && !hasActiveTab) {
+                        view.isActive = YES;
+                        this.activeTab = view;
+                    }
+
+                    view.parentView = this;
+                    view._name = childViews[i];
+                    this.html += view.render();
+                } else {
+                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
+                }
+            }
+        } else {
+            M.Logger.log('No TabBarItemViews specified.', M.WARN);
+            return;
+        }
+    },
+
+    /**
+     * This method visually activates a tab bar item based on a given page.
+     *
+     * @param {M.TabBarItemView} tab The tab to set active.
+     */
+    setActiveTab: function(tab) {
+        /* deactivate current active tav */
+        this.activeTab.isActive = NO;
+        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
+        $('[id^=' + activeTabMainID + '_]').each(function() {
+            $(this).removeClass('ui-btn-active');
+        });
+
+        /* activate new tab */
+        tab.isActive = YES;
+        this.activeTab = tab;
+        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
+        $('[id^=' + tabMainID + '_]').each(function() {
+            $(this).addClass('ui-btn-active');
+        });
+
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      26.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5034,166 +5194,6 @@ M.MapView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
- * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
- * M.TabBarView can be used the top navigation level for an application since it is always
- * visible an indicates the currently selected tab.
- *
- */
-M.TabBarView = M.View.extend(
-/** @scope M.TabBarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarView',
-    
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer tab bar
-     * - M.TOP => is a header tab bar
-     * - null / not set ==> a tab bar outside header / footer
-     *
-     * @type String
-     */
-    anchorLocation: null,
-
-    /**
-     * This property defines the tab bar's name. This is used internally to identify
-     * the tab bar inside the DOM.
-     *
-     * @type String
-     */
-    name: 'tab_bar',
-
-    /**
-     * This property holds a reference to the currently active tab.
-     *
-     * @type M.TabBarItemView
-     */
-    activeTab: null,
-
-    /**
-     * This property is used internally to count the number of usages of a tab bar.
-     */
-    usageCounter: 0,
-
-    /**
-     * Renders a tab bar as an unordered list.
-     *
-     * @private
-     * @returns {String} The tab bar view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        this.usageCounter += 1;
-
-        if(this.anchorLocation) {
-            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed"><div data-role="navbar"><ul>';
-        } else {
-            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
-        }
-
-        this.renderChildViews();
-
-        this.html += '</ul></div>';
-
-        if(this.anchorLocation) {
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.TabBarItemView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* pre-process the child views to define which tab is selected */
-            var hasActiveTab = NO;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView' && view.isActive) {
-                    if(!hasActiveTab) {
-                        hasActiveTab = YES;
-                        this.activeTab = view;
-                    } else {
-                        view.isActive = NO;
-                    }
-                }
-            }
-
-            var numTabBarViews = 0;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView') {
-                    numTabBarViews = numTabBarViews + 1;
-
-                    /* set first tab to active tab if nothing else specified */
-                    if(numTabBarViews === 1 && !hasActiveTab) {
-                        view.isActive = YES;
-                        this.activeTab = view;
-                    }
-
-                    view.parentView = this;
-                    view._name = childViews[i];
-                    this.html += view.render();
-                } else {
-                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
-                }
-            }
-        } else {
-            M.Logger.log('No TabBarItemViews specified.', M.WARN);
-            return;
-        }
-    },
-
-    /**
-     * This method visually activates a tab bar item based on a given page.
-     *
-     * @param {M.TabBarItemView} tab The tab to set active.
-     */
-    setActiveTab: function(tab) {
-        /* deactivate current active tav */
-        this.activeTab.isActive = NO;
-        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
-        $('[id^=' + activeTabMainID + '_]').each(function() {
-            $(this).removeClass('ui-btn-active');
-        });
-
-        /* activate new tab */
-        tab.isActive = YES;
-        this.activeTab = tab;
-        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
-        $('[id^=' + tabMainID + '_]').each(function() {
-            $(this).addClass('ui-btn-active');
-        });
-
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5307,6 +5307,726 @@ M.ImageView = M.View.extend(
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the anchor location: top.
+ *
+ * @type String
+ */
+M.TOP = 'header';
+
+/**
+ * A constant value for the anchor location: bottom.
+ *
+ * @type String
+ */
+M.BOTTOM = 'footer';
+
+/**
+ * A constant value for the anchor location: left.
+ *
+ * @type Number
+ */
+M.LEFT = 'LEFT';
+
+/**
+ * A constant value for the anchor location: center.
+ *
+ * @type Number
+ */
+M.CENTER = 'CENTER';
+
+/**
+ * A constant value for the anchor location: right.
+ *
+ * @type Number
+ */
+M.RIGHT = 'RIGHT';
+
+/**
+ * @class
+ *
+ * The root object for ToolbarViews.
+ *
+ * @extends M.View
+ */
+M.ToolbarView = M.View.extend(
+/** @scope M.ToolbarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ToolbarView',
+
+     /**
+     * Defines the position of the TabBar. Possible values are:
+     *
+     * - M.BOTTOM => is a footer bar
+     * - M.TOP => is a header bar
+     *
+     * @type String
+     */
+    anchorLocation: M.TOP,
+
+    /**
+     * Determines whether to display an auto-generated back-button on the left side
+     * of the toolbar view or not.
+     *
+     * @type Boolean
+     */
+    showBackButton: NO,
+
+    /**
+     * If the showBackButton property is set to yes, this property will be used to
+     * save a reference to the M.ButtonView.
+     */
+    backButton: null,
+
+    /**
+     * This property determines whether to fix the toolbar to the top / bottom of a
+     * page. By default this is set to YES.
+     *
+     * @type Boolean
+     */
+    isFixed: YES,
+
+    /**
+     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
+     * h1 child tag (representing the title of the header)
+     *
+     * @private
+     * @returns {String} The toolbar view's html representation.
+     */
+    render: function() {
+        this.html += '<div id="' + this.id + '" data-role="' + this.anchorLocation + '"' + this.style();
+
+        if(this.isFixed) {
+            this.html += ' data-position="fixed"';
+        }
+
+        this.html += '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children or simply display the value as a label,
+     * if it is set.
+     */
+    renderChildViews: function() {
+        if(this.value && this.showBackButton) {
+            /* create the toolbar's back button */
+            this.backButton = M.ButtonView.design({
+                value: 'Back',
+                icon: 'arrow-l',
+                internalEvents: {
+                    tap: {
+                        action: function() {
+                            history.back(-1);
+                        }
+                    }
+                }
+            });
+
+            /* render the back button and add it to the toolbar's html*/
+            this.html += '<div class="ui-btn-left">';
+            this.html += this.backButton.render();
+            this.html += '</div>';
+
+            /* render the centered value */
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if(this.value) {
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var viewPositions = {};
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                view._name = childViews[i];
+                if( viewPositions[view.anchorLocation] ) {
+                    M.Logger.log('ToolbarView has two items positioned at M.' +
+                        view.anchorLocation + 
+                        '.  Only one item permitted in each location', M.WARN);
+                    return;
+                }
+                viewPositions[view.anchorLocation] = YES;
+                switch (view.anchorLocation) {
+                    case M.LEFT:
+                        this.html += '<div class="ui-btn-left">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    case M.CENTER:
+                        this.html += '<h1>';
+                        this.html += view.render();
+                        this.html += '</h1>';
+                        break;
+                    case M.RIGHT:
+                        this.html += '<div class="ui-btn-right">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    default:
+                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
+                        return;
+                }
+            }
+        }
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
+     */
+    registerEvents: function() {
+        if(this.backButton) {
+            this.backButton.registerEvents();
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the toolbar.
+     *
+     * @private
+     * @returns {String} The toolbar's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html += '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically used for triggering an action, e.g. switching to another page, firing a
+ * request or opening a dialog.
+ *
+ * @extends M.View
+ */
+M.ButtonView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonView',
+
+    /**
+     * Determines whether this button is active or not.
+     *
+     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * Determines whether to display the button ony with an icon but no text or not.
+     *
+     * @type Boolean
+     */
+    isIconOnly: NO,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this button. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this button. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property can be used to specify a tag, that is independent from the button's
+     * value. This allows you to identify a button, without having to worry about changes
+     * to its value.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
+                    break;
+            }
+        } else {
+            this.html += 'href="#"';
+        }
+
+        this.html += '>' + this.value + '</a>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                tap: {
+                    target: this,
+                    action: 'dispatchEvent'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates the value of the button with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        if(this.parentView && this.parentView.type === 'M.ButtonGroupView') {
+            $('#' + this.id).find('.ui-btn-text').text(this.value);
+        } else {
+            $('#' + this.id).parent().find('.ui-btn-text').text(this.value);
+        }
+    },
+
+    /**
+     * Sets the button's value and calls renderUpdate() to make the value update visible.
+     *
+     * @param {String} value The button's new value.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the button.
+     *
+     * @private
+     */
+    theme: function() {
+        /* theme only if not already done */
+        if(!$('#' + this.id).hasClass('ui-btn')) {
+            $('#' + this.id).button();
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' data-inline="true"';
+        }
+        if(this.icon) {
+            html += ' data-icon="' + this.icon + '"';
+        }
+        if(this.cssClass) {
+            html += ' data-theme="' + this.cssClass + '"';
+        }
+        if(this.isIconOnly) {
+            html += ' data-iconpos="notext"';
+        }
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    dispatchEvent: function(id, event, nextEvent) {
+        if(this.isEnabled && nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to disable the button. This leads to a visual 'disabled' look and
+     * disabled the buttons tap/click events.
+     */
+    disable: function() {
+        if(this.isEnabled) {
+            var html = $('#' + this.id).html();
+            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
+            $('#' + this.id).html(html);
+            this.isEnabled = NO;
+        }
+    },
+
+    /**
+     * This method can be used to enable a disabled button and make it usable again.
+     */
+    enable: function() {
+        if(!this.isEnabled) {
+            var html = $('#' + this.id + ' div').html();
+            $('#' + this.id).html(html);
+            this.isEnabled = YES;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/button.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any list item view. It can only be used as child view of a list
+ * view (M.ListView).
+ *
+ * @extends M.View
+ */
+M.ListItemView = M.View.extend(
+/** @scope M.ListItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ListItemView',
+
+    /**
+     * States whether the list view item is currently in edit mode or not. This is mainly used by
+     * the built-in toggleRemove() functionality of list views.
+     *
+     * @type Boolean
+     */
+    inEditMode: NO,
+
+    /**
+     * This property determines whether a list item has one single action that is triggered
+     * once there is a click anywhere inside the list item or if there are specific actions
+     * defined for single ui elements within one list item.
+     *
+     * @type Boolean
+     */
+    hasSingleAction: YES,
+
+    /**
+     * This property contains the list item's delete button that is automatically shown if the
+     * list view's built-in toggleRemove() functionality is used.
+     *
+     * @type M.ButtonView
+     */
+    deleteButton: M.ButtonView.design({
+        icon: 'delete',
+        value: ''
+    }),
+
+    /**
+     * This property determines whether the list item is a divider or not.
+     *
+     * @type Boolean
+     */
+    isDivider: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This property can be used to specify whether a selection list item can be selected or not. Note, that this
+     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
+     */
+    isSelectable: YES,
+
+    /**
+     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
+     *
+     * @private
+     * @returns {String} The list item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '"' + this.style();
+
+        if(this.isDivider) {
+            this.html += ' data-role="list-divider"';
+        }
+
+        this.html += '>';
+
+        if(this.childViews) {
+            if(this.inEditMode) {
+                this.html += '<a href="#">';
+                this.renderChildViews();
+                this.html += '</a>';
+
+                this.html += this.deleteButton.render();
+            } else {
+                if(this.isSelectable) {
+                    this.html += '<a href="#">';
+                    this.renderChildViews();
+                    this.html += '</a>';
+                } else {
+                    this.renderChildViews();
+                }
+            }
+        } else if(this.value) {
+            this.html += this.value;
+        }
+
+        this.html += '</li>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this.parentView,
+                action: 'setActiveListItem'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the list item.
+     *
+     * @private
+     * @returns {String} The list item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
     }
 
 });
@@ -5770,344 +6490,6 @@ M.SliderView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the anchor location: top.
- *
- * @type String
- */
-M.TOP = 'header';
-
-/**
- * A constant value for the anchor location: bottom.
- *
- * @type String
- */
-M.BOTTOM = 'footer';
-
-/**
- * A constant value for the anchor location: left.
- *
- * @type Number
- */
-M.LEFT = 'LEFT';
-
-/**
- * A constant value for the anchor location: center.
- *
- * @type Number
- */
-M.CENTER = 'CENTER';
-
-/**
- * A constant value for the anchor location: right.
- *
- * @type Number
- */
-M.RIGHT = 'RIGHT';
-
-/**
- * @class
- *
- * The root object for ToolbarViews.
- *
- * @extends M.View
- */
-M.ToolbarView = M.View.extend(
-/** @scope M.ToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToolbarView',
-
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer bar
-     * - M.TOP => is a header bar
-     *
-     * @type String
-     */
-    anchorLocation: M.TOP,
-
-    /**
-     * Determines whether to display an auto-generated back-button on the left side
-     * of the toolbar view or not.
-     *
-     * @type Boolean
-     */
-    showBackButton: NO,
-
-    /**
-     * If the showBackButton property is set to yes, this property will be used to
-     * save a reference to the M.ButtonView.
-     */
-    backButton: null,
-
-    /**
-     * This property determines whether to fix the toolbar to the top / bottom of a
-     * page. By default this is set to YES.
-     *
-     * @type Boolean
-     */
-    isFixed: YES,
-
-    /**
-     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
-     * h1 child tag (representing the title of the header)
-     *
-     * @private
-     * @returns {String} The toolbar view's html representation.
-     */
-    render: function() {
-        this.html += '<div id="' + this.id + '" data-role="' + this.anchorLocation + '"' + this.style();
-
-        if(this.isFixed) {
-            this.html += ' data-position="fixed"';
-        }
-
-        this.html += '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children or simply display the value as a label,
-     * if it is set.
-     */
-    renderChildViews: function() {
-        if(this.value && this.showBackButton) {
-            /* create the toolbar's back button */
-            this.backButton = M.ButtonView.design({
-                value: 'Back',
-                icon: 'arrow-l',
-                internalEvents: {
-                    tap: {
-                        action: function() {
-                            history.back(-1);
-                        }
-                    }
-                }
-            });
-
-            /* render the back button and add it to the toolbar's html*/
-            this.html += '<div class="ui-btn-left">';
-            this.html += this.backButton.render();
-            this.html += '</div>';
-
-            /* render the centered value */
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if(this.value) {
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var viewPositions = {};
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                view._name = childViews[i];
-                if( viewPositions[view.anchorLocation] ) {
-                    M.Logger.log('ToolbarView has two items positioned at M.' +
-                        view.anchorLocation + 
-                        '.  Only one item permitted in each location', M.WARN);
-                    return;
-                }
-                viewPositions[view.anchorLocation] = YES;
-                switch (view.anchorLocation) {
-                    case M.LEFT:
-                        this.html += '<div class="ui-btn-left">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    case M.CENTER:
-                        this.html += '<h1>';
-                        this.html += view.render();
-                        this.html += '</h1>';
-                        break;
-                    case M.RIGHT:
-                        this.html += '<div class="ui-btn-right">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    default:
-                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
-                        return;
-                }
-            }
-        }
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(this.backButton) {
-            this.backButton.registerEvents();
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the toolbar.
-     *
-     * @private
-     * @returns {String} The toolbar's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html += '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -6261,388 +6643,6 @@ M.GridView = M.View.extend(
             var html = 'class="' + this.layout.cssClass + '"';
             return html;
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically used for triggering an action, e.g. switching to another page, firing a
- * request or opening a dialog.
- *
- * @extends M.View
- */
-M.ButtonView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonView',
-
-    /**
-     * Determines whether this button is active or not.
-     *
-     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * Determines whether to display the button ony with an icon but no text or not.
-     *
-     * @type Boolean
-     */
-    isIconOnly: NO,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this button. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this button. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property can be used to specify a tag, that is independent from the button's
-     * value. This allows you to identify a button, without having to worry about changes
-     * to its value.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
-                    break;
-            }
-        } else {
-            this.html += 'href="#"';
-        }
-
-        this.html += '>' + this.value + '</a>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                tap: {
-                    target: this,
-                    action: 'dispatchEvent'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates the value of the button with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        if(this.parentView && this.parentView.type === 'M.ButtonGroupView') {
-            $('#' + this.id).find('.ui-btn-text').text(this.value);
-        } else {
-            $('#' + this.id).parent().find('.ui-btn-text').text(this.value);
-        }
-    },
-
-    /**
-     * Sets the button's value and calls renderUpdate() to make the value update visible.
-     *
-     * @param {String} value The button's new value.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the button.
-     *
-     * @private
-     */
-    theme: function() {
-        /* theme only if not already done */
-        if(!$('#' + this.id).hasClass('ui-btn')) {
-            $('#' + this.id).button();
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' data-inline="true"';
-        }
-        if(this.icon) {
-            html += ' data-icon="' + this.icon + '"';
-        }
-        if(this.cssClass) {
-            html += ' data-theme="' + this.cssClass + '"';
-        }
-        if(this.isIconOnly) {
-            html += ' data-iconpos="notext"';
-        }
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    dispatchEvent: function(id, event, nextEvent) {
-        if(this.isEnabled && nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to disable the button. This leads to a visual 'disabled' look and
-     * disabled the buttons tap/click events.
-     */
-    disable: function() {
-        if(this.isEnabled) {
-            var html = $('#' + this.id).html();
-            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
-            $('#' + this.id).html(html);
-            this.isEnabled = NO;
-        }
-    },
-
-    /**
-     * This method can be used to enable a disabled button and make it usable again.
-     */
-    enable: function() {
-        if(!this.isEnabled) {
-            var html = $('#' + this.id + ' div').html();
-            $('#' + this.id).html(html);
-            this.isEnabled = YES;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/button.js');
-
-/**
- * @class
- *
- * This is the prototype for any list item view. It can only be used as child view of a list
- * view (M.ListView).
- *
- * @extends M.View
- */
-M.ListItemView = M.View.extend(
-/** @scope M.ListItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ListItemView',
-
-    /**
-     * States whether the list view item is currently in edit mode or not. This is mainly used by
-     * the built-in toggleRemove() functionality of list views.
-     *
-     * @type Boolean
-     */
-    inEditMode: NO,
-
-    /**
-     * This property determines whether a list item has one single action that is triggered
-     * once there is a click anywhere inside the list item or if there are specific actions
-     * defined for single ui elements within one list item.
-     *
-     * @type Boolean
-     */
-    hasSingleAction: YES,
-
-    /**
-     * This property contains the list item's delete button that is automatically shown if the
-     * list view's built-in toggleRemove() functionality is used.
-     *
-     * @type M.ButtonView
-     */
-    deleteButton: M.ButtonView.design({
-        icon: 'delete',
-        value: ''
-    }),
-
-    /**
-     * This property determines whether the list item is a divider or not.
-     *
-     * @type Boolean
-     */
-    isDivider: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This property can be used to specify whether a selection list item can be selected or not. Note, that this
-     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
-     */
-    isSelectable: YES,
-
-    /**
-     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
-     *
-     * @private
-     * @returns {String} The list item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '"' + this.style();
-
-        if(this.isDivider) {
-            this.html += ' data-role="list-divider"';
-        }
-
-        this.html += '>';
-
-        if(this.childViews) {
-            if(this.inEditMode) {
-                this.html += '<a href="#">';
-                this.renderChildViews();
-                this.html += '</a>';
-
-                this.html += this.deleteButton.render();
-            } else {
-                if(this.isSelectable) {
-                    this.html += '<a href="#">';
-                    this.renderChildViews();
-                    this.html += '</a>';
-                } else {
-                    this.renderChildViews();
-                }
-            }
-        } else if(this.value) {
-            this.html += this.value;
-        }
-
-        this.html += '</li>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this.parentView,
-                action: 'setActiveListItem'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the list item.
-     *
-     * @private
-     * @returns {String} The list item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
     }
 
 });
