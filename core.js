@@ -204,6 +204,327 @@ M.Object =
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
+ * First M.Request.init needs to be called, then send.
+ *
+ * @extends M.Object
+ */
+M.Request = M.Object.extend(
+/** @scope M.Request.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Request',
+
+    /**
+     * The HTTP method to use.
+     *
+     * Defaults to GET.
+     *
+     * @type String
+     */
+    method: 'GET',
+
+    /**
+     * The URL this request is sent to.
+     *
+     * @type String
+     */
+    url: null,
+
+    /**
+     * Sends the request asynchronously instead of blocking the browser.
+     * You should almost always make requests asynchronous. You can change this
+     * options with the async() helper option (or simply set it directly).
+     *
+     * Defaults to YES.
+     *
+     * @type Boolean
+     */
+    isAsync: YES,
+
+
+    /**
+     * Processes the request and response as JSON if possible.
+     *
+     * Defaults to NO.
+     *
+     * @type Boolean
+     */
+    isJSON: NO,
+
+    /**
+     * Optional timeout value of the request in milliseconds.
+     *
+     * @type Number
+     */
+    timeout: null,
+
+    /**
+     * If set, contains the request's callbacks in sub objects. There are three
+     * possible callbacks that can be used:
+     *
+     *   - beforeSend
+     *   - success
+     *   - error
+     *
+     * A callback object consists of at least an action but can also specify a
+     * target object that determines the scope for that action. If a target is
+     * specified, the action can either  be a string (the name if a method within
+     * the specified scope) or a function. If there is no target specified, the
+     * action must be a function. So a success callback could e.g. look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: 'successCallback'
+     *     }
+     *   }
+     *
+     * Or it could look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: function() {
+     *         // do something...
+     *       }
+     *     }
+     *   }
+     *
+     * Depending on the type of callback, there are different parameters, that
+     * are automatically passed to the callback:
+     *
+     *   - beforeSend(request)
+     *   - success(data, msg, request)
+     *   - error(request, msg)
+     *
+     * For further information about that, take a look at the internal callbacks
+     * of M.Request:
+     *
+     *   - internalBeforeSend
+     *   - internalOnSuccess
+     *   - internalOnError
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This property can be used to specify whether or not to cache the request.
+     * Setting this to YES will set the 'Cache-Control' property of the request
+     * header to 'no-cache'.
+     *
+     * @Boolean
+     */
+    sendNoCacheHeader: YES,
+
+    /**
+     * This property can be used to specify whether or not to send a timestamp
+     * along with the request in order to make every request unique. Since some
+     * browsers (e.g. Android) automatically cache identical requests, setting
+     * this property to YES will add an additional parameter to the request,
+     * containing the current timestamp.
+     *
+     * So if you have any trouble with caching of requests, try setting this to
+     * YES. But note, that it might also cause trouble on the server-side if they
+     * do not expect this additional parameter.
+     *
+     * @Boolean
+     */
+    sendTimestamp: NO,
+
+    /**
+     * The data body of the request.
+     *
+     * @type String, Object
+     */
+    data: null,
+
+    /**
+     * Holds the jQuery request object
+     *
+     * @type Object
+     */
+    request: null,
+
+    /**
+     * Initializes a request. Sets the parameter of this request object with the passed values.
+     *
+     * @param {Object} obj The parameter object. Includes:
+     * * method: the http method to use, e.g. 'POST'
+     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
+     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
+     * * isJSON: defines whether to process request and response as JSON
+     * * timout: defines timeout in milliseconds
+     * * data: the data to be transmitted
+     * * beforeSend: callback that is called before request is sent
+     * * onError: callback that is called when an error occured
+     * * onSuccess: callback that is called when request was successful
+     */
+    init: function(obj){
+        obj = obj ? obj : {};
+        return this.extend({
+            method: obj['method'] ? obj['method'] : this.method,
+            url: obj['url'] ? obj['url'] : this.url,
+            isAsync: obj['isAsync'] ? obj['isAsync'] : this.isAsync,
+            isJSON: obj['isJSON'] ? obj['isJSON'] : this.isJSON,
+            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
+            data: obj['data'] ? obj['data'] : this.data,
+            callbacks: obj['callbacks'],
+            sendNoCacheHeader: obj['sendNoCacheHeader'],
+            sendTimestamp: obj['sendTimestamp'],
+            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
+            onError: obj['onError'] ? obj['onError'] : this.onError,
+            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
+        });
+    },
+
+    /**
+     * A pre-callback that is called right before the request is sent.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    beforeSend: function(request){},
+
+    /**
+     * The callback to be called if the request failed.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
+     */
+    onError: function(request, msg){},
+
+    /**
+     * The callback to be called if the request succeeded.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    onSuccess: function(data, msg, request){},
+
+    /**
+     * This method is an internal callback that is called right before a
+     * request is send.
+     *
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    internalBeforeSend: function(request){
+        if(this.sendNoCacheHeader) {
+            request.setRequestHeader('Cache-Control', 'no-cache');
+        }
+
+        if(!this.callbacks && this.beforeSend) {
+            this.beforeSend(request);
+        }
+
+        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
+            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
+        }
+    },
+
+    /**
+     * This method is an internal callback that is called if a request
+     * failed.
+     *
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
+     */
+    internalOnError: function(request, msg){
+        if(!this.callbacks && this.onError) {
+            this.onError(request, msg);
+        }
+
+        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
+            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
+        }
+    },
+
+    /**
+     * This method is an internal callback that is called if the request
+     * succeeded.
+     *
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    internalOnSuccess: function(data, msg, request){
+        if(!this.callbacks && this.onSuccess) {
+            this.onSuccess(data, msg, request);
+        }
+
+        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
+        }
+    },
+
+    /**
+     * Sends an Ajax request by using jQuery's $.ajax().
+     * Needs init first!
+     */
+    send: function(){
+        this.request = $.ajax({
+            type: this.method,
+            url: this.url,
+            async: this.isAsync,
+            dataType: this.isJSON ? 'json' : 'text',
+            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
+            timeout: this.timeout,
+            data: this.data ? this.data : '',
+            context: this,
+            beforeSend: this.internalBeforeSend,
+            success: this.internalOnSuccess,
+            error: this.internalOnError,
+            cache: !this.sendTimestamp
+        });
+    },
+
+    /**
+     * Aborts this request. Delegate to jQuery
+     *
+     * @return Boolean Indicating whether request exists and is aborted or not
+     */
+    abort: function() {
+        if(this.request) {
+            this.request.abort();
+            return YES;
+        }
+        return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -592,94 +913,6 @@ M.DeviceSwitch = M.Object.extend(
 });
 
 M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1117,6 +1350,94 @@ M.I18N = M.Object.extend(
         }
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -1732,327 +2053,6 @@ M.UniqueId = M.Object.extend({
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
- * First M.Request.init needs to be called, then send.
- *
- * @extends M.Object
- */
-M.Request = M.Object.extend(
-/** @scope M.Request.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Request',
-
-    /**
-     * The HTTP method to use.
-     *
-     * Defaults to GET.
-     *
-     * @type String
-     */
-    method: 'GET',
-
-    /**
-     * The URL this request is sent to.
-     *
-     * @type String
-     */
-    url: null,
-
-    /**
-     * Sends the request asynchronously instead of blocking the browser.
-     * You should almost always make requests asynchronous. You can change this
-     * options with the async() helper option (or simply set it directly).
-     *
-     * Defaults to YES.
-     *
-     * @type Boolean
-     */
-    isAsync: YES,
-
-
-    /**
-     * Processes the request and response as JSON if possible.
-     *
-     * Defaults to NO.
-     *
-     * @type Boolean
-     */
-    isJSON: NO,
-
-    /**
-     * Optional timeout value of the request in milliseconds.
-     *
-     * @type Number
-     */
-    timeout: null,
-
-    /**
-     * If set, contains the request's callbacks in sub objects. There are three
-     * possible callbacks that can be used:
-     *
-     *   - beforeSend
-     *   - success
-     *   - error
-     *
-     * A callback object consists of at least an action but can also specify a
-     * target object that determines the scope for that action. If a target is
-     * specified, the action can either  be a string (the name if a method within
-     * the specified scope) or a function. If there is no target specified, the
-     * action must be a function. So a success callback could e.g. look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: 'successCallback'
-     *     }
-     *   }
-     *
-     * Or it could look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: function() {
-     *         // do something...
-     *       }
-     *     }
-     *   }
-     *
-     * Depending on the type of callback, there are different parameters, that
-     * are automatically passed to the callback:
-     *
-     *   - beforeSend(request)
-     *   - success(data, msg, request)
-     *   - error(request, msg)
-     *
-     * For further information about that, take a look at the internal callbacks
-     * of M.Request:
-     *
-     *   - internalBeforeSend
-     *   - internalOnSuccess
-     *   - internalOnError
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This property can be used to specify whether or not to cache the request.
-     * Setting this to YES will set the 'Cache-Control' property of the request
-     * header to 'no-cache'.
-     *
-     * @Boolean
-     */
-    sendNoCacheHeader: YES,
-
-    /**
-     * This property can be used to specify whether or not to send a timestamp
-     * along with the request in order to make every request unique. Since some
-     * browsers (e.g. Android) automatically cache identical requests, setting
-     * this property to YES will add an additional parameter to the request,
-     * containing the current timestamp.
-     *
-     * So if you have any trouble with caching of requests, try setting this to
-     * YES. But note, that it might also cause trouble on the server-side if they
-     * do not expect this additional parameter.
-     *
-     * @Boolean
-     */
-    sendTimestamp: NO,
-
-    /**
-     * The data body of the request.
-     *
-     * @type String, Object
-     */
-    data: null,
-
-    /**
-     * Holds the jQuery request object
-     *
-     * @type Object
-     */
-    request: null,
-
-    /**
-     * Initializes a request. Sets the parameter of this request object with the passed values.
-     *
-     * @param {Object} obj The parameter object. Includes:
-     * * method: the http method to use, e.g. 'POST'
-     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
-     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
-     * * isJSON: defines whether to process request and response as JSON
-     * * timout: defines timeout in milliseconds
-     * * data: the data to be transmitted
-     * * beforeSend: callback that is called before request is sent
-     * * onError: callback that is called when an error occured
-     * * onSuccess: callback that is called when request was successful
-     */
-    init: function(obj){
-        obj = obj ? obj : {};
-        return this.extend({
-            method: obj['method'] ? obj['method'] : this.method,
-            url: obj['url'] ? obj['url'] : this.url,
-            isAsync: obj['isAsync'] ? obj['isAsync'] : this.isAsync,
-            isJSON: obj['isJSON'] ? obj['isJSON'] : this.isJSON,
-            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
-            data: obj['data'] ? obj['data'] : this.data,
-            callbacks: obj['callbacks'],
-            sendNoCacheHeader: obj['sendNoCacheHeader'],
-            sendTimestamp: obj['sendTimestamp'],
-            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
-            onError: obj['onError'] ? obj['onError'] : this.onError,
-            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
-        });
-    },
-
-    /**
-     * A pre-callback that is called right before the request is sent.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    beforeSend: function(request){},
-
-    /**
-     * The callback to be called if the request failed.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    onError: function(request, msg){},
-
-    /**
-     * The callback to be called if the request succeeded.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    onSuccess: function(data, msg, request){},
-
-    /**
-     * This method is an internal callback that is called right before a
-     * request is send.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalBeforeSend: function(request){
-        if(this.sendNoCacheHeader) {
-            request.setRequestHeader('Cache-Control', 'no-cache');
-        }
-
-        if(!this.callbacks && this.beforeSend) {
-            this.beforeSend(request);
-        }
-
-        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
-            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if a request
-     * failed.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    internalOnError: function(request, msg){
-        if(!this.callbacks && this.onError) {
-            this.onError(request, msg);
-        }
-
-        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
-            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if the request
-     * succeeded.
-     *
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalOnSuccess: function(data, msg, request){
-        if(!this.callbacks && this.onSuccess) {
-            this.onSuccess(data, msg, request);
-        }
-
-        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
-        }
-    },
-
-    /**
-     * Sends an Ajax request by using jQuery's $.ajax().
-     * Needs init first!
-     */
-    send: function(){
-        this.request = $.ajax({
-            type: this.method,
-            url: this.url,
-            async: this.isAsync,
-            dataType: this.isJSON ? 'json' : 'text',
-            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
-            timeout: this.timeout,
-            data: this.data ? this.data : '',
-            context: this,
-            beforeSend: this.internalBeforeSend,
-            success: this.internalOnSuccess,
-            error: this.internalOnError,
-            cache: !this.sendTimestamp
-        });
-    },
-
-    /**
-     * Aborts this request. Delegate to jQuery
-     *
-     * @return Boolean Indicating whether request exists and is aborted or not
-     */
-    abort: function() {
-        if(this.request) {
-            this.request.abort();
-            return YES;
-        }
-        return NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      11.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -2360,6 +2360,151 @@ M.Base64 = M.Object.extend(
         }
 
         return M.Cypher.utf8_decode(output);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/request.js');
+
+/**
+ * A constant value for logging level: info.
+ *
+ * @type Number
+ */
+M.INFO = 0;
+
+/**
+ * A constant value for logging level: debug.
+ *
+ * @type Number
+ */
+M.DEBUG = 1;
+
+/**
+ * A constant value for logging level: warning.
+ *
+ * @type Number
+ */
+M.WARN = 2;
+
+/**
+ * A constant value for logging level: error.
+ *
+ * @type Number
+ */
+M.ERR = 3;
+
+/**
+ * @class
+ *
+ * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
+ * based on a given logging level.
+ *
+ * @extends M.Object
+ */
+M.Logger = M.Object.extend(
+/** @scope M.Logger.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Logger',
+
+    /**
+     * This method is used to log anything out of an application based on the given logging level.
+     * Possible values for the logging level are:
+     *
+     * - debug:   M.DEBUG
+     * - error:   M.ERROR
+     * - warning: M.WARN
+     * - info: M.INFO
+     *
+     * @param {String} msg The logging message.
+     * @param {Number} level The logging level.
+     */
+    log: function(msg, level) {
+        level = level || M.DEBUG;
+
+        /* are we in production mode, then do not throw any logs */
+        if(M.Application.getConfig('debugMode') === false) {
+            return;
+        }
+
+        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
+        if (typeof console === 'undefined') {
+            window.console = {} ;
+            console.log = console.info = console.warn = console.error = function(){};
+        }
+        
+        switch (level) {
+            case M.DEBUG:
+                this.debug(msg);
+                break;
+            case M.ERR:
+                this.error(msg);
+                break;
+            case M.WARN:
+                this.warn(msg);
+                break;
+            case M.INFO:
+                this.info(msg);
+                break;
+            default:
+                this.debug(msg);
+                break;
+        }
+    },
+
+    /**
+     * This method is used to log a message on logging level debug.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    debug: function(msg) {
+        console.debug(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level error.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    error: function(msg) {
+        console.error(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level warning.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    warn: function(msg) {
+        console.warn(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level info.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    info: function(msg) {
+        console.info(msg);
     }
 
 });
@@ -2802,151 +2947,6 @@ M.LocationManager = M.Object.extend(
                 }
             });
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/request.js');
-
-/**
- * A constant value for logging level: info.
- *
- * @type Number
- */
-M.INFO = 0;
-
-/**
- * A constant value for logging level: debug.
- *
- * @type Number
- */
-M.DEBUG = 1;
-
-/**
- * A constant value for logging level: warning.
- *
- * @type Number
- */
-M.WARN = 2;
-
-/**
- * A constant value for logging level: error.
- *
- * @type Number
- */
-M.ERR = 3;
-
-/**
- * @class
- *
- * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
- * based on a given logging level.
- *
- * @extends M.Object
- */
-M.Logger = M.Object.extend(
-/** @scope M.Logger.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Logger',
-
-    /**
-     * This method is used to log anything out of an application based on the given logging level.
-     * Possible values for the logging level are:
-     *
-     * - debug:   M.DEBUG
-     * - error:   M.ERROR
-     * - warning: M.WARN
-     * - info: M.INFO
-     *
-     * @param {String} msg The logging message.
-     * @param {Number} level The logging level.
-     */
-    log: function(msg, level) {
-        level = level || M.DEBUG;
-
-        /* are we in production mode, then do not throw any logs */
-        if(M.Application.getConfig('debugMode') === false) {
-            return;
-        }
-
-        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
-        if (typeof console === 'undefined') {
-            window.console = {} ;
-            console.log = console.info = console.warn = console.error = function(){};
-        }
-        
-        switch (level) {
-            case M.DEBUG:
-                this.debug(msg);
-                break;
-            case M.ERR:
-                this.error(msg);
-                break;
-            case M.WARN:
-                this.warn(msg);
-                break;
-            case M.INFO:
-                this.info(msg);
-                break;
-            default:
-                this.debug(msg);
-                break;
-        }
-    },
-
-    /**
-     * This method is used to log a message on logging level debug.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    debug: function(msg) {
-        console.debug(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level error.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    error: function(msg) {
-        console.error(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level warning.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    warn: function(msg) {
-        console.warn(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level info.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    info: function(msg) {
-        console.info(msg);
     }
 
 });
@@ -3909,272 +3909,6 @@ M.DataConsumer = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      11.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The root object for Error objects
- *
- * M.Error encapsulates errors in The-M-Project.
- * Should be passed to error callbacks.
- *
- * 0-99:    general errors
- *
- * 100-199: Model and Validation errors
- *
- * 200-299:   WebSQL errors
- *
- * 300-400:   CouchDB errors
- *
- *
- * Constant                             Code    Situation
- * --------                             ----    ---------
- * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
- * M.ERR_CONNECTION                     1       A connection to an external service could not be established
- *
- * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
- * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
- * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
- * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
- * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
- *
- * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
- *
- * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
- * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
- * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
- * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
- * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
- * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
- * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
- * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
- * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
- * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
- *
- * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
- * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
- * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
- * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
- *
- *
- *
- *
- * @extends M.Object
-*/
-
-
-/**
- * A constant value for an undefined error.
- *
- * @type Number
- */
-M.ERR_UNDEFINED = 0;
-
-/**
- * A constant value for an error occuring when a connection to an external service could not be established.
- *
- * @type Number
- */
-M.ERR_CONNECTION = 1;
-
-/**
- * A model record failed validation due to a property is not set but required to be.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PRESENCE = 100;
-
-/**
- * A model record failed validation due to a property does not represent a valid URL but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_URL = 101;
-
-/**
- * A model record failed validation due to a property does not represent a phone number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PHONE = 102;
-
-/**
- * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NUMBER = 103;
-
-/**
- * A model record failed validation due to a property contains a minus value but it is required to do not.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NOTMINUS = 104;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_EMAIL = 105;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_DATE = 106;
-
-/**
- * A Data Provider was not set for a model.
- *
- * @type Number
- */
-M.ERR_MODEL_PROVIDER_NOT_SET = 120;
-
-
-/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 0
- *
- * @type Number
- */
-M.ERR_WEBSQL_UNKNOWN = 200;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed for database reasons not covered by any other error code."
- * Error code in WebSQL specification: 1
- *
- * @type Number
- */
-M.ERR_WEBSQL_DATABASE = 201;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 2
- *
- * @type Number
- */
-M.ERR_WEBSQL_VERSION = 202;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
- * Error code in WebSQL specification: 3
- *
- * @type Number
- */
-M.ERR_WEBSQL_TOO_LARGE = 203;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
- * Error code in WebSQL specification: 4
- *
- * @type Number
- */
-M.ERR_WEBSQL_QUOTA = 204;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
- * Error code in WebSQL specification: 5
- *
- * @type Number
- */
-M.ERR_WEBSQL_SYNTAX = 205;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
- * Error code in WebSQL specification: 6
- *
- * @type Number
- */
-M.ERR_WEBSQL_CONSTRAINT = 206;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "A lock for the transaction could not be obtained in a reasonable time."
- * Error code in WebSQL specification: 7
- *
- * @type Number
- */
-M.ERR_WEBSQL_TIMEOUT = 207;
-
-/* following errors are WebSQL Data Provider errors. */
-
-/**
- * A constant value for an error occuring when dbHandler does not exist in
- * data provider. Reason: Initialization did not take place or failed.
- *
- * @type Number
- */
-M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
-
-/**
- * A constant value for an error occuring with bulkSave operation in dataprovider.
- * No Record array was passed to the method via the param obj.
- *
- * @type Number
- */
-M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
-
-
-/**
- * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
- *
- * @type Number
- */
-M.ERR_COUCHDB_CONFLICT = 300;
-
-/**
- * A constant value for an error occuring if the provided database could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBNOTFOUND = 301;
-
-/**
- * A constant value for an error occuring if a database that shall be created already exists
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBEXISTS = 302;
-
-/**
- * A constant value for an error occuring if a document could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DOCNOTFOUND = 303;
-
-M.Error = M.Object.extend(
-/** @scope M.Error.prototype */ {
-    code: '',
-    msg: '',
-    errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      27.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4438,6 +4172,272 @@ M.EventDispatcher = M.Object.extend(
         return YES;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      11.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The root object for Error objects
+ *
+ * M.Error encapsulates errors in The-M-Project.
+ * Should be passed to error callbacks.
+ *
+ * 0-99:    general errors
+ *
+ * 100-199: Model and Validation errors
+ *
+ * 200-299:   WebSQL errors
+ *
+ * 300-400:   CouchDB errors
+ *
+ *
+ * Constant                             Code    Situation
+ * --------                             ----    ---------
+ * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
+ * M.ERR_CONNECTION                     1       A connection to an external service could not be established
+ *
+ * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
+ * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
+ * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
+ * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
+ *
+ * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
+ *
+ * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
+ * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
+ * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
+ * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
+ * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
+ * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
+ * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
+ * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
+ * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
+ * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
+ *
+ * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
+ * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
+ * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
+ * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
+ *
+ *
+ *
+ *
+ * @extends M.Object
+*/
+
+
+/**
+ * A constant value for an undefined error.
+ *
+ * @type Number
+ */
+M.ERR_UNDEFINED = 0;
+
+/**
+ * A constant value for an error occuring when a connection to an external service could not be established.
+ *
+ * @type Number
+ */
+M.ERR_CONNECTION = 1;
+
+/**
+ * A model record failed validation due to a property is not set but required to be.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PRESENCE = 100;
+
+/**
+ * A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_URL = 101;
+
+/**
+ * A model record failed validation due to a property does not represent a phone number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PHONE = 102;
+
+/**
+ * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NUMBER = 103;
+
+/**
+ * A model record failed validation due to a property contains a minus value but it is required to do not.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NOTMINUS = 104;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_EMAIL = 105;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_DATE = 106;
+
+/**
+ * A Data Provider was not set for a model.
+ *
+ * @type Number
+ */
+M.ERR_MODEL_PROVIDER_NOT_SET = 120;
+
+
+/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 0
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_UNKNOWN = 200;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed for database reasons not covered by any other error code."
+ * Error code in WebSQL specification: 1
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_DATABASE = 201;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 2
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_VERSION = 202;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
+ * Error code in WebSQL specification: 3
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TOO_LARGE = 203;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
+ * Error code in WebSQL specification: 4
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_QUOTA = 204;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
+ * Error code in WebSQL specification: 5
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_SYNTAX = 205;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
+ * Error code in WebSQL specification: 6
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_CONSTRAINT = 206;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "A lock for the transaction could not be obtained in a reasonable time."
+ * Error code in WebSQL specification: 7
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TIMEOUT = 207;
+
+/* following errors are WebSQL Data Provider errors. */
+
+/**
+ * A constant value for an error occuring when dbHandler does not exist in
+ * data provider. Reason: Initialization did not take place or failed.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
+
+/**
+ * A constant value for an error occuring with bulkSave operation in dataprovider.
+ * No Record array was passed to the method via the param obj.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
+
+
+/**
+ * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_CONFLICT = 300;
+
+/**
+ * A constant value for an error occuring if the provided database could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBNOTFOUND = 301;
+
+/**
+ * A constant value for an error occuring if a database that shall be created already exists
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBEXISTS = 302;
+
+/**
+ * A constant value for an error occuring if a document could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DOCNOTFOUND = 303;
+
+M.Error = M.Object.extend(
+/** @scope M.Error.prototype */ {
+    code: '',
+    msg: '',
+    errObj: null
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6991,7 +6991,7 @@ M.Controller = M.Object.extend(
      * @param {M.TabBarItemView} tab The tab to be activated.
      */
     switchToTab: function(tab,back) {
-		navigator.notification.vibrate(200);
+		try{navigator.notification.vibrate(200);}catch(e){}
 		if (!back) back = NO;
         if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
             M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
