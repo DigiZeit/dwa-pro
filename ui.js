@@ -3843,170 +3843,6 @@ M.SelectionListView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-        
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      01.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4183,6 +4019,170 @@ M.FormView = M.View.extend(
      */
     getFormValues: function() {
         return this.getValues();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+        
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
     }
 
 });
@@ -5310,462 +5310,6 @@ M.ImageView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-
-//// ==========================================================================
-//// Project:   The M-Project - Mobile HTML5 Application Framework
-//// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-//// Creator:   Dominik
-//// Date:      17.11.2011
-//// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-////            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-////            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-//// ==========================================================================
-//
-///**
-// * @class
-// *
-// * This defines the prototype for a slider view. It renders a touch-optimized slider
-// * that can be used to set a number within a specified range.
-// *
-// * @extends M.View
-// */
-//M.SliderView = M.View.extend(
-///** @scope M.ButtonView.prototype */ {
-//
-//    /**
-//     * The type of this object.
-//     *
-//     * @type String
-//     */
-//    type: 'M.SliderView',
-//
-//    /**
-//     * This property contains the slider's value.
-//     */
-//    value: 0,
-//
-//    /**
-//     * This property contains the slider's initial value.
-//     *
-//     * @private
-//     */
-//    initialValue: 0,
-//
-//    /**
-//     * This property specifies the min value of the slider.
-//     *
-//     * @type Number
-//     */
-//    min: 0,
-//
-//    /**
-//     * This property specifies the max value of the slider.
-//     *
-//     * @type Number
-//     */
-//    max: 100,
-//
-//    /**
-//     * This property specifies the step value of the slider.
-//     *
-//     * @type Number
-//     */
-//    step: 1,
-//
-//    /**
-//     * This property determines whether or not to display the corresponding input of the slider.
-//     *
-//     * @type Boolean
-//     */
-//    isSliderOnly: NO,
-//
-//    /**
-//     * This property specifies the recommended events for this type of view.
-//     *
-//     * @type Array
-//     */
-//    recommendedEvents: ['change'],
-//
-//    /**
-//     * Renders a slider.
-//     *
-//     * @private
-//     * @returns {String} The slider view's html representation.
-//     */
-//    render: function() {
-//        if(this.label) {
-//           this.html += '<label for="' + this.id + '">' + this.label + '</label>';
-//        }
-//
-//        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-//        this.html += '<input id="' + this.id + '" type="range" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-//
-//        this.html += '</div>';
-//
-//        /* store value as initial value for later resetting */
-//        this.initialValue = this.value;
-//
-//        return this.html;
-//    },
-//
-//    /**
-//     * This method registers the change event to internally re-set the value of the
-//     * slider.
-//     */
-//    registerEvents: function() {
-//        if(!this.internalEvents) {
-//            this.internalEvents = {
-//                change: {
-//                    target: this,
-//                    action: 'setValueFromDOM'
-//                }
-//            }
-//        }
-//        this.bindToCaller(this, M.View.registerEvents)();
-//    },
-//
-//    /**
-//     * Updates a SliderView with DOM access by jQuery.
-//     *
-//     * @private
-//     */
-//    renderUpdate: function() {
-//        /* check if the slider's value is numeric, otherwise use initial value */
-//        if(isNaN(this.value)) {
-//            this.value = this.initialValue;
-//        /* if it is a number, but out of bounds, use min/max */
-//        } else if(this.value < this.min) {
-//            this.value = this.min
-//        } else if(this.value > this.max) {
-//            this.value = this.max
-//        }
-//
-//        $('#' + this.id).val(this.value);
-//        $('#' + this.id).slider('refresh');
-//    },
-//
-//    /**
-//     * This method sets its value to the value it has in its DOM representation
-//     * and then delegates these changes to a controller property if the
-//     * contentBindingReverse property is set.
-//     *
-//     * Additionally call target / action if set.
-//     *
-//     * @param {String} id The DOM id of the event target.
-//     * @param {Object} event The DOM event.
-//     * @param {Object} nextEvent The next event (external event), if specified.
-//     */
-//    setValueFromDOM: function(id, event, nextEvent) {
-//        this.value = $('#' + this.id).val();
-//
-//        if(nextEvent) {
-//            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-//        }
-//    },
-//
-//    /**
-//     * Applies some style-attributes to the slider.
-//     *
-//     * @private
-//     * @returns {String} The slider's styling as html representation.
-//     */
-//    style: function() {
-//        var html = '';
-//        if(this.cssClass) {
-//            html += ' class="' + this.cssClass + '"';
-//        }
-//        return html;
-//    },
-//
-//    /**
-//     * Do some theming/styling once the slider was added to the DOM.
-//     *
-//     * @private
-//     */
-//    theme: function() {
-//        if(this.isSliderOnly) {
-//            $('#' + this.id).hide();
-//        }
-//
-//        if(!this.isEnabled) {
-//            this.disable();
-//        }
-//    },
-//
-//    /**
-//     * This method resets the slider to its initial value.
-//     */
-//    resetSlider: function() {
-//        this.value = this.initialValue;
-//        this.renderUpdate();
-//    },
-//
-//    /**
-//     * This method disables the text field by setting the disabled property of its
-//     * html representation to true.
-//     */
-//    disable: function() {
-//        this.isEnabled = NO;
-//        $('#' + this.id).slider('disable');
-//    },
-//
-//    /**
-//     * This method enables the text field by setting the disabled property of its
-//     * html representation to false.
-//     */
-//    enable: function() {
-//        this.isEnabled = YES;
-//        $('#' + this.id).slider('enable');
-//    }
-//
-//});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8560,3 +8104,460 @@ M.TextFieldView = M.View.extend(
     }
 
 });
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.11.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
+ *
+ * @extends M.View
+ */
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SliderView',
+
+    /**
+     * This property contains the slider's value.
+     */
+    value: 0,
+
+    /**
+     * This property contains the slider's initial value.
+     *
+     * @private
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
+     */
+    render: function() {
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
+        return this.html;
+    },
+
+    /**
+     * This method registers the change event to internally re-set the value of the
+     * slider.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the slider.
+     *
+     * @private
+     * @returns {String} The slider's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
+    }
+
+});
+
+//// ==========================================================================
+//// Project:   The M-Project - Mobile HTML5 Application Framework
+//// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+//// Creator:   Dominik
+//// Date:      17.11.2011
+//// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+////            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+////            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+//// ==========================================================================
+//
+///**
+// * @class
+// *
+// * This defines the prototype for a slider view. It renders a touch-optimized slider
+// * that can be used to set a number within a specified range.
+// *
+// * @extends M.View
+// */
+//M.SliderView = M.View.extend(
+///** @scope M.ButtonView.prototype */ {
+//
+//    /**
+//     * The type of this object.
+//     *
+//     * @type String
+//     */
+//    type: 'M.SliderView',
+//
+//    /**
+//     * This property contains the slider's value.
+//     */
+//    value: 0,
+//
+//    /**
+//     * This property contains the slider's initial value.
+//     *
+//     * @private
+//     */
+//    initialValue: 0,
+//
+//    /**
+//     * This property specifies the min value of the slider.
+//     *
+//     * @type Number
+//     */
+//    min: 0,
+//
+//    /**
+//     * This property specifies the max value of the slider.
+//     *
+//     * @type Number
+//     */
+//    max: 100,
+//
+//    /**
+//     * This property specifies the step value of the slider.
+//     *
+//     * @type Number
+//     */
+//    step: 1,
+//
+//    /**
+//     * This property determines whether or not to display the corresponding input of the slider.
+//     *
+//     * @type Boolean
+//     */
+//    isSliderOnly: NO,
+//
+//    /**
+//     * This property specifies the recommended events for this type of view.
+//     *
+//     * @type Array
+//     */
+//    recommendedEvents: ['change'],
+//
+//    /**
+//     * Renders a slider.
+//     *
+//     * @private
+//     * @returns {String} The slider view's html representation.
+//     */
+//    render: function() {
+//        if(this.label) {
+//           this.html += '<label for="' + this.id + '">' + this.label + '</label>';
+//        }
+//
+//        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+//        this.html += '<input id="' + this.id + '" type="range" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+//
+//        this.html += '</div>';
+//
+//        /* store value as initial value for later resetting */
+//        this.initialValue = this.value;
+//
+//        return this.html;
+//    },
+//
+//    /**
+//     * This method registers the change event to internally re-set the value of the
+//     * slider.
+//     */
+//    registerEvents: function() {
+//        if(!this.internalEvents) {
+//            this.internalEvents = {
+//                change: {
+//                    target: this,
+//                    action: 'setValueFromDOM'
+//                }
+//            }
+//        }
+//        this.bindToCaller(this, M.View.registerEvents)();
+//    },
+//
+//    /**
+//     * Updates a SliderView with DOM access by jQuery.
+//     *
+//     * @private
+//     */
+//    renderUpdate: function() {
+//        /* check if the slider's value is numeric, otherwise use initial value */
+//        if(isNaN(this.value)) {
+//            this.value = this.initialValue;
+//        /* if it is a number, but out of bounds, use min/max */
+//        } else if(this.value < this.min) {
+//            this.value = this.min
+//        } else if(this.value > this.max) {
+//            this.value = this.max
+//        }
+//
+//        $('#' + this.id).val(this.value);
+//        $('#' + this.id).slider('refresh');
+//    },
+//
+//    /**
+//     * This method sets its value to the value it has in its DOM representation
+//     * and then delegates these changes to a controller property if the
+//     * contentBindingReverse property is set.
+//     *
+//     * Additionally call target / action if set.
+//     *
+//     * @param {String} id The DOM id of the event target.
+//     * @param {Object} event The DOM event.
+//     * @param {Object} nextEvent The next event (external event), if specified.
+//     */
+//    setValueFromDOM: function(id, event, nextEvent) {
+//        this.value = $('#' + this.id).val();
+//
+//        if(nextEvent) {
+//            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+//        }
+//    },
+//
+//    /**
+//     * Applies some style-attributes to the slider.
+//     *
+//     * @private
+//     * @returns {String} The slider's styling as html representation.
+//     */
+//    style: function() {
+//        var html = '';
+//        if(this.cssClass) {
+//            html += ' class="' + this.cssClass + '"';
+//        }
+//        return html;
+//    },
+//
+//    /**
+//     * Do some theming/styling once the slider was added to the DOM.
+//     *
+//     * @private
+//     */
+//    theme: function() {
+//        if(this.isSliderOnly) {
+//            $('#' + this.id).hide();
+//        }
+//
+//        if(!this.isEnabled) {
+//            this.disable();
+//        }
+//    },
+//
+//    /**
+//     * This method resets the slider to its initial value.
+//     */
+//    resetSlider: function() {
+//        this.value = this.initialValue;
+//        this.renderUpdate();
+//    },
+//
+//    /**
+//     * This method disables the text field by setting the disabled property of its
+//     * html representation to true.
+//     */
+//    disable: function() {
+//        this.isEnabled = NO;
+//        $('#' + this.id).slider('disable');
+//    },
+//
+//    /**
+//     * This method enables the text field by setting the disabled property of its
+//     * html representation to false.
+//     */
+//    enable: function() {
+//        this.isEnabled = YES;
+//        $('#' + this.id).slider('enable');
+//    }
+//
+//});
