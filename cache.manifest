@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4262 beta, Timestamp:1381842316661
+#Application:DigiWebApp, Version:1.6.1.4263 beta, Timestamp:1381842699234
 
 
 # Explicitly cached entries
@@ -13,12 +13,12 @@ underscore-min.js
 d8-0.4.0.min.js
 theme/tmp.css
 bootstrap.js
-jstz.js
+jquery.xml2json_1.3.js
 digi_selection_list.js
 digi_selection_list_item.js
 digi_list_item.js
 digi_list.js
-jquery.xml2json_1.3.js
+jstz.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 ui.js
