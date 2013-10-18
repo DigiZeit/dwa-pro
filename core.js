@@ -21,7 +21,7 @@ var M = M || {};
 /**
  * The version of The-M-Project
  */
-M.Version = '1.0';
+M.Version = '1.4';
 
 /**
  * These command is used by the build tool to control the load order.
@@ -61,23 +61,25 @@ M.META_M_ID = '_m_id';
  * @param {String} param One character string. If it is 'f' (means 'force'), the existing clear() is used to clear the whole storage
  * if param is undefined or another letter, the custom clear is used.
  */
-Object.getPrototypeOf(localStorage).clear = function(param) {
-    /* Call localStorage.clear() with parameter 'f' to use system wide localStorage.clear() */
-    var l = this.length;
-    if(param === 'f') {
-        var l = this.length;
-        for (var i = l - 1; i >= 0; i--){
-            this.removeItem(this.key(i));
-        }
-    } else {
-        for (var i = l - 1; i >= 0; i--){
-            var k = this.key(i);
-            var regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX).exec(k);
-            if(regexResult) {
-                this.removeItem(k);
-            }
-        }
-    }
+if(localStorage){
+	Object.getPrototypeOf(localStorage).clear = function(param) {
+	    /* Call localStorage.clear() with parameter 'f' to use system wide localStorage.clear() */
+	    var l = this.length;
+	    if(param === 'f') {
+	        var l = this.length;
+	        for (var i = l - 1; i >= 0; i--){
+	            this.removeItem(this.key(i));
+	        }
+	    } else {
+	        for (var i = l - 1; i >= 0; i--){
+	            var k = this.key(i);
+	            var regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX).exec(k);
+	            if(regexResult) {
+	                this.removeItem(k);
+	            }
+	        }
+	    }
+	}
 }
 
 // ==========================================================================
@@ -192,11 +194,26 @@ M.Object =
      */
     destroy: function() {
         if(this.id && $('#' + this.id)) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]]) {
+                    this[childViews[i]].destroy();
+                }
+            }
             M.EventDispatcher.unregisterEvents(this);
             M.ViewManager.unregister(this);
             $('#' + this.id).remove();
         }
         delete this;
+    },
+
+    detachContentBinding: function(){
+        if( this.contentBinding && this.contentBinding.target && this.contentBinding.target.observable && this.contentBinding.property){
+            this.contentBinding.target.observable.detach(this.contentBinding.property);
+        }
+        if( this.valueBinding    && this.valueBinding.target    && this.valueBinding.target.observable    && this.valueBinding.property){
+            this.valueBinding.target.observable.detach(this.valueBinding.property);
+        }
     }
 
 };
@@ -382,8 +399,8 @@ M.Request = M.Object.extend(
         return this.extend({
             method: obj['method'] ? obj['method'] : this.method,
             url: obj['url'] ? obj['url'] : this.url,
-            isAsync: obj['isAsync'] ? obj['isAsync'] : this.isAsync,
-            isJSON: obj['isJSON'] ? obj['isJSON'] : this.isJSON,
+            isAsync: (obj['isAsync'] !== undefined && obj['isAsync'] !== null) ? obj['isAsync'] : this.isAsync,
+            isJSON: (obj['isJSON'] !== undefined && obj['isJSON'] !== null) ? obj['isJSON'] : this.isJSON,
             timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
             data: obj['data'] ? obj['data'] : this.data,
             callbacks: obj['callbacks'],
@@ -518,6 +535,130 @@ M.Request = M.Object.extend(
             return YES;
         }
         return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2012
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines methods for preloading images.
+ *
+ * @extends M.Object
+ */
+M.ImagePreloader = M.Object.extend(
+/** @scope M.ImagePreloader.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImagePreloader',
+
+    images: null,
+
+    refId: '',
+
+    bodyDOM: null,
+
+    loadCounter: 0,
+
+    init: function(obj) {
+        obj.refId = obj.refId || M.UniqueId.uuid();
+        obj.bodyDOM = $('body');
+
+        return this.extend(obj);
+    },
+
+    preload: function() {
+        var that = this;
+        if(this.images && this.images.length > 0) {
+            _.each(this.images, function(i) {
+                window.setTimeout(function() {
+                    that.preloadSingleImage(i);
+                }, 1);
+            });
+        }
+    },
+
+    preloadSingleImage: function(image) {
+        var imageView = M.ImageView.design({
+            value: image,
+            cssClass: 'tmp-image-preloading',
+            events: {
+                load: {
+                    target: this,
+                    action: 'loadSingle'
+                },
+                error: {
+                    target: this,
+                    action: 'error'
+                }
+            }
+        });
+
+        this.bodyDOM.append(imageView.render());
+        imageView.registerEvents();
+    },
+
+    loadSingle: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call load event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
+            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    error: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call error event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
+            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    finish: function() {
+        /* doublecheck */
+        if(this.loadCounter !== this.images.length) {
+            return;
+        }
+
+        /* call finish event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
+            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
+        }
     }
 
 });
@@ -766,8 +907,8 @@ M.Math = M.Object.extend(
      * This method returns the value of the base to the power of the exponent. So e.g.
      * pow(2, 3) would return '2 to the power of 3' --> 8.
      *
-     * @param base {Number} The base.
-     * @param exponent {Number} The exponent.
+     * @param {Number} base The base.
+     * @param {Number} exponent The exponent.
      * @returns {Number} The result of the operation.
      */
     pow: function(base, exponent) {
@@ -783,8 +924,8 @@ M.Math = M.Object.extend(
      * - 2: 33.2%
      * - 3: 33.6%
      *
-     * @param min {Number} The minimal value.
-     * @param max {Number} The maximal value.
+     * @param {Number} min The minimal value.
+     * @param {Number} max The maximal value.
      * @returns {Number} The result of the operation.
      */
     random: function(min, max) {
@@ -803,9 +944,9 @@ M.Math = M.Object.extend(
      * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
      * is 0.
      *
-     * @param input {Number} The input value.
-     * @param type {String} The type of rounding.
-     * @param type {Number} The number of decimals (only available for M.ROUND).
+     * @param {Number} input The input value.
+     * @param {String} type The type of rounding.
+     * @param {Number} type The number of decimals (only available for M.ROUND).
      * @returns {Number} The result of the operation.
      */
     round: function(input, type, decimals) {
@@ -835,6 +976,31 @@ M.Math = M.Object.extend(
         }
 
         return output;
+    },
+
+    /**
+     * This method finds the closest number within an array of numbers that to a certain
+     * given number.
+     *
+     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
+     *
+     * @param {Array} numbers The array of numbers to search in.
+     * @param {Number} number The reference number.
+     * @returns {Number} The nearest number.
+     */
+    nearestNumber: function(numbers, number) {
+        var minDiff = null;
+        var nearestNumber = null;
+
+        _.each(numbers, function(n) {
+            var diff = Math.abs(n - number);
+            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
+                minDiff = diff;
+                nearestNumber = n;
+            }
+        });
+
+        return nearestNumber;
     }
 
 });
@@ -1084,7 +1250,10 @@ M.Environment = M.Object.extend(
      * @private
      * @type Object
      */
-    modernizr: function(a,b,c){function y(){e.inputtypes=function(a){for(var d=0,e,g,h,i=a.length;d<i;d++)k.setAttribute("type",g=a[d]),e=k.type!=="text",e&&(k.value=l,k.style.cssText="position:absolute;visibility:hidden;",/^range$/.test(g)&&k.style.WebkitAppearance!==c?(f.appendChild(k),h=b.defaultView,e=h.getComputedStyle&&h.getComputedStyle(k,null).WebkitAppearance!=="textfield"&&k.offsetHeight!==0,f.removeChild(k)):/^(search|tel)$/.test(g)||(/^(url|email)$/.test(g)?e=k.checkValidity&&k.checkValidity()===!1:/^color$/.test(g)?(f.appendChild(k),f.offsetWidth,e=k.value!=l,f.removeChild(k)):e=k.value!=l)),o[a[d]]=!!e;return o}("search tel url email datetime date month week time datetime-local number range color".split(" "))}function x(a,b){return!!~(""+a).indexOf(b)}function w(a,b){return typeof a===b}function v(a,b){return u(prefixes.join(a+";")+(b||""))}function u(a){j.cssText=a}var d="2.0.6",e={},f=b.documentElement,g=b.head||b.getElementsByTagName("head")[0],h="modernizr",i=b.createElement(h),j=i.style,k=b.createElement("input"),l=":)",m=Object.prototype.toString,n={},o={},p={},q=[],r,s={}.hasOwnProperty,t;!w(s,c)&&!w(s.call,c)?t=function(a,b){return s.call(a,b)}:t=function(a,b){return b in a&&w(a.constructor.prototype[b],c)};for(var z in n)t(n,z)&&(r=z.toLowerCase(),e[r]=n[z](),q.push((e[r]?"":"no-")+r));e.input||y(),u(""),i=k=null,e._version=d;return e}(this,this.document),
+    modernizr: {
+        inputtypes: (function(props){var docElement=document.documentElement;var inputs={};var smile=":)";var inputElem=document.createElement("input");for(var i=0,bool,inputElemType,defaultView,len=props.length;i<len;i++){inputElem.setAttribute("type",inputElemType=props[i]);bool=inputElem.type!=="text";if(bool){inputElem.value=smile;inputElem.style.cssText="position:absolute;visibility:hidden;";if(/^range$/.test(inputElemType)&&inputElem.style.WebkitAppearance!==undefined){docElement.appendChild(inputElem);defaultView=document.defaultView;bool=defaultView.getComputedStyle&&defaultView.getComputedStyle(inputElem,null).WebkitAppearance!=="textfield"&&inputElem.offsetHeight!==0;docElement.removeChild(inputElem)}else if(/^(search|tel)$/.test(inputElemType)){}else if(/^(url|email)$/.test(inputElemType)){bool=inputElem.checkValidity&&inputElem.checkValidity()===false;}else if(/^color$/.test(inputElemType)){docElement.appendChild(inputElem);bool=inputElem.value!=smile;docElement.removeChild(inputElem)}else{bool=inputElem.value!=smile}}inputs[props[i]]=!!bool;}return inputs})("search tel url email datetime date month week time datetime-local number range color".split(" ")),
+        inputattributes: (function( props ) { var docElement=document.documentElement;var attrs={};var smile=":)";var inputElem=document.createElement("input"); for ( var i = 0, len = props.length; i < len; i++ ) { attrs[ props[i] ] = !!(props[i] in inputElem); } if (attrs.list){ attrs.list = !!(document.createElement('datalist') && window.HTMLDataListElement); } return attrs; })('autocomplete autofocus list placeholder max min multiple pattern required step'.split(' '))
+    },
 
     /**
      * Checks the connection status by sending an ajax request
@@ -1318,22 +1487,20 @@ M.I18N = M.Object.extend(
      * @type Object
      */
     languageMapper: {
-          de: 'de_de'
-	    , en: 'en_us'
-    	, fr: 'fr_fr'
-        , es: 'es_es'
-        , nl: 'nl_nl'
-  },
+        de: 'de_de',
+        en: 'en_us'
+    },
     
     /**
      * This method returns the localized string for the given key based on
      * the current language.
      *
      * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
      * @returns {String} The localized string based on the current application language.
      */
-    l: function(key) {
-        return this.localize(key);
+    l: function(key, context) {
+        return this.localize(key, context);
     },
 
     /**
@@ -1343,25 +1510,34 @@ M.I18N = M.Object.extend(
      *
      * @private
      * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
      * @returns {String} The localized string based on the current application language.
      */
-    localize: function(key) {
+    localize: function(key, context) {
+        var translation;
         if(!M.Application.currentLanguage) {
             M.Application.currentLanguage = this.getLanguage();
         }
-
         if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            return this[M.Application.currentLanguage][key];
+            translation = this[M.Application.currentLanguage][key];
         } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
             M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            return this[M.Application.defaultLanguage][key];
+            translation = this[M.Application.defaultLanguage][key];
         }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
             M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return this[this.defaultLanguage][key];
+            translation = this[this.defaultLanguage][key];
         } else {
             M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
         }
-
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
     },
 
     /**
@@ -2423,6 +2599,15 @@ M.Logger = M.Object.extend(
     type: 'M.Logger',
 
     /**
+     *
+     *  for internal use
+     *  if the espresso call fails - don't try it again
+     *
+     * @type Boolean
+      */
+    _remoteAccess: YES,
+
+    /**
      * This method is used to log anything out of an application based on the given logging level.
      * Possible values for the logging level are:
      *
@@ -2447,7 +2632,7 @@ M.Logger = M.Object.extend(
             window.console = {} ;
             console.log = console.info = console.warn = console.error = function(){};
         }
-        
+
         switch (level) {
             case M.DEBUG:
                 this.debug(msg);
@@ -2505,6 +2690,30 @@ M.Logger = M.Object.extend(
      */
     info: function(msg) {
         console.info(msg);
+    },
+
+    /**
+     * tries to connect to espresso and prints a debug message in the espresso console
+     * @param msg the message send to espresso
+     */
+    remote: function(msg){
+        var that = this;
+        try{
+            if(that._remoteAccess){
+                var m = JSON.stringify(msg);
+                $.ajax({
+                    url: "/__espresso_debug_console__",
+                    data: m,
+                    type: 'POST'
+                }).done(function(){
+                    that._remoteAccess = YES;
+                }).fail(function(){
+                    that._remoteAccess = NO;
+                });
+            }
+        }catch(e){
+            M.Logger.error(e);
+        }
     }
 
 });
@@ -2947,6 +3156,287 @@ M.LocationManager = M.Object.extend(
                 }
             });
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+m_require('core/utility/environment.js');
+
+/**
+ * @class
+ *
+ * Object for dispatching all incoming events.
+ *
+ * @extends M.Object
+ */
+M.EventDispatcher = M.Object.extend(
+/** @scope M.EventDispatcher.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EventDispatcher',
+
+    /**
+     * Saves the latest on click event to make sure that there are no multiple events
+     * fired for one click.
+     *
+     * @type {Object}
+     */
+    lastEvent: {},
+
+    /**
+     * This method is used to register events and link them to a corresponding action.
+     * 
+     * @param {String|Object} eventSource The view's id or a DOM object.
+     * @param {Object} events The events to be registered for the given view or DOM object.
+     */
+    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
+        if(!events || typeof(events) !== 'object') {
+            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
+            return;
+        }
+
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+
+        _.each(events, function(handler, type) {
+            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
+        });
+    },
+
+    /**
+     * This method is used to register a certain event for a certain view or DOM object
+     * and link them to a corresponding action.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     * @param {Object} handler The handler for the event.
+     * @param {Object} recommendedEvents The recommended events for this event source.
+     * @param {Object} sourceType The type of the event source.
+     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
+     */
+    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall, skipUnbinding) {
+        if(!isInternalCall) {
+            if(!handler || typeof(handler) !== 'object') {
+                M.Logger.log('No event passed!', M.WARN);
+                return;
+            }
+
+            eventSource = this.getEventSource(eventSource);
+            if(!this.checkEventSource(eventSource)) {
+                return;
+            }
+        }
+
+        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
+            if(sourceType && typeof(sourceType) === 'string') {
+                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
+            } else {
+                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
+            }
+        }
+
+        if(!this.checkHandler(handler, type)) {
+            return;
+        }
+
+        /* switch enter event to keyup with keycode 13 */
+        if(type === 'enter') {
+            eventSource.bind('keyup', function(event) {
+                if(event.which === 13) {
+                    $(this).trigger('enter');
+                }
+            });
+        }
+
+        var that = this;
+        var view = M.ViewManager.getViewById(eventSource.attr('id'));
+        eventSource.bind(type, function(event) {
+            /* discard false twice-fired events in some special cases */
+            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
+                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
+                    return;
+                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
+                    return;
+                }
+            }
+
+            /* no propagation (except some specials) */
+            var killEvent = YES;
+            if(eventSource.attr('id')) {
+                var view = M.ViewManager.getViewById(eventSource.attr('id'));
+                if(view.type === 'M.SearchBarView') {
+                    killEvent = NO;
+                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
+                    killEvent = NO;
+                } else if(view.hyperlinkTarget && view.hyperlinkType) {
+                    killEvent = NO;
+                } else if(type === 'pageshow') {
+                    killEvent = NO;
+                }
+            }
+            if(killEvent) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            /* store event in lastEvent property for capturing false twice-fired events */
+            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
+                that.lastEvent[type] = {
+                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
+                    date: +new Date(),
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            }
+
+            /* event logger, uncomment for development mode */
+            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
+
+            if(handler.nextEvent) {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
+            } else {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+            }
+        });
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvents: function(eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind();
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvent: function(type, eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind(type);
+    },
+
+    /**
+     * This method is used to explicitly call an event handler. We mainly use this for
+     * combining internal and external events.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {Object} event The original DOM event.
+     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
+     * @param {Array} parameters The (additional) parameters for the handler call.
+     */
+    callHandler: function(handler, event, passEvent, parameters) {
+        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
+            return;
+        }
+
+        if(!passEvent) {
+            this.bindToCaller(handler.target, handler.action, parameters)();
+        } else {
+            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+        }
+    },
+
+    /**
+     * This method is used to check the handler. It tests if target and action are
+     * specified correctly.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {String} type The type of the event.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkHandler: function(handler, type) {
+        if(typeof(handler.action) === 'string') {
+            if(handler.target) {
+                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
+                    handler.action = handler.target[handler.action];
+                    return YES;
+                } else {
+                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
+                    return NO;
+                }
+            } else {
+                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
+                return NO;
+            }
+        } else if(typeof(handler.action) !== 'function') {
+            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
+            return NO;
+        }
+
+        return YES;
+    },
+
+    /**
+     * This method is used to get the event source as a DOM object.
+     *
+     * @param {Object|String} eventSource The event source.
+     * @return {Object} The event source as dom object.
+     */
+    getEventSource: function(eventSource) {
+        if(typeof(eventSource) === 'string') {
+            eventSource = $('#' + eventSource + ':first');
+        } else {
+            eventSource = $(eventSource);
+        }
+        
+        return eventSource;
+    },
+
+    /**
+     * This method is used to check the event source. It tests if it is correctly
+     * specified.
+     *
+     * @param {Object} eventSource The event source.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkEventSource: function(eventSource) {
+        if(!eventSource) {
+            M.Logger.log('The event source is invalid!', M.WARN);
+            return NO;
+        }
+        
+        return YES;
+    },
+
+    dispatchOrientationChangeEvent: function(id, event, nextEvent) {
+        var orientation = M.Environment.getOrientation();
+        if(orientation === M.PORTRAIT_BOTTOM || orientation === M.PORTRAIT_TOP) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+        }
+        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
     }
 
 });
@@ -4175,274 +4665,6 @@ M.Error = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Object for dispatching all incoming events.
- *
- * @extends M.Object
- */
-M.EventDispatcher = M.Object.extend(
-/** @scope M.EventDispatcher.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EventDispatcher',
-
-    /**
-     * Saves the latest on click event to make sure that there are no multiple events
-     * fired for one click.
-     *
-     * @type {Object}
-     */
-    lastEvent: {},
-
-    /**
-     * This method is used to register events and link them to a corresponding action.
-     * 
-     * @param {String|Object} eventSource The view's id or a DOM object.
-     * @param {Object} events The events to be registered for the given view or DOM object.
-     */
-    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
-        if(!events || typeof(events) !== 'object') {
-            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
-            return;
-        }
-
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-
-        _.each(events, function(handler, type) {
-            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
-        });
-    },
-
-    /**
-     * This method is used to register a certain event for a certain view or DOM object
-     * and link them to a corresponding action.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     * @param {Object} handler The handler for the event.
-     * @param {Object} recommendedEvents The recommended events for this event source.
-     * @param {Object} sourceType The type of the event source.
-     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
-     */
-    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall) {
-        if(!isInternalCall) {
-            if(!handler || typeof(handler) !== 'object') {
-                M.Logger.log('No event passed!', M.WARN);
-                return;
-            }
-
-            eventSource = this.getEventSource(eventSource);
-            if(!this.checkEventSource(eventSource)) {
-                return;
-            }
-        }
-
-        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
-            if(sourceType && typeof(sourceType) === 'string') {
-                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
-            } else {
-                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
-            }
-        }
-
-        if(!this.checkHandler(handler, type)) {
-            return;
-        }
-
-        /* switch enter event to keyup with keycode 13 */
-        if(type === 'enter') {
-            eventSource.bind('keyup', function(event) {
-                if(event.which === 13) {
-                    $(this).trigger('enter');
-                }
-            });
-        }
-
-        var that = this;
-        var view = M.ViewManager.getViewById(eventSource.attr('id'));
-        if(!view || (view.type !== 'M.TextFieldView' && view.type !== 'M.SearchBarView')) {
-            eventSource.unbind(type);
-        }
-        eventSource.bind(type, function(event) {
-
-            /* discard false twice-fired events in some special cases */
-            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
-                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
-                    return;
-                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
-                    return;
-                }
-            }
-
-            /* no propagation (except some specials) */
-            var killEvent = YES;
-            if(eventSource.attr('id')) {
-                var view = M.ViewManager.getViewById(eventSource.attr('id'));
-                if(view.type === 'M.SearchBarView') {
-                    killEvent = NO;
-                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
-                    killEvent = NO;
-                }
-            }
-            if(killEvent) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            /* store event in lastEvent property for capturing false twice-fired events */
-            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
-                that.lastEvent[type] = {
-                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
-                    date: +new Date(),
-                    x: event.clientX,
-                    y: event.clientY
-                }
-            }
-
-            /* event logger, uncomment for development mode */
-            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
-
-            if(handler.nextEvent) {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
-            } else {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-            }
-        });
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvents: function(eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind();
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvent: function(type, eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind(type);
-    },
-
-    /**
-     * This method is used to explicitly call an event handler. We mainly use this for
-     * combining internal and external events.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {Object} event The original DOM event.
-     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
-     * @param {Array} parameters The (additional) parameters for the handler call.
-     */
-    callHandler: function(handler, event, passEvent, parameters) {
-        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
-            return;
-        }
-
-        if(!passEvent) {
-            this.bindToCaller(handler.target, handler.action, parameters)();
-        } else {
-            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-        }
-    },
-
-    /**
-     * This method is used to check the handler. It tests if target and action are
-     * specified correctly.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {String} type The type of the event.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkHandler: function(handler, type) {
-        if(typeof(handler.action) === 'string') {
-            if(handler.target) {
-                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
-                    handler.action = handler.target[handler.action];
-                    return YES;
-                } else {
-                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
-                    return NO;
-                }
-            } else {
-                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
-                return NO;
-            }
-        } else if(typeof(handler.action) !== 'function') {
-            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
-            return NO;
-        }
-
-        return YES;
-    },
-
-    /**
-     * This method is used to get the event source as a DOM object.
-     *
-     * @param {Object|String} eventSource The event source.
-     * @return {Object} The event source as dom object.
-     */
-    getEventSource: function(eventSource) {
-        if(typeof(eventSource) === 'string') {
-            eventSource = $('#' + eventSource + ':first');
-        } else {
-            eventSource = $(eventSource);
-        }
-        
-        return eventSource;
-    },
-
-    /**
-     * This method is used to check the event source. It tests if it is correctly
-     * specified.
-     *
-     * @param {Object} eventSource The event source.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkEventSource: function(eventSource) {
-        if(!eventSource) {
-            M.Logger.log('The event source is invalid!', M.WARN);
-            return NO;
-        }
-        
-        return YES;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      28.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5019,8 +5241,8 @@ M.Observable = M.Object.extend(
          * It works on a copy so we have to assign the "cleaned"
          * array to our bindingList.
          */
-        this.bindlingList = $.grep(this.bindlingList, function(value, index) {
-                return value.observer !== observer;
+        this.bindingList = _.filter(this.bindingList, function(value, index) {
+                return value.observable !== observer;
         });
     },
 
@@ -5031,10 +5253,12 @@ M.Observable = M.Object.extend(
      */
     notifyObservers: function(key) {
         _.each(this.bindingList, function(entry){
-            if(key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) {
-                entry.observer.contentDidChange();
-            } else if(key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))) === 0) {
-                entry.observer.contentDidChange();
+            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
+                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
+                    entry.observer.valueDidChange();
+                }else{
+                    entry.observer.contentDidChange();
+                }
             }
         });
     }
@@ -5133,7 +5357,8 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
             localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
             return YES;
         } catch (e) {
-            M.Logger.log(M.WARN, 'Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id);
+            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
+            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
             return NO;
         }
 
@@ -5156,7 +5381,7 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
             }
             return NO;
         } catch (e) {
-            M.Logger.log(M.WARN, 'Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage');
+            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
             return NO;
         }
     },
@@ -5216,7 +5441,8 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
             if(res && res.length > 0) {
                 var o = res[0];
                 if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
-                    throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
+					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
+						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
                 }
             }
 
@@ -5564,7 +5790,7 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
      * @param obj
      */
     configure: function(obj) {
-        //console.log('configure() called.');
+        console.log('configure() called.');
         // maybe some value checking
         return this.extend({
             config:obj
@@ -5572,6 +5798,75 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
     }
 
 }); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5680,59 +5975,57 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a String if it represents a valid e-mail adress.
+ * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
  *
  * @extends M.Validator
  */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
+M.NumberValidator = M.Validator.extend(
+/** @scope M.NumberValidator.prototype */ {
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NumberValidator',
 
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+    /**
+     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
+     * The '==' operator makes an implicit conversion of the value. '===' would return false.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if(typeof(obj.value) === 'number') {
+            return YES;
+        }
 
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
+        /* == makes implicit conversion */ 
+        if(typeof(obj.value) === 'string' && (parseInt(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
+            return YES;        
+        }
 
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a number.',
+            code: M.ERR_VALIDATION_NUMBER,
+            errObj: {
+                msg: obj.value + ' is not a number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'NUMBER',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
 
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
+        this.validationErrors.push(err);
 
-        return NO;
-    }
-    
+        return NO;
+    }
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5809,73 +6102,6 @@ M.PresenceValidator = M.Validator.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
- *
- * @extends M.Validator
- */
-M.NumberValidator = M.Validator.extend(
-/** @scope M.NumberValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NumberValidator',
-
-    /**
-     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
-     * The '==' operator makes an implicit conversion of the value. '===' would return false.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if(typeof(obj.value) === 'number') {
-            return YES;
-        }
-
-        /* == makes implicit conversion */ 
-        if(typeof(obj.value) === 'string' && (parseInt(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
-            return YES;        
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a number.',
-            code: M.ERR_VALIDATION_NUMBER,
-            errObj: {
-                msg: obj.value + ' is not a number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'NUMBER',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6296,6 +6522,13 @@ M.View = M.Object.extend(
     contentBindingReverse: null,
 
     /**
+     * some kind of ContentBinding for thinks like SelectionListViews if you want to apply some businessdata like a model to it.
+     *
+     * @property {String}
+     */
+    valueBinding: null,
+
+    /**
      * An array specifying the view's children.
      *
      * @type Array
@@ -6432,6 +6665,14 @@ M.View = M.Object.extend(
      * @type Array
      */
     recommendedEvents: null,
+    
+    /**
+     * Cache for getParentPage function.
+     *
+     * @type M.PageView
+     */
+
+    parentPage : null,
 
     /**
      * This method encapsulates the 'extend' method of M.Object for better reading of code syntax.
@@ -6484,6 +6725,7 @@ M.View = M.Object.extend(
             for(var i in childViews) {
                 if(this[childViews[i]]) {
                     this[childViews[i]]._name = childViews[i];
+                    this[childViews[i]].parentView = this;
                     this.html += this[childViews[i]].render();
                 } else {
                     this.childViews = this.childViews.replace(childViews[i], ' ');
@@ -6523,7 +6765,11 @@ M.View = M.Object.extend(
      * @returns {Array} The child views as an array.
      */
     getChildViewsAsArray: function() {
-        return $.trim(this.childViews.replace(/\s+/g, ' ')).split(' ');
+    	try{
+    	    return this.childViews ? $.trim(this.childViews.replace(/\s+/g, ' ')).split(' ') : [];
+    	} catch(e){
+    	    return [];
+    	}
     },
 
     /**
@@ -6637,9 +6883,25 @@ M.View = M.Object.extend(
     registerEvents: function() {
         var externalEvents = {};
         for(var event in this.events) {
+            /* map orientationchange event to orientationdidchange event */
+            if(event === 'orientationchange') {
+                event = 'orientationdidchange';
+            }
             externalEvents[event] = this.events[event];
         }
-        
+
+        if(this.internalEvents) {
+            for(var event in this.internalEvents) {
+                /* map orientationchange event to orientationdidchange event */
+                if(this.internalEvents[event]) {
+                    if(event === 'orientationchange') {
+                        this.internalEvents['orientationdidchange'] = this.internalEvents[event];
+                        delete this.internalEvents[event];
+                    }
+                }
+            }
+        }
+
         if(this.internalEvents && externalEvents) {
             for(var event in externalEvents) {
                 if(this.internalEvents[event]) {
@@ -6692,7 +6954,6 @@ M.View = M.Object.extend(
         var propertyChain = contentBinding.property.split('.');
         _.each(propertyChain, function(level) {
             if(value) {
-            	//console.log(value + "[" + level + "]: " + value[level]);
                 value = value[level];
             }
         });
@@ -6716,34 +6977,50 @@ M.View = M.Object.extend(
      * This method attaches the view to an observable to be later notified once the observable's
      * state did change.
      */
-    attachToObservable: function() {
-        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
 
-        if(!contentBinding) {
+    attachToObservable: function() {
+        this.registerContentBinding();
+        this.registervalueBinding();
+    },
+
+    registervalueBinding:function () {
+        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
+        if(!valueBinding) { return; }
+        this.attachBinding(valueBinding, 'valueBinding');
+    },
+
+    registerContentBinding: function(){
+        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
+        if(!contentBinding) { return; }
+        this.attachBinding(contentBinding, 'contentBinding');
+    },
+
+    attachBinding: function(binding, name) {
+        if(!binding) {
             return;
         }
 
-        if(typeof(contentBinding) === 'object') {
-            if(contentBinding.target && typeof(contentBinding.target) === 'object') {
-                if(contentBinding.property && typeof(contentBinding.property) === 'string') {
-                    var propertyChain = contentBinding.property.split('.');
-                    if(contentBinding.target[propertyChain[0]] !== undefined) {
-                        if(!contentBinding.target.observable) {
-                            contentBinding.target.observable = M.Observable.extend({});
+        if(typeof(binding) === 'object') {
+            if(binding.target && typeof(binding.target) === 'object') {
+                if(binding.property && typeof(binding.property) === 'string') {
+                    var propertyChain = binding.property.split('.');
+                    if(binding.target[propertyChain[0]] !== undefined) {
+                        if(!binding.target.observable) {
+                            binding.target.observable = M.Observable.extend({});
                         }
-                        contentBinding.target.observable.attach(this, contentBinding.property);
+                        binding.target.observable.attach(this, binding.property);
                         this.isObserver = YES;
                     } else {
-                        M.Logger.log('The specified target for contentBinding for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' has no property \'' + contentBinding.property + '!', M.WARN);
+                        M.Logger.log('The specified target for ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' has no property \'' + binding.property + '!', M.WARN);
                     }
                 } else {
-                    M.Logger.log('The type of the value of \'action\' in contentBinding for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' is \'' + typeof(contentBinding.property) + ' but it must be of type \'string\'!', M.WARN);
+                    M.Logger.log('The type of the value of \'action\' in ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' is \'' + typeof(binding.property) + ' but it must be of type \'string\'!', M.WARN);
                 }
             } else {
-                M.Logger.log('No valid target specified in content binding \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
+                M.Logger.log('No valid target specified in ' + name + ' \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
             }
         } else {
-            M.Logger.log('No valid content binding specified for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
+            M.Logger.log('No valid ' + name + ' specified for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
         }
     },
 
@@ -6920,23 +7197,59 @@ M.View = M.Object.extend(
     removeCssProperty: function(key) {
         this.setCssProperty(key, '');
     },
-    
-    /**
+	/**
      *
      * returns the page on which the current view is defined
      *
-     * @return {*} M.PageView
+      * @return {*} M.PageView
      */
     getParentPage: function(){
-        if(this.type === 'M.PageView') {
-            return this;
-        } else if(this.parentView) {
-            return this.parentView.getParentPage();
-	
+        if(this.parentPage){
+            return this.parentPage;
+        }else{
+            if(this.type === 'M.PageView'){
+                return this;
+            }else if(this.parentView){
+                this.parentPage = this.parentView.getParentPage();
+            }else{
+                var parentId = $('#' + this.id).parent().closest('[id^=m_]').attr('id');
+                if(parentId){
+                    this.parentPage = M.ViewManager.getViewById(parentId).getParentPage();
+                }
+            }
+            return this.parentPage;
         }
-    }
+    },
+    
+    /*
+    * find all childviews to the given string
+    *
+    * @param {String} childName the name of the child view looking for.
+    * @param {Boolean} deepSearch look also in all childViews for the one.
+    * @return {Array} all found childViews
+    * 
+    */
+    findChildViews: function( childName, deepSearch ) {
+    	var that = this;
+        var childViews = this.getChildViewsAsArray();
+        var foundChildren = [];
+        _.each(childViews, function( child ) {
+            if( child === childName ) {
+                foundChildren.push(that[child]);
+            }
+        });
 
+        if( deepSearch ) {
+            _.each(childViews, function( child ) {
+                foundChildren.push.apply(foundChildren, that[child].findChildViews(childName, deepSearch));
+            });
+        }
+
+        return foundChildren;
+    }
+	
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6990,9 +7303,7 @@ M.Controller = M.Object.extend(
      *
      * @param {M.TabBarItemView} tab The tab to be activated.
      */
-    switchToTab: function(tab,back) {
-		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e){}
-		if (!back) back = NO;
+    switchToTab: function(tab) {
         if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
             M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
             return;
@@ -7006,10 +7317,10 @@ M.Controller = M.Object.extend(
         if(tab === currentTab) {
             var currentPage = M.ViewManager.getCurrentPage();
             if(currentPage !== newPage) {
-                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
+                this.switchToPage(newPage, null, YES, NO);
             }
         } else {
-            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
+            this.switchToPage(newPage, M.TRANSITION.NONE, NO, YES);
         }
     },
 
@@ -7433,9 +7744,9 @@ M.Application = M.Object.extend(
      */
     main: function() {
         var that = this;
-        
+
         /* first lets get the entry page and remove it from pagelist and viewlist */
-        var entryPage = M.ViewManager.getPage(M.Application.entryPage);
+        var entryPage = M.ViewManager.getPage(M.Application.entryPage.replace(/\s+/g, ''));
         delete M.ViewManager.viewList[entryPage.id];
         delete M.ViewManager.pageList[entryPage.id];
 
@@ -7469,3 +7780,52 @@ M.Application = M.Object.extend(
     }
 
 });
+(function( $ ){
+    //return the height of an element with the its margin whether it's visible or not
+    $.fn.outerMarginHeight = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var height = this.outerHeight();
+        height += parseInt(this.css('margin-bottom'));
+        height += parseInt(this.css('margin-top'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return height;
+
+    };
+    //return the width of an element with the its margin whether it's visible or not
+    $.fn.outerMarginWidth = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var width = this.outerWidth();
+        width += parseInt(this.css('margin-left'));
+        width += parseInt(this.css('margin-right'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return width;
+
+    };
+
+})( jQuery );
