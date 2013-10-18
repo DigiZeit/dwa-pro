@@ -9435,6 +9435,7 @@ DigiWebApp.BookingController = M.Controller.extend({
     }
 
     , book: function() {
+    	gnarf.fail();
     	this.currentBookingTimesStampBook = new Date();
     	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e){}
     	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in book");
@@ -12189,7 +12190,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4272
+    , softwareVersion: 4273
 
 
     /**
@@ -26321,7 +26322,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4272'
+              value: 'Build: 4273'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
