@@ -12190,7 +12190,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4277
+    , softwareVersion: 4278
 
 
     /**
@@ -26324,7 +26324,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4277'
+              value: 'Build: 4278'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -30913,11 +30913,11 @@ M.Application.useTransitions = NO;
 
 var DigiWebApp  = DigiWebApp || {};
 
-function writeToLog(myWriteContent) {		
+function writeToLog(myWriteContent, successCallback, errorCallback) {		
 	
-	var successCallback = function(){};
-	var errorCallback = function(){};
-	
+	if (typeof(successCallback) !== "function") successCallback = function(){};
+	if (typeof(errorCallback) !== "function") errorCallback = function(){};
+
 	var now = new Date();
 	var writeContent = new String("\n" + now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2) + " " + ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2) + "." + ("0" + now.getMilliseconds()).slice(-2) + " " + myWriteContent);
 	
@@ -30955,7 +30955,7 @@ function writeToLog(myWriteContent) {
 					    			writer.onwriteend = function(ev) {
 				    					successCallback(ev);
 					    			};
-				    				writer.truncate(writeContent.length);
+				    				//writer.truncate(writeContent.length);
 				    	        };
 				    	        // Create a new Blob and write it to log.txt.
 				    	        var blob = new Blob([writeContent], {type: 'text/plain'});
@@ -30996,7 +30996,7 @@ function writeToLog(myWriteContent) {
 				    			writer.onwriteend = function(ev) {
 			    					successCallback(ev);
 				    			};
-			    				writer.truncate(writeContent.length);
+			    				//writer.truncate(writeContent.length);
 			    	        };
 			    	        
 			    	        writer.seek(writer.length);
