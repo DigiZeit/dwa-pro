@@ -1,13 +1,13 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4351 beta, Timestamp:1382281425264
+#Application:DigiWebApp, Version:1.6.1.4352 beta, Timestamp:1382298246691
 
 
 # Explicitly cached entries
 CACHE:
 en_us.js
 es_es.js
-de_de.js
 nl_nl.js
+de_de.js
 fr_fr.js
 d8-0.4.0.min.js
 underscore-min.js
@@ -50,8 +50,8 @@ theme/style.css
 theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
-theme/images/icon_takePicture.png
 theme/images/icon_dataTransfer.png
+theme/images/icon_takePicture.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
@@ -60,33 +60,33 @@ theme/images/48x48_plain_gears.png
 theme/images/640x960_90_DIGI-WebApp.png
 theme/images/Icon.png
 theme/images/640x960_90_SCHOLPP.png
-theme/images/icon-winphone.png
 theme/images/tile-icon-winphone.png
+theme/images/icon-winphone.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_info.png
-theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/ajax-loader_digi-transparent.gif
-theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/Icon_2x.png
+theme/images/1024x1024_90_DIGI-WebApp.png
+theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/1536x2048_90_SCHOLPP.png
-theme/images/48x48_plain_note_view.png
 theme/images/5000x5000_90_SCHOLPP.png
+theme/images/48x48_plain_note_view.png
+theme/images/icon_handApplication.png
+theme/images/480x800_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_car_compact_grey.png
 theme/images/tabSprite.png
-theme/images/icon_handApplication.png
 theme/images/arrow_white.png
-theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_handauftrag.png
 theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
-theme/images/1024x1024_90_SCHOLPP.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
+theme/images/1024x1024_90_SCHOLPP.png
 theme/images/48x48_plain_cup.png
 theme/images/NeuesLogo2013.png
 theme/images/ajax-loader.png
@@ -101,10 +101,10 @@ theme/images/arrow_grey.png
 theme/images/icon_ios_72.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_graphics-tablet.png
-theme/images/Auftrag.png
 theme/images/icon_media.png
 theme/images/icon_record.png
 theme/images/48x48_plain_clock_pause.png
+theme/images/Auftrag.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_114.png
 theme/images/icon_closingTime.png
