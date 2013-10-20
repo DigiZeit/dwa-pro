@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.6.1.4326 beta, Timestamp:1382272771522
+#Application:DigiWebApp, Version:1.6.1.4327 beta, Timestamp:1382272995331
 
 
 # Explicitly cached entries
@@ -30,8 +30,8 @@ core.js
 jquery.signaturepad.min.js
 json2.min.js
 theme/journal.svg
-flashcanvas.js
 theme/journal.woff
+flashcanvas.js
 theme/journal.eot
 theme/journal.ttf
 pen.cur
@@ -50,8 +50,8 @@ theme/style.css
 theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
-theme/images/icon_dataTransfer.png
 theme/images/icon_takePicture.png
+theme/images/icon_dataTransfer.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
