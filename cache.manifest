@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.0.4377 beta, Timestamp:1382696450402
+#Application:DigiWebApp, Version:1.7.0.4378 beta, Timestamp:1382696558592
 
 
 # Explicitly cached entries
@@ -7,18 +7,18 @@ CACHE:
 en_us.js
 es_es.js
 de_de.js
-nl_nl.js
 fr_fr.js
-underscore-min.js
+nl_nl.js
 d8-0.4.0.min.js
-theme/tmp.css
 bootstrap.js
+theme/tmp.css
+underscore-min.js
 jquery.xml2json_1.3.js
 jstz.js
-digi_selection_list.js
 digi_selection_list_item.js
 digi_list_item.js
 digi_list.js
+digi_selection_list.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 ui.js
@@ -71,11 +71,11 @@ theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
-theme/images/480x800_90_DIGI-WebApp.png
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/48x48_plain_note_view.png
 theme/images/5000x5000_90_SCHOLPP.png
 theme/images/icon_handApplication.png
+theme/images/480x800_90_DIGI-WebApp.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_car_compact_grey.png
@@ -97,8 +97,8 @@ theme/images/48x48_plain_about.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/icon_timeData.png
 theme/images/splash.png
-theme/images/icon_ios_72.png
 theme/images/arrow_grey.png
+theme/images/icon_ios_72.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/Auftrag.png
