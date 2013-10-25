@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.0.4396 beta, Timestamp:1382711892965
+#Application:DigiWebApp, Version:1.7.0.4397 beta, Timestamp:1382712508172
 
 
 # Explicitly cached entries
@@ -114,10 +114,10 @@ theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_index.png
 theme/images/48x48_plain_text_code.png
-theme/images/icon_playbackAudio.png
 theme/images/icon_stop.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/icon_searchPicture.png
+theme/images/icon_playbackAudio.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/ic_launcher_hdpi.png
 theme/images/icon_settings.png
