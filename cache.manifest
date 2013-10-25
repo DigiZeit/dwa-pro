@@ -1,18 +1,18 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.0.4393 beta, Timestamp:1382707537033
+#Application:DigiWebApp, Version:1.7.0.4394 beta, Timestamp:1382708970072
 
 
 # Explicitly cached entries
 CACHE:
+underscore-min.js
+d8-0.4.0.min.js
+theme/tmp.css
+bootstrap.js
 en_us.js
 es_es.js
 de_de.js
 nl_nl.js
 fr_fr.js
-underscore-min.js
-d8-0.4.0.min.js
-theme/tmp.css
-bootstrap.js
 jquery.xml2json_1.3.js
 jstz.js
 digi_selection_list.js
@@ -51,8 +51,8 @@ theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
 theme/images/icon_takePicture.png
-theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_dataTransfer.png
+theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
