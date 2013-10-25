@@ -13,311 +13,6 @@
 /**
  * @class
  *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
- *
- * @extends M.View
- */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TableView',
-
-    /**
-     * Determines whether to remove all content rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeContentRowsOnUpdate: YES,
-
-    /**
-     * Determines whether to remove the header rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeHeaderRowOnUpdate: NO,
-
-    /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the table.
-     *
-     * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
-     */
-    theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
-    },
-
-    /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
-        }
-
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
-        }
-    },
-
-    /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
-     */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
-        }
-    },
-
-    /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
-     */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
  * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
  * M.Application. A page is the container view for all other views.
  *
@@ -1414,6 +1109,311 @@ a++;this.maxScrollY%this.wrapperH&&(this.pagesY[this.pagesY.length]=this.maxScro
 if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a="next"==a?this.currPageY+1:"prev"==a?this.currPageY-1:a,b=0>b?0:b>this.pagesX.length-1?this.pagesX.length-1:b,a=0>a?0:a>this.pagesY.length-1?this.pagesY.length-1:a,this.currPageX=b,this.currPageY=a,b=this.pagesX[b],a=this.pagesY[a];else if(b*=-this.wrapperW,a*=-this.wrapperH,b<this.maxScrollX&&(b=this.maxScrollX),a<this.maxScrollY)a=this.maxScrollY;this.scrollTo(b,a,c)},disable:function(){this.stop();this._resetPos(0);
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
+    }
+
+});
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
