@@ -38,7 +38,7 @@ M.ScrollView = M.View.extend(
      * @returns {String} The scroll view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+        this.html += '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
 
         this.renderChildViews();
 
@@ -149,7 +149,7 @@ M.TableView = M.View.extend(
      * @returns {String} The table view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+        this.html += '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
 
         return this.html;
     },
@@ -257,8 +257,8 @@ M.TableView = M.View.extend(
                 _.each(content.content, function(row) {
                     zebraFlag = (zebraFlag === 0 ? 1 : 0);
                     html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    _.each(row, function(col) {
+                        html += '<td class="tmp-table-td">' + (col && col.toString() ? col.toString() : '') + '</td> ';
                     });
                     html += '</tr>';
                     that.addRow(html);
@@ -299,11 +299,10 @@ M.TableView = M.View.extend(
      * html in the DOM. This method is based on jQuery's remove().
      */
     removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
+        $('#' + 'm_3' + ' tr td').parent().remove();
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -360,7 +359,7 @@ M.PageView = M.View.extend(
      *
      * @type Array
      */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationchange'],
 
     /**
      * This property is used to specify a view's internal events and their corresponding actions. If
@@ -400,7 +399,7 @@ M.PageView = M.View.extend(
         /* store the currently rendered page as a reference for use in child views */
         M.ViewManager.currentlyRenderedPage = this;
         
-        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+        this.html += '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
 
         this.renderChildViews();
 
@@ -437,7 +436,7 @@ M.PageView = M.View.extend(
                 target: this,
                 action: 'pageDidHide'
             },
-            orientationdidchange: {
+            orientationchange: {
                 target: this,
                 action: 'orientationDidChange'
             }
@@ -453,10 +452,10 @@ M.PageView = M.View.extend(
     	if (restartOnBlackBerry) {
     		if (document.readyState === "loading") {
     			document.write(this.html);
-    		} else if (typeof($(this.html)[0]) !== undefined) {
+    		} else if (typeof(jQuery(this.html)[0]) !== undefined) {
     			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
-    				$('body').append(this.html);
+    			if (document.body.innerHTML.indexOf(jQuery(this.html)[0].id) === -1) {
+    				jQuery("body").append(this.html);
     			}
     		}
 		} else {
@@ -496,14 +495,6 @@ M.PageView = M.View.extend(
             M.LoaderView.initialize();
         }
 
-        /* call controlgroup plugin on any such element on the page */
-        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-            var that = this;
-            window.setTimeout(function() {
-                $(that).controlgroup();
-            }, 1);
-        });
-
         /* reset the page's title */
         document.title = M.Application.name;
 
@@ -527,10 +518,8 @@ M.PageView = M.View.extend(
             M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
         }
 
-        /* call controlgroup plugin on any such element on the page */
-//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-//            $(this).controlgroup();
-//        });
+        /* call jqm to fix header/footer */
+        $.mobile.fixedToolbars.show();
 
         this.isFirstLoad = NO;
     },
@@ -574,7 +563,7 @@ M.PageView = M.View.extend(
 
     /**
      * This method is called right after the device's orientation did change. If a action for
-     * orientationdidchange is defined for the page, it is now called.
+     * orientationchange is defined for the page, it is now called.
      *
      * @param {String} id The DOM id of the event target.
      * @param {Object} event The DOM event.
@@ -598,12 +587,6 @@ M.PageView = M.View.extend(
                 dialog.positionDialog(dialogDOM);
                 dialog.positionBackground($('.tmp-dialog-background'));
             }, 500);
-        });
-
-        /* auto-reposition carousels */
-        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
-            var carousel = M.ViewManager.getViewById($(this).attr('id'));
-            carousel.orientationDidChange();
         });
 
         /* set the current orientation */
@@ -647,6 +630,7 @@ M.PageView = M.View.extend(
     }
     
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -709,7 +693,7 @@ M.ToggleView = M.View.extend(
      * @returns {String} The toggle view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '">';
+        this.html += '<div id="' + this.id + '">';
 
         this.renderChildViews();
 
@@ -733,7 +717,7 @@ M.ToggleView = M.View.extend(
                     if(this[childViews[i]]) {
                         if(this.toggleOnClick) {
                             this[childViews[i]].internalEvents = {
-                                vclick: {
+                                tap: {
                                     target: this,
                                     action: 'toggleView'
                                 }
@@ -759,14 +743,17 @@ M.ToggleView = M.View.extend(
     toggleView: function(id, event, nextEvent) {
         this.isInFirstState = !this.isInFirstState;
         var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
         $('#' + this.id + '_' + currentViewIndex).show();
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
 
         /* set current view */
         var childViews = this.getChildViewsAsArray();
         if(this[childViews[currentViewIndex]]) {
             this.currentView = this[childViews[currentViewIndex]];
         }
+
+        /* call jqm to fix header/footer */
+        $.mobile.fixedToolbars.show();
 
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, YES);
@@ -819,602 +806,6 @@ M.ToggleView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for calculating the carousel's size based on its content.
- *
- * @type Number
- */
-M.CAROUSEL_SIZE_CONTENT = 1;
-
-/**
- * A constant value for calculating the carousel's size based on its surrounding element.
- *
- * @type Number
- */
-M.CAROUSEL_SIZE_SURROUNDING_ELEMENT = 2;
-
-/**
- * A constant value for not calculating the size at all.
- *
- * Note: you will have to take care of this instead!
- *
- * @type Number
- */
-M.CAROUSEL_SIZE_NONE = 3;
-
-
-/**
- * @class
- *
- * A carousel is a view that allows you to slide/scroll vertically or horizontally
- * through a set of items. If required, a paginator indicates the user which item
- * is currently visible and how many of them are there at all.
- *
- * @extends M.View
- */
-M.CarouselView = M.View.extend(
-/** @scope M.CarouselView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CarouselView',
-
-    /**
-     * This property is used inernally to count the number of theme calls once the
-     * carousel was added to dom.
-     *
-     * @private
-     * @type Number
-     */
-    numOfThemeCalls: 0,
-
-    /**
-     * This property is used internally to store the reference width of the parent element
-     * of the carousel which is needed for theming.
-     *
-     * @private
-     * @type Number
-     */
-    lastWidth: 0,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * This property is used internally to store the iScroll object for this carousel.
-     *
-     * @private
-     * @type Object
-     */
-    iScroll: null,
-
-    /* This property contains the numerical index of the currently visible item of the
-     * carousel.
-     *
-     * @private
-     * @type Number
-     */
-    activeItem: 1,
-
-    /* This property contains the number of items within the carousel.
-     *
-     * @private
-     * @type Number
-     */
-    numItems: 0,
-
-    /* This property contains a flag telling us whether the carousel was correctly
-     * initialized or not. Whenever there is an orientation change event, this flag
-     * needs to be reset.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /* TT
-     *
-     * @type Boolean
-     */
-    showPaginator: YES,
-
-    /**
-     * This property determines whether the carousel is vertically or horizontally
-     * scrollable.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /* This property can be used to specify on what bases the size of the carousel
-     * shall be calculated. By default the content of the items determine that size.
-     * So the item with the longest / biggest content sets the size for all the other
-     * items and the carousel itself.
-     *
-     * If set to M.CAROUSEL_SIZE_SURROUNDING_ELEMENT, the surrounding element will
-     * determine the size of the carousel.
-     *
-     * If set to M.CAROUSEL_SIZE_NONE, there will be no special size calculation for
-     * the carousel. You will have to take care about this instead.
-     *
-     * @type Number
-     */
-    sizeCalculator: M.CAROUSEL_SIZE_CONTENT,
-
-    /**
-     * This method renders the basic skeleton of the carousel based on several nested
-     * div elements.
-     *
-     * @private
-     * @returns {String} The carousel view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id +'" class="tmp-carousel-wrapper">';
-        this.html += '<div class="tmp-carousel-scroller">';
-        this.html += '<ul class="tmp-carousel-list">';
-
-        if(this.childViews) {
-            this.renderChildViews();
-        }
-
-        this.html += '</ul>';
-        this.html += '</div>';
-        this.html += '</div>';
-
-        if(this.showPaginator) {
-            this.html += '<div id="' + this.id + '_paginator" class="tmp-carousel-paginator tmp-carousel-paginator-' + this.direction + '"></div>';
-        }
-
-        this.html += '<div class="tmp-carousel-clear"></div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            change: {
-                target: this,
-                action: 'prepareExternalCallback'
-            }
-        };
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method is called everytime a carousel item is set to active. It will prepare
-     * the external callback for the change event and then call it.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    prepareExternalCallback: function(id, event, nextEvent) {
-        if(nextEvent) {
-            var activeItem = M.ViewManager.getViewById($('#' + this.id + ' .tmp-carousel-list li:nth-child(' + this.activeItem + ')').attr('id'));
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [activeItem, this.activeItem - 1]);
-        }
-    },
-
-    /**
-     * This method is called automatically once the bound content changes. It then re-renders the
-     * carousel's content.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.contentBinding && this.value) {
-            this.removeAllItems();
-
-            /* lets gather the html together */
-            var html = '';
-            for(var i in this.value) {
-                html += this.value[i].render();
-            }
-
-            /* set the num of items */
-            this.numItems = this.value.length;
-
-            /* add the items to the DOM */
-            this.addItems(html);
-
-            /* now the items are in DOM, finally register events */
-            for(var i in this.value) {
-                this.value[i].theme();
-                this.value[i].registerEvents();
-            }
-
-            /* no re-theme the carousel (async) */
-            var that = this;
-            window.setTimeout(function() {
-                that.isInitialized = NO;
-                that.initThemeUpdate(YES);
-            }, 1);
-        }
-    },
-
-    /**
-     * This method adds a given html string, containing the carousel's items, to the DOM.
-     *
-     * @param {String} item The html representation of the carousel items to be added.
-     */
-    addItems: function(items) {
-        $('#' + this.id + ' .tmp-carousel-list').append(items);
-    },
-
-    /**
-     * This method removes all of the carousel view's items by removing all of its content in the
-     * DOM. This method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        /* remove all list items, kill the style and unbind events from list */
-        $('#' + this.id + ' .tmp-carousel-list').empty();
-        $('#' + this.id + ' .tmp-carousel-list').attr('style', '');
-        $('#' + this.id + ' .tmp-carousel-list').unbind();
-
-        /* kill the style and unbind events from scroller */
-        $('#' + this.id + ' .tmp-carousel-scroller').attr('style', '');
-        $('#' + this.id + ' .tmp-carousel-scroller').unbind();
-
-        /* kill the style and unbind events from wrapper */
-        $('#' + this.id).attr('style', '');
-        $('#' + this.id).unbind();
-    },
-
-    /**
-     * This method triggers the render() function on all children of type M.CarouselItemView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            var numItems = 0;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.CarouselItemView') {
-                    view.parentView = this;
-                    view._name = childViews[i];
-                    this.html += view.render();
-                    numItems++;
-                } else {
-                    M.Logger.log('Invalid child views specified for M.CarouselView. Only M.CarouselItemView accepted.', M.WARN);
-                }
-            }
-            this.numItems = numItems;
-        } else if(!this.contentBinding) {
-            M.Logger.log('No child views specified for the carousel view.', M.WARN);
-        }
-    },
-
-    /**
-     * This method is responsible for theming and layouting the carousel. We mainly do
-     * some calculation based on the device's screen size to position the carousel
-     * correctly.
-     *
-     * @private
-     */
-    theme: function() {
-        var that = this;
-
-        /* if there is no container, something went wrong, so return */
-        if(!($('#' + this.id).parent() && $('#' + this.id).parent().length > 0)) {
-            return;
-        }
-
-        /* if we already called this method 200 times, return */
-        if(this.numOfThemeCalls >= 200) {
-            return;
-        }
-
-        /* if the container is not ready yet, try again in 25ms */
-        if(parseInt($('#' + this.id).css('opacity')) > 0 || $('#' + this.id).parent().width() === 0 || $('#' + this.id).parent().width() === this.lastWidth) {
-            window.setTimeout(function() {
-                that.theme();
-            }, 25);
-            this.numOfThemeCalls++;
-        /* otherwise setup iscroll */
-        } else {
-            window.setTimeout(function() {
-                /* store the last width */
-                that.lastWidth = $('#' + that.id).parent().width();
-
-                /* calculate the size of the carousel */
-                var width = $('#' + that.id).parent().outerWidth();
-                var height = 0;
-
-                if(that.sizeCalculator === M.CAROUSEL_SIZE_CONTENT) {
-                    $('#' + that.id + ' ul.tmp-carousel-list li').each(function() {
-                        if(height < $(this).outerHeight()) {
-                            height = $(this).outerHeight();
-                        }
-                    });
-                } else if(that.sizeCalculator === M.CAROUSEL_SIZE_SURROUNDING_ELEMENT) {
-                    height = parseInt($('#' + that.id).parent().css('height'));
-                }
-
-                $('#' + that.id).css('width', width);
-                $('#' + that.id).css('height', height);
-                $('#' + that.id + ' .tmp-carousel-scroller').css('width', (that.direction === M.HORIZONTAL ? width * that.numItems : width));
-                $('#' + that.id + ' .tmp-carousel-scroller').css('height', (that.direction === M.VERTICAL ? height * that.numItems : height));
-                $('#' + that.id + ' ul.tmp-carousel-list li').css('width', width);
-                $('#' + that.id + ' ul.tmp-carousel-list li').css('height', height);
-
-                /* add negative margin for any padding of outer element */
-                var margin = {
-                    top: -parseInt($('#' + that.id).parent().css('padding-top')),
-                    right: -parseInt($('#' + that.id).parent().css('padding-right')),
-                    bottom: -parseInt($('#' + that.id).parent().css('padding-bottom')),
-                    left: -parseInt($('#' + that.id).parent().css('padding-left'))
-                };
-                _.each(margin, function(m, key) {
-                    switch(key) {
-                        case 'top':
-                            /* if this is the first child, add negative margin */
-                            if($('#' + that.id).parent().children()[0] === $('#' + that.id)[0]) {
-                                $('#' + that.id).css('margin-' + key, m);
-                            }
-                            break;
-                        case 'bottom':
-                            /* if this is the last child, add negative margin */
-                            if($('#' + that.id).parent().children()[$('#' + that.id).parent().children().length - 1] === $('#' + that.id)[0]) {
-                                $('#' + that.id).css('margin-' + key, m);
-                            }
-                            break;
-                        default:
-                            $('#' + that.id).css('margin-' + key, m);
-                            break;
-                    }
-                });
-
-                if(that.iScroll) {
-                    that.iScroll.refresh();
-                    that.iScroll.scrollToElement('li:nth-child(' + (that.activeItem > 1 ? that.activeItem : 1) + ')', 100);
-                } else {
-                    that.iScroll = new iScroll(that.id, {
-                        snap: true,
-                        momentum: false,
-                        hScrollbar: false,
-                        vScrollbar: false,
-                        onScrollEnd: function () {
-                            var nextItem = null;
-                            if(that.direction === M.HORIZONTAL) {
-                                var width = parseInt($('#' + that.id + ' ul.tmp-carousel-list li').css('width'));
-                                nextItem = Math.abs(Math.floor(that.iScroll.x / width)) + 1;
-                            } else {
-                                var height = parseInt($('#' + that.id + ' ul.tmp-carousel-list li').css('height'));
-                                nextItem = Math.abs(Math.ceil(that.iScroll.y / height)) + 1;
-                            }
-
-                            if(nextItem !== that.activeItem) {
-                                $('#' + that.id + '_paginator_' + that.activeItem).removeClass('tmp-carousel-paginator-item-active');
-                                that.activeItem = nextItem;
-                                $('#' + that.id + '_paginator_' + that.activeItem).addClass('tmp-carousel-paginator-item-active');
-                            }
-
-                            /* trigger change event for the button group */
-                            $('#' + that.id).trigger('change');
-                        }
-                    });
-                }
-
-                /* position and calculate the paginator (async) */
-                var paginatorDOM = $('#' + that.id + '_paginator');
-                paginatorDOM.css('opacity', 0);
-                window.setTimeout(function() {
-                    /* render paginator items? */
-                    if(!paginatorDOM.html()) {
-                        var html = '';
-                        for(var i = 1; i <= that.numItems; i++) {
-                            html += '<div id="' + that.id + '_paginator_' + i + '" class="tmp-carousel-paginator-item' + (i === that.activeItem ? ' tmp-carousel-paginator-item-active' : '') + '"></div>';
-                        }
-                        paginatorDOM.html(html);
-                    }
-
-                    /* css stuff */
-                    if(that.direction === M.HORIZONTAL) {
-                        paginatorDOM.css('width', width);
-                        paginatorDOM.css('top', $('#' + that.id).position().top + parseInt($('#' + that.id + ' .tmp-carousel-scroller').css('height')) - parseInt($('#' + that.id + '_paginator').css('height')));
-                    } else {
-                        paginatorDOM.css('top', $('#' + that.id).position().top + (parseInt($('#' + that.id).css('height')) - parseInt(paginatorDOM.height()))/2);
-                    }
-                    paginatorDOM.css('margin-top', margin['top']);
-                    paginatorDOM.animate({
-                        opacity: 1
-                    }, 100);
-                }, 500);
-
-                /* display carousel */
-                $('#' + that.id).animate({
-                    opacity: 1
-                }, 100);
-
-                /* set isInitialized flag to YES */
-                that.isInitialized = YES;
-            }, 100);
-        }
-    },
-
-    /**
-     * This method is automatically called by the surrounding page once an orientation
-     * change event took place.
-     *
-     * @private
-     */
-    orientationDidChange: function() {
-        this.isInitialized = NO;
-        this.initThemeUpdate();
-    },
-
-    /**
-     * This method is automatically called once there was an event that might require
-     * an re-theming of the carousel such as orientation change or page show.
-     *
-     * @private
-     */
-    initThemeUpdate: function(initFromScratch) {
-        /* if this carousel already is initialized, return */
-        if(this.isInitialized) {
-            return;
-        }
-
-        /* if this is a total refresh, clean some things up */
-        if(initFromScratch) {
-            this.lastWidth = 0;
-            $('#' + this.id + '_paginator').html('');
-        }
-
-        /* reset theme counter */
-        this.numOfThemeCalls = 0;
-
-        /* hide carousel */
-        $('#' + this.id).css('opacity', 0);
-
-        /* hide the paginator (if available) */
-        $('#' + this.id + '_paginator').css('opacity', 0);
-
-        /* init the re-theming (but give the carousel some time to get invisible) */
-        var that = this;
-        window.setTimeout(function() {
-            that.theme();
-        }, 100)
-    },
-
-    /**
-     * This method activates one specific item within the carousel.
-     *
-     * @param {M.CarouselItemView, String} item The item to be set active or its id.
-     */
-    setActiveItem: function(item) {
-        /* get the item based on the given obj or the given id */
-        item = typeof(item) === 'string' ? M.ViewManager.getViewById(item) : item;
-        if(!(item && item.type === 'M.CarouselItemView')) {
-            M.Logger.log('No valid carousel item passed to be set active. Must be either valid id or item object of type M.CarouselItemView.', M.WARN);
-            return;
-        }
-
-        /* if item is already active, return */
-        var activeItem = M.ViewManager.getViewById($('#' + this.id + ' .tmp-carousel-list li.tmp-carousel-item:nth-child(' + this.activeItem + ')').attr('id'));
-        if(activeItem && activeItem.id === item.id) {
-            M.Logger.log('The given carousel item already is active, so we do nothing.', M.INFO);
-            return;
-        }
-
-        /* set given item active */
-        $('#' + this.id + '_paginator_' + this.activeItem).removeClass('tmp-carousel-paginator-item-active');
-        this.activeItem = 1;
-        var that = this;
-        $('#' + this.id + ' .tmp-carousel-list li.tmp-carousel-item').each(function() {
-            if($(this).attr('id') !== item.id) {
-                that.activeItem++;
-            } else {
-                return false;
-            }
-        });
-        /* highlight active item in paginator again */
-        $('#' + this.id + '_paginator_' + this.activeItem).addClass('tmp-carousel-paginator-item-active');
-        this.iScroll.scrollToElement('li.tmp-carousel-item:nth-child(' + (this.activeItem > 1 ? this.activeItem : 1) + ')', 100);
-    },
-
-    /**
-     * This method activates the next item in the row.
-     */
-    next: function() {
-        var nextItem = $('#' + this.id + ' .tmp-carousel-list li:nth-child(' + this.activeItem + ')').next();
-        if(nextItem.length === 0) {
-            M.Logger.log('There is no next item available. You already reached the end of the carousel.', M.INFO);
-            return;
-        }
-        this.setActiveItem(M.ViewManager.getViewById(nextItem.attr('id')));
-    },
-
-    /**
-     * This method activates the previous item in the row.
-     */
-    prev: function() {
-        var prevItem = $('#' + this.id + ' .tmp-carousel-list li:nth-child(' + this.activeItem + ')').prev();
-        if(prevItem.length === 0) {
-            M.Logger.log('There is no previous item available. You already reached the start of the carousel.', M.INFO);
-            return;
-        }
-        this.setActiveItem(M.ViewManager.getViewById(prevItem.attr('id')));
-    }
-
-});
-
-/* iScroll */
-(function(){var g=Math,f=/webkit/i.test(navigator.appVersion)?"webkit":/firefox/i.test(navigator.userAgent)?"Moz":/trident/i.test(navigator.userAgent)?"ms":"opera"in window?"O":"",t=/android/gi.test(navigator.appVersion),u=/iphone|ipad/gi.test(navigator.appVersion),p=/playbook/gi.test(navigator.appVersion),B=/hp-tablet/gi.test(navigator.appVersion),v="WebKitCSSMatrix"in window&&"m11"in new WebKitCSSMatrix,l="ontouchstart"in window&&!B,z=f+"Transform"in document.documentElement.style,C=u||p,D=function(){return window.requestAnimationFrame||
-window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(b){return setTimeout(b,1)}}(),A=window.cancelRequestAnimationFrame||window.webkitCancelAnimationFrame||window.webkitCancelRequestAnimationFrame||window.mozCancelRequestAnimationFrame||window.oCancelRequestAnimationFrame||window.msCancelRequestAnimationFrame||clearTimeout,w="onorientationchange"in window?"orientationchange":"resize",x=l?"touchstart":"mousedown",
-q=l?"touchmove":"mousemove",r=l?"touchend":"mouseup",s=l?"touchcancel":"mouseup",y="Moz"==f?"DOMMouseScroll":"mousewheel",n="translate"+(v?"3d(":"("),o=v?",0)":")",p=function(b,a){var c=this,d;c.wrapper="object"==typeof b?b:document.getElementById(b);c.wrapper.style.overflow="hidden";c.scroller=c.wrapper.children[0];c.options={hScroll:!0,vScroll:!0,x:0,y:0,bounce:!0,bounceLock:!1,momentum:!0,lockDirection:!0,useTransform:!0,useTransition:!1,topOffset:0,checkDOMChanges:!1,hScrollbar:!0,vScrollbar:!0,
-fixedScrollbar:t,hideScrollbar:u,fadeScrollbar:u&&v,scrollbarClass:"",zoom:!1,zoomMin:1,zoomMax:4,doubleTapZoom:2,wheelAction:"scroll",snap:!1,snapThreshold:1,onRefresh:null,onBeforeScrollStart:function(a){a.preventDefault()},onScrollStart:null,onBeforeScrollMove:null,onScrollMove:null,onBeforeScrollEnd:null,onScrollEnd:null,onTouchEnd:null,onDestroy:null,onZoomStart:null,onZoom:null,onZoomEnd:null};for(d in a)c.options[d]=a[d];c.x=c.options.x;c.y=c.options.y;c.options.useTransform=z?c.options.useTransform:
-!1;c.options.hScrollbar=c.options.hScroll&&c.options.hScrollbar;c.options.vScrollbar=c.options.vScroll&&c.options.vScrollbar;c.options.zoom=c.options.useTransform&&c.options.zoom;c.options.useTransition=C&&c.options.useTransition;c.options.zoom&&t&&(n="translate(",o=")");c.scroller.style[f+"TransitionProperty"]=c.options.useTransform?"-"+f.toLowerCase()+"-transform":"top left";c.scroller.style[f+"TransitionDuration"]="0";c.scroller.style[f+"TransformOrigin"]="0 0";c.options.useTransition&&(c.scroller.style[f+
-"TransitionTimingFunction"]="cubic-bezier(0.33,0.66,0.66,1)");c.options.useTransform?c.scroller.style[f+"Transform"]=n+c.x+"px,"+c.y+"px"+o:c.scroller.style.cssText+=";position:absolute;top:"+c.y+"px;left:"+c.x+"px";c.options.useTransition&&(c.options.fixedScrollbar=!0);c.refresh();c._bind(w,window);c._bind(x);l||(c._bind("mouseout",c.wrapper),"none"!=c.options.wheelAction&&c._bind(y));c.options.checkDOMChanges&&(c.checkDOMTime=setInterval(function(){c._checkDOMChanges()},500))};p.prototype={enabled:!0,
-x:0,y:0,steps:[],scale:1,currPageX:0,currPageY:0,pagesX:[],pagesY:[],aniTime:null,wheelZoomCount:0,handleEvent:function(b){switch(b.type){case x:if(!l&&0!==b.button)break;this._start(b);break;case q:this._move(b);break;case r:case s:this._end(b);break;case w:this._resize();break;case y:this._wheel(b);break;case "mouseout":this._mouseout(b);break;case "webkitTransitionEnd":this._transitionEnd(b)}},_checkDOMChanges:function(){!this.moved&&!this.zoomed&&!(this.animating||this.scrollerW==this.scroller.offsetWidth*
-this.scale&&this.scrollerH==this.scroller.offsetHeight*this.scale)&&this.refresh()},_scrollbar:function(b){var a=document,c;this[b+"Scrollbar"]?(this[b+"ScrollbarWrapper"]||(c=a.createElement("div"),this.options.scrollbarClass?c.className=this.options.scrollbarClass+b.toUpperCase():c.style.cssText="position:absolute;z-index:100;"+("h"==b?"height:7px;bottom:1px;left:2px;right:"+(this.vScrollbar?"7":"2")+"px":"width:7px;bottom:"+(this.hScrollbar?"7":"2")+"px;top:2px;right:1px"),c.style.cssText+=";pointer-events:none;-"+
-f+"-transition-property:opacity;-"+f+"-transition-duration:"+(this.options.fadeScrollbar?"350ms":"0")+";overflow:hidden;opacity:"+(this.options.hideScrollbar?"0":"1"),this.wrapper.appendChild(c),this[b+"ScrollbarWrapper"]=c,c=a.createElement("div"),this.options.scrollbarClass||(c.style.cssText="position:absolute;z-index:100;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);-"+f+"-background-clip:padding-box;-"+f+"-box-sizing:border-box;"+("h"==b?"height:100%":"width:100%")+";-"+f+
-"-border-radius:3px;border-radius:3px"),c.style.cssText+=";pointer-events:none;-"+f+"-transition-property:-"+f+"-transform;-"+f+"-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);-"+f+"-transition-duration:0;-"+f+"-transform:"+n+"0,0"+o,this.options.useTransition&&(c.style.cssText+=";-"+f+"-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1)"),this[b+"ScrollbarWrapper"].appendChild(c),this[b+"ScrollbarIndicator"]=c),"h"==b?(this.hScrollbarSize=this.hScrollbarWrapper.clientWidth,this.hScrollbarIndicatorSize=
-g.max(this.hScrollbarSize*this.hScrollbarSize/this.scrollerW>>0,8),this.hScrollbarIndicator.style.width=this.hScrollbarIndicatorSize+"px",this.hScrollbarMaxScroll=this.hScrollbarSize-this.hScrollbarIndicatorSize,this.hScrollbarProp=this.hScrollbarMaxScroll/this.maxScrollX):(this.vScrollbarSize=this.vScrollbarWrapper.clientHeight,this.vScrollbarIndicatorSize=g.max(this.vScrollbarSize*this.vScrollbarSize/this.scrollerH>>0,8),this.vScrollbarIndicator.style.height=this.vScrollbarIndicatorSize+"px",this.vScrollbarMaxScroll=
-this.vScrollbarSize-this.vScrollbarIndicatorSize,this.vScrollbarProp=this.vScrollbarMaxScroll/this.maxScrollY),this._scrollbarPos(b,!0)):this[b+"ScrollbarWrapper"]&&(z&&(this[b+"ScrollbarIndicator"].style[f+"Transform"]=""),this[b+"ScrollbarWrapper"].parentNode.removeChild(this[b+"ScrollbarWrapper"]),this[b+"ScrollbarWrapper"]=null,this[b+"ScrollbarIndicator"]=null)},_resize:function(){var b=this;setTimeout(function(){b.refresh()},t?200:0)},_pos:function(b,a){b=this.hScroll?b:0;a=this.vScroll?a:0;
-this.options.useTransform?this.scroller.style[f+"Transform"]=n+b+"px,"+a+"px"+o+" scale("+this.scale+")":(b>>=0,a>>=0,this.scroller.style.left=b+"px",this.scroller.style.top=a+"px");this.x=b;this.y=a;this._scrollbarPos("h");this._scrollbarPos("v")},_scrollbarPos:function(b,a){var c="h"==b?this.x:this.y;this[b+"Scrollbar"]&&(c*=this[b+"ScrollbarProp"],0>c?(this.options.fixedScrollbar||(c=this[b+"ScrollbarIndicatorSize"]+(3*c>>0),8>c&&(c=8),this[b+"ScrollbarIndicator"].style["h"==b?"width":"height"]=
-c+"px"),c=0):c>this[b+"ScrollbarMaxScroll"]&&(this.options.fixedScrollbar?c=this[b+"ScrollbarMaxScroll"]:(c=this[b+"ScrollbarIndicatorSize"]-(3*(c-this[b+"ScrollbarMaxScroll"])>>0),8>c&&(c=8),this[b+"ScrollbarIndicator"].style["h"==b?"width":"height"]=c+"px",c=this[b+"ScrollbarMaxScroll"]+(this[b+"ScrollbarIndicatorSize"]-c))),this[b+"ScrollbarWrapper"].style[f+"TransitionDelay"]="0",this[b+"ScrollbarWrapper"].style.opacity=a&&this.options.hideScrollbar?"0":"1",this[b+"ScrollbarIndicator"].style[f+
-"Transform"]=n+("h"==b?c+"px,0":"0,"+c+"px")+o)},_start:function(b){var a=l?b.touches[0]:b,c,d;if(this.enabled){this.options.onBeforeScrollStart&&this.options.onBeforeScrollStart.call(this,b);(this.options.useTransition||this.options.zoom)&&this._transitionTime(0);this.zoomed=this.animating=this.moved=!1;this.dirY=this.dirX=this.absDistY=this.absDistX=this.distY=this.distX=0;this.options.zoom&&l&&1<b.touches.length&&(d=g.abs(b.touches[0].pageX-b.touches[1].pageX),c=g.abs(b.touches[0].pageY-b.touches[1].pageY),
-this.touchesDistStart=g.sqrt(d*d+c*c),this.originX=g.abs(b.touches[0].pageX+b.touches[1].pageX-2*this.wrapperOffsetLeft)/2-this.x,this.originY=g.abs(b.touches[0].pageY+b.touches[1].pageY-2*this.wrapperOffsetTop)/2-this.y,this.options.onZoomStart&&this.options.onZoomStart.call(this,b));if(this.options.momentum&&(this.options.useTransform?(c=getComputedStyle(this.scroller,null)[f+"Transform"].replace(/[^0-9-.,]/g,"").split(","),d=1*c[4],c=1*c[5]):(d=1*getComputedStyle(this.scroller,null).left.replace(/[^0-9-]/g,
-""),c=1*getComputedStyle(this.scroller,null).top.replace(/[^0-9-]/g,"")),d!=this.x||c!=this.y))this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime),this.steps=[],this._pos(d,c);this.absStartX=this.x;this.absStartY=this.y;this.startX=this.x;this.startY=this.y;this.pointX=a.pageX;this.pointY=a.pageY;this.startTime=b.timeStamp||Date.now();this.options.onScrollStart&&this.options.onScrollStart.call(this,b);this._bind(q);this._bind(r);this._bind(s)}},_move:function(b){var a=l?
-b.touches[0]:b,c=a.pageX-this.pointX,d=a.pageY-this.pointY,e=this.x+c,i=this.y+d,h=b.timeStamp||Date.now();this.options.onBeforeScrollMove&&this.options.onBeforeScrollMove.call(this,b);if(this.options.zoom&&l&&1<b.touches.length)e=g.abs(b.touches[0].pageX-b.touches[1].pageX),i=g.abs(b.touches[0].pageY-b.touches[1].pageY),this.touchesDist=g.sqrt(e*e+i*i),this.zoomed=!0,a=1/this.touchesDistStart*this.touchesDist*this.scale,a<this.options.zoomMin?a=0.5*this.options.zoomMin*Math.pow(2,a/this.options.zoomMin):
-a>this.options.zoomMax&&(a=2*this.options.zoomMax*Math.pow(0.5,this.options.zoomMax/a)),this.lastScale=a/this.scale,e=this.originX-this.originX*this.lastScale+this.x,i=this.originY-this.originY*this.lastScale+this.y,this.scroller.style[f+"Transform"]=n+e+"px,"+i+"px"+o+" scale("+a+")",this.options.onZoom&&this.options.onZoom.call(this,b);else{this.pointX=a.pageX;this.pointY=a.pageY;if(0<e||e<this.maxScrollX)e=this.options.bounce?this.x+c/2:0<=e||0<=this.maxScrollX?0:this.maxScrollX;if(i>this.minScrollY||
-i<this.maxScrollY)i=this.options.bounce?this.y+d/2:i>=this.minScrollY||0<=this.maxScrollY?this.minScrollY:this.maxScrollY;this.distX+=c;this.distY+=d;this.absDistX=g.abs(this.distX);this.absDistY=g.abs(this.distY);6>this.absDistX&&6>this.absDistY||(this.options.lockDirection&&(this.absDistX>this.absDistY+5?(i=this.y,d=0):this.absDistY>this.absDistX+5&&(e=this.x,c=0)),this.moved=!0,this._pos(e,i),this.dirX=0<c?-1:0>c?1:0,this.dirY=0<d?-1:0>d?1:0,300<h-this.startTime&&(this.startTime=h,this.startX=
-this.x,this.startY=this.y),this.options.onScrollMove&&this.options.onScrollMove.call(this,b))}},_end:function(b){if(!(l&&0!=b.touches.length)){var a=this,c=l?b.changedTouches[0]:b,d,e,i={dist:0,time:0},h={dist:0,time:0},k=(b.timeStamp||Date.now())-a.startTime,j=a.x,m=a.y;a._unbind(q);a._unbind(r);a._unbind(s);a.options.onBeforeScrollEnd&&a.options.onBeforeScrollEnd.call(a,b);if(a.zoomed)j=a.scale*a.lastScale,j=Math.max(a.options.zoomMin,j),j=Math.min(a.options.zoomMax,j),a.lastScale=j/a.scale,a.scale=
-j,a.x=a.originX-a.originX*a.lastScale+a.x,a.y=a.originY-a.originY*a.lastScale+a.y,a.scroller.style[f+"TransitionDuration"]="200ms",a.scroller.style[f+"Transform"]=n+a.x+"px,"+a.y+"px"+o+" scale("+a.scale+")",a.zoomed=!1,a.refresh(),a.options.onZoomEnd&&a.options.onZoomEnd.call(a,b);else{if(a.moved){if(300>k&&a.options.momentum){i=j?a._momentum(j-a.startX,k,-a.x,a.scrollerW-a.wrapperW+a.x,a.options.bounce?a.wrapperW:0):i;h=m?a._momentum(m-a.startY,k,-a.y,0>a.maxScrollY?a.scrollerH-a.wrapperH+a.y-a.minScrollY:
-0,a.options.bounce?a.wrapperH:0):h;j=a.x+i.dist;m=a.y+h.dist;if(0<a.x&&0<j||a.x<a.maxScrollX&&j<a.maxScrollX)i={dist:0,time:0};if(a.y>a.minScrollY&&m>a.minScrollY||a.y<a.maxScrollY&&m<a.maxScrollY)h={dist:0,time:0}}i.dist||h.dist?(i=g.max(g.max(i.time,h.time),10),a.options.snap&&(h=j-a.absStartX,k=m-a.absStartY,g.abs(h)<a.options.snapThreshold&&g.abs(k)<a.options.snapThreshold?a.scrollTo(a.absStartX,a.absStartY,200):(h=a._snap(j,m),j=h.x,m=h.y,i=g.max(h.time,i))),a.scrollTo(j>>0,m>>0,i)):a.options.snap?
-(h=j-a.absStartX,k=m-a.absStartY,g.abs(h)<a.options.snapThreshold&&g.abs(k)<a.options.snapThreshold?a.scrollTo(a.absStartX,a.absStartY,200):(h=a._snap(a.x,a.y),(h.x!=a.x||h.y!=a.y)&&a.scrollTo(h.x,h.y,h.time))):a._resetPos(200)}else l&&(a.doubleTapTimer&&a.options.zoom?(clearTimeout(a.doubleTapTimer),a.doubleTapTimer=null,a.options.onZoomStart&&a.options.onZoomStart.call(a,b),a.zoom(a.pointX,a.pointY,1==a.scale?a.options.doubleTapZoom:1),a.options.onZoomEnd&&setTimeout(function(){a.options.onZoomEnd.call(a,
-b)},200)):a.doubleTapTimer=setTimeout(function(){a.doubleTapTimer=null;for(d=c.target;1!=d.nodeType;)d=d.parentNode;"SELECT"!=d.tagName&&"INPUT"!=d.tagName&&"TEXTAREA"!=d.tagName&&(e=document.createEvent("MouseEvents"),e.initMouseEvent("click",!0,!0,b.view,1,c.screenX,c.screenY,c.clientX,c.clientY,b.ctrlKey,b.altKey,b.shiftKey,b.metaKey,0,null),e._fake=!0,d.dispatchEvent(e))},a.options.zoom?250:0)),a._resetPos(200);a.options.onTouchEnd&&a.options.onTouchEnd.call(a,b)}}},_resetPos:function(b){var a=
-0<=this.x?0:this.x<this.maxScrollX?this.maxScrollX:this.x,c=this.y>=this.minScrollY||0<this.maxScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y;if(a==this.x&&c==this.y){if(this.moved&&(this.moved=!1,this.options.onScrollEnd&&this.options.onScrollEnd.call(this)),this.hScrollbar&&this.options.hideScrollbar&&("webkit"==f&&(this.hScrollbarWrapper.style[f+"TransitionDelay"]="300ms"),this.hScrollbarWrapper.style.opacity="0"),this.vScrollbar&&this.options.hideScrollbar)"webkit"==f&&
-(this.vScrollbarWrapper.style[f+"TransitionDelay"]="300ms"),this.vScrollbarWrapper.style.opacity="0"}else this.scrollTo(a,c,b||0)},_wheel:function(b){var a=this,c,d;if("wheelDeltaX"in b)c=b.wheelDeltaX/12,d=b.wheelDeltaY/12;else if("wheelDelta"in b)c=d=b.wheelDelta/12;else if("detail"in b)c=d=3*-b.detail;else return;if("zoom"==a.options.wheelAction){if(d=a.scale*Math.pow(2,1/3*(d?d/Math.abs(d):0)),d<a.options.zoomMin&&(d=a.options.zoomMin),d>a.options.zoomMax&&(d=a.options.zoomMax),d!=a.scale)!a.wheelZoomCount&&
-a.options.onZoomStart&&a.options.onZoomStart.call(a,b),a.wheelZoomCount++,a.zoom(b.pageX,b.pageY,d,400),setTimeout(function(){a.wheelZoomCount--;!a.wheelZoomCount&&a.options.onZoomEnd&&a.options.onZoomEnd.call(a,b)},400)}else c=a.x+c,d=a.y+d,0<c?c=0:c<a.maxScrollX&&(c=a.maxScrollX),d>a.minScrollY?d=a.minScrollY:d<a.maxScrollY&&(d=a.maxScrollY),a.scrollTo(c,d,0)},_mouseout:function(b){var a=b.relatedTarget;if(a)for(;a=a.parentNode;)if(a==this.wrapper)return;this._end(b)},_transitionEnd:function(b){b.target==
-this.scroller&&(this._unbind("webkitTransitionEnd"),this._startAni())},_startAni:function(){var b=this,a=b.x,c=b.y,d=Date.now(),e,f,h;b.animating||(b.steps.length?(e=b.steps.shift(),e.x==a&&e.y==c&&(e.time=0),b.animating=!0,b.moved=!0,b.options.useTransition)?(b._transitionTime(e.time),b._pos(e.x,e.y),b.animating=!1,e.time?b._bind("webkitTransitionEnd"):b._resetPos(0)):(h=function(){var k=Date.now(),j;if(k>=d+e.time){b._pos(e.x,e.y);b.animating=false;b.options.onAnimationEnd&&b.options.onAnimationEnd.call(b);
-b._startAni()}else{k=(k-d)/e.time-1;f=g.sqrt(1-k*k);k=(e.x-a)*f+a;j=(e.y-c)*f+c;b._pos(k,j);if(b.animating)b.aniTime=D(h)}},h()):b._resetPos(400))},_transitionTime:function(b){b+="ms";this.scroller.style[f+"TransitionDuration"]=b;this.hScrollbar&&(this.hScrollbarIndicator.style[f+"TransitionDuration"]=b);this.vScrollbar&&(this.vScrollbarIndicator.style[f+"TransitionDuration"]=b)},_momentum:function(b,a,c,d,e){var a=g.abs(b)/a,f=a*a/0.0012;0<b&&f>c?(c+=e/(6/(6.0E-4*(f/a))),a=a*c/f,f=c):0>b&&f>d&&(d+=
-e/(6/(6.0E-4*(f/a))),a=a*d/f,f=d);return{dist:f*(0>b?-1:1),time:a/6.0E-4>>0}},_offset:function(b){for(var a=-b.offsetLeft,c=-b.offsetTop;b=b.offsetParent;)a-=b.offsetLeft,c-=b.offsetTop;b!=this.wrapper&&(a*=this.scale,c*=this.scale);return{left:a,top:c}},_snap:function(b,a){var c,d,e;e=this.pagesX.length-1;c=0;for(d=this.pagesX.length;c<d;c++)if(b>=this.pagesX[c]){e=c;break}e==this.currPageX&&0<e&&0>this.dirX&&e--;b=this.pagesX[e];d=(d=g.abs(b-this.pagesX[this.currPageX]))?500*(g.abs(this.x-b)/d):
-0;this.currPageX=e;e=this.pagesY.length-1;for(c=0;c<e;c++)if(a>=this.pagesY[c]){e=c;break}e==this.currPageY&&0<e&&0>this.dirY&&e--;a=this.pagesY[e];c=(c=g.abs(a-this.pagesY[this.currPageY]))?500*(g.abs(this.y-a)/c):0;this.currPageY=e;e=g.max(d,c)>>0;return{x:b,y:a,time:e||200}},_bind:function(b,a,c){(a||this.scroller).addEventListener(b,this,!!c)},_unbind:function(b,a,c){(a||this.scroller).removeEventListener(b,this,!!c)},destroy:function(){this.scroller.style[f+"Transform"]="";this.vScrollbar=this.hScrollbar=
-!1;this._scrollbar("h");this._scrollbar("v");this._unbind(w,window);this._unbind(x);this._unbind(q);this._unbind(r);this._unbind(s);this.options.hasTouch||(this._unbind("mouseout",this.wrapper),this._unbind(y));this.options.useTransition&&this._unbind("webkitTransitionEnd");this.options.checkDOMChanges&&clearInterval(this.checkDOMTime);this.options.onDestroy&&this.options.onDestroy.call(this)},refresh:function(){var b,a,c,d=0;a=0;this.scale<this.options.zoomMin&&(this.scale=this.options.zoomMin);
-this.wrapperW=this.wrapper.clientWidth||1;this.wrapperH=this.wrapper.clientHeight||1;this.minScrollY=-this.options.topOffset||0;this.scrollerW=this.scroller.offsetWidth*this.scale>>0;this.scrollerH=(this.scroller.offsetHeight+this.minScrollY)*this.scale>>0;this.maxScrollX=this.wrapperW-this.scrollerW;this.maxScrollY=this.wrapperH-this.scrollerH+this.minScrollY;this.dirY=this.dirX=0;this.options.onRefresh&&this.options.onRefresh.call(this);this.hScroll=this.options.hScroll&&0>this.maxScrollX;this.vScroll=
-this.options.vScroll&&(!this.options.bounceLock&&!this.hScroll||this.scrollerH>this.wrapperH);this.hScrollbar=this.hScroll&&this.options.hScrollbar;this.vScrollbar=this.vScroll&&this.options.vScrollbar&&this.scrollerH>this.wrapperH;b=this._offset(this.wrapper);this.wrapperOffsetLeft=-b.left;this.wrapperOffsetTop=-b.top;if("string"==typeof this.options.snap){this.pagesX=[];this.pagesY=[];c=this.scroller.querySelectorAll(this.options.snap);b=0;for(a=c.length;b<a;b++)d=this._offset(c[b]),d.left+=this.wrapperOffsetLeft,
-d.top+=this.wrapperOffsetTop,this.pagesX[b]=d.left<this.maxScrollX?this.maxScrollX:d.left*this.scale,this.pagesY[b]=d.top<this.maxScrollY?this.maxScrollY:d.top*this.scale}else if(this.options.snap){for(this.pagesX=[];d>=this.maxScrollX;)this.pagesX[a]=d,d-=this.wrapperW,a++;this.maxScrollX%this.wrapperW&&(this.pagesX[this.pagesX.length]=this.maxScrollX-this.pagesX[this.pagesX.length-1]+this.pagesX[this.pagesX.length-1]);a=d=0;for(this.pagesY=[];d>=this.maxScrollY;)this.pagesY[a]=d,d-=this.wrapperH,
-a++;this.maxScrollY%this.wrapperH&&(this.pagesY[this.pagesY.length]=this.maxScrollY-this.pagesY[this.pagesY.length-1]+this.pagesY[this.pagesY.length-1])}this._scrollbar("h");this._scrollbar("v");this.zoomed||(this.scroller.style[f+"TransitionDuration"]="0",this._resetPos(200))},scrollTo:function(b,a,c,d){var e=b;this.stop();e.length||(e=[{x:b,y:a,time:c,relative:d}]);b=0;for(a=e.length;b<a;b++)e[b].relative&&(e[b].x=this.x-e[b].x,e[b].y=this.y-e[b].y),this.steps.push({x:e[b].x,y:e[b].y,time:e[b].time||
-0});this._startAni()},scrollToElement:function(b,a){var c;if(b=b.nodeType?b:this.scroller.querySelector(b))c=this._offset(b),c.left+=this.wrapperOffsetLeft,c.top+=this.wrapperOffsetTop,c.left=0<c.left?0:c.left<this.maxScrollX?this.maxScrollX:c.left,c.top=c.top>this.minScrollY?this.minScrollY:c.top<this.maxScrollY?this.maxScrollY:c.top,a=void 0===a?g.max(2*g.abs(c.left),2*g.abs(c.top)):a,this.scrollTo(c.left,c.top,a)},scrollToPage:function(b,a,c){c=void 0===c?400:c;this.options.onScrollStart&&this.options.onScrollStart.call(this);
-if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a="next"==a?this.currPageY+1:"prev"==a?this.currPageY-1:a,b=0>b?0:b>this.pagesX.length-1?this.pagesX.length-1:b,a=0>a?0:a>this.pagesY.length-1?this.pagesY.length-1:a,this.currPageX=b,this.currPageY=a,b=this.pagesX[b],a=this.pagesY[a];else if(b*=-this.wrapperW,a*=-this.wrapperH,b<this.maxScrollX&&(b=this.maxScrollX),a<this.maxScrollY)a=this.maxScrollY;this.scrollTo(b,a,c)},disable:function(){this.stop();this._resetPos(0);
-this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
-this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1593,7 +984,7 @@ M.ButtonGroupView = M.View.extend(
                 }
             }
         }
-        this.html = '';
+
         /* if there are multiple lines, render multiple horizontally aligned button groups */
         if(this.numberOfLines) {
             /* set the direction to horizontally, no matter what it was set to before */
@@ -1806,10 +1197,7 @@ M.ButtonGroupView = M.View.extend(
                 this.activeButton.isActive = NO;
             }
 
-            var obj = this[button];
-            if(!obj){
-                obj = M.ViewManager.getViewById(button);
-            }
+            var obj = M.ViewManager.getViewById(button);
             if(!obj) {
                 if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
                     obj = button;
@@ -1901,447 +1289,6 @@ M.ButtonGroupView = M.View.extend(
     }
 
 });
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitView = M.View.extend(
-/** @scope M.SplitView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitView',
-
-    menu: null,
-
-    content: null,
-
-    isInitialized: NO,
-
-    selectedItem: null,
-
-    orientation: null,
-
-    headerheight: null,
-
-    footerheight: null,
-
-    itemheight: null,
-
-    contentLoaded: NO,
-
-    scrollviewsInitialized: NO,
-
-    hasMenuScrollview: NO,
-
-    shouldHaveScrollview: YES,
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if (this.childViews || this.contentBinding) {
-            var childViews = this.getChildViewsAsArray();
-            if (childViews.length > 0 || this.contentBinding) {
-                this.menu = M.ScrollView.design({
-                    childViews: 'menu',
-                    menu: M.ListView.design({})
-                });
-                this.menu.parentView = this;
-                this.menu.menu.parentView = this.menu;
-                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
-                this.html += this.menu.render();
-
-                this.content = M.ScrollView.design({});
-                this.content.parentView = this;
-                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
-                this.html += this.content.render();
-
-                return this.html;
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var content = null;
-
-        if (this.contentBinding) {
-            content = this.value;
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            content = [];
-            for (var i = 0; i < childViews.length; i++) {
-                content.push(this[childViews[i]]);
-            }
-        }
-
-        if (content) {
-            if (content.length > 0) {
-
-                /* reset menu list before filling it up again */
-                this.menu.menu.removeAllItems();
-
-                var entryItem = null;
-                var currentItem = 0;
-                for (var i in content) {
-                    if (content[i] && content[i].type === 'M.SplitItemView') {
-                        /* add item to list */
-                        var item = M.ListItemView.design({
-                            childViews: 'label',
-                            parentView: this.menu.menu,
-                            splitViewItem: content[i],
-                            label: M.LabelView.design({
-                                value: content[i].value
-                            }),
-                            events: {
-                                tap: {
-                                    target: this,
-                                    action: 'listItemSelected'
-                                }
-                            }
-                        });
-                        this.menu.menu.addItem(item.render());
-
-                        /* register events for item */
-                        item.registerEvents();
-
-                        /* save id of the current item if it is either the first item or isActive is set */
-                        if (currentItem === 0 || content[i].isActive) {
-                            entryItem = item.id;
-                        }
-
-                        /* increase item counter */
-                        currentItem++;
-                    } else {
-                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
-                    }
-                }
-
-                /* theme the list */
-                this.menu.menu.themeUpdate();
-
-                /* now set the active list item */
-                this.menu.menu.setActiveListItem(entryItem);
-
-                /* finally show the active list item's content */
-                this.listItemSelected(entryItem);
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-
-        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
-        if (!this.contentLoaded) {
-            var that = this;
-            $(document).bind('DOMContentLoaded', function() {
-                that.initializeVar();
-            });
-        }
-    },
-
-    themeUpdate: function() {
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-
-        /* landscape mode */
-        if (M.Environment.getWidth() > M.Environment.getHeight()) {
-            this.orientation = 'landscape';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseInt($('#' + this.menu.id).css('border-right-width'))) + 'px');
-            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('#' + this.menu.id).css('border-right-width')) + 'px');
-
-            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
-            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-        /* portrait mode */
-        } else {
-            this.orientation = 'portrait';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.content.id).css('width', width - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', '0px');
-
-            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
-        }
-
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* set the min height of the page based on if there's a footer or not */
-        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
-            $('#' + page.id).css('min-height', height + 'px');
-        } else {
-            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
-        }
-
-        /* set the height of the menu based on header/footer */
-        if ($('#' + page.id + ' .ui-footer').length === 0) {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
-        } else {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
-        }
-
-        /* initialize the scrolling stuff (if not done yet) */
-        if (!this.scrollviewsInitialized) {
-            $('#' + this.content.id).scrollview({
-                direction: 'y'
-            });
-
-            /* check whether scrolling is required or not for the menu */
-            if (this.orientation === 'landscape') {
-                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
-                var itemCount = $('#' + this.menu.menu.id).find('li').length;
-
-                if (this.itemheight !== 0) {
-                    var menuHeight = M.Environment.getHeight();
-                    var itemListHeight = itemCount * this.itemheight;
-                    if (menuHeight < itemListHeight) {
-                        $('#' + this.menu.menu.id).scrollview({
-                            direction: 'y'
-                        });
-                        this.hasMenuScrollview = YES;
-                    } else {
-                        this.shouldHaveScrollview = NO;
-                    }
-                }
-                this.scrollviewsInitialized = YES;
-            }
-
-        }
-    },
-
-    /**
-     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
-     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
-     */
-    initializeVar: function() {
-        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
-        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
-        this.contentLoaded = YES;
-        this.themeUpdate();
-    },
-
-    registerEvents: function() {
-        /* register for orientation change events of the current page */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        M.EventDispatcher.registerEvent(
-            'orientationdidchange',
-            page.id,
-            {
-                target: this,
-                action:  function() {
-                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
-                    var that = this;
-                    window.setTimeout(function() {
-                        that.orientationDidChange();
-                    }, 100);
-                }
-            },
-            ['orientationdidchange'],
-            null,
-            NO,
-            YES
-        );
-    },
-
-    listItemSelected: function(id) {
-        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
-
-        if (!contentView) {
-            return;
-        }
-
-        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-        if (!this.isInitialized) {
-            if (contentView.html) {
-                $('#' + this.content.id).html(contentView.html);
-            } else {
-                $('#' + this.content.id).html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            this.isInitialized = YES;
-        } else {
-            if (contentView.html) {
-                $('#' + this.content.id + ' div:first').html(contentView.html);
-            } else {
-                $('#' + this.content.id + ' div:first').html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-        }
-
-        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        var that = this;
-        if (page) {
-            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
-                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
-                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
-                    $('#' + toolbar.id + ' h1').html(toolbar.value);
-
-                    /* now link the menu with the toolbar if not yet done */
-                    if (!toolbar.parentView.splitview) {
-                        toolbar.parentView.splitview = that;
-                    }
-                }
-            });
-
-            /* add special css class if there is no footer */
-            if ($('#' + page.id + ' .ui-footer').length === 0) {
-                page.addCssClass('tmp-splitview-no-footer');
-            }
-
-            /* add special css class if there is no header */
-            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
-                page.addCssClass('tmp-splitview-no-header');
-            }
-        }
-    },
-
-    orientationDidChange: function() {
-        var orientation = M.Environment.getOrientation();
-        var that = this;
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* portrait */
-        if (M.Environment.getHeight() > M.Environment.getWidth()) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        /* landscape */
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-
-            /* hide the popover */
-            var toolbar;
-            if (page) {
-                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
-                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
-                        toolbar.parentView.popover.hide();
-                    }
-                });
-            }
-
-            /* update the menu */
-            var id;
-            $('#' + this.menu.id).find('li').each(function() {
-                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
-                    id = $(this).attr('id');
-                }
-            });
-
-            /* activate the current item */
-            if (id) {
-                this.menu.menu.setActiveListItem(id);
-            }
-
-            /* set the selected item */
-            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-            /* scroll the menu so we def. see the selected item */
-            this.scrollListToRightPosition(id);
-        }
-
-        /* scroll content to top */
-        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-
-        /* call theme update */
-        this.themeUpdate();
-    },
-
-    scrollListToRightPosition: function(id) {
-        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + id).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
-        var middle = menuHeight / 2;
-        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < middle) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - middle);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < middle) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - middle);
-            }
-        }
-
-        /* if there already is a scroll view, just scroll */
-        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
-            $('#' + this.menu.menu.id).scrollview({
-                direction: 'y'
-            });
-        }
-        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -2428,9 +1375,7 @@ M.TabBarItemView = M.View.extend(
      * page switching job to M.Controller's switchToTab().
      */
     switchPage: function() {
-    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
-    	if(this.page) {
-        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
+        if(this.page) {
             M.Controller.switchToTab(this);
         } else {
             this.parentView.setActiveTab(this);
@@ -3034,16 +1979,6 @@ M.DatePickerView = M.View.extend(
         /* kill parts of the scoller */
         $('.dwv').remove();
 
-        /* give it some shiny jqm style */
-        window.setTimeout(function() {
-            $('.dw').addClass('ui-btn-up-a');
-        }, 1);
-
-        /* disable scrolling for the background */
-        $('.dwo').bind('touchmove', function(e) {
-            e.preventDefault();
-        });
-
         /* inject TMP buttons*/
         var confirmButton = M.ButtonView.design({
             value: this.confirmButtonValue,
@@ -3101,7 +2036,7 @@ M.DatePickerView = M.View.extend(
         }
 
         /* call callback */
-        if(this.callbacks && this.callbacks['before'] && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
             M.EventDispatcher.callHandler(this.callbacks['before'], null, NO, [value, date]);
         }
     },
@@ -3133,9 +2068,9 @@ M.DatePickerView = M.View.extend(
         }
 
         /* call cancel callback */
-        if(!this.isValueSelected && this.callbacks && this.callbacks['cancel'] && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
+        if(!this.isValueSelected && this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
             M.EventDispatcher.callHandler(this.callbacks['cancel'], null, NO, []);
-        } else if(this.isValueSelected && this.callbacks && this.callbacks['confirm'] && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
+        } else if(this.isValueSelected && this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
             M.EventDispatcher.callHandler(this.callbacks['confirm'], null, NO, [value, date]);
         }
 
@@ -3150,139 +2085,6 @@ M.DatePickerView = M.View.extend(
     onSelect: function(value) {
         /* mark the datepicker as 'valueSelected' */
         this.isValueSelected = YES;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
-
-    /**
-     * Triggers render() on all children.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
     }
 
 });
@@ -3465,8 +2267,6 @@ M.LoaderView = M.View.extend(
     initialize: function() {
         if(!this.isInitialized) {
             this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
             this.isInitialized = YES;
         }
     },
@@ -3476,18 +2276,16 @@ M.LoaderView = M.View.extend(
      * title parameter.
      *
      * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
      */
-    show: function(title, hideSpinner) {
+    show: function(title) {
         this.refCount++;
         var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
         if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
+            $.mobile.showPageLoadingMsg();
+            this.changeTitle(title);
 
             /* position alert in the center of the possibly scrolled viewport */
+            var loader = $('.ui-loader');
             var screenSize = M.Environment.getSize();
             var scrollYOffset = window.pageYOffset;
             var loaderHeight = loader.outerHeight();
@@ -3643,72 +2441,6 @@ M.DialogView = M.View.extend(
             var obj = this.queue.pop();
             this[obj.action](obj.obj);
         }
-    },
-
-    show: function() {
-        /* call the dialog's render() */
-        this.render();
-        var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background');
-        background.hide();
-
-        /* disable scrolling to enable a "real" dialog behaviour */
-//        $(document).bind('touchmove', function(e) {
-//            e.preventDefault();
-//        });
-
-        /* position the dialog and fade it in */
-        this.positionDialog(dialog);
-        dialog.addClass('pop in');
-
-        /* reposition, but wait a second */
-        var that = this;
-        window.setTimeout(function() {
-            background.show();
-            that.positionBackground(background);
-        }, 1);
-    },
-
-    hide: function() {
-        var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background');
-        dialog.addClass('pop out');
-        background.remove();
-        this.destroy();
-
-        /* enable scrolling again */
-//        $(document).unbind('touchmove');
-
-        /* now wait 100ms and then call the next in the queue */
-        var that = this;
-        window.setTimeout(function() {
-            M.DialogView.isActive = NO;
-            that.dequeue();
-        }, 100);
-    },
-
-    positionDialog: function(dialog) {
-        /* position alert in the center of the possibly scrolled viewport */
-        var screenSize = M.Environment.getSize();
-        var scrollYOffset = window.pageYOffset;
-        var scrollXOffset = window.pageXOffset;
-        var dialogHeight = dialog.outerHeight();
-        var dialogWidth = dialog.outerWidth();
-
-        var xPos = scrollXOffset + (screenSize[0]/2);
-        var yPos = scrollYOffset + (screenSize[1]/2);
-
-        dialog.css('position', 'absolute');
-        dialog.css('top', yPos + 'px');
-        dialog.css('left', xPos + 'px');
-        dialog.css('z-index', 10000);
-        dialog.css('margin-top', '-' + (dialogHeight/2) + 'px');
-        dialog.css('margin-left', '-' + (dialogWidth/2) + 'px');
-    },
-
-    positionBackground: function(background) {
-        background.css('height', $(document).height() + 'px');
-        background.css('width', $(document).width() + 'px');
     }
 
 });
@@ -3817,7 +2549,7 @@ M.ActionSheetDialogView = M.DialogView.extend(
             buttons.push(M.ButtonView.design({
                 value: this.destructiveButtonValue,
                 tag: 'destruction',
-                dataTheme: 'a tmp-actionsheet-destructive-button',
+                cssClass: 'a tmp-actionsheet-destructive-button',
                 events: {
                     tap: {
                         target: that,
@@ -3858,7 +2590,7 @@ M.ActionSheetDialogView = M.DialogView.extend(
             buttons.push(M.ButtonView.design({
                 value: this.cancelButtonValue,
                 tag: 'cancel',
-                dataTheme: 'a',
+                cssClass: 'a',
                 events: {
                     tap: {
                         target: that,
@@ -3889,32 +2621,28 @@ M.ActionSheetDialogView = M.DialogView.extend(
     },
 
     show: function() {
-        /* call the dialog's render() */
         this.render();
         var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background');
-        background.hide();
-
-        /* disable scrolling to enable a "real" dialog behaviour */
-//        $(document).bind('touchmove', function(e) {
-//            e.preventDefault();
-//        });
-
-        /* slide the dialog in */
         dialog.removeClass('slideup out reverse');
         dialog.addClass('slideup in');
+    },
 
-        /* reposition, but wait a second */
+    hide: function() {
+        var dialog = $('#' + this.id);
+        dialog.removeClass('slideup in');
+        dialog.addClass('slideup out reverse');
+        $('.tmp-dialog-background').remove();
+
+        /* destroying the view object and its DOM representation must be performed after the slide animation is finished. */
+        var that = this;
+        window.setTimeout(that.bindToCaller(that, that.destroy), this.deletionDelay);
+
+        /* now wait 100ms (plus the default delay) and then call the next in the queue */
         var that = this;
         window.setTimeout(function() {
-            background.show();
-            that.positionBackground(background);
-
-            /* click on background cancels the action sheet */
-            $('.tmp-dialog-background').bind('click tap', function() {
-                that.hide();
-            });
-        }, 1);
+            M.DialogView.isActive = NO;
+            that.dequeue();
+        }, this.deletionDelay + 100);
     },
 
     handleCallback: function(viewId, event) {
@@ -3926,6 +2654,9 @@ M.ActionSheetDialogView = M.DialogView.extend(
             this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
         }
     }
+
+
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -4013,7 +2744,7 @@ M.AlertDialogView = M.DialogView.extend(
             var that = this;
             button = M.ButtonView.design({
                 value: this.confirmButtonValue,
-                dataTheme: 'b tmp-dialog-smallerbtn',
+                cssClass: 'b tmp-dialog-smallerbtn',
                 events: {
                     tap: {
                         target: that,
@@ -4033,11 +2764,62 @@ M.AlertDialogView = M.DialogView.extend(
         }
     },
 
+    show: function() {
+        /* call the dialog's render() */
+        this.render();
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background')    ;
+
+        this.positionDialog(dialog);
+        this.positionBackground(background);
+
+        dialog.addClass('pop in');
+    },
+
+    hide: function() {
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background');
+        dialog.addClass('pop out');
+        background.remove();
+        this.destroy();
+
+        /* now wait 100ms and then call the next in the queue */
+        var that = this;
+        window.setTimeout(function() {
+            M.DialogView.isActive = NO;
+            that.dequeue();
+        }, 100);
+    },
+
     handleCallback: function() {
         this.hide();
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
             this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
         }
+    },
+
+    positionDialog: function(dialog) {
+        /* position alert in the center of the possibly scrolled viewport */
+        var screenSize = M.Environment.getSize();
+        var scrollYOffset = window.pageYOffset;
+        var scrollXOffset = window.pageXOffset;
+        var dialogHeight = dialog.outerHeight();
+        var dialogWidth = dialog.outerWidth();
+
+        var xPos = scrollXOffset + (screenSize[0]/2);
+        var yPos = scrollYOffset + (screenSize[1]/2);
+
+        dialog.css('position', 'absolute');
+        dialog.css('top', yPos + 'px');
+        dialog.css('left', xPos + 'px');
+        dialog.css('z-index', 10000);
+        dialog.css('margin-top', '-' + (dialogHeight/2) + 'px');
+        dialog.css('margin-left', '-' + (dialogWidth/2) + 'px');
+    },
+
+    positionBackground: function(background) {
+        background.css('height', $(document).height() + 'px');
+        background.css('width', $(document).width() + 'px');
     }
 
 });
@@ -4126,7 +2908,7 @@ M.ConfirmDialogView = M.DialogView.extend(
         /* build confirm button */
         var button = M.ButtonView.design({
             value: this.confirmButtonValue,
-            dataTheme: 'b tmp-dialog-smallerbtn-confirm',
+            cssClass: 'b tmp-dialog-smallerbtn-confirm',
             events: {
                 tap: {
                     target: that,
@@ -4137,7 +2919,7 @@ M.ConfirmDialogView = M.DialogView.extend(
         /* build cancel button */
         var button2 = M.ButtonView.design({
             value: this.cancelButtonValue,
-            dataTheme: 'd tmp-dialog-smallerbtn-confirm',
+            cssClass: 'd tmp-dialog-smallerbtn-confirm',
             events: {
                 tap: {
                     target: that,
@@ -4167,6 +2949,32 @@ M.ConfirmDialogView = M.DialogView.extend(
         }
     },
 
+    show: function() {
+        this.render();
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background')    ;
+
+        this.positionDialog(dialog);
+        this.positionBackground(background);
+
+        dialog.addClass('pop in');
+    },
+
+    hide: function() {
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background');
+        dialog.addClass('pop out');
+        background.remove();
+        this.destroy();
+
+        /* now wait 100ms and then call the next in the queue */
+        var that = this;
+        window.setTimeout(function() {
+            M.DialogView.isActive = NO;
+            that.dequeue();
+        }, 100);
+    },
+
     confirmed: function() {
         this.hide();
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
@@ -4179,6 +2987,30 @@ M.ConfirmDialogView = M.DialogView.extend(
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.cancel)){
             this.bindToCaller(this.callbacks.cancel.target, this.callbacks.cancel.action)();
         }
+    },
+
+    positionDialog: function(dialog) {
+        /* position alert in the center of the possibly scrolled viewport */
+        var screenSize = M.Environment.getSize();
+        var scrollYOffset = window.pageYOffset;
+        var scrollXOffset = window.pageXOffset;
+        var dialogHeight = dialog.outerHeight();
+        var dialogWidth = dialog.outerWidth();
+
+        var xPos = scrollXOffset + (screenSize[0]/2);
+        var yPos = scrollYOffset + (screenSize[1]/2);
+
+        dialog.css('position', 'absolute');
+        dialog.css('top', yPos + 'px');
+        dialog.css('left', xPos + 'px');
+        dialog.css('z-index', 10000);
+        dialog.css('margin-top', '-' + (dialogHeight/2) + 'px');
+        dialog.css('margin-left', '-' + (dialogWidth/2) + 'px');
+    },
+
+    positionBackground: function(background) {
+        background.css('height', $(document).height() + 'px');
+        background.css('width', $(document).width() + 'px');
     }
 
 });
@@ -4238,7 +3070,6 @@ M.SelectionListItemView = M.View.extend(
      * @returns {String} The selection list item view's html representation.
      */
     render: function() {
-        this.html = '';
         if(this.parentView && (this.parentView.selectionMode === M.SINGLE_SELECTION_DIALOG || this.parentView.selectionMode === M.MULTIPLE_SELECTION_DIALOG)) {
             this.html += '<option id="' + this.id + '" value="' + this.value + '"';
 
@@ -4481,20 +3312,6 @@ M.SelectionListView = M.View.extend(
     recommendedEvents: ['change'],
 
     /**
-     * Define whether putting an asterisk to the right of the label for this selection list.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
      * Renders a selection list.
      *
      * @private
@@ -4505,7 +3322,7 @@ M.SelectionListView = M.View.extend(
         /* initialize the initialState property as new array */
         this.initialState = [];
 
-        this.html = '<div id="' + this.id + '_container"';
+        this.html += '<div id="' + this.id + '_container"';
 
         if(this.isGrouped) {
             this.html += ' data-role="fieldcontain"';
@@ -4525,16 +3342,7 @@ M.SelectionListView = M.View.extend(
         if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
             
             if(this.label) {
-                this.html += '<label for="' + this.id + '">' + this.label;
-                if (this.hasAsteriskOnLabel) {
-                    if (this.cssClassForAsterisk) {
-                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                    } else {
-                        this.html += '<span>*</span></label>';
-                    }
-                } else {
-                    this.html += '</label>';
-                }
+                this.html += '<label for="' + this.id + '">' + this.label + '</label>';
             }
 
             this.html += '<select name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + (this.selectionMode === M.MULTIPLE_SELECTION_DIALOG ? ' multiple="multiple"' : '') + '>';
@@ -4548,16 +3356,7 @@ M.SelectionListView = M.View.extend(
             this.html += '<fieldset data-role="controlgroup" data-native-menu="false" id="' + this.id + '">';
 
             if(this.label) {
-                this.html += '<legend>' + this.label;
-                if (this.hasAsteriskOnLabel) {
-                    if (this.cssClassForAsterisk) {
-                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></legend>';
-                    } else {
-                        this.html += '<span>*</span></legend>';
-                    }
-                } else {
-                    this.html += '</legend>';
-                }
+                this.html += '<legend>' + this.label + '</legend>';
             }
 
             this.renderChildViews();
@@ -4690,9 +3489,8 @@ M.SelectionListView = M.View.extend(
     theme: function() {
         if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
             $('#' + this.id).selectmenu();
-            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
+            if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) {
                 $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
-                document.getElementById(this.id).selectedIndex = -1;
             }
         } else if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
             $('#' + this.id).controlgroup();
@@ -4707,9 +3505,8 @@ M.SelectionListView = M.View.extend(
     themeUpdate: function() {
         if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
             $('#' + this.id).selectmenu('refresh');
-            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
+            if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) {
                 $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
-                document.getElementById(this.id).selectedIndex = -1;
             } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection) {
                 var that = this;
                 var item = M.ViewManager.getViewById($('#' + this.id).find('option:first-child').attr('id'));
@@ -4794,7 +3591,6 @@ M.SelectionListView = M.View.extend(
                 selectionValues.push(this.selection[i].value);
                 $('#' + this.id + '_container').find('.ui-btn-text').html(this.formatSelectionLabel(this.selection.length));
             }
-            $('#' + this.id + '_container').find('.ui-li-count').html(this.selection ? this.selection.length : 0);
 
             /* if there is no more item selected, reset the initial text */
             if(this.selection.length === 0) {
@@ -4804,27 +3600,6 @@ M.SelectionListView = M.View.extend(
             if(nextEvent) {
                 M.EventDispatcher.callHandler(nextEvent, event, NO, [selectionValues, this.selection]);
             }
-        }
-
-        /* fix the toolbar(s) again */
-        if(this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).blur();
-        }
-        
-        this.delegateValueUpdate();
-    },
-    
-    /**
-     * This method delegates any value changes to a controller, if the 'contentBindingReverse'
-     * property is specified.
-     */
-    delegateValueUpdate: function() {
-        /**
-         * delegate value updates to a bound controller, but only if the view currently is
-         * the master
-         */
-        if(this.contentBindingReverse) {
-            this.contentBindingReverse.target.set(this.contentBindingReverse.property, this.selection.value);
         }
     },
 
@@ -4938,10 +3713,10 @@ M.SelectionListView = M.View.extend(
 
                     /* set the label */
                     $('#' + that.id + '_container').find('.ui-btn-text').html(that.formatSelectionLabel(that.selection.length));
-                    $('#' + that.id + '_container').find('.ui-li-count').html(that.selection ? that.selection.length : 0);
                 });
             }
         }
+        that.theme();
     },
 
     /**
@@ -5037,7 +3812,7 @@ M.SelectionListView = M.View.extend(
                 $(this).checkboxradio('disable');
             });
         } else {
-            $('#' + this.id).selectmenu('disable');
+            $('#' + this.id).select('disable');
             $('#' + this.id).each(function() {
                 $(this).attr('disabled', 'disabled');
             });
@@ -5055,38 +3830,14 @@ M.SelectionListView = M.View.extend(
                 $(this).checkboxradio('enable');
             });
         } else {
-            $('#' + this.id).selectmenu('enable');
+            $('#' + this.id).select('enable');
             $('#' + this.id).each(function() {
                 $(this).removeAttr('disabled');
             });
         }
-    },
-
-    valueDidChange: function(){
-        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
-
-        if(!valueBinding) {
-            return;
-        }
-
-        var value = valueBinding.target;
-        var propertyChain = valueBinding.property.split('.');
-        _.each(propertyChain, function(level) {
-            if(value) {
-                value = value[level];
-            }
-        });
-
-        if(!value || value === undefined || value === null) {
-            M.Logger.log('The value assigned by valueBinding (property: \'' + valueBinding.property + '\') for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ') is invalid!', M.WARN);
-            return;
-        }
-
-        this.setSelection(value);
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5209,7 +3960,7 @@ M.LabelView = M.View.extend(
         }
 
         this.html += '</div>';
-
+        
         return this.html;
     },
 
@@ -5251,229 +4002,6 @@ M.LabelView = M.View.extend(
     }
 
 });
-/**
- * @class
- *
- * This defines the prototype of a toggle switch view
- *
- * General spoken it is an Boolean switch.
- *
- * @extends M.View
- */
-M.ToggleSwitchView = M.View.extend(
-    /** @scope M.ToggleSwitchView.prototype */ {
-
-        /**
-         * The type of this object.
-         *
-         * @type String
-         */
-        type:'M.ToggleSwitchView',
-
-        /**
-         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
-         *
-         * @type Boolean
-         */
-        isMini:NO,
-
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        onLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        offLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         *
-         * @default YES
-         * @type Boolean but could be anything
-         */
-
-        onValue:YES,
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         *
-         * @default NO
-         * @type Boolean but could be anything
-         */
-        offValue:NO,
-
-        /**
-         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
-         * @default YES
-         * @type Boolean
-         */
-        fieldcontain:NO,
-
-
-        /**
-         * This property specifies the recommended events for this type of view.
-         *
-         * @type Array
-         */
-        recommendedEvents: ['change'],
-
-
-        /**
-         * Renders a selection list.
-         *
-         * @private
-         * @returns {String} The toggle switch view's html representation.
-         */
-        render:function () {
-
-            this.html = '';
-            /* if there is no label put the value as label */
-            if (!this.onLabel) {
-                this.onLabel = this.onValue;
-            }
-
-            /* if there is no label put the value as label */
-            if (!this.offLabel) {
-                this.offLabel = this.offValue;
-            }
-
-            var dataRoleFieldContain = '';
-
-            /*is there is a fieldcontain defined use it*/
-            if (this.fieldcontain) {
-                dataRoleFieldContain = ' data-role="fieldcontain" ';
-            }
-
-            /*should the element be inline?*/
-            var isInline = '';
-            if (this.isInline) {
-                isInline = ' style="display: inline-block" ';
-            }
-
-            /*add the label to the view*/
-            if (this.label) {
-                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
-            }
-
-            /* build the markup as jquerymobile likes it */
-            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
-            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
-            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
-            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
-            this.html += '</select>';
-
-            this.html += '</div>';
-
-
-            /* return the markup*/
-            return this.html;
-        },
-
-        theme: function(){
-
-        },
-
-        /**
-         *
-         * add the class attribute to the HTML
-         *
-         * @return {String}
-         */
-
-        style:function () {
-            var html = ' class="';
-            if (this.cssClass) {
-                html += this.cssClass;
-            }
-            html += '" ';
-            return html;
-        },
-
-
-        /**
-         *
-         * returns the value of the selection
-         *
-         * @return {*} the value of the selection
-         */
-        getValue:function () {
-            var val = $('#' + this.id).val();
-            return val;
-        },
-
-        /**
-         *
-         * pass either the name of the option or its value to set the option and toggle the slider
-         *
-         * @param val the value to be set
-         */
-        setValue:function (val) {
-            //if the name matchs set the option to selected otherwise test the given parameter to the option value
-            var useValue = true;
-            $('#' + this.id + ' option').each(function () {
-                if ($(this).html() === val) {
-                    $(this).attr('selected', 'selected');
-                    useValue = false;
-                }
-            });
-            if (useValue) {
-                //is there an option with the paramet as value. if so then select it
-                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
-            }
-            //toggle the view
-            $('#' + this.id).slider('refresh');
-        },
-
-
-        /**
-         * sets the value of the toggle switch to onValue
-         */
-        on:function () {
-            this.setValue(this.onValue);
-        },
-
-        /**
-         * sets the value of the toggle switch to offValue
-         */
-        off:function () {
-            this.setValue(this.offValue);
-        },
-
-
-        /**
-         * enable the toggle switch view
-         */
-        enable:function () {
-            $('#' + this.id).slider('enable');
-        },
-
-
-        /**
-         * disable the toggle switch view
-         */
-        disable:function () {
-            $('#' + this.id).slider('disable');
-        }
-
-    })
-
-
-
-
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5510,7 +4038,7 @@ M.ContainerView = M.View.extend(
      * @returns {String} The container view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
 
         this.renderChildViews();
 
@@ -5531,402 +4059,6 @@ M.ContainerView = M.View.extend(
             html += ' class="' + this.cssClass + '"';
         }
         return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      15.08.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This ...
- *
- * @extends M.View
- */
-M.PopoverView = M.View.extend(
-/** @scope M.PopoverView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PopoverView',
-
-    menu: null,
-
-    scrollview: null,
-
-    hasPopScrollview: NO,
-
-    selectedItemInPopover: null,
-
-    render: function() {
-        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
-
-        /* render a toolbar as the popover's header */
-        var toolbar = M.ToolbarView.design({
-            value: 'Menu',
-            cssClass: 'tmp-popover-header'
-        });
-        this.html += toolbar.render();
-
-        this.menu = M.ListView.design({});
-
-        /* render a scrollview as the content container */
-        this.scrollview = M.ScrollView.design({
-            cssClass: 'tmp-popover-content',
-            childViews: 'list',
-            list: this.menu
-        });
-        this.html += this.scrollview.render();
-
-        /* add the border (with the arrow at the top) */
-        this.html += '<div class="tmp-popover-arrow"></div>';
-
-        this.html += '</div>';
-
-        /* push to DOM */
-        $('body').append(this.html);
-
-        /* now render items */
-        this.selectedItemInPopover = null;
-        for (var i in this.items) {
-            var item = M.ListItemView.design({
-                childViews: 'label',
-                parentView: this.splitview.menu.menu,
-                splitViewItem: this.items[i],
-                label: M.LabelView.design({
-                    value: this.items[i].value
-                }),
-                events: {
-                    tap: {
-                        target: this,
-                        action: 'itemSelected'
-                    }
-                }
-            });
-            this.scrollview.list.addItem(item.render());
-
-            /* check if this item has to be selected afterwards */
-            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
-                this.selectedItemInPopover = item.id;
-            }
-
-            /* register events for item */
-            item.registerEvents();
-        }
-
-        /* now set the active list item */
-        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
-
-        /* finally show the active list item's content */
-        this.splitview.listItemSelected(this.selectedItemInPopover);
-    },
-
-    renderUpdate: function() {
-        /* get id of selected item */
-        var id;
-        var that = this;
-        $('#' + this.menu.id).find('li').each(function() {
-            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
-                id = $(this).attr('id');
-            }
-        });
-        /* activate item */
-        if (id) {
-            this.menu.setActiveListItem(id);
-            this.selectedItemInPopover = id;
-        }
-    },
-
-    show: function() {
-        this.render();
-        this.theme();
-        this.toggle();
-    },
-
-    hide: function() {
-        $('#' + this.id).hide();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
-    },
-
-
-    /**
-     * This method calculates the popup's height, checks if a scrollview is required and,
-     * if neccessary, scrollt the list to make the selected item visible.
-     */
-    resizePopup: function() {
-        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
-        var itemCount = $('#' + this.menu.id).find('li').length;
-        var popoverSize = M.Environment.getHeight() * 0.7;
-        var itemListHeight = itemCount * itemHeight;
-        if (popoverSize < itemListHeight) {
-            $('#' + this.menu.id).css('height', popoverSize);
-            // Add a scrollview to List
-            $('#' + this.menu.id).scrollview({
-                direction: 'y'
-            });
-            this.hasPopScrollview = YES;
-        }
-        else {
-            $('#' + this.menu.id).css('height', itemListHeight);
-        }
-        //Scrolling to right position is only needed when the popover has a scrollview
-        if (this.hasPopScrollview) {
-            this.scrollListToRightPosition();
-        }
-    },
-
-    toggle: function() {
-        $('#' + this.id).toggle();
-        this.resizePopup();
-    },
-
-    itemSelected: function(id, event, nextEvent) {
-        this.toggle();
-        this.splitview.listItemSelected(id);
-    },
-
-    scrollListToRightPosition: function() {
-        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() * 0.7;
-        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
-        var center = menuHeight / 2;
-        var distanceToListEnd = completeItemListHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < center) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - center);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < center) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - center);
-            }
-        }
-        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * Comment ...
- *
- * @extends M.View
- */
-M.WebView = M.View.extend(
-/** @scope M.WebView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.WebView',
-
-    /**
-     * This property can be used to specify wheter a user should be able to srcoll
-     * within the web view or not.
-     *
-     * Note: If set to NO, the external web content must take care of fitting in the
-     * web view. Otherwise some part of the web page won't be visible.
-     *
-     * @type Boolean
-     */
-    isScrollable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['load'],
-
-    /**
-     * This method renders a web view as a simple iFrame element.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.checkURL();
-        this.html = '<div id="' + this.id + '"></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-    },
-
-    /**
-     * This method is called whenever the content bound by content binding changes.
-     * It forces the web view to re-render meaning to load the updated url stored
-     * in the value property.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.value) {
-            this.computeValue();
-            this.checkURL();
-        }
-
-        if(this.value && this.html && this.html.indexOf('<div') === 0) {
-            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
-            $('#' + this.id).replaceWith(this.html);
-            this.registerEvents();
-        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
-            $('#' + this.id).attr('src', this.value);
-        }
-    },
-
-    /**
-     * This method is used to check the given URL and to make sure there is an
-     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
-     *
-     * @private
-     */
-    checkURL: function() {
-        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
-            this.value = 'http://' + this.value;
-        }
-    },
-
-    /**
-     * This method simply applies an internal CSS class to the web view and,
-     * if available, the CSS class specified by the cssClass property of that
-     * view element.
-     *
-     * @private
-     * @returns {String} The web view's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-webview';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    },
-
-    /**
-     * This method can be used to force the web view to reload its original
-     * URL. This can either be the one specified by the value property or the
-     * one specified by the currently bound content.
-     */
-    reload: function() {
-        $('#' + this.id).attr('src', this.value);
     }
 
 });
@@ -5999,10 +4131,6 @@ M.FormView = M.View.extend(
         for(var name in ids) {
             var view = M.ViewManager.getViewById(ids[name]);
             if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
                 _.each(view.validators, function(validator) {
                     if(!validator.validate(view, name)) {
                         isValid = NO;
@@ -6028,13 +4156,11 @@ M.FormView = M.View.extend(
     showErrors: function() {
         var errors = '';
         _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
+            var view = M.ViewManager.getViewById(error.errObj.viewId);
+            if(view && view.cssClassOnError) {
+                view.addCssClass(view.cssClassOnError);
             }
+            errors += '<li>' + error.msg + '</li>';
         });
 
         if(this.showAlertDialogOnError) {
@@ -6224,29 +4350,6 @@ M.MapMarkerView = M.View.extend(
     icon: null,
 
     /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
-
-    /**
      * This property specifies the recommended events for this type of view.
      *
      * @type Array
@@ -6320,7 +4423,7 @@ M.MapMarkerView = M.View.extend(
         if(this.events || this.map.events) {
             var events = this.events ? this.events : this.map.events;
             for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                if(e === (event.type === 'click' ? 'tap' : event.type)) {
                     M.EventDispatcher.callHandler(events[e], event, NO, [this]);
                 }
             }
@@ -6390,14 +4493,6 @@ M.TabBarView = M.View.extend(
     usageCounter: 0,
 
     /**
-     * This property determines whether to toggle the tab bar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
-    /**
      * Renders a tab bar as an unordered list.
      *
      * @private
@@ -6408,7 +4503,7 @@ M.TabBarView = M.View.extend(
         this.usageCounter += 1;
 
         if(this.anchorLocation) {
-            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed" data-tap-toggle="' + this.toggleOnTap + '" data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"><div data-role="navbar"><ul>';
+            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed"><div data-role="navbar"><ul>';
         } else {
             this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
         }
@@ -6744,7 +4839,7 @@ M.MapView = M.View.extend(
      * @returns {String} The map view's html representation.
      */
     render: function() {
-        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
+        this.html += '<div data-fullscreen="true" id="' + this.id + '"';
         this.html += !this.isInset ? ' class="ui-listview"' : '';
         this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
 
@@ -7038,20 +5133,14 @@ M.MapView = M.View.extend(
      * @param {M.MapMarkerView} marker The marker to be added.
      */
     addMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
             var that = this;
             marker.marker = new google.maps.Marker({
                 map: that.map,
                 draggable: NO,
                 animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
                 position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
-                icon: marker.icon ? new google.maps.MarkerImage(
-                    marker.icon,
-                    null,
-                    null,
-                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
-                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
-                ) : marker.icon
+                icon: marker.icon
             });
             marker.registerEvents();
             this.markers.push(
@@ -7144,7 +5233,7 @@ M.ImageView = M.View.extend(
      */
     render: function() {
         this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        this.html += '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + '>';
         return this.html;
     },
 
@@ -7205,7 +5294,7 @@ M.ImageView = M.View.extend(
 
     sourceIsInvalid: function(id, event, nextEvent) {
         M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
+        $('#' + this.id).hide();
 
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, YES);
@@ -7213,200 +5302,11 @@ M.ImageView = M.View.extend(
     },
 
     sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
+        $('#' + this.id).show();
+
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
- *
- * @extends M.View
- */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CarouselItemView',
-
-    /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
-     *
-     * @private
-     * @returns {String} The carousel item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
-
-        this.renderChildViews();
-
-        this.html += '</li>';
-
-        return this.html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
     }
 
 });
@@ -7522,7 +5422,6 @@ M.SliderView = M.View.extend(
      * @returns {String} The slider view's html representation.
      */
     render: function() {
-        this.html = '';
         if(this.label) {
             this.html += '<label for="' + this.id + '">' + this.label;
             if (this.hasAsteriskOnLabel) {
@@ -7658,6 +5557,215 @@ M.SliderView = M.View.extend(
     }
 
 });
+
+//// ==========================================================================
+//// Project:   The M-Project - Mobile HTML5 Application Framework
+//// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+//// Creator:   Dominik
+//// Date:      17.11.2011
+//// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+////            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+////            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+//// ==========================================================================
+//
+///**
+// * @class
+// *
+// * This defines the prototype for a slider view. It renders a touch-optimized slider
+// * that can be used to set a number within a specified range.
+// *
+// * @extends M.View
+// */
+//M.SliderView = M.View.extend(
+///** @scope M.ButtonView.prototype */ {
+//
+//    /**
+//     * The type of this object.
+//     *
+//     * @type String
+//     */
+//    type: 'M.SliderView',
+//
+//    /**
+//     * This property contains the slider's value.
+//     */
+//    value: 0,
+//
+//    /**
+//     * This property contains the slider's initial value.
+//     *
+//     * @private
+//     */
+//    initialValue: 0,
+//
+//    /**
+//     * This property specifies the min value of the slider.
+//     *
+//     * @type Number
+//     */
+//    min: 0,
+//
+//    /**
+//     * This property specifies the max value of the slider.
+//     *
+//     * @type Number
+//     */
+//    max: 100,
+//
+//    /**
+//     * This property specifies the step value of the slider.
+//     *
+//     * @type Number
+//     */
+//    step: 1,
+//
+//    /**
+//     * This property determines whether or not to display the corresponding input of the slider.
+//     *
+//     * @type Boolean
+//     */
+//    isSliderOnly: NO,
+//
+//    /**
+//     * This property specifies the recommended events for this type of view.
+//     *
+//     * @type Array
+//     */
+//    recommendedEvents: ['change'],
+//
+//    /**
+//     * Renders a slider.
+//     *
+//     * @private
+//     * @returns {String} The slider view's html representation.
+//     */
+//    render: function() {
+//        if(this.label) {
+//           this.html += '<label for="' + this.id + '">' + this.label + '</label>';
+//        }
+//
+//        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+//        this.html += '<input id="' + this.id + '" type="range" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+//
+//        this.html += '</div>';
+//
+//        /* store value as initial value for later resetting */
+//        this.initialValue = this.value;
+//
+//        return this.html;
+//    },
+//
+//    /**
+//     * This method registers the change event to internally re-set the value of the
+//     * slider.
+//     */
+//    registerEvents: function() {
+//        if(!this.internalEvents) {
+//            this.internalEvents = {
+//                change: {
+//                    target: this,
+//                    action: 'setValueFromDOM'
+//                }
+//            }
+//        }
+//        this.bindToCaller(this, M.View.registerEvents)();
+//    },
+//
+//    /**
+//     * Updates a SliderView with DOM access by jQuery.
+//     *
+//     * @private
+//     */
+//    renderUpdate: function() {
+//        /* check if the slider's value is numeric, otherwise use initial value */
+//        if(isNaN(this.value)) {
+//            this.value = this.initialValue;
+//        /* if it is a number, but out of bounds, use min/max */
+//        } else if(this.value < this.min) {
+//            this.value = this.min
+//        } else if(this.value > this.max) {
+//            this.value = this.max
+//        }
+//
+//        $('#' + this.id).val(this.value);
+//        $('#' + this.id).slider('refresh');
+//    },
+//
+//    /**
+//     * This method sets its value to the value it has in its DOM representation
+//     * and then delegates these changes to a controller property if the
+//     * contentBindingReverse property is set.
+//     *
+//     * Additionally call target / action if set.
+//     *
+//     * @param {String} id The DOM id of the event target.
+//     * @param {Object} event The DOM event.
+//     * @param {Object} nextEvent The next event (external event), if specified.
+//     */
+//    setValueFromDOM: function(id, event, nextEvent) {
+//        this.value = $('#' + this.id).val();
+//
+//        if(nextEvent) {
+//            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+//        }
+//    },
+//
+//    /**
+//     * Applies some style-attributes to the slider.
+//     *
+//     * @private
+//     * @returns {String} The slider's styling as html representation.
+//     */
+//    style: function() {
+//        var html = '';
+//        if(this.cssClass) {
+//            html += ' class="' + this.cssClass + '"';
+//        }
+//        return html;
+//    },
+//
+//    /**
+//     * Do some theming/styling once the slider was added to the DOM.
+//     *
+//     * @private
+//     */
+//    theme: function() {
+//        if(this.isSliderOnly) {
+//            $('#' + this.id).hide();
+//        }
+//
+//        if(!this.isEnabled) {
+//            this.disable();
+//        }
+//    },
+//
+//    /**
+//     * This method resets the slider to its initial value.
+//     */
+//    resetSlider: function() {
+//        this.value = this.initialValue;
+//        this.renderUpdate();
+//    },
+//
+//    /**
+//     * This method disables the text field by setting the disabled property of its
+//     * html representation to true.
+//     */
+//    disable: function() {
+//        this.isEnabled = NO;
+//        $('#' + this.id).slider('disable');
+//    },
+//
+//    /**
+//     * This method enables the text field by setting the disabled property of its
+//     * html representation to false.
+//     */
+//    enable: function() {
+//        this.isEnabled = YES;
+//        $('#' + this.id).slider('enable');
+//    }
+//
+//});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7753,27 +5861,6 @@ M.ToolbarView = M.View.extend(
      */
     isFixed: YES,
 
-
-    /**
-     * This property determines whether the toolbar is persistent or not.
-     * By default this is set to YES.
-     * If you like to customize the behavior you can simply define you own identifier. Every M.Toolbar with the same identifier is with each other persistent.
-     * If you simply set it to YES the header is persistent to each other header with the flag YES.
-     * If it is set to NO, then there is the old style page switch
-     *
-     * @type Boolean or String
-     */
-
-    isPersistent: YES,
-
-    /**
-     * This property determines whether to toggle the toolbar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
     /**
      * Renders a toolbar as a div tag with corresponding data-role attribute and inner
      * h1 child tag (representing the title of the header)
@@ -7782,21 +5869,11 @@ M.ToolbarView = M.View.extend(
      * @returns {String} The toolbar view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '" data-role="' + this.anchorLocation + '" data-tap-toggle="' + this.toggleOnTap + '"' + this.style();
+        this.html += '<div id="' + this.id + '" data-role="' + this.anchorLocation + '"' + this.style();
 
         if(this.isFixed) {
             this.html += ' data-position="fixed"';
         }
-
-        if(this.isPersistent) {
-            if(typeof(this.isPersistent) === "string"){
-                this.html += ' data-id="' + this.isPersistent + '"';
-            }else{
-                this.html += ' data-id="themprojectpersistenttoolbar"';
-            }
-        }
-
-        this.html += ' data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"';
 
         this.html += '>';
 
@@ -7873,16 +5950,6 @@ M.ToolbarView = M.View.extend(
     },
 
     /**
-     * Updates the value of the toolbar with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id + ' h1').text(this.value);
-    },
-
-    /**
      * This method is responsible for registering events for view elements and its child views. It
      * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
      * events.
@@ -7911,327 +5978,6 @@ M.ToolbarView = M.View.extend(
         return html;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of a movable label view.
- * It extends M.LabelView and has special methods and overrides for making it movable
- *
- * @extends M.LabelView
- */
-M.MovableLabelView = M.LabelView.extend(
-/** @scope M.MovableLabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type {String}
-     */
-    type: 'M.MovableLabelView',
-
-    /**
-     * movable object property responsible for making this view movable
-     *
-     */
-    movable: null,
-
-    /**
-     * The CSSOM representation of the newly created style in the document-head
-     *
-     * @private
-     * @type {Object}
-     */
-    extraStyle: null,
-
-    /**
-     * Signalizes if there are any moveRules attached to this view
-     *
-     * @private
-     * @type {Boolean}
-     */
-    moveRulesAvailable: NO,
-
-    /**
-     * jQuery object of the DOM representation of this view
-     *
-     * @private
-     * @type {Object}
-     */
-    $this: null,
-
-    /**
-     * jQuery object of the DOM representation of this view's parent
-     *
-     * @private
-     * @type {Object}
-     */
-    $parent: null,
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value. Also checks if the label has to move hence that the movable property has been passed.
-     * If so renders an outer div, creates an extra style inside the document-head, checks if moving is necessary
-     * and if so sets the label movable.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-
-    render: function() {
-        var that = this,
-            diff;
-        this.computeValue();
-        if(_.isObject(this.movable)) {
-            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
-                this.html = '<div class="tmp-movable-outer outer-'+ this.id +'">';
-                this.extraStyle = this._createExtraStyle();
-                window.setTimeout(function(){
-                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
-                }, 0);
-            }else {
-                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
-            }
-        }
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        /* If movable is set, an outer div box was defined before and we need to close it here */
-        if(_.isObject(this.movable)) {
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery. Checks again if this view has to move
-     * as the width might has changed hence of changes in the views value.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var that = this;
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-        if(_.isObject(this.movable)){
-            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
-                window.setTimeout(function(){
-                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
-                }, 0);
-            }else {
-                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * Actual method which makes this view movable by inserting CSS3 animation rule
-     * to the extra style-tag in the document-head.
-     *
-     * @private
-     */
-    _makeMovable: function(diff) {
-        var that = this;
-        window.setTimeout(function(){
-            that._insertMoveRules(that._getBrowserKeyframeRule(), diff, (that.movable.offset || that.movable.offset === 0) ? that.movable.offset : 0, (that.movable.pxPerSec) ? (diff / that.movable.pxPerSec) : that.movable.time);
-        }, 0);
-    },
-
-    /**
-     * Responsible for deciding whether this view should move or not.
-     *
-     * @private
-     * @returns either the calculated number or false
-     */
-    _checkIfMovingNecessary: function() {
-        var diff;
-        this.$this = $('#' + this.id);
-        this.$parent = this.$this.parent();
-        this._addMoveClasses(this.$this, this.$parent);
-        diff = this._getDiff(this.$this, this.$parent);
-        if(diff > 0){
-            if(this.moveRulesAvailable){
-                this._deleteMoveRules();
-            }
-            return diff;
-        }else {
-            this._removeMoveClasses(this.$this, this.$parent);
-            if(this.moveRulesAvailable) {
-                this._deleteMoveRules();
-            }
-            return NO;
-        }
-    },
-
-    /**
-     *
-     * Appends an extra style tag to the head
-     *
-     * @private
-     * @returns {HTMLElement} The style element as CSSOM
-     */
-    _createExtraStyle: function(){
-        var animationStyle = document.createElement('style'), styles;
-        animationStyle.type = "text/css";
-        document.getElementsByTagName('head').item(0).appendChild(animationStyle);
-        styles = document.styleSheets.length;
-        animationStyle = document.styleSheets[styles-1];
-        return animationStyle;
-    },
-
-    /**
-     * Calculates the width-difference of the inner div (the one containing the value) and
-     * its outer box.
-     *
-     * Difference + offset results in the "moving value", the offset that the label is animated.
-     *
-     * @private
-     * @param {Object} $self
-     * @param {Object} $parent
-     * @returns {number} difference self-width minus parent-width
-     */
-    _getDiff: function($self, $parent) {
-        var diff = $self.outerWidth() - $parent.width();
-        return diff;
-    },
-
-    /**
-     * Returns the CSSRule for the specific browser.
-     *
-     * @private
-     * @returns {string} the name of the browser for css3-animation
-     */
-    _getBrowserKeyframeRule: function(){
-        if(CSSRule.WEBKIT_KEYFRAME_RULE) {
-            return "-webkit-";
-        }else if(CSSRule.MOZ_KEYRAME_RULE) {
-            return "-moz-";
-        }else if(CSSRule.O_KEYFRAME_RULE) {
-            return "-o-";
-        }else {
-            return "";
-        }
-    },
-
-    /**
-     * Adds special classes responsible for making the label move.
-     *
-     * @private
-     * @param {Object} $self The jQuery-Object of this label
-     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
-     */
-    _addMoveClasses: function($self, $parent) {
-        $self.addClass('tmp-movable-inner inner-' + this.id);
-        $parent.addClass('tmp-movable-outer');
-    },
-
-    /**
-     * Removes special classes responsible for making the label move.
-     *
-     * @private
-     * @param {Object} $self The jQuery-Object of this label
-     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
-     */
-    _removeMoveClasses: function($self, $parent) {
-        $self.removeClass('tmp-movable-inner inner-' + this.id);
-        $parent.removeClass('tmp-movable-outer');
-    },
-
-    /**
-     * Inserts Animation-Rules to the CSSOM in the document-head.
-     *
-     * @private
-     * @param {String} The String for the specific browser
-     * @param diff The difference self-parent
-     * @param offset The offset value of the passed movable-object
-     * @param sec The time value of the passed movable-object
-     */
-    _insertMoveRules: function(browsertype, diff, offset, sec){
-        this.extraStyle.insertRule('.inner-' + this.id + ' {'+
-            browsertype+'animation-name: move-' + this.id + ';'+
-            browsertype+'animation-duration: ' + sec + 's;'+
-            browsertype+'animation-iteration-count: infinite;'+
-            browsertype+'animation-timing-function: linear;'+
-            '}', 0);
-        this.extraStyle.insertRule('@' + browsertype + 'keyframes move-' + this.id + '{ 0%,100% { left: ' + offset + 'px;} 50% { left:' + (-diff - offset) + 'px;}}', 1);
-        this.moveRulesAvailable = YES;
-    },
-
-    /**
-     * Deletes the extra CSS3 animation-rules from the CSSOM in the document-head.
-     *
-     * @private
-     *
-     */
-    _deleteMoveRules: function(){
-        var l = this.extraStyle.cssRules.length;
-        while(l > 0){
-            this.extraStyle.removeRule(l-1);
-            l = this.extraStyle.cssRules.length;
-        }
-        this.moveRulesAvailable = NO;
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -8277,7 +6023,7 @@ M.CanvasView = M.View.extend(
      * @returns {String} The image view's styling as html representation.
      */
     render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
+        this.html += '<canvas id="' + this.id + '" ></canvas>';
 
         return this.html;
     },
@@ -8430,19 +6176,11 @@ M.ButtonView = M.View.extend(
     tag: null,
 
     /**
-     * This property can be used to specifically set the data-theme property of a button view
-     * as it is used by jquery mobile.
-     *
-     * @type String
-     */
-    dataTheme: '',
-
-    /**
      * This property specifies the recommended events for this type of view.
      *
      * @type Array
      */
-    recommendedEvents: ['click', 'tap', 'vclick'],
+    recommendedEvents: ['click', 'tap'],
 
     /**
      * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
@@ -8452,7 +6190,7 @@ M.ButtonView = M.View.extend(
      */
     render: function() {
         this.computeValue();
-        this.html = '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
+        this.html += '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
 
         if(this.hyperlinkTarget && this.hyperlinkType) {
             switch (this.hyperlinkType) {
@@ -8502,7 +6240,11 @@ M.ButtonView = M.View.extend(
      */
     renderUpdate: function() {
         this.computeValue();
-        $('#' + this.id + ' .ui-btn-text').text(this.value);
+        if(this.parentView && this.parentView.type === 'M.ButtonGroupView') {
+            $('#' + this.id).find('.ui-btn-text').text(this.value);
+        } else {
+            $('#' + this.id).parent().find('.ui-btn-text').text(this.value);
+        }
     },
 
     /**
@@ -8523,7 +6265,7 @@ M.ButtonView = M.View.extend(
     theme: function() {
         /* theme only if not already done */
         if(!$('#' + this.id).hasClass('ui-btn')) {
-            $('#' + this.id).buttonMarkup();
+            $('#' + this.id).button();
         }
     },
 
@@ -8542,10 +6284,7 @@ M.ButtonView = M.View.extend(
             html += ' data-icon="' + this.icon + '"';
         }
         if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.dataTheme) {
-            html += ' data-theme="' + this.dataTheme + '"';
+            html += ' data-theme="' + this.cssClass + '"';
         }
         if(this.isIconOnly) {
             html += ' data-iconpos="notext"';
@@ -8595,7 +6334,6 @@ M.ButtonView = M.View.extend(
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8670,51 +6408,10 @@ M.ListItemView = M.View.extend(
     recommendedEvents: ['tap'],
 
     /**
-     * This property can be used to specify whether a list item can be selected or not. Note, that this
+     * This property can be used to specify whether a selection list item can be selected or not. Note, that this
      * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
-     *
-     * @type Boolean
      */
     isSelectable: YES,
-
-    /**
-     * This property can be used to specify a button that appears on a swipe left or swipe right
-     * gesture (as known from the iphone). Simply specify a tap event for that button and provide a
-     * custom method to handle the event. This can e.g. be used as a delete button.
-     *
-     * By default the button will look like a delete button (in red) and display 'delete'. To change this,
-     * simply pass a value to set the label and make use of the cssClass property. To get a standard button
-     * as you now it from the other parts of the framework, set the cssClass property's value to:
-     *
-     *   - 'a'  ->  black
-     *   - 'b'  ->  blue
-     *   - 'c'  ->  light grey
-     *   - 'd'  ->  white
-     *   - 'e'  ->  yellow
-     *
-     * Check the jQM docs for further information and visual samples of these themes:
-     * http://jquerymobile.com/test/docs/buttons/buttons-themes.html
-     *
-     * A valid and usefull configuration of such a swipe button could e.g. look like the following:
-     *
-     *   swipeButton: M.ButtonView.design({
-     *     events: {
-     *       tap: {
-     *         target: MyApp.MyController,
-     *         action: 'removeItem'
-     *       }
-     *     },
-     *     cssClass: 'e'
-     *   })
-     *
-     * The event handler (removeItem() in the sample above) will be called with two parameters:
-     *
-     *   - domID  ->  The DOM id of the list item view, e.g. 'm_123'
-     *   - id  ->  The id/recordId of the list item based on the bound data
-     *
-     * @type M.ButtonView
-     */
-    swipeButton: null,
 
     /**
      * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
@@ -8752,38 +6449,8 @@ M.ListItemView = M.View.extend(
         }
 
         this.html += '</li>';
-
+        
         return this.html;
-    },
-
-    /**
-     * Triggers render() on all children. This method defines a special rendering behaviour for a list item
-     * view's child views.
-     *
-     * @override
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                var childView = this[childViews[i]];
-                if(childView) {
-                    childView._name = childViews[i];
-                    childView.parentView = this;
-
-                    if(childView.type === 'M.ButtonView') {
-                        this.html += '<div>' + childView.render() + '</div>';
-                    } else {
-                        this.html += childView.render();
-                    }
-                } else {
-                    this.childViews = this.childViews.replace(childViews[i], ' ');
-                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
-                }
-            }
-            return this.html;
-        }
     },
 
     /**
@@ -8800,18 +6467,6 @@ M.ListItemView = M.View.extend(
                 target: this.parentView,
                 action: 'setActiveListItem'
             }
-        };
-        if(this.swipeButton) {
-            $.extend(this.internalEvents, {
-                swipeleft: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                },
-                swiperight: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                }
-            })
         }
         this.bindToCaller(this, M.View.registerEvents)();
     },
@@ -8828,23 +6483,6 @@ M.ListItemView = M.View.extend(
             html += ' class="' + this.cssClass + '"';
         }
         return html;
-    },
-
-    /**
-     * This method is used as the event handler of the tap event of a swipe button. All it does
-     * is to collect the required information for the external handler (domID, modelID) and call
-     * this external handler (if there is one specified).
-     *
-     * @private
-     */
-    swipeButtonClicked: function(id, event, nextEvent) {
-        id = this.id;
-        var modelId = M.ViewManager.getViewById(id).modelId;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
-        }
     }
 
 });
@@ -8942,13 +6580,6 @@ M.GridView = M.View.extend(
      * @type Object
      */
     layout: null,
-    
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: '',
 
     /**
      * Renders a grid view based on the specified layout.
@@ -8957,7 +6588,7 @@ M.GridView = M.View.extend(
      * @returns {String} The grid view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
+        this.html += '<div id="' + this.id + '" ' + this.style() + '>';
 
         this.renderChildViews();
 
@@ -9009,13 +6640,12 @@ M.GridView = M.View.extend(
      */
     style: function() {
         if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
+            var html = 'class="' + this.layout.cssClass + '"';
             return html;
         }
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -9119,7 +6749,7 @@ M.DashboardView = M.View.extend(
      * @returns {String} The dashboard view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
         this.renderChildViews();
         this.html += '</div>';
 
@@ -9208,7 +6838,7 @@ M.DashboardView = M.View.extend(
 
             /* is new line starting? */
             if(itemIndex % this.itemsPerLine === 0) {
-                html += '<div class="tmp-dashboard-line">';
+                //html += '<div class="tmp-dashboard-line">';
             }
 
             /* assign the desired width */
@@ -9219,7 +6849,7 @@ M.DashboardView = M.View.extend(
 
             /* is a line finished? */
             if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
-                html += '</div><div class="tmp-dashboard-line-clear"></div>';
+                //html += '</div><div class="tmp-dashboard-line-clear"></div>';
             }
 
             /* return the html */
@@ -9618,7 +7248,11 @@ M.SearchBarView = M.View.extend(
      * @returns {String} The search bar view's html representation.
      */
     render: function() {
-        this.html = '<input id="' + this.id + '" type="search" value="' + (this.value ? this.value : this.initialText) + '" class="' + this.cssClass + '" />';
+        this.html += '<form role="search"' + this.style() + '>';
+
+        this.html += '<input id="' + this.id + '" type="search" value="' + (this.value ? this.value : this.initialText) + '" class="' + this.cssClass + '" />';
+
+        this.html += '</form>';
 
         return this.html;
     },
@@ -10008,22 +7642,6 @@ M.ListView = M.View.extend(
     selectedItem: null,
 
     /**
-     * Contains a reference to the currently visible swipe delete button (if one exists).
-     *
-     * @type M.ButtonView
-     * @private
-     */
-    swipeButton: null,
-
-    /**
-     * This property can be used to determine whether or not to use a list items index as its refer id.
-     *
-     * @type Boolean
-     * @private
-     */
-    useIndexAsId: NO,
-
-    /**
      * This method renders the empty list view either as an ordered or as an unordered list. It also applies
      * some styling, if the corresponding properties where set.
      *
@@ -10041,9 +7659,7 @@ M.ListView = M.View.extend(
             this.searchBar.isListViewSearchBar = YES;
             this.searchBar.listView = this;
             this.searchBar = M.SearchBarView.design(this.searchBar);
-            this.html = this.searchBar.render();
-        } else {
-            this.html = '';
+            this.html += this.searchBar.render();
         }
 
         var listTagName = this.isNumberedList ? 'ol' : 'ul';
@@ -10096,9 +7712,6 @@ M.ListView = M.View.extend(
      * method is based on jQuery's empty().
      */
     removeAllItems: function() {
-        $('#' + this.id).find('> li').each(function() {
-            M.ViewManager.getViewById($(this).attr('id')).destroy();
-        });
         $('#' + this.id).empty();
     },
 
@@ -10121,8 +7734,8 @@ M.ListView = M.View.extend(
         var that = this;
 
         /* Get the list view's content as an object from the assigned content binding */
-        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.value) {
-            var content = this.value;
+        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property]) {
+            var content = this.contentBinding.target[this.contentBinding.property];
         } else {
             M.Logger.log('The specified content binding for the list view (' + this.id + ') is invalid!', M.WARN);
             return;
@@ -10136,9 +7749,6 @@ M.ListView = M.View.extend(
             M.Logger.log('The template view could not be loaded! Maybe you forgot to use m_require to set up the correct load order?', M.ERR);
             return;
         }
-
-        /* check if there is an events propety specified for the template or if we should use the list's events */
-        templateView.events = templateView.events ? templateView.events : this.events;
 
         /* If there is an items property, re-assign this to content, otherwise iterate through content itself */
         if(this.items) {
@@ -10160,11 +7770,14 @@ M.ListView = M.View.extend(
                 });
             }
         } else {
-            this.renderListItemView(content, templateView);
+        	this.renderListItemView(content, templateView);
         }
 
         /* Finally let the whole list look nice */
         this.themeUpdate();
+
+        /* At last fix the toolbar */
+        $.mobile.fixedToolbars.show();
     },
 
     /**
@@ -10176,7 +7789,7 @@ M.ListView = M.View.extend(
     renderListItemDivider: function(name) {
         var obj = M.ListItemView.design({});
         obj.value = name;
-        obj.isDivider = YES;
+        obj.isDivider = YES,
         this.addItem(obj.render());
         obj.theme();
     },
@@ -10192,31 +7805,52 @@ M.ListView = M.View.extend(
         /* Save this in variable that for later use within an other scope (e.g. _each()) */
         var that = this;
 
-        _.each(content, function(item, index) {
+        _.each(content, function(item) {
 
             /* Create a new object for the current template view */
             var obj = templateView.design({});
-
-            /* Determine the "modelId" value of the list item */
-            if(that.useIndexAsId && typeof(index) === 'number') {
-                obj.modelId = index;
-            } else if(item.type === 'M.Model') {
-                if(that.idName) {
-                    obj.modelId = item.get(that.idName);
-                } else {
-                    obj.modelId = item.m_id;
-                }
-            } else if(that.idName) {
-                obj.modelId = item[that.idName] || undefined;
-            } else if(item.id) {
+            /* If item is a model, assign the model's id to the view's modelId property */
+            if(item.type === 'M.Model') {
+                obj.modelId = item.m_id;
+            /* Otherwise, if there is an id property, save this automatically to have a reference */
+            } else if(item.id || !isNaN(item.id)) {
                 obj.modelId = item.id;
-            } else if(typeof(index) === 'number') {
-                obj.modelId = index;
+            } else if(item[that.idName] || item[that.idName] === "") {
+                obj.modelId = item[that.idName];
             }
 
-            obj = that.cloneObject(obj, item);
-            //set the current list item value to the view value. This enables for example to get the value/contentBinding of a list item in a template view.
-            obj.value = item;
+            /* Get the child views as an array of strings */
+            var childViewsArray = obj.getChildViewsAsArray();
+
+            /* If the item is a model, read the values from the 'record' property instead */
+            var record = item.type === 'M.Model' ? item.record : item;
+
+            /* Iterate through all views defined in the template view */
+            for(var i in childViewsArray) {
+                /* Create a new object for the current view */
+                obj[childViewsArray[i]] = obj[childViewsArray[i]].design({});
+
+                var regexResult = null;
+                if(obj[childViewsArray[i]].computedValue) {
+                    /* This regex looks for a variable inside the template view (<%= ... %>) ... */
+                    regexResult = /^<%=\s+([.|_|-|$|§|a-zA-Z]+[0-9]*[.|_|-|$|§|a-zA-Z]*)\s*%>$/.exec(obj[childViewsArray[i]].computedValue.valuePattern);
+                } else {
+                    regexResult = /^<%=\s+([.|_|-|$|§|a-zA-Z]+[0-9]*[.|_|-|$|§|a-zA-Z]*)\s*%>$/.exec(obj[childViewsArray[i]].valuePattern);
+                }
+
+                /* ... if a match was found, the variable is replaced by the corresponding value inside the record */
+                if(regexResult) {
+                    switch (obj[childViewsArray[i]].type) {
+                        case 'M.LabelView':
+                        case 'M.ButtonView':
+                        case 'M.ImageView':
+                        case 'M.TextFieldView':
+                            obj[childViewsArray[i]].value = record[regexResult[1]];
+                            break;
+                    }
+                }
+            }
+
             /* If edit mode is on, render a delete button */
             if(that.inEditMode) {
                 obj.inEditMode = that.inEditMode;
@@ -10250,69 +7884,10 @@ M.ListView = M.View.extend(
             }
 
             /* ... once it is in the DOM, make it look nice */
-            var childViewsArray = obj.getChildViewsAsArray();
-            for(var i in obj.getChildViewsAsArray()) {
+            for(var i in childViewsArray) {
                 obj[childViewsArray[i]].theme();
             }
         });
-    },
-
-    /**
-     * This method clones an object of the template including its sub views (recursively).
-     *
-     * @param {Object} obj The object to be cloned.
-     * @param {Object} item The current item (record/data).
-     * @private
-     */
-    cloneObject: function(obj, item) {
-        /* Get the child views as an array of strings */
-        var childViewsArray = obj.childViews ? obj.getChildViewsAsArray() : [];
-
-        /* If the item is a model, read the values from the 'record' property instead */
-        var record = item.type === 'M.Model' ? item.record : item;
-
-        /* Iterate through all views defined in the template view */
-        for(var i in childViewsArray) {
-            /* Create a new object for the current view */
-            obj[childViewsArray[i]] = obj[childViewsArray[i]].design({});
-
-            /* create childViews of the current object */
-            obj[childViewsArray[i]] = this.cloneObject(obj[childViewsArray[i]], item);
-
-            /* This regex looks for a variable inside the template view (<%= ... %>) ... */
-            var pattern = obj[childViewsArray[i]].computedValue ? obj[childViewsArray[i]].computedValue.valuePattern : obj[childViewsArray[i]].valuePattern;
-            var regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
-
-            /* ... if a match was found, the variable is replaced by the corresponding value inside the record */
-            if(regexResult) {
-                switch (obj[childViewsArray[i]].type) {
-                    case 'M.LabelView':
-                    case 'M.ButtonView':
-                    case 'M.ImageView':
-                    case 'M.TextFieldView':
-                        while(regexResult !== null) {
-                            if(typeof(record[regexResult[1]]) === 'object') {
-                                pattern = record[regexResult[1]];
-                                regexResult = null;
-                            } else {
-                                pattern = pattern.replace(regexResult[0], record[regexResult[1]]);
-                                regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
-                            }
-                        }
-                        obj[childViewsArray[i]].value = pattern;
-                        break;
-                }
-            }
-        }
-        obj.item = item;
-
-        _.each(Object.keys(item), function(key){
-            if(!obj.hasOwnProperty(key)){
-                obj[key] = item[key];
-            }
-        });
-        
-        return obj;
     },
 
     /**
@@ -10321,7 +7896,6 @@ M.ListView = M.View.extend(
      * @private
      */
     theme: function() {
-        $('#' + this.id).listview();
         if(this.searchBar) {
             /* JQM-hack: remove multiple search bars */
             if($('#' + this.id) && $('#' + this.id).parent()) {
@@ -10368,19 +7942,13 @@ M.ListView = M.View.extend(
      * @param {String} listItemId The id of the list item to be set active.
      */
     setActiveListItem: function(listItemId, event, nextEvent) {
-        /* if there is a swipe button visible, do nothing but hide that button */
-        if(this.swipeButton) {
-            this.hideSwipeButton();
-            return;
-        }
-
         if(this.selectedItem) {
             this.selectedItem.removeCssClass('ui-btn-active');
         }
         this.selectedItem = M.ViewManager.getViewById(listItemId);
 
         /* is the selection list items are selectable, activate the right one */
-        if(!this.listItemTemplateView || (this.listItemTemplateView && this.listItemTemplateView.isSelectable)) {
+        if(this.listItemTemplateView && this.listItemTemplateView.isSelectable) {
             this.selectedItem.addCssClass('ui-btn-active');
         }
 
@@ -10440,128 +8008,9 @@ M.ListView = M.View.extend(
         if(nextEvent) {
             M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
         }
-    },
-
-    showSwipeButton: function(id, event, nextEvent) {
-        var listItem = M.ViewManager.getViewById(id);
-
-        /* reset the selection for better visual effect */
-        this.resetActiveListItem();
-
-        if(!listItem.swipeButton) {
-            M.Logger.log('You need to specify a valid button with the \'swipeButton\' property of your list template!', M.WARN);
-        } else {
-            var previouslistItem = this.swipeButton ? this.swipeButton.parentView : null;
-
-            if(previouslistItem) {
-                this.hideSwipeButton();
-            }
-
-            if(!previouslistItem) {
-                this.swipeButton = M.ButtonView.design(
-                    listItem.swipeButton
-                );
-                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
-                this.swipeButton.parentView = M.ViewManager.getViewById(id);
-                this.swipeButton.cssClass = this.swipeButton.cssClass ? this.swipeButton.cssClass + ' tmp-swipe-button' : 'a tmp-actionsheet-destructive-button tmp-swipe-button';
-                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
-                this.swipeButton.internalEvents = {
-                    tap: {
-                        target: listItem,
-                        action: 'swipeButtonClicked'
-                    }
-                };
-
-                $('#' + id).append(this.swipeButton.render());
-                this.swipeButton.theme();
-                this.swipeButton.registerEvents();
-                $('#' + this.swipeButton.id).css('height', 0.7 * $('#' + id).outerHeight());
-                $('#' + this.swipeButton.id).css('top', Math.floor(0.15 * $('#' + id).outerHeight()));
-                $('#' + id + '>div.ui-btn-inner').css('margin-right', parseInt($('#' + this.swipeButton.id).css('width')) + parseInt($('#' + this.swipeButton.id).css('right')));
-
-                /* register tap/click for the page so we can hide the button again */
-                var that = this;
-                $('#' + M.ViewManager.getCurrentPage().id).bind('click tap', function() {
-                    that.hideSwipeButton();
-                });
-            }
-        }
-    },
-
-    hideSwipeButton: function() {
-        $('#' + this.swipeButton.id).hide();
-        $('#' + this.swipeButton.id).parent('li').find('div.ui-btn-inner').css('margin-right', 0);
-        this.swipeButton = null;
-
-        /* un-register tap/click for the page */
-        $('#' + M.ViewManager.getCurrentPage().id).unbind('click tap');
-    },
-
-    /**
-     * This method can be used to determine a list item view based on its id.
-     *
-     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
-     * of the item within the list is taken as reference id.
-     *
-     * @param {String, Number} modelId The id to determine the list item.
-     */
-    getListItemViewById: function(modelId) {
-        var item = _.detect(this.childViewObjects, function(item) {
-            return item.modelId === modelId;
-        });
-
-        return item;
-    },
-
-    /**
-     * This method can be used to silently update values within a single list item. Instead
-     * of removing the whole item, only the desired sub views are updated.
-     *
-     * To determine which list item to update, pass the internal id of the item as the first
-     * parameter.
-     *
-     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
-     * of the item within the list is taken as reference id.
-     *
-     * As second parameter pass an array containing objects that specify which sub view to
-     * update (key) and which value to set (value), e.g.:
-     *
-     *     [
-     *         {
-     *             key: 'label1',
-     *             value: 'new value',
-     *         }
-     *     ]
-     *
-     * @param {String, Number} modelId The id to determine the list item.
-     * @param {Array} updates An array containing all updates.
-     */
-    updateListItemView: function(modelId, updates) {
-        var item = this.getListItemViewById(modelId);
-
-        if(!item) {
-            M.Logger.log('No list item found with given id \'' + modelId + '\'.', M.WARN);
-            return;
-        }
-
-        if(!(updates && typeof(updates) === 'object')) {
-            M.Logger.log('No updates specified when calling \'updateListItemView\'.', M.WARN);
-            return;
-        }
-
-        _.each(updates, function(update) {
-            var view = M.ViewManager.getView(item, update['key']);
-
-            if(view) {
-                view.setValue(update['value']);
-            } else {
-                M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
-            }
-        });
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -10772,20 +8221,6 @@ M.TextFieldView = M.View.extend(
     recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
 
     /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
      * Renders a TextFieldView
      * 
      * @private
@@ -10793,40 +8228,36 @@ M.TextFieldView = M.View.extend(
      */
     render: function() {
         this.computeValue();
+        this.html += '<div';
 
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-            if(this.hasAsteriskOnLabel) {
-                if(this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
+        if(this.label && this.isGrouped) {
+            this.html += ' data-role="fieldcontain"';
         }
 
-		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
-        var placeholder = '';
-        if(this.initialText) {
-            placeholder = ' placeholder="' + this.initialText + '" ';
+        if(this.cssClass) {
+            this.html += ' class="' + this.cssClass + '_container"';
+        }
 
+        this.html += '>';
+
+        if(this.label) {
+            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label + '</label>';
         }
 
         if(this.hasMultipleLines) {
-            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
+            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + '>' + (this.value ? this.value : this.initialText) + '</textarea>';
             
         } else {
             var type = this.inputType;
-            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable || (this.initialText && this.inputType == M.INPUT_PASSWORD)) {
                 type = 'text';
             }
             
-            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
+            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : this.initialText) + '" />';
         }
-        
+
+        this.html += '</div>';
+
         return this.html;
     },
 
@@ -10851,15 +8282,11 @@ M.TextFieldView = M.View.extend(
             keyup: {
                 target: this,
                 action: 'setValueFromDOM'
+            },
+            tap: {
+                target: this,
+                action: 'handleTap'
             }
-        };
-        /* add TAP handler only if needed */
-        var type = this.inputType;
-        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-            this.internalEvents['tap'] = {
-                target:this,
-                action:'handleTap'
-            };
         }
         this.bindToCaller(this, M.View.registerEvents)();
     },
@@ -10935,6 +8362,9 @@ M.TextFieldView = M.View.extend(
      * @param {Object} nextEvent The next event (external event), if specified.
      */
     gotFocus: function(id, event, nextEvent) {
+        if(this.initialText && (!this.value || this.initialText === this.value)) {
+            this.setValue('');
+        }
         this.hasFocus = YES;
 
         if(nextEvent) {
@@ -10952,8 +8382,15 @@ M.TextFieldView = M.View.extend(
      * @param {Object} nextEvent The next event (external event), if specified.
      */
     lostFocus: function(id, event, nextEvent) {
-        this.setValueFromDOM();
+        /* if this is a native date field, get the value from dom */
+        if(_.include(this.dateInputTypes, this.inputType) && M.Environment.supportsInputType(this.inputType) && this.useNativeImplementationIfAvailable) {
+            this.setValueFromDOM();
+        }
 
+        if(this.initialText && !this.value) {
+            this.setValue(this.initialText, NO);
+            this.value = '';
+        }
         this.hasFocus = NO;
 
         if(nextEvent) {
@@ -10991,17 +8428,14 @@ M.TextFieldView = M.View.extend(
      * @private
      */
     theme: function() {
-        /* trigger keyup event to make the text field autogrow */
-        var jDom = $('#'  + this.id);
-        if(this.value) {
-            jDom.trigger('keyup').textinput();
-            if(!this.isEnabled){
-	            jDom.textinput('disable');
-	        }
+        if(this.initialText && !this.value && this.cssClassOnInit) {
+            this.addCssClass(this.cssClassOnInit);
         }
 
-        /* add container-css class */
-        jDom.parent().addClass(this.cssClass + '_container');
+        /* trigger keyup event to make the text field autogrow */
+        if(this.value) {
+            $('#'  + this.id).trigger('keyup');
+        }
     },
 
     /**
@@ -11060,6 +8494,27 @@ M.TextFieldView = M.View.extend(
     setValue: function(value, delegateUpdate, preventValueComputing) {
         this.value = value;
 
+		// Handle the classOnInit for initial text
+		if(value != this.initialText) {
+			if(this.cssClassOnInit) {
+				this.removeCssClass(this.cssClassOnInit);
+			}
+			if(this.inputType == M.INPUT_PASSWORD) {
+				// Set the field type to password
+				$('#' + this.id).prop('type','password');
+			}
+		}
+		else {
+            if(this.cssClassOnInit) {
+                this.addCssClass(this.cssClassOnInit);
+            }
+
+			if(this.inputType == M.INPUT_PASSWORD) {
+				// Set the field type to text
+				$('#' + this.id).prop('type','text');
+			}
+		}
+
         this.renderUpdate(preventValueComputing);
 
         if(delegateUpdate) {
@@ -11102,16 +8557,6 @@ M.TextFieldView = M.View.extend(
      */
     getValue: function() {
         return this.value;
-    },
-	/**
-     *
-     * Set a new label for this text field
-     * @param txt the new label value
-     */
-    setLabel: function(txt){
-        if(this.label){
-            $('label[for="' + this.id + '"]').html(txt);
-        }
     }
 
 });
