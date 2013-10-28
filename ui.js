@@ -3411,6 +3411,125 @@ M.DashboardItemView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4062,125 +4181,6 @@ M.ConfirmDialogView = M.DialogView.extend(
         }
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6065,174 +6065,6 @@ M.FormView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
- * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
- * M.TabBarView can be used the top navigation level for an application since it is always
- * visible an indicates the currently selected tab.
- *
- */
-M.TabBarView = M.View.extend(
-/** @scope M.TabBarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarView',
-    
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer tab bar
-     * - M.TOP => is a header tab bar
-     * - null / not set ==> a tab bar outside header / footer
-     *
-     * @type String
-     */
-    anchorLocation: null,
-
-    /**
-     * This property defines the tab bar's name. This is used internally to identify
-     * the tab bar inside the DOM.
-     *
-     * @type String
-     */
-    name: 'tab_bar',
-
-    /**
-     * This property holds a reference to the currently active tab.
-     *
-     * @type M.TabBarItemView
-     */
-    activeTab: null,
-
-    /**
-     * This property is used internally to count the number of usages of a tab bar.
-     */
-    usageCounter: 0,
-
-    /**
-     * This property determines whether to toggle the tab bar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
-    /**
-     * Renders a tab bar as an unordered list.
-     *
-     * @private
-     * @returns {String} The tab bar view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        this.usageCounter += 1;
-
-        if(this.anchorLocation) {
-            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed" data-tap-toggle="' + this.toggleOnTap + '" data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"><div data-role="navbar"><ul>';
-        } else {
-            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
-        }
-
-        this.renderChildViews();
-
-        this.html += '</ul></div>';
-
-        if(this.anchorLocation) {
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.TabBarItemView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* pre-process the child views to define which tab is selected */
-            var hasActiveTab = NO;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView' && view.isActive) {
-                    if(!hasActiveTab) {
-                        hasActiveTab = YES;
-                        this.activeTab = view;
-                    } else {
-                        view.isActive = NO;
-                    }
-                }
-            }
-
-            var numTabBarViews = 0;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView') {
-                    numTabBarViews = numTabBarViews + 1;
-
-                    /* set first tab to active tab if nothing else specified */
-                    if(numTabBarViews === 1 && !hasActiveTab) {
-                        view.isActive = YES;
-                        this.activeTab = view;
-                    }
-
-                    view.parentView = this;
-                    view._name = childViews[i];
-                    this.html += view.render();
-                } else {
-                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
-                }
-            }
-        } else {
-            M.Logger.log('No TabBarItemViews specified.', M.WARN);
-            return;
-        }
-    },
-
-    /**
-     * This method visually activates a tab bar item based on a given page.
-     *
-     * @param {M.TabBarItemView} tab The tab to set active.
-     */
-    setActiveTab: function(tab) {
-        /* deactivate current active tav */
-        this.activeTab.isActive = NO;
-        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
-        $('[id^=' + activeTabMainID + '_]').each(function() {
-            $(this).removeClass('ui-btn-active');
-        });
-
-        /* activate new tab */
-        tab.isActive = YES;
-        this.activeTab = tab;
-        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
-        $('[id^=' + tabMainID + '_]').each(function() {
-            $(this).addClass('ui-btn-active');
-        });
-
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      27.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6493,6 +6325,778 @@ M.MapMarkerView = M.View.extend(
                 }
             }
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
+ * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
+ * M.TabBarView can be used the top navigation level for an application since it is always
+ * visible an indicates the currently selected tab.
+ *
+ */
+M.TabBarView = M.View.extend(
+/** @scope M.TabBarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarView',
+    
+     /**
+     * Defines the position of the TabBar. Possible values are:
+     *
+     * - M.BOTTOM => is a footer tab bar
+     * - M.TOP => is a header tab bar
+     * - null / not set ==> a tab bar outside header / footer
+     *
+     * @type String
+     */
+    anchorLocation: null,
+
+    /**
+     * This property defines the tab bar's name. This is used internally to identify
+     * the tab bar inside the DOM.
+     *
+     * @type String
+     */
+    name: 'tab_bar',
+
+    /**
+     * This property holds a reference to the currently active tab.
+     *
+     * @type M.TabBarItemView
+     */
+    activeTab: null,
+
+    /**
+     * This property is used internally to count the number of usages of a tab bar.
+     */
+    usageCounter: 0,
+
+    /**
+     * This property determines whether to toggle the tab bar on tap on the content area
+     * or not. By default this is set to NO.
+     *
+     * @type Boolean
+     */
+    toggleOnTap: NO,
+
+    /**
+     * Renders a tab bar as an unordered list.
+     *
+     * @private
+     * @returns {String} The tab bar view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        this.usageCounter += 1;
+
+        if(this.anchorLocation) {
+            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed" data-tap-toggle="' + this.toggleOnTap + '" data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"><div data-role="navbar"><ul>';
+        } else {
+            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
+        }
+
+        this.renderChildViews();
+
+        this.html += '</ul></div>';
+
+        if(this.anchorLocation) {
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.TabBarItemView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* pre-process the child views to define which tab is selected */
+            var hasActiveTab = NO;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView' && view.isActive) {
+                    if(!hasActiveTab) {
+                        hasActiveTab = YES;
+                        this.activeTab = view;
+                    } else {
+                        view.isActive = NO;
+                    }
+                }
+            }
+
+            var numTabBarViews = 0;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView') {
+                    numTabBarViews = numTabBarViews + 1;
+
+                    /* set first tab to active tab if nothing else specified */
+                    if(numTabBarViews === 1 && !hasActiveTab) {
+                        view.isActive = YES;
+                        this.activeTab = view;
+                    }
+
+                    view.parentView = this;
+                    view._name = childViews[i];
+                    this.html += view.render();
+                } else {
+                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
+                }
+            }
+        } else {
+            M.Logger.log('No TabBarItemViews specified.', M.WARN);
+            return;
+        }
+    },
+
+    /**
+     * This method visually activates a tab bar item based on a given page.
+     *
+     * @param {M.TabBarItemView} tab The tab to set active.
+     */
+    setActiveTab: function(tab) {
+        /* deactivate current active tav */
+        this.activeTab.isActive = NO;
+        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
+        $('[id^=' + activeTabMainID + '_]').each(function() {
+            $(this).removeClass('ui-btn-active');
+        });
+
+        /* activate new tab */
+        tab.isActive = YES;
+        this.activeTab = tab;
+        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
+        $('[id^=' + tabMainID + '_]').each(function() {
+            $(this).addClass('ui-btn-active');
+        });
+
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for map type: roadmap
+ *
+ * @type String
+ */
+M.MAP_ROADMAP = 'ROADMAP';
+
+/**
+ * A constant value for map type: hybrid
+ *
+ * @type String
+ */
+M.MAP_HYBRID = 'HYBRID';
+
+/**
+ * A constant value for map type: satellite
+ *
+ * @type String
+ */
+M.MAP_SATELLITE = 'SATELLITE';
+
+/**
+ * A constant value for map type: terrain
+ *
+ * @type String
+ */
+M.MAP_TERRAIN = 'TERRAIN';
+
+/**
+ * A global reference to the first instances of M.MapView. We use this to have a accessible hook
+ * to the map we can pass to google as a callback object.
+ *
+ * @type Object
+ */
+M.INITIAL_MAP = null;
+
+/**
+ * @class
+ *
+ * M.MapView is the prototype of a map view. It defines a set of methods for
+ * displaying a map, setting markers and showing the current location. This
+ * map view is based on google maps, but other implementations are possible.
+ *
+ * @extends M.View
+ */
+M.MapView = M.View.extend(
+/** @scope M.MapView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapView',
+
+    /**
+     * This property is used to save a reference to the actual google map. It
+     * is set automatically when the map is firstly initialized.
+     *
+     * @type Object
+     */
+    map: null,
+
+    /**
+     * This property is used to store the map's M.MapMarkerViews. If a marker
+     * is set within the init() method or by calling the addMarker() method,
+     * it is automatically pushed into this array.
+     *
+     * @type Object
+     */
+    markers: null,
+
+    /**
+     * Determines whether to display the map view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * This property specifies the zoom level for this map view. It is directly
+     * mapped to the zoom property of a google map view. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Number
+     */
+    zoomLevel: 15,
+
+    /**
+     * This property specifies the map type for this map view. It is directly
+     * mapped to the 'mapTypeId' property of a google map view. Possible values
+     * for this property are:
+     *
+     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
+     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
+     *   - M.MAP_SATELLITE --> This map type displays satellite images.
+     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
+     *
+     * For further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type String
+     */
+    mapType: M.MAP_ROADMAP,
+
+    /**
+     * This property specifies whether or not to display the map type controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showMapTypeControl: NO,
+
+    /**
+     * This property specifies whether or not to display the navigation controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showNavigationControl: NO,
+
+    /**
+     * This property specifies whether or not to display the street view controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showStreetViewControl: NO,
+
+    /**
+     * This property specifies whether the map is draggable or not. If set to NO,
+     * a user won't be able to move the map, respectively the visible sector. For
+     * further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: YES,
+
+    /**
+     * This property specifies the initial location for this map view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the center
+     * property of a google map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type M.Location
+     */
+
+    initialLocation: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property determines whether or not to show a marker at the map view's
+     * initial location. This location can be specified by the initialLocation
+     * property of this map view.
+     *
+     * @type Boolean
+     */
+    setMarkerAtInitialLocation: NO,
+
+    /**
+     * This property can be used to specify the animation type for this map view's
+     * markers. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
+
+    /**
+     * This property spacifies whether or not this map has already been initialized.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property specifies whether or not to remove all existing markers on a
+     * map update. A map update can either be an automatic update due to content
+     * binding or a implicit call of the map view's updateMap() method.
+     *
+     * @type Boolean
+     */
+    removeMarkersOnUpdate: YES,
+
+    /**
+     * If set, contains the map view's callback in sub a object named 'error',
+     * which will be called if no connection is available and the map service
+     * (google maps api) can not be loaded.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This flag can be used to specify whether or not to load the google places
+     * library. By default this property is set to YES. If you do not need the
+     * library, you should set this to NO in order to save some bandwidth.
+     *
+     * @type Boolean
+     */
+    loadPlacesLibrary: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a map view, respectively a map view container.
+     *
+     * @private
+     * @returns {String} The map view's html representation.
+     */
+    render: function() {
+        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
+        this.html += !this.isInset ? ' class="ui-listview"' : '';
+        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is called if the bound content changed. This content must be
+     * an array of M.Location objects or M.MapMarkerView objects. This method
+     * will take care of a re-rendering of the map view and all of its bound
+     * markers.
+     *
+     * If M.Location objects are passed, the default settings for map markers
+     * of this map view are assigned.
+     *
+     * Note that you can not use individual click events for your markers if
+     * you pass M.Location objects.
+     */
+    renderUpdate: function() {
+        /* check if content binding is valid */
+        var content = null;
+        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
+            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
+            return;
+        }
+
+        /* get the marker / location objects from content binding */
+        var content = this.contentBinding.target[this.contentBinding.property];
+        var markers = [];
+
+        /* save a reference to the map */
+        var that = this;
+
+        /* if we got locations, transform to markers */
+        if(content && content[0] && content[0].type === 'M.Location') {
+            _.each(content, function(location) {
+                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
+                    markers.push(M.MapMarkerView.init({
+                        location: location,
+                        map: that
+                    }));
+                }
+            });
+        /* otherwise check and filter for map markers */
+        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
+            markers = _.select(content, function(marker) {
+                return (marker && marker.type === 'M.MapMarkerView')
+            })
+        }
+
+        /* remove current markers */
+        if(this.removeMarkersOnUpdate) {
+            this.removeAllMarkers();
+        }
+
+        /* add all new markers */
+        _.each(markers, function(marker) {
+            that.addMarker(marker);
+        })
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * We use this to disable event registration for M.MapView, since we only use the 'events' property
+     * for determining the handler for possible map markers of this map.
+     */
+    registerEvents: function() {
+
+    },
+
+    /**
+     * Applies some style-attributes to the map view.
+     *
+     * @private
+     * @returns {String} The maps view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is used to initialize a map view, typically out of a controller.
+     * With its options parameter you can set or update almost every parameter of
+     * a map view. This allows you to define a map view within your view, but then
+     * update its parameters later when you want this view to display a map.
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * Once the google api is initialized, the success callback specified with the
+     * options parameter is called. If an error occurs (e.g. no network connection),
+     * the error callback is called instead. They can be specified like the
+     * following:
+     *
+     *   {
+     *     callbacks: {
+     *       success: {
+     *         target: this,
+     *         action: function() {
+     *           // success callback
+     *         }
+     *       },
+     *       error: {
+     *         target: this,
+     *         action: function() {
+     *           // error callback
+     *         }
+     *       }
+     *     }
+     *   }
+     *   
+     * @param {Object} options The options for the map view.
+     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
+     */
+    initMap: function(options, isUpdate) {
+        if(!this.isInitialized || isUpdate) {
+            if(!isUpdate) {
+                this.markers = [];
+            }
+
+            if(typeof(google) === 'undefined') {
+                /* store the passed params and this map globally for further use */
+                M.INITIAL_MAP = {
+                    map: this,
+                    options: options,
+                    isUpdate: isUpdate
+                };
+
+                /* check the connection status */
+                M.Environment.getConnectionStatus({
+                    target: this,
+                    action: 'didRetrieveConnectionStatus'
+                });
+            } else {
+                this.googleDidLoad(options, isUpdate, true);
+            }
+        } else {
+            M.Logger.log('The M.MapView has already been initialized', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally to retrieve the connection status. If there is a connection
+     * available, we will include the google maps api.
+     *
+     * @private
+     */
+    didRetrieveConnectionStatus: function(connectionStatus) {
+        if(connectionStatus === M.ONLINE) {
+            $.getScript(
+                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
+            );
+        } else {
+            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
+            if(callback && M.EventDispatcher.checkHandler(callback.error)){
+                this.bindToCaller(callback.error.target, callback.error.action)();
+            }
+        }
+    },
+
+    /**
+     * This method is used internally to initialite the map if the google api hasn't been loaded
+     * before. If so, we use this method as callback for google.
+     *
+     * @private
+     */
+    googleDidLoad: function(options, isUpdate, isInternalCall) {
+        if(!isInternalCall) {
+            options = M.INITIAL_MAP.options;
+            isUpdate = M.INITIAL_MAP.isUpdate;
+        }
+
+        for(var i in options) {
+             switch (i) {
+                 case 'zoomLevel':
+                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
+                    break;
+                 case 'mapType':
+                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
+                    break;
+                 case 'markerAnimationType':
+                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
+                    break;
+                 case 'showMapTypeControl':
+                 case 'showNavigationControl':
+                 case 'showStreetViewControl':
+                 case 'isDraggable':
+                 case 'setMarkerAtInitialLocation':
+                 case 'removeMarkersOnUpdate':
+                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
+                    break;
+                 case 'initialLocation':
+                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
+                    break;
+                 case 'callbacks':
+                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
+                    break;
+                 default:
+                    break;
+             }
+        };
+        if(isUpdate) {
+            if(this.removeMarkersOnUpdate) {
+                this.removeAllMarkers();
+            }
+            this.map.setOptions({
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        } else {
+            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        }
+
+        if(this.setMarkerAtInitialLocation) {
+            var that = this;
+            this.addMarker(M.MapMarkerView.init({
+                location: this.initialLocation,
+                map: that.map
+            }));
+        }
+
+        this.isInitialized = YES;
+
+        /* now call callback of "the outside world" */
+        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
+            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
+        }
+    },
+
+    /**
+     * This method is used to update a map view, typically out of a controller.
+     * With its options parameter you can update or update almost every parameter
+     * of a map view. This allows you to define a map view within your view, but
+     * then update its parameters later when you want this view to display a map
+     * and to update those options over and over again for this map. 
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * @param {Object} options The options for the map view.
+     */
+    updateMap: function(options) {
+        this.initMap(options, YES);
+    },
+
+    /**
+     * This method can be used to add a marker to the map view. Simply pass a
+     * valid M.MapMarkerView object and a map marker is created automatically,
+     * displayed on the map and added to this map view's markers property.
+     *
+     * @param {M.MapMarkerView} marker The marker to be added.
+     */
+    addMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
+            var that = this;
+            marker.marker = new google.maps.Marker({
+                map: that.map,
+                draggable: NO,
+                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
+                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
+                icon: marker.icon ? new google.maps.MarkerImage(
+                    marker.icon,
+                    null,
+                    null,
+                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
+                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
+                ) : marker.icon
+            });
+            marker.registerEvents();
+            this.markers.push(
+                marker
+            );
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method can be used to remove a certain marker from the map view. In
+     * order to do this, you need to pass the M.MapMarkerView object that you
+     * want to be removed from the map view.
+     *
+     * @param {M.MapMarkerView} marker The marker to be removed.
+     */
+    removeMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
+            var didRemoveMarker = NO;
+            this.markers = _.select(this.markers, function(m) {
+                if(marker === m){
+                    m.marker.setMap(null);
+                    didRemoveMarker = YES;
+                }
+                return !(marker === m);
+            });
+            if(!didRemoveMarker) {
+                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
+            }
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method removes all markers from this map view. It both cleans up the
+     * markers array and deletes the marker's visual representation from the map
+     * view.
+     */
+    removeAllMarkers: function() {
+        _.each(this.markers, function(marker) {
+            marker.marker.setMap(null);
+        });
+        this.markers = [];
     }
 
 });
@@ -8414,6 +9018,560 @@ M.GridView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for input type: text
+ *
+ * @type String
+ */
+M.INPUT_TEXT = 'text';
+
+/**
+ * A constant value for input type: password
+ *
+ * @type String
+ */
+M.INPUT_PASSWORD = 'password';
+
+/**
+ * A constant value for input type: number
+ *
+ * @type String
+ */
+M.INPUT_NUMBER = 'number';
+
+/**
+ * A constant value for input type: tel
+ *
+ * @type String
+ */
+M.INPUT_TELEPHONE = 'tel';
+
+/**
+ * A constant value for input type: url
+ *
+ * @type String
+ */
+M.INPUT_URL = 'url';
+
+/**
+ * A constant value for input type: email
+ *
+ * @type String
+ */
+M.INPUT_EMAIL = 'email';
+
+/**
+ * A constant value for input type: time
+ *
+ * @type String
+ */
+M.INPUT_TIME = 'time';
+
+/**
+ * A constant value for input type: date
+ *
+ * @type String
+ */
+M.INPUT_DATE = 'date';
+
+/**
+ * A constant value for input type: month
+ *
+ * @type String
+ */
+M.INPUT_MONTH = 'month';
+
+/**
+ * A constant value for input type: week
+ *
+ * @type String
+ */
+M.INPUT_WEEK = 'week';
+
+/**
+ * A constant value for input type: datetime
+ *
+ * @type String
+ */
+M.INPUT_DATETIME = 'datetime';
+
+/**
+ * A constant value for input type: datetime-local
+ *
+ * @type String
+ */
+M.INPUT_DATETIME_LOCAL = 'datetime-local';
+
+/**
+ * @class
+ *
+ * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
+ * a single line text field and a multiple line text field. If it is styled as a multiple
+ * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
+ * depending on the number of lines of text a user enters.
+ *
+ * @extends M.View
+ */
+M.TextFieldView = M.View.extend(
+/** @scope M.TextFieldView.prototype */ {
+
+   /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TextFieldView',
+
+   /**
+    * The name of the text field. During the rendering, this property gets assigned to the name
+    * property of the text field's html representation. This can be used to manually access the
+    * text field's DOM representation later on.
+    *
+    * @type String
+    */
+    name: null,
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
+     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * The initial text shown inside the text field describing the input or making a suggestion for input
+     * e.g. "Please enter your Name."
+     *
+     * @type String
+     */
+    initialText: '',
+
+    /**
+     * Determines whether to display the textfield grouped with the label specified with the label property.
+     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
+     * the box'. If set to NO, custom styling could be necessary.
+     *
+     * If there is no label specified, this property is ignored by default.
+     *
+     * @type Boolean
+     */
+    isGrouped: NO,
+
+    /**
+     * Defines whether the text field has multiple lines respectively is a text area.
+     *
+     * @type Boolean
+     */
+    hasMultipleLines: NO,
+
+    /**
+     * This property specifies the input type of this input field. Possible values are:
+     *
+     *   - M.INPUT_TEXT --> text input (default)
+     *   - M.INPUT_PASSWORD --> password
+     *   - M.INPUT_NUMBER --> number
+     *   - M.INPUT_TELEPHONE --> tel
+     *   - M.INPUT_URL --> url
+     *   - M.INPUT_EMAIL --> email
+     *
+     * Note, that these types are not yet supported by all browsers!
+     *
+     * @type String
+     */
+    inputType: M.INPUT_TEXT,
+
+    /**
+     * This property is used internally to determine all the possible input types for a
+     * date textfield.
+     *
+     * @private
+     * @type Array
+     */
+    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
+
+    /**
+     * This property can be used to specify the allowed number if chars for this text field
+     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
+     * be set.
+     *
+     * @type Number
+     */
+    numberOfChars: null,
+
+    /**
+     * This property can be used to specify whether to use the native implementation
+     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
+     * will render its own date/time picker controls to the corresponding input
+     * type. If set to no, the native implementation will be disabled.
+     *
+     * @type Boolean
+     */
+    useNativeImplementationIfAvailable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this textfield.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a TextFieldView
+     * 
+     * @private
+     * @returns {String} The text field view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
+            if(this.hasAsteriskOnLabel) {
+                if(this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
+        var placeholder = '';
+        if(this.initialText) {
+            placeholder = ' placeholder="' + this.initialText + '" ';
+
+        }
+
+        if(this.hasMultipleLines) {
+            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
+            
+        } else {
+            var type = this.inputType;
+            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+                type = 'text';
+            }
+            
+            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
+        }
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for text field views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            focus: {
+                target: this,
+                action: 'gotFocus'
+            },
+            blur: {
+                target: this,
+                action: 'lostFocus'
+            },
+            keyup: {
+                target: this,
+                action: 'setValueFromDOM'
+            }
+        };
+        /* add TAP handler only if needed */
+        var type = this.inputType;
+        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+            this.internalEvents['tap'] = {
+                target:this,
+                action:'handleTap'
+            };
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * The contentDidChange method is automatically called by the observable when the
+     * observable's state did change. It then updates the view's value property based
+     * on the specified content binding.
+     *
+     * This is a special implementation for M.TextFieldView.
+     */
+    contentDidChange: function(){
+        /* if the text field has the focus, we do not apply the content binding */
+        if(this.hasFocus) {
+            return;
+        }
+
+        /* let M.View do the real job */
+        this.bindToCaller(this, M.View.contentDidChange)();
+
+        this.renderUpdate();
+        this.delegateValueUpdate();
+    },
+
+    /**
+     * Updates a TextFieldView with DOM access by jQuery.
+     *
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     * @private
+     */
+    renderUpdate: function(preventValueComputing) {
+        if(!preventValueComputing) {
+            this.computeValue();
+        }
+        $('#' + this.id).val(this.value);
+        this.styleUpdate();
+    },
+
+    /**
+     * This method is called whenever the view is taped/clicked. Typically a text
+     * field view would not use a tap event. But since a tap is called before the
+     * focus event, we use this to do some input type depending stuff, e.g. show
+     * a date picker.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    handleTap: function(id, event, nextEvent) {
+        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
+            M.DatePickerView.show({
+                source: this,
+                useSourceDateAsInitialDate: YES,
+                showDatePicker: (this.inputType !== M.INPUT_TIME),
+                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
+                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
+                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
+            });
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view gets the focus.
+     * If there is a initial text specified and the value of this text field
+     * still equals this initial text, the value is emptied.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    gotFocus: function(id, event, nextEvent) {
+        this.hasFocus = YES;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view lost the focus.
+     * If there is a initial text specified and the value of this text field
+     * is empty, the value is set to the initial text.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    lostFocus: function(id, event, nextEvent) {
+        this.setValueFromDOM();
+
+        this.hasFocus = NO;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Method to append css styles inline to the rendered text field.
+     *
+     * @private
+     * @returns {String} The text field's styling as html representation.
+     */
+    style: function() {
+        var html = ' style="';
+        if(this.isInline) {
+            html += 'display:inline;';
+        }
+        html += '"';
+
+        if(!this.isEnabled) {
+            html += ' disabled="disabled"';
+        }
+        
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+
+        return html;
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the text field.
+     *
+     * @private
+     */
+    theme: function() {
+        /* trigger keyup event to make the text field autogrow */
+        var jDom = $('#'  + this.id);
+        if(this.value) {
+            jDom.trigger('keyup').textinput();
+            if(!this.isEnabled){
+	            jDom.textinput('disable');
+	        }
+        }
+
+        /* add container-css class */
+        jDom.parent().addClass(this.cssClass + '_container');
+    },
+
+    /**
+     * Method to append css styles inline to the rendered view on the fly.
+     *
+     * @private
+     */
+    styleUpdate: function() {
+        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
+        if(this.value) {
+            $('#' + this.id).removeAttr('disabled');
+            $('#'  + this.id).trigger('keyup');
+        }
+
+        if(this.isInline) {
+            $('#' + this.id).attr('display', 'inline');
+        } else {
+            $('#' + this.id).removeAttr('display');
+        }
+
+        if(!this.isEnabled) {
+            $('#' + this.id).attr('disabled', 'disabled');
+        } else {
+            $('#' + this.id).removeAttr('disabled');
+        }
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = this.secure($('#' + this.id).val());
+        this.delegateValueUpdate();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method sets the text field's value, initiates its re-rendering
+     * and call the delegateValueUpdate().
+     *
+     * @param {String} value The value to be applied to the text field view.
+     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     */
+    setValue: function(value, delegateUpdate, preventValueComputing) {
+        this.value = value;
+
+        this.renderUpdate(preventValueComputing);
+
+        if(delegateUpdate) {
+            this.delegateValueUpdate();
+        }
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method clears the text field's value, both in the DOM and within the JS object.
+     */
+    clearValue: function() {
+        this.setValue('');
+
+        /* call lostFocus() to get the initial text displayed */
+        this.lostFocus();
+    },
+
+    /**
+     * This method returns the text field view's value.
+     *
+     * @returns {String} The text field view's value.
+     */
+    getValue: function() {
+        return this.value;
+    },
+	/**
+     *
+     * Set a new label for this text field
+     * @param txt the new label value
+     */
+    setLabel: function(txt){
+        if(this.label){
+            $('label[for="' + this.id + '"]').html(txt);
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -9954,1165 +11112,6 @@ M.ListView = M.View.extend(
                 M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
             }
         });
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for input type: text
- *
- * @type String
- */
-M.INPUT_TEXT = 'text';
-
-/**
- * A constant value for input type: password
- *
- * @type String
- */
-M.INPUT_PASSWORD = 'password';
-
-/**
- * A constant value for input type: number
- *
- * @type String
- */
-M.INPUT_NUMBER = 'number';
-
-/**
- * A constant value for input type: tel
- *
- * @type String
- */
-M.INPUT_TELEPHONE = 'tel';
-
-/**
- * A constant value for input type: url
- *
- * @type String
- */
-M.INPUT_URL = 'url';
-
-/**
- * A constant value for input type: email
- *
- * @type String
- */
-M.INPUT_EMAIL = 'email';
-
-/**
- * A constant value for input type: time
- *
- * @type String
- */
-M.INPUT_TIME = 'time';
-
-/**
- * A constant value for input type: date
- *
- * @type String
- */
-M.INPUT_DATE = 'date';
-
-/**
- * A constant value for input type: month
- *
- * @type String
- */
-M.INPUT_MONTH = 'month';
-
-/**
- * A constant value for input type: week
- *
- * @type String
- */
-M.INPUT_WEEK = 'week';
-
-/**
- * A constant value for input type: datetime
- *
- * @type String
- */
-M.INPUT_DATETIME = 'datetime';
-
-/**
- * A constant value for input type: datetime-local
- *
- * @type String
- */
-M.INPUT_DATETIME_LOCAL = 'datetime-local';
-
-/**
- * @class
- *
- * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
- * a single line text field and a multiple line text field. If it is styled as a multiple
- * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
- * depending on the number of lines of text a user enters.
- *
- * @extends M.View
- */
-M.TextFieldView = M.View.extend(
-/** @scope M.TextFieldView.prototype */ {
-
-   /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TextFieldView',
-
-   /**
-    * The name of the text field. During the rendering, this property gets assigned to the name
-    * property of the text field's html representation. This can be used to manually access the
-    * text field's DOM representation later on.
-    *
-    * @type String
-    */
-    name: null,
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
-     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * The initial text shown inside the text field describing the input or making a suggestion for input
-     * e.g. "Please enter your Name."
-     *
-     * @type String
-     */
-    initialText: '',
-
-    /**
-     * Determines whether to display the textfield grouped with the label specified with the label property.
-     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
-     * the box'. If set to NO, custom styling could be necessary.
-     *
-     * If there is no label specified, this property is ignored by default.
-     *
-     * @type Boolean
-     */
-    isGrouped: NO,
-
-    /**
-     * Defines whether the text field has multiple lines respectively is a text area.
-     *
-     * @type Boolean
-     */
-    hasMultipleLines: NO,
-
-    /**
-     * This property specifies the input type of this input field. Possible values are:
-     *
-     *   - M.INPUT_TEXT --> text input (default)
-     *   - M.INPUT_PASSWORD --> password
-     *   - M.INPUT_NUMBER --> number
-     *   - M.INPUT_TELEPHONE --> tel
-     *   - M.INPUT_URL --> url
-     *   - M.INPUT_EMAIL --> email
-     *
-     * Note, that these types are not yet supported by all browsers!
-     *
-     * @type String
-     */
-    inputType: M.INPUT_TEXT,
-
-    /**
-     * This property is used internally to determine all the possible input types for a
-     * date textfield.
-     *
-     * @private
-     * @type Array
-     */
-    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
-
-    /**
-     * This property can be used to specify the allowed number if chars for this text field
-     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
-     * be set.
-     *
-     * @type Number
-     */
-    numberOfChars: null,
-
-    /**
-     * This property can be used to specify whether to use the native implementation
-     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
-     * will render its own date/time picker controls to the corresponding input
-     * type. If set to no, the native implementation will be disabled.
-     *
-     * @type Boolean
-     */
-    useNativeImplementationIfAvailable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a TextFieldView
-     * 
-     * @private
-     * @returns {String} The text field view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-            if(this.hasAsteriskOnLabel) {
-                if(this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
-        var placeholder = '';
-        if(this.initialText) {
-            placeholder = ' placeholder="' + this.initialText + '" ';
-
-        }
-
-        if(this.hasMultipleLines) {
-            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
-            
-        } else {
-            var type = this.inputType;
-            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-                type = 'text';
-            }
-            
-            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
-        }
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            focus: {
-                target: this,
-                action: 'gotFocus'
-            },
-            blur: {
-                target: this,
-                action: 'lostFocus'
-            },
-            keyup: {
-                target: this,
-                action: 'setValueFromDOM'
-            }
-        };
-        /* add TAP handler only if needed */
-        var type = this.inputType;
-        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-            this.internalEvents['tap'] = {
-                target:this,
-                action:'handleTap'
-            };
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * The contentDidChange method is automatically called by the observable when the
-     * observable's state did change. It then updates the view's value property based
-     * on the specified content binding.
-     *
-     * This is a special implementation for M.TextFieldView.
-     */
-    contentDidChange: function(){
-        /* if the text field has the focus, we do not apply the content binding */
-        if(this.hasFocus) {
-            return;
-        }
-
-        /* let M.View do the real job */
-        this.bindToCaller(this, M.View.contentDidChange)();
-
-        this.renderUpdate();
-        this.delegateValueUpdate();
-    },
-
-    /**
-     * Updates a TextFieldView with DOM access by jQuery.
-     *
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     * @private
-     */
-    renderUpdate: function(preventValueComputing) {
-        if(!preventValueComputing) {
-            this.computeValue();
-        }
-        $('#' + this.id).val(this.value);
-        this.styleUpdate();
-    },
-
-    /**
-     * This method is called whenever the view is taped/clicked. Typically a text
-     * field view would not use a tap event. But since a tap is called before the
-     * focus event, we use this to do some input type depending stuff, e.g. show
-     * a date picker.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    handleTap: function(id, event, nextEvent) {
-        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
-            M.DatePickerView.show({
-                source: this,
-                useSourceDateAsInitialDate: YES,
-                showDatePicker: (this.inputType !== M.INPUT_TIME),
-                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
-                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
-                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
-            });
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view gets the focus.
-     * If there is a initial text specified and the value of this text field
-     * still equals this initial text, the value is emptied.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    gotFocus: function(id, event, nextEvent) {
-        this.hasFocus = YES;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view lost the focus.
-     * If there is a initial text specified and the value of this text field
-     * is empty, the value is set to the initial text.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    lostFocus: function(id, event, nextEvent) {
-        this.setValueFromDOM();
-
-        this.hasFocus = NO;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Method to append css styles inline to the rendered text field.
-     *
-     * @private
-     * @returns {String} The text field's styling as html representation.
-     */
-    style: function() {
-        var html = ' style="';
-        if(this.isInline) {
-            html += 'display:inline;';
-        }
-        html += '"';
-
-        if(!this.isEnabled) {
-            html += ' disabled="disabled"';
-        }
-        
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-
-        return html;
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the text field.
-     *
-     * @private
-     */
-    theme: function() {
-        /* trigger keyup event to make the text field autogrow */
-        var jDom = $('#'  + this.id);
-        if(this.value) {
-            jDom.trigger('keyup').textinput();
-            if(!this.isEnabled){
-	            jDom.textinput('disable');
-	        }
-        }
-
-        /* add container-css class */
-        jDom.parent().addClass(this.cssClass + '_container');
-    },
-
-    /**
-     * Method to append css styles inline to the rendered view on the fly.
-     *
-     * @private
-     */
-    styleUpdate: function() {
-        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
-        if(this.value) {
-            $('#' + this.id).removeAttr('disabled');
-            $('#'  + this.id).trigger('keyup');
-        }
-
-        if(this.isInline) {
-            $('#' + this.id).attr('display', 'inline');
-        } else {
-            $('#' + this.id).removeAttr('display');
-        }
-
-        if(!this.isEnabled) {
-            $('#' + this.id).attr('disabled', 'disabled');
-        } else {
-            $('#' + this.id).removeAttr('disabled');
-        }
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = this.secure($('#' + this.id).val());
-        this.delegateValueUpdate();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method sets the text field's value, initiates its re-rendering
-     * and call the delegateValueUpdate().
-     *
-     * @param {String} value The value to be applied to the text field view.
-     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     */
-    setValue: function(value, delegateUpdate, preventValueComputing) {
-        this.value = value;
-
-        this.renderUpdate(preventValueComputing);
-
-        if(delegateUpdate) {
-            this.delegateValueUpdate();
-        }
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method clears the text field's value, both in the DOM and within the JS object.
-     */
-    clearValue: function() {
-        this.setValue('');
-
-        /* call lostFocus() to get the initial text displayed */
-        this.lostFocus();
-    },
-
-    /**
-     * This method returns the text field view's value.
-     *
-     * @returns {String} The text field view's value.
-     */
-    getValue: function() {
-        return this.value;
-    },
-	/**
-     *
-     * Set a new label for this text field
-     * @param txt the new label value
-     */
-    setLabel: function(txt){
-        if(this.label){
-            $('label[for="' + this.id + '"]').html(txt);
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for map type: roadmap
- *
- * @type String
- */
-M.MAP_ROADMAP = 'ROADMAP';
-
-/**
- * A constant value for map type: hybrid
- *
- * @type String
- */
-M.MAP_HYBRID = 'HYBRID';
-
-/**
- * A constant value for map type: satellite
- *
- * @type String
- */
-M.MAP_SATELLITE = 'SATELLITE';
-
-/**
- * A constant value for map type: terrain
- *
- * @type String
- */
-M.MAP_TERRAIN = 'TERRAIN';
-
-/**
- * A global reference to the first instances of M.MapView. We use this to have a accessible hook
- * to the map we can pass to google as a callback object.
- *
- * @type Object
- */
-M.INITIAL_MAP = null;
-
-/**
- * @class
- *
- * M.MapView is the prototype of a map view. It defines a set of methods for
- * displaying a map, setting markers and showing the current location. This
- * map view is based on google maps, but other implementations are possible.
- *
- * @extends M.View
- */
-M.MapView = M.View.extend(
-/** @scope M.MapView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapView',
-
-    /**
-     * This property is used to save a reference to the actual google map. It
-     * is set automatically when the map is firstly initialized.
-     *
-     * @type Object
-     */
-    map: null,
-
-    /**
-     * This property is used to store the map's M.MapMarkerViews. If a marker
-     * is set within the init() method or by calling the addMarker() method,
-     * it is automatically pushed into this array.
-     *
-     * @type Object
-     */
-    markers: null,
-
-    /**
-     * Determines whether to display the map view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * This property specifies the zoom level for this map view. It is directly
-     * mapped to the zoom property of a google map view. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Number
-     */
-    zoomLevel: 15,
-
-    /**
-     * This property specifies the map type for this map view. It is directly
-     * mapped to the 'mapTypeId' property of a google map view. Possible values
-     * for this property are:
-     *
-     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
-     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
-     *   - M.MAP_SATELLITE --> This map type displays satellite images.
-     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
-     *
-     * For further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type String
-     */
-    mapType: M.MAP_ROADMAP,
-
-    /**
-     * This property specifies whether or not to display the map type controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showMapTypeControl: NO,
-
-    /**
-     * This property specifies whether or not to display the navigation controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showNavigationControl: NO,
-
-    /**
-     * This property specifies whether or not to display the street view controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showStreetViewControl: NO,
-
-    /**
-     * This property specifies whether the map is draggable or not. If set to NO,
-     * a user won't be able to move the map, respectively the visible sector. For
-     * further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: YES,
-
-    /**
-     * This property specifies the initial location for this map view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the center
-     * property of a google map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type M.Location
-     */
-
-    initialLocation: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property determines whether or not to show a marker at the map view's
-     * initial location. This location can be specified by the initialLocation
-     * property of this map view.
-     *
-     * @type Boolean
-     */
-    setMarkerAtInitialLocation: NO,
-
-    /**
-     * This property can be used to specify the animation type for this map view's
-     * markers. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
-
-    /**
-     * This property spacifies whether or not this map has already been initialized.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property specifies whether or not to remove all existing markers on a
-     * map update. A map update can either be an automatic update due to content
-     * binding or a implicit call of the map view's updateMap() method.
-     *
-     * @type Boolean
-     */
-    removeMarkersOnUpdate: YES,
-
-    /**
-     * If set, contains the map view's callback in sub a object named 'error',
-     * which will be called if no connection is available and the map service
-     * (google maps api) can not be loaded.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This flag can be used to specify whether or not to load the google places
-     * library. By default this property is set to YES. If you do not need the
-     * library, you should set this to NO in order to save some bandwidth.
-     *
-     * @type Boolean
-     */
-    loadPlacesLibrary: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a map view, respectively a map view container.
-     *
-     * @private
-     * @returns {String} The map view's html representation.
-     */
-    render: function() {
-        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
-        this.html += !this.isInset ? ' class="ui-listview"' : '';
-        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is called if the bound content changed. This content must be
-     * an array of M.Location objects or M.MapMarkerView objects. This method
-     * will take care of a re-rendering of the map view and all of its bound
-     * markers.
-     *
-     * If M.Location objects are passed, the default settings for map markers
-     * of this map view are assigned.
-     *
-     * Note that you can not use individual click events for your markers if
-     * you pass M.Location objects.
-     */
-    renderUpdate: function() {
-        /* check if content binding is valid */
-        var content = null;
-        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
-            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
-            return;
-        }
-
-        /* get the marker / location objects from content binding */
-        var content = this.contentBinding.target[this.contentBinding.property];
-        var markers = [];
-
-        /* save a reference to the map */
-        var that = this;
-
-        /* if we got locations, transform to markers */
-        if(content && content[0] && content[0].type === 'M.Location') {
-            _.each(content, function(location) {
-                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
-                    markers.push(M.MapMarkerView.init({
-                        location: location,
-                        map: that
-                    }));
-                }
-            });
-        /* otherwise check and filter for map markers */
-        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
-            markers = _.select(content, function(marker) {
-                return (marker && marker.type === 'M.MapMarkerView')
-            })
-        }
-
-        /* remove current markers */
-        if(this.removeMarkersOnUpdate) {
-            this.removeAllMarkers();
-        }
-
-        /* add all new markers */
-        _.each(markers, function(marker) {
-            that.addMarker(marker);
-        })
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * We use this to disable event registration for M.MapView, since we only use the 'events' property
-     * for determining the handler for possible map markers of this map.
-     */
-    registerEvents: function() {
-
-    },
-
-    /**
-     * Applies some style-attributes to the map view.
-     *
-     * @private
-     * @returns {String} The maps view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is used to initialize a map view, typically out of a controller.
-     * With its options parameter you can set or update almost every parameter of
-     * a map view. This allows you to define a map view within your view, but then
-     * update its parameters later when you want this view to display a map.
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * Once the google api is initialized, the success callback specified with the
-     * options parameter is called. If an error occurs (e.g. no network connection),
-     * the error callback is called instead. They can be specified like the
-     * following:
-     *
-     *   {
-     *     callbacks: {
-     *       success: {
-     *         target: this,
-     *         action: function() {
-     *           // success callback
-     *         }
-     *       },
-     *       error: {
-     *         target: this,
-     *         action: function() {
-     *           // error callback
-     *         }
-     *       }
-     *     }
-     *   }
-     *   
-     * @param {Object} options The options for the map view.
-     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
-     */
-    initMap: function(options, isUpdate) {
-        if(!this.isInitialized || isUpdate) {
-            if(!isUpdate) {
-                this.markers = [];
-            }
-
-            if(typeof(google) === 'undefined') {
-                /* store the passed params and this map globally for further use */
-                M.INITIAL_MAP = {
-                    map: this,
-                    options: options,
-                    isUpdate: isUpdate
-                };
-
-                /* check the connection status */
-                M.Environment.getConnectionStatus({
-                    target: this,
-                    action: 'didRetrieveConnectionStatus'
-                });
-            } else {
-                this.googleDidLoad(options, isUpdate, true);
-            }
-        } else {
-            M.Logger.log('The M.MapView has already been initialized', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally to retrieve the connection status. If there is a connection
-     * available, we will include the google maps api.
-     *
-     * @private
-     */
-    didRetrieveConnectionStatus: function(connectionStatus) {
-        if(connectionStatus === M.ONLINE) {
-            $.getScript(
-                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
-            );
-        } else {
-            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
-            if(callback && M.EventDispatcher.checkHandler(callback.error)){
-                this.bindToCaller(callback.error.target, callback.error.action)();
-            }
-        }
-    },
-
-    /**
-     * This method is used internally to initialite the map if the google api hasn't been loaded
-     * before. If so, we use this method as callback for google.
-     *
-     * @private
-     */
-    googleDidLoad: function(options, isUpdate, isInternalCall) {
-        if(!isInternalCall) {
-            options = M.INITIAL_MAP.options;
-            isUpdate = M.INITIAL_MAP.isUpdate;
-        }
-
-        for(var i in options) {
-             switch (i) {
-                 case 'zoomLevel':
-                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
-                    break;
-                 case 'mapType':
-                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
-                    break;
-                 case 'markerAnimationType':
-                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
-                    break;
-                 case 'showMapTypeControl':
-                 case 'showNavigationControl':
-                 case 'showStreetViewControl':
-                 case 'isDraggable':
-                 case 'setMarkerAtInitialLocation':
-                 case 'removeMarkersOnUpdate':
-                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
-                    break;
-                 case 'initialLocation':
-                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
-                    break;
-                 case 'callbacks':
-                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
-                    break;
-                 default:
-                    break;
-             }
-        };
-        if(isUpdate) {
-            if(this.removeMarkersOnUpdate) {
-                this.removeAllMarkers();
-            }
-            this.map.setOptions({
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        } else {
-            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        }
-
-        if(this.setMarkerAtInitialLocation) {
-            var that = this;
-            this.addMarker(M.MapMarkerView.init({
-                location: this.initialLocation,
-                map: that.map
-            }));
-        }
-
-        this.isInitialized = YES;
-
-        /* now call callback of "the outside world" */
-        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
-            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
-        }
-    },
-
-    /**
-     * This method is used to update a map view, typically out of a controller.
-     * With its options parameter you can update or update almost every parameter
-     * of a map view. This allows you to define a map view within your view, but
-     * then update its parameters later when you want this view to display a map
-     * and to update those options over and over again for this map. 
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * @param {Object} options The options for the map view.
-     */
-    updateMap: function(options) {
-        this.initMap(options, YES);
-    },
-
-    /**
-     * This method can be used to add a marker to the map view. Simply pass a
-     * valid M.MapMarkerView object and a map marker is created automatically,
-     * displayed on the map and added to this map view's markers property.
-     *
-     * @param {M.MapMarkerView} marker The marker to be added.
-     */
-    addMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
-            var that = this;
-            marker.marker = new google.maps.Marker({
-                map: that.map,
-                draggable: NO,
-                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
-                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
-                icon: marker.icon ? new google.maps.MarkerImage(
-                    marker.icon,
-                    null,
-                    null,
-                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
-                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
-                ) : marker.icon
-            });
-            marker.registerEvents();
-            this.markers.push(
-                marker
-            );
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method can be used to remove a certain marker from the map view. In
-     * order to do this, you need to pass the M.MapMarkerView object that you
-     * want to be removed from the map view.
-     *
-     * @param {M.MapMarkerView} marker The marker to be removed.
-     */
-    removeMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
-            var didRemoveMarker = NO;
-            this.markers = _.select(this.markers, function(m) {
-                if(marker === m){
-                    m.marker.setMap(null);
-                    didRemoveMarker = YES;
-                }
-                return !(marker === m);
-            });
-            if(!didRemoveMarker) {
-                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
-            }
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method removes all markers from this map view. It both cleans up the
-     * markers array and deletes the marker's visual representation from the map
-     * view.
-     */
-    removeAllMarkers: function() {
-        _.each(this.markers, function(marker) {
-            marker.marker.setMap(null);
-        });
-        this.markers = [];
     }
 
 });
