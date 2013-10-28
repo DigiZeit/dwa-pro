@@ -1051,78 +1051,6 @@ DigiWebApp.Booking = M.Model.create({
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: HandOrder
-// ==========================================================================
-
-DigiWebApp.HandOrder = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'HandOrder'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isLocalOnly: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        var bookings = DigiWebApp.Booking.find();
-        var openBooking = _.detect(bookings, function(b) {
-            return b.get('isCurrent') === true;
-        });
-
-        _.each(this.find(), function(el) {
-            if(openBooking) {
-                if(!(el.get('id') === openBooking.get('handOrderId') || el.get('name') === openBooking.get('handOrderName'))) {
-                    el.del();
-                }
-            } else {
-                el.del();
-            }
-        });
-    }
-    
-    , findSorted: function() {
-        var that = this;
-
-        // Die handorderKeys stimmen nicht, daher normales find benutzen
-        //TODO: handorderKeys richtig setzen, bzw. im Code suchen wo die (falsch) gesetzt werden
-    	return that.find();
-    	
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e2) {
-        	console.error("ERROR in " + this.name + ".findSorted: " + e2);
-        }
-
-        var records = [];
-
-        if (keys) {
-            _.each(keys, function(k) {
-            	var myKey = M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k;
-               	//console.log(myKey);
-            	var r = that.find({key:myKey});
-            	//console.log(r);
-                records.push(r);
-            });
-        }
-        return records;
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso
 //
 // Project: DigiWebApp
@@ -1276,6 +1204,78 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
     }
 
 }));
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: HandOrder
+// ==========================================================================
+
+DigiWebApp.HandOrder = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'HandOrder'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isLocalOnly: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        var bookings = DigiWebApp.Booking.find();
+        var openBooking = _.detect(bookings, function(b) {
+            return b.get('isCurrent') === true;
+        });
+
+        _.each(this.find(), function(el) {
+            if(openBooking) {
+                if(!(el.get('id') === openBooking.get('handOrderId') || el.get('name') === openBooking.get('handOrderName'))) {
+                    el.del();
+                }
+            } else {
+                el.del();
+            }
+        });
+    }
+    
+    , findSorted: function() {
+        var that = this;
+
+        // Die handorderKeys stimmen nicht, daher normales find benutzen
+        //TODO: handorderKeys richtig setzen, bzw. im Code suchen wo die (falsch) gesetzt werden
+    	return that.find();
+    	
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e2) {
+        	console.error("ERROR in " + this.name + ".findSorted: " + e2);
+        }
+
+        var records = [];
+
+        if (keys) {
+            _.each(keys, function(k) {
+            	var myKey = M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k;
+               	//console.log(myKey);
+            	var r = that.find({key:myKey});
+            	//console.log(r);
+                records.push(r);
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -2473,6 +2473,113 @@ DigiWebApp.Activity = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: Position
+// ==========================================================================
+
+DigiWebApp.Position = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'Position'
+
+    , id: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , strasse: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , hausnummer: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , plz: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ort: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , land: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , countrycode: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , telefon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fax: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , email: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ansprechpartner: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , kundenname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , description: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e2) {
+        	console.error("ERROR in " + this.name + ".findSorted: " + e2);
+        }
+
+        var records = [];
+
+        if (keys) {
+            _.each(keys, function(k) {
+                records.push(that.find({key:M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k}));
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: OnlinePosition
 // ==========================================================================
 
@@ -2640,113 +2747,6 @@ DigiWebApp.OnlinePosition = M.Model.create({
     }
 
 }));
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: Position
-// ==========================================================================
-
-DigiWebApp.Position = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'Position'
-
-    , id: M.Model.attr('String',{
-    	isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , strasse: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , hausnummer: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , plz: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ort: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , land: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , countrycode: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , telefon: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fax: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , email: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ansprechpartner: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , kundenname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , description: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-    , findSorted: function() {
-        var that = this;
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e2) {
-        	console.error("ERROR in " + this.name + ".findSorted: " + e2);
-        }
-
-        var records = [];
-
-        if (keys) {
-            _.each(keys, function(k) {
-                records.push(that.find({key:M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k}));
-            });
-        }
-        return records;
-    }
-
-}, M.DataProviderLocalStorage);
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -3105,101 +3105,31 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: BautagebuchEinstellungen
+// Model: Features
 // ==========================================================================
 
-DigiWebApp.BautagebuchEinstellungen = M.Model.create({
-    
+DigiWebApp.Features = M.Model.create({
+
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchEinstellungen'
+    __name__: 'Features'
 
-    , startUhrzeit: M.Model.attr('String', {
-          isRequired: NO
-    })
-
-    , inStundenBuchen: M.Model.attr('String', {
-          isRequired: NO
-    })
-    
-    , falscheZeitenIgnorieren: M.Model.attr('String', {
+    , id: M.Model.attr('String', {
         isRequired: NO
     })
 
-	, deleteAll: function() {
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , isAvailable: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+    
+    , deleteAll: function() {
         _.each(this.find(), function(el) {
-    		el.deleteSorted();
+            el.del();
         });
     }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e2);
-	    }
-	    if (keys){
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    that.save();
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	console.error("ERROR in " + that.name + ".saveSorted: " + e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	console.error("ERROR in " + that.name + ".findSorted: " + e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	            records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
-	        });
-	    }
-	    return records;
-	}
 
 }, M.DataProviderLocalStorage);
 
@@ -3309,6 +3239,109 @@ DigiWebApp.SpesenAuswahlOption = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchEinstellungen
+// ==========================================================================
+
+DigiWebApp.BautagebuchEinstellungen = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchEinstellungen'
+
+    , startUhrzeit: M.Model.attr('String', {
+          isRequired: NO
+    })
+
+    , inStundenBuchen: M.Model.attr('String', {
+          isRequired: NO
+    })
+    
+    , falscheZeitenIgnorieren: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+	, deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	console.error("ERROR in " + that.name + ".deleteSorted: " + e2);
+	    }
+	    if (keys){
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    that.save();
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	console.error("ERROR in " + that.name + ".saveSorted: " + e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	console.error("ERROR in " + that.name + ".findSorted: " + e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	            records.push(that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k}));
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Employee
 // ==========================================================================
 
@@ -3356,39 +3389,6 @@ DigiWebApp.Employee = M.Model.create({
             });
         }
         return records;
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: Features
-// ==========================================================================
-
-DigiWebApp.Features = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'Features'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , isAvailable: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-    
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
     }
 
 }, M.DataProviderLocalStorage);
@@ -10395,10 +10395,56 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.Booking.find();
 	        if (bookings.length > 0) {
 	            _.each(bookings, function(booking) {
+	            	var startDate = booking.get('startDateString');
+	            	var startTime = booking.get('startTimeString');
+	            	if ((typeof(startDate) === "undefined" || !startDate || startDate === "")
+	            	|| (typeof(startTime) === "undefined" || !startTime || startTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8start = D8.create(new Date(Number(booking.get('timeStampStart')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8start) >= 0 && tagDerWinterzeit.timeBetween(d8start) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8start = d8start.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8start = d8start.addHours(1);
+	                    	}
+	                    }
+	                    startDate = d8start.format('dd.mm.yyyy');
+	                    startTime = d8start.format('HH:MM');
+	            	}
+	            	var endeDate = booking.get('endeDateString');
+	            	var endeTime = booking.get('endeTimeString');
+	            	if ((typeof(endeDate) === "undefined" || !endeDate || endeDate === "")
+	            	|| (typeof(endeTime) === "undefined" || !endeTime || endeTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8ende = D8.create(new Date(Number(booking.get('timeStampEnd')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8ende) >= 0 && tagDerWinterzeit.timeBetween(d8ende) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8ende = d8ende.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8ende = d8ende.addHours(1);
+	                    	}
+	                    }
+	                    endeDate = d8ende.format('dd.mm.yyyy');
+	                    endeTime = d8ende.format('HH:MM');
+	            	}
 	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	} else {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	}
 	
 	                // set the handOrderId as orderId for correct display in list item view
@@ -10435,10 +10481,56 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = DigiWebApp.SentBooking.find();
 	        if (bookings.length > 0) {
 	            _.each(bookings, function(booking) {
+	            	var startDate = booking.get('startDateString');
+	            	var startTime = booking.get('startTimeString');
+	            	if ((typeof(startDate) === "undefined" || !startDate || startDate === "")
+	            	|| (typeof(startTime) === "undefined" || !startTime || startTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8start = D8.create(new Date(Number(booking.get('timeStampStart')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8start) >= 0 && tagDerWinterzeit.timeBetween(d8start) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8start = d8start.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8start = d8start.addHours(1);
+	                    	}
+	                    }
+	                    startDate = d8start.format('dd.mm.yyyy');
+	                    startTime = d8start.format('HH:MM');
+	            	}
+	            	var endeDate = booking.get('endeDateString');
+	            	var endeTime = booking.get('endeTimeString');
+	            	if ((typeof(endeDate) === "undefined" || !endeDate || endeDate === "")
+	            	|| (typeof(endeTime) === "undefined" || !endeTime || endeTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8ende = D8.create(new Date(Number(booking.get('timeStampEnd')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8ende) >= 0 && tagDerWinterzeit.timeBetween(d8ende) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8ende = d8ende.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8ende = d8ende.addHours(1);
+	                    	}
+	                    }
+	                    endeDate = d8ende.format('dd.mm.yyyy');
+	                    endeTime = d8ende.format('HH:MM');
+	            	}
 	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	} else {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	}
 	
 	                // set the handOrderId as orderId for correct display in list item view
@@ -10489,10 +10581,56 @@ DigiWebApp.BookingController = M.Controller.extend({
 		        });
 		        if (bookings.length > 0) {
 		            _.each(bookings, function(booking) {
+		            	var startDate = booking.get('startDateString');
+		            	var startTime = booking.get('startTimeString');
+		            	if ((typeof(startDate) === "undefined" || !startDate || startDate === "")
+		            	|| (typeof(startTime) === "undefined" || !startTime || startTime === "")
+		            	) {
+		            		// Buchung aus alter WebAppVersion
+		            		var d8start = D8.create(new Date(Number(booking.get('timeStampStart')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+		                    if (tagDerSommerzeit.timeBetween(d8start) >= 0 && tagDerWinterzeit.timeBetween(d8start) <= 0) {
+		                    	// Buchung war in Sommerzeit
+		                    	if (inWinterzeit) {
+		                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+		                    		d8start = d8start.addHours(-1);
+		                    	}                   	
+		                    } else {
+		                    	// Buchung war in Winterzeit
+		                    	if (inSommerzeit) {
+		                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+		                    		d8start = d8start.addHours(1);
+		                    	}
+		                    }
+		                    startDate = d8start.format('dd.mm.yyyy');
+		                    startTime = d8start.format('HH:MM');
+		            	}
+		            	var endeDate = booking.get('endeDateString');
+		            	var endeTime = booking.get('endeTimeString');
+		            	if ((typeof(endeDate) === "undefined" || !endeDate || endeDate === "")
+		            	|| (typeof(endeTime) === "undefined" || !endeTime || endeTime === "")
+		            	) {
+		            		// Buchung aus alter WebAppVersion
+		            		var d8ende = D8.create(new Date(Number(booking.get('timeStampEnd')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+		                    if (tagDerSommerzeit.timeBetween(d8ende) >= 0 && tagDerWinterzeit.timeBetween(d8ende) <= 0) {
+		                    	// Buchung war in Sommerzeit
+		                    	if (inWinterzeit) {
+		                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+		                    		d8ende = d8ende.addHours(-1);
+		                    	}                   	
+		                    } else {
+		                    	// Buchung war in Winterzeit
+		                    	if (inSommerzeit) {
+		                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+		                    		d8ende = d8ende.addHours(1);
+		                    	}
+		                    }
+		                    endeDate = d8ende.format('dd.mm.yyyy');
+		                    endeTime = d8ende.format('HH:MM');
+		            	}
 		            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
-		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 		            	} else {
-		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+		            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 		            	}
 		
 		                // set the handOrderId as orderId for correct display in list item view
@@ -10523,10 +10661,56 @@ DigiWebApp.BookingController = M.Controller.extend({
 	        var bookings = [DigiWebApp.BookingController.currentBooking];
 	        if (bookings.length > 0) {
 	            _.each(bookings, function(booking) {
+	            	var startDate = booking.get('startDateString');
+	            	var startTime = booking.get('startTimeString');
+	            	if ((typeof(startDate) === "undefined" || !startDate || startDate === "")
+	            	|| (typeof(startTime) === "undefined" || !startTime || startTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8start = D8.create(new Date(Number(booking.get('timeStampStart')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8start) >= 0 && tagDerWinterzeit.timeBetween(d8start) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8start = d8start.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8start = d8start.addHours(1);
+	                    	}
+	                    }
+	                    startDate = d8start.format('dd.mm.yyyy');
+	                    startTime = d8start.format('HH:MM');
+	            	}
+	            	var endeDate = booking.get('endeDateString');
+	            	var endeTime = booking.get('endeTimeString');
+	            	if ((typeof(endeDate) === "undefined" || !endeDate || endeDate === "")
+	            	|| (typeof(endeTime) === "undefined" || !endeTime || endeTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8ende = D8.create(new Date(Number(booking.get('timeStampEnd')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8ende) >= 0 && tagDerWinterzeit.timeBetween(d8ende) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8ende = d8ende.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8ende = d8ende.addHours(1);
+	                    	}
+	                    }
+	                    endeDate = d8ende.format('dd.mm.yyyy');
+	                    endeTime = d8ende.format('HH:MM');
+	            	}
 	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	} else {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	}
 	                
 	                // set the handOrderId as orderId for correct display in list item view
@@ -10553,11 +10737,64 @@ DigiWebApp.BookingController = M.Controller.extend({
 	    	if ( DigiWebApp.EditTimeDataPage.bookingToEdit === null ) { return; }
 	        var bookings = [DigiWebApp.EditTimeDataPage.bookingToEdit];
 	        if (bookings.length > 0) {
+	        	var tagDerWinterzeit = D8.create("11/01/" + new Date().getFullYear() + " 02:00:00").addDays(-D8.create("11/01/" + new Date().getFullYear() + " 02:00:00").date.getDay());
+	        	var tagDerSommerzeit = D8.create("04/01/" + new Date().getFullYear() + " 02:00:00").addDays(-D8.create("04/01/" + new Date().getFullYear() + " 02:00:00").date.getDay());
+        		var d8Now = new D8();
+        		var inSommerzeit = (tagDerSommerzeit.timeBetween(d8Now) >= 0 && tagDerWinterzeit.timeBetween(d8Now) <= 0);
+        		//var inWinterzeit = ((tagDerWinterzeit.timeBetween(d8Now) >= 0 && tagDerSommerzeit.timeBetween(d8Now) >= 0) || (tagDerWinterzeit.timeBetween(d8Now) <= 0 && tagDerSommerzeit.timeBetween(d8Now) <= 0));
+        		var inWinterzeit = !inSommerzeit;
+	        	while 
 	            _.each(bookings, function(booking) {
+	            	var startDate = booking.get('startDateString');
+	            	var startTime = booking.get('startTimeString');
+	            	if ((typeof(startDate) === "undefined" || !startDate || startDate === "")
+	            	|| (typeof(startTime) === "undefined" || !startTime || startTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8start = D8.create(new Date(Number(booking.get('timeStampStart')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8start) >= 0 && tagDerWinterzeit.timeBetween(d8start) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8start = d8start.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8start = d8start.addHours(1);
+	                    	}
+	                    }
+	                    startDate = d8start.format('dd.mm.yyyy');
+	                    startTime = d8start.format('HH:MM');
+	            	}
+	            	var endeDate = booking.get('endeDateString');
+	            	var endeTime = booking.get('endeTimeString');
+	            	if ((typeof(endeDate) === "undefined" || !endeDate || endeDate === "")
+	            	|| (typeof(endeTime) === "undefined" || !endeTime || endeTime === "")
+	            	) {
+	            		// Buchung aus alter WebAppVersion
+	            		var d8ende = D8.create(new Date(Number(booking.get('timeStampEnd')) + (1000 * 60 * (new Date().getTimezoneOffset() - booking.get('timezoneOffset')))));
+	                    if (tagDerSommerzeit.timeBetween(d8ende) >= 0 && tagDerWinterzeit.timeBetween(d8ende) <= 0) {
+	                    	// Buchung war in Sommerzeit
+	                    	if (inWinterzeit) {
+	                    		// inzwischen haben wir jedoch Winterzeit: Buchung eine Stunde zurück schieben
+	                    		d8ende = d8ende.addHours(-1);
+	                    	}                   	
+	                    } else {
+	                    	// Buchung war in Winterzeit
+	                    	if (inSommerzeit) {
+	                    		// inzwischen haben wir jedoch Sommerzeit: Buchung eine Stunde vor schieben
+	                    		d8ende = d8ende.addHours(1);
+	                    	}
+	                    }
+	                    endeDate = d8ende.format('dd.mm.yyyy');
+	                    endeTime = d8ende.format('HH:MM');
+	            	}
 	            	if (typeof(booking.get('timezoneOffset')) === "undefined") {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',-120' + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	} else {
-	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + booking.get('startDateString') + ',' + booking.get('startTimeString') + ',' + booking.get('endeDateString') + ',' + booking.get('endeTimeString'));
+	            		booking.set('date', booking.get('timeStampStart') + ',' + booking.get('timeStampEnd') + ',' + booking.get('timezoneOffset') + ',' + startDate + ',' + startTime + ',' + endeDate + ',' + endeTime);
 	            	}
 	                
 	                // set the handOrderId as orderId for correct display in list item view
@@ -12415,7 +12652,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4404
+    , softwareVersion: 4405
 
 
     /**
@@ -26993,7 +27230,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4404'
+              value: 'Build: 4405'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -28471,110 +28708,6 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchBautageberichtTemplateView
-// ==========================================================================
-
-DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'abgeschlossen datum startUhrzeit orderName'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-				//console.log("tap");
-			    var view = M.ViewManager.getViewById(id);
-			    var view_modelId = view.modelId;
-			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
-					if (selectedItem.m_id === view_modelId) {
-						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
-						if (selectedItem.get("abgeschlossen") === YES) {
-							DigiWebApp.BautagebuchZusammenfassungController.load(selectedItem);
-							DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
-						} else {
-							DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
-						}
-					}
-				});
-			}
-        }
-    }
-
-	, spacer: M.LabelView.design({
-	      cssClass: 'unselectable marginBottom12'
-	    , value: ' '
-	})
-	
-	, abgeschlossen: M.LabelView.design({
-	    cssClass: 'bigLabel unselectable'
-	  , isInline: NO
-	  , computedValue: {
-	        valuePattern: '<%= abgeschlossen %>'
-	      , operation: function(v) {
-					if (parseBool(v)) {
-						return M.I18N.l('BautagebuchAbgeschlossen');
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, datum: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= datum %>'
-	      , operation: function(v) {
-					if (v !== "") {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, startUhrzeit: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= startUhrzeit %>'
-	      , operation: function(v) {
-					if (v !== "") {
-						return ", " + M.I18N.l('BautagebuchStartingFrom') + " " + v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-
-	, orderName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , computedValue: {
-	        valuePattern: '<%= orderName %>'
-	      , operation: function(v) {
-				if (v !== "") {
-					return v;
-				} else {
-					return "";
-				}
-	          }
-	  }
-	})
-
-    
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: CameraPage
 // ==========================================================================
 
@@ -28773,6 +28906,110 @@ DigiWebApp.CameraPage = M.PageView.design({
         
     })
 });
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchBautageberichtTemplateView
+// ==========================================================================
+
+DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'abgeschlossen datum startUhrzeit orderName'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+				//console.log("tap");
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchBautageberichteListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchBautageberichtDetailsController.load(selectedItem);
+						if (selectedItem.get("abgeschlossen") === YES) {
+							DigiWebApp.BautagebuchZusammenfassungController.load(selectedItem);
+							DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
+						} else {
+							DigiWebApp.NavigationController.toBautagebuchBautageberichtDetailsPageTransition();
+						}
+					}
+				});
+			}
+        }
+    }
+
+	, spacer: M.LabelView.design({
+	      cssClass: 'unselectable marginBottom12'
+	    , value: ' '
+	})
+	
+	, abgeschlossen: M.LabelView.design({
+	    cssClass: 'bigLabel unselectable'
+	  , isInline: NO
+	  , computedValue: {
+	        valuePattern: '<%= abgeschlossen %>'
+	      , operation: function(v) {
+					if (parseBool(v)) {
+						return M.I18N.l('BautagebuchAbgeschlossen');
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, datum: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= datum %>'
+	      , operation: function(v) {
+					if (v !== "") {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, startUhrzeit: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= startUhrzeit %>'
+	      , operation: function(v) {
+					if (v !== "") {
+						return ", " + M.I18N.l('BautagebuchStartingFrom') + " " + v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+
+	, orderName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= orderName %>'
+	      , operation: function(v) {
+				if (v !== "") {
+					return v;
+				} else {
+					return "";
+				}
+	          }
+	  }
+	})
+
+    
+});
+
 
 
 // ==========================================================================
