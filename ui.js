@@ -308,6 +308,349 @@ M.TableView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
+ * M.Application. A page is the container view for all other views.
+ *
+ * @extends M.View
+ */
+M.PageView = M.View.extend(
+/** @scope M.PageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PageView',
+
+    /**
+     * States whether a page is loaded the first time or not. It is automatically set to NO
+     * once the page was first loaded.
+     *
+     * @type Boolean
+     */
+    isFirstLoad: YES,
+
+    /**
+     * Indicates whether the page has a tab bar or not.
+     *
+     * @type Boolean
+     */
+    hasTabBarView: NO,
+
+    /**
+     * The page's tab bar.
+     *
+     * @type M.TabBarView
+     */
+    tabBarView: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions. If
+     * there are external handlers specified for the same event, the internal handler is called first.
+     *
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * An associative array containing all list views used in this page. The key for a list view is
+     * its id. We do this to have direct access to a list view, so we can reset its selected item
+     * once the page was hidden.
+     *
+     * @type Object
+     */
+    listList: null,
+
+    /**
+     * This property contains the page's current orientation. This property is only used internally!
+     *
+     * @private
+     * @type Number
+     */
+    orientation: null,
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The page view's html representation.
+     */
+    render: function() {
+        /* store the currently rendered page as a reference for use in child views */
+        M.ViewManager.currentlyRenderedPage = this;
+        
+        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
+        this.registerEvents();
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for page views and its
+     * internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            pagebeforeshow: {
+                target: this,
+                action: 'pageWillLoad'
+            },
+            pageshow: {
+                target: this,
+                action: 'pageDidLoad'
+            },
+            pagebeforehide: {
+                target: this,
+                action: 'pageWillHide'
+            },
+            pagehide: {
+                target: this,
+                action: 'pageDidHide'
+            },
+            orientationdidchange: {
+                target: this,
+                action: 'orientationDidChange'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method writes the view's html string into the DOM. M.Page is the only view that does
+     * that. All other views just deliver their html representation to a page view.
+     */
+    writeToDOM: function() {
+    	if (restartOnBlackBerry) {
+    		if (document.readyState === "loading") {
+    			document.write(this.html);
+    		} else if (typeof($(this.html)[0]) !== undefined) {
+    			// append only if the page-id isn't already in the body 
+    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
+    				$('body').append(this.html);
+    			}
+    		}
+		} else {
+			document.write(this.html);
+		}
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillLoad: function(id, event, nextEvent) {
+        /* initialize the tabbar */
+        if(M.Application.isFirstLoad) {
+            M.Application.isFirstLoad = NO;
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage && currentPage.hasTabBarView) {
+                var tabBarView = currentPage.tabBarView;
+
+                if(tabBarView.childViews) {
+                    var childViews = tabBarView.getChildViewsAsArray();
+                    for(var i in childViews) {
+                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
+                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* initialize the loader for later use (if not already done) */
+        if(M.LoaderView) {
+            M.LoaderView.initialize();
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+            var that = this;
+            window.setTimeout(function() {
+                $(that).controlgroup();
+            }, 1);
+        });
+
+        /* reset the page's title */
+        document.title = M.Application.name;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was loaded. If a onLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidLoad: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+//            $(this).controlgroup();
+//        });
+
+        this.isFirstLoad = NO;
+    },
+
+    /**
+     * This method is called right before the page is hidden. If a beforeHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillHide: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was hidden. If a onHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidHide: function(id, event, nextEvent) {
+        /* if there is a list on the page, reset it: deactivate possible active list items */
+        if(this.listList) {
+            _.each(this.listList, function(list) {
+                list.resetActiveListItem();
+            });
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the device's orientation did change. If a action for
+     * orientationdidchange is defined for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    orientationDidChange: function(id, event, nextEvent) {
+        /* get the orientation */
+        var orientation = M.Environment.getOrientation();
+        
+        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
+        if(orientation === this.orientation) {
+            return;
+        }
+
+        /* auto-reposition opened dialogs */
+        $('.tmp-dialog').each(function() {
+            var id = $(this).attr('id');
+            var dialog = M.ViewManager.getViewById(id);
+            var dialogDOM = $(this);
+            window.setTimeout(function() {
+                dialog.positionDialog(dialogDOM);
+                dialog.positionBackground($('.tmp-dialog-background'));
+            }, 500);
+        });
+
+        /* auto-reposition carousels */
+        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
+            var carousel = M.ViewManager.getViewById($(this).attr('id'));
+            carousel.orientationDidChange();
+        });
+
+        /* set the current orientation */
+        this.orientation = orientation;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the page.
+     *
+     * @private
+     * @returns {String} The page's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            if(!html) {
+                html += ' class="';
+            }
+            html += this.cssClass;
+        }
+        if(html) {
+            html += '"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1072,349 +1415,6 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
- * M.Application. A page is the container view for all other views.
- *
- * @extends M.View
- */
-M.PageView = M.View.extend(
-/** @scope M.PageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PageView',
-
-    /**
-     * States whether a page is loaded the first time or not. It is automatically set to NO
-     * once the page was first loaded.
-     *
-     * @type Boolean
-     */
-    isFirstLoad: YES,
-
-    /**
-     * Indicates whether the page has a tab bar or not.
-     *
-     * @type Boolean
-     */
-    hasTabBarView: NO,
-
-    /**
-     * The page's tab bar.
-     *
-     * @type M.TabBarView
-     */
-    tabBarView: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions. If
-     * there are external handlers specified for the same event, the internal handler is called first.
-     *
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * An associative array containing all list views used in this page. The key for a list view is
-     * its id. We do this to have direct access to a list view, so we can reset its selected item
-     * once the page was hidden.
-     *
-     * @type Object
-     */
-    listList: null,
-
-    /**
-     * This property contains the page's current orientation. This property is only used internally!
-     *
-     * @private
-     * @type Number
-     */
-    orientation: null,
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The page view's html representation.
-     */
-    render: function() {
-        /* store the currently rendered page as a reference for use in child views */
-        M.ViewManager.currentlyRenderedPage = this;
-        
-        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        this.writeToDOM();
-        this.theme();
-        this.registerEvents();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for page views and its
-     * internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            pagebeforeshow: {
-                target: this,
-                action: 'pageWillLoad'
-            },
-            pageshow: {
-                target: this,
-                action: 'pageDidLoad'
-            },
-            pagebeforehide: {
-                target: this,
-                action: 'pageWillHide'
-            },
-            pagehide: {
-                target: this,
-                action: 'pageDidHide'
-            },
-            orientationdidchange: {
-                target: this,
-                action: 'orientationDidChange'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method writes the view's html string into the DOM. M.Page is the only view that does
-     * that. All other views just deliver their html representation to a page view.
-     */
-    writeToDOM: function() {
-    	if (restartOnBlackBerry) {
-    		if (document.readyState === "loading") {
-    			document.write(this.html);
-    		} else if (typeof($(this.html)[0]) !== undefined) {
-    			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
-    				$('body').append(this.html);
-    			}
-    		}
-		} else {
-			document.write(this.html);
-		}
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillLoad: function(id, event, nextEvent) {
-        /* initialize the tabbar */
-        if(M.Application.isFirstLoad) {
-            M.Application.isFirstLoad = NO;
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage && currentPage.hasTabBarView) {
-                var tabBarView = currentPage.tabBarView;
-
-                if(tabBarView.childViews) {
-                    var childViews = tabBarView.getChildViewsAsArray();
-                    for(var i in childViews) {
-                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
-                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* initialize the loader for later use (if not already done) */
-        if(M.LoaderView) {
-            M.LoaderView.initialize();
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-            var that = this;
-            window.setTimeout(function() {
-                $(that).controlgroup();
-            }, 1);
-        });
-
-        /* reset the page's title */
-        document.title = M.Application.name;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was loaded. If a onLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidLoad: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-//            $(this).controlgroup();
-//        });
-
-        this.isFirstLoad = NO;
-    },
-
-    /**
-     * This method is called right before the page is hidden. If a beforeHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillHide: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was hidden. If a onHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidHide: function(id, event, nextEvent) {
-        /* if there is a list on the page, reset it: deactivate possible active list items */
-        if(this.listList) {
-            _.each(this.listList, function(list) {
-                list.resetActiveListItem();
-            });
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the device's orientation did change. If a action for
-     * orientationdidchange is defined for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    orientationDidChange: function(id, event, nextEvent) {
-        /* get the orientation */
-        var orientation = M.Environment.getOrientation();
-        
-        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
-        if(orientation === this.orientation) {
-            return;
-        }
-
-        /* auto-reposition opened dialogs */
-        $('.tmp-dialog').each(function() {
-            var id = $(this).attr('id');
-            var dialog = M.ViewManager.getViewById(id);
-            var dialogDOM = $(this);
-            window.setTimeout(function() {
-                dialog.positionDialog(dialogDOM);
-                dialog.positionBackground($('.tmp-dialog-background'));
-            }, 500);
-        });
-
-        /* auto-reposition carousels */
-        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
-            var carousel = M.ViewManager.getViewById($(this).attr('id'));
-            carousel.orientationDidChange();
-        });
-
-        /* set the current orientation */
-        this.orientation = orientation;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the page.
-     *
-     * @private
-     * @returns {String} The page's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            if(!html) {
-                html += ' class="';
-            }
-            html += this.cssClass;
-        }
-        if(html) {
-            html += '"';
-        }
-        return html;
-    }
-    
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -2461,6 +2461,697 @@ M.TabBarItemView = M.View.extend(
         return html;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a date picker view. A date picker is a special view, that can
+ * be called out of a controller. It is shown as a date picker popup, based on the mobiscroll
+ * library. You can either connect a date picker with an existing view and automatically pass
+ * the selected date to the source's value property, or you can simply use the date picker to
+ * select a date, return it to the controller (respectively the callback) and handle the date
+ * by yourself.
+ *
+ * @extends M.View
+ */
+M.DatePickerView = M.View.extend(
+/** @scope M.DatePickerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DatePickerView',
+
+    /**
+     * This property is used to link the date picker to a source. You can either pass the DOM id of
+     * the corresponding source or the javascript object itself. Linking the date picker directly
+     * to a source results in automatic value updates of this source.
+     *
+     * Note: Valid sources need to provide a setValue() method.
+     *
+     * If you do not pass a source, the date picker isn't linked to any view. It simply returns the
+     * selected value/date to given callbacks. So you can call the date picker out of a controller
+     * and handle the selected date all by yourself.
+     *
+     * @type String|Object
+     */
+    source: null,
+
+    /**
+     * This property can be used to specify several callbacks for the date picker view. There are
+     * three types of callbacks available:
+     *
+     *     - before
+     *         This callback gets called, right before the date picker is shown. It passes along two
+     *         parameters:
+     *             - value      -> The initial date of the date picker, formatted as a string
+     *             - date       -> The initial date of the date picker as d8 object
+     *     - confirm
+     *         This callback gets called, when a selected date was confirmed. It passes along two
+     *         parameters:
+     *             - value      -> The selected date of the date picker, formatted as a string
+     *             - date       -> The selected date of the date picker as d8 object
+     *     - cancel
+     *         This callback gets called, when the cancel button is hit. It doesn't pass any
+     *         parameters.
+     *
+     * Setting up one of those callbacks works the same as with other controls of The-M-Project. You
+     * simply have to specify an object containing a target function, e.g.:
+     *
+     * callbacks: {
+     *     confirm: {
+     *         target: this,
+     *         action: 'dateSelected'
+     *     },
+     *     cancel: {
+     *         action: function() {
+     *             // do something
+     *         }
+     *     }
+     * }
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This property can be used to specify the initial date for the date picker. If you use the
+     * date picker without a source, this date is always picked as the initial date. If nothing is
+     * specified, the current date will be displayed.
+     *
+     * If you use the date picker with a valid source, the initial date is picked as long as there
+     * is no valid date available by the source. Once a date was selected and assigned to the source,
+     * this is taken as initial date the next time the date picker is opened.
+     *
+     * @type Object|String
+     */
+    initialDate: null,
+
+    /**
+     * This property can be used to determine whether to use the data source's value as initial date
+     * or not. If there is no source specified, this property is irrelevant.
+     *
+     * Note: If there is a source specified and this property is set to NO, the 'initialDate' property
+     * will be used anyway if there is no date value available for the source!
+     *
+     * @type Boolean
+     */
+    useSourceDateAsInitialDate: YES,
+
+    /**
+     * This property can be used to specify whether to show scrollers for picking a date or not.
+     *
+     * Note: If both this and the 'showTimePicker' property are set to NO, no date picker will
+     * be shown!
+     *
+     * @type Boolean
+     */
+    showDatePicker: YES,
+
+    /**
+     * This property can be used to specify whether to show scrollers for picking a time or not.
+     *
+     * Note: If both this and the 'showDatePicker' property are set to NO, no date picker will
+     * be shown!
+     *
+     * @type Boolean
+     */
+    showTimePicker: YES,
+
+    /**
+     * This property can be used to specify whether or not to show labels above of the scrollers.
+     * If set to YES, the labels specified with the '...Label' properties are displayed above of
+     * the corresponding scroller.
+     *
+     * @type Boolean
+     */
+    showLabels: YES,
+
+    /**
+     * This property specified the label shown above of the 'year' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    yearLabel: 'Year',
+
+    /**
+     * This property specified the label shown above of the 'month' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    monthLabel: 'Month',
+
+    /**
+     * This property specified the label shown above of the 'day' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    dayLabel: 'Day',
+
+    /**
+     * This property specified the label shown above of the 'hours' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    hoursLabel: 'Hours',
+
+    /**
+     * This property specified the label shown above of the 'minutes' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    minutesLabel: 'Minutes',
+
+    /**
+     * You can use this property to enable or disable the AM/PM scroller. If set to NO, the
+     * date picker will use the 24h format.
+     *
+     * @type Boolean
+     */
+    showAmPm: YES,
+
+    /**
+     * This property can be used to specify the first year of the 'year' scroller. By default,
+     * this will be set to 20 years before the current year.
+     *
+     * @type Number
+     */
+    startYear: null,
+
+    /**
+     * This property can be used to specify the last year of the 'year' scroller. By default,
+     * this will be set to 20 years after the current year.
+     *
+     * @type Number
+     */
+    endYear: null,
+
+    /**
+     * This property can be used to customize the date format of the date picker. This is important
+     * if you use the date picker on a valid source since the date picker will then automatically
+     * push the selected date/datetime to the 'value' property of the source - based on this format.
+     *
+     * The possible keys:
+     *
+     *     - m      -> month (without leading zero)
+     *     - mm     -> month (two-digit)
+     *     - M      -> month name (short)
+     *     - MM     -> month name (long)
+     *     - d      -> day (without leading zero)
+     *     - d      -> day (two digit)
+     *     - D      -> day name (short)
+     *     - DD     -> day name (long)
+     *     - y      -> year (two digit)
+     *     - yy     -> year (four digit)
+     *
+     * @type String
+     */
+    dateFormat: 'M dd, yy',
+
+    /**
+     * This property can be used to customize the date format of the date picker if it is associated
+     * with a text input with the type 'month'. It works the same as the dateFormat property.
+     *
+     * @type String
+     */
+    dateFormatMonthOnly: 'MM yy',
+
+    /**
+     * This property can be used to customize the time format of the date picker. This is important
+     * if you use the date picker on a valid source since the date picker will then automatically
+     * push the selected time/datetime to the 'value' property of the source - based on this format.
+     *
+     * The possible keys:
+     *
+     *     - h      -> hours (without leading zero, 12h format)
+     *     - hh     -> hours (two-digit, 12h format)
+     *     - H      -> hours (without leading zero, 24h format)
+     *     - HH     -> hours (two-digit, 24h format)
+     *     - i      -> minutes (without leading zero)
+     *     - ii     -> minutes (two-digit)
+     *     - A      -> AM/PM
+     *
+     * @type String
+     */
+    timeFormat: 'h:ii A',
+
+    /**
+     * This property determines the order and formating of the date scrollers. The following keys
+     * are possible:
+     *
+     *     - m      -> month (without leading zero)
+     *     - mm     -> month (two-digit)
+     *     - M      -> month name (short)
+     *     - MM     -> month name (long)
+     *     - d      -> day (without leading zero)
+     *     - d      -> day (two digit)
+     *     - y      -> year (two digit)
+     *     - yy     -> year (four digit)
+     *
+     * By default, we use this format: Mddyy
+     *
+     * @type String
+     */
+    dateOrder: 'Mddyy',
+
+    /**
+     * This property determines the order and formating of the date scrollers if it is associated
+     * with an input field of type 'month'. It works the same as the dateOrder property.
+     *
+     * By default, we use this format: MMyy
+     *
+     * @type String
+     */
+    dateOrderMonthOnly: 'MMyy',
+
+
+
+    /**
+     * This property specifies a list of full month names.
+     *
+     * @type Array
+     */
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+    /**
+     * This property specifies a list of short month names.
+     *
+     * @type Array
+     */
+    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
+    /**
+     * This property specifies a list of full day names.
+     *
+     * @type Array
+     */
+    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+
+    /**
+     * This property specifies a list of short day names.
+     *
+     * @type Array
+     */
+    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+
+    /**
+     * This property can be used to specify the label of the date picker's cancel button. By default
+     * it shows 'Cancel'.
+     *
+     * @type String
+     */
+    cancelButtonValue: 'Cancel',
+
+    /**
+     * This property can be used to specify the label of the date picker's cancel button. By default
+     * it shows 'Ok'.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * This property can be used to specify the steps between hours in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepHour: 1,
+
+    /**
+     * This property can be used to specify the steps between minutes in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepMinute: 1,
+
+    /**
+     * This property can be used to specify the steps between seconds in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepSecond: 1,
+
+    /**
+     * This property can be used to activate the seconds wheel on a time/date-time picker.
+     *
+     * @type Boolean
+     */
+    seconds: NO,
+
+    /**
+     * This property is used internally to indicate whether the current date picker works on a valid
+     * source or was called without one. This is important for stuff like auto-updating the source's
+     * DOM representation.
+     *
+     * @private
+     */
+    hasSource: YES,
+
+    /**
+     * This property is used internally to state whether a value, respectively a date, was selected
+     * or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isValueSelected: NO,
+
+    /**
+     * This property is used internally to state whether a the date picker is currently activated
+     * or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This method is the only important method of a date picker view for 'the outside world'. From within
+     * an application, simply call this method and pass along an object, containing all the properties
+     * you want to set, different from default.
+     *
+     * A sample call:
+     *
+     * M.DatePickerView.show({
+     *     source: M.ViewManager.getView('mainPage', 'myTextField')
+     *     initialDate: D8.create('30.04.1985 10:30'),
+     *     callbacks: {
+     *          confirm: {
+     *              target: this,
+     *              action: function(value, date) {
+     *                  // do something...
+     *              }
+     *          }
+     *     }
+     * });
+     *
+     * @param obj
+     */
+    show: function(obj) {
+        var datepicker = M.DatePickerView.design(obj);
+
+        /* if a datepicker is active already, return */
+        if(Object.getPrototypeOf(datepicker).isActive) {
+            return;
+        /* otherwise go on and set the flag to active */
+        } else {
+            Object.getPrototypeOf(datepicker).isActive = YES;
+        }
+
+        /* check if it's worth the work at all */
+        if(!(datepicker.showDatePicker || datepicker.showTimePicker)) {
+            M.Logger.log('In order to use the M.DatepickerView, you have to set the \'showDatePicker\' or \'showTimePicker\' property to YES.', M.ERR);
+            return;
+        }
+
+        /* calculate the default start and end years */
+        this.startYear = this.startYear ? this.startYear : D8.now().format('yyyy') - 20;
+        this.endYear = this.endYear ? this.endYear : D8.now().format('yyyy') + 20;
+
+        /* check if we got a valid source */
+        if(datepicker.source) {
+            /* if we got a view, get its id */
+            datepicker.source = typeof(datepicker.source) === 'object' && datepicker.source.type ? datepicker.source.id : datepicker.source;
+
+            var view = M.ViewManager.getViewById(datepicker.source);
+            if(view && typeof(view.setValue) === 'function' && $('#' + datepicker.source) && $('#' + datepicker.source).length > 0) {
+                datepicker.init();
+            } else {
+                M.Logger.log('The specified source for the M.DatepickerView is invalid!', M.ERR);
+            }
+        } else {
+            /* use default source (the current page) */
+            datepicker.hasSource = NO;
+            var page = M.ViewManager.getCurrentPage();
+            if(page) {
+                datepicker.source = page.id;
+                datepicker.init();
+            }
+        }
+    },
+
+    /**
+     * This method is used internally to communicate with the mobiscroll library. It actually initializes
+     * the creation of the date picker and is responsible for reacting on events. If the cancel or confirm
+     * button is hit, this method dispatches the events to the corresponding callbacks.
+     *
+     * @private
+     */
+    init: function() {
+        var that = this;
+        $('#' + this.source).scroller({
+            preset: (this.showDatePicker && this.showTimePicker ? 'datetime' : (this.showDatePicker ? 'date' : (this.showTimePicker ? 'time' : null))),
+            ampm: this.showAmPm,
+            startYear: this.startYear,
+            endYear: this.endYear,
+            dateFormat: this.dateFormat,
+            timeFormat: this.timeFormat,
+            dateOrder: this.dateOrder,
+            dayText: this.dayLabel,
+            hourText: this.hoursLabel,
+            minuteText: this.minutesLabel,
+            monthText: this.monthLabel,
+            yearText: this.yearLabel,
+            monthNames: this.monthNames,
+            monthNamesShort: this.monthNamesShort,
+            dayNames: this.dayNames,
+            dayNamesShort: this.dayNamesShort,
+            cancelText: this.cancelButtonValue,
+            setText: this.confirmButtonValue,
+            stepHour: this.stepHour,
+            stepMinute: this.stepMinute,
+            stepSecond: this.stepSecond,
+            seconds: this.seconds,
+
+            /* now set the width of the scrollers */
+            width: (M.Environment.getWidth() - 20) / 3 - 20 > 90 ? 90 : (M.Environment.getWidth() - 20) / 3 - 20,
+
+            beforeShow: function(input, scroller) {
+                that.bindToCaller(that, that.beforeShow, [input, scroller])();
+            },
+            onClose: function(value, scroller) {
+                that.bindToCaller(that, that.onClose, [value, scroller])();
+            },
+            onSelect: function(value, scroller) {
+                that.bindToCaller(that, that.onSelect, [value, scroller])();
+            }
+        });
+        $('#' + this.source).scroller('show');
+    },
+
+    /**
+     * This method is used internally to handle the 'beforeShow' event. It does some adjustments to the
+     * rendered scroller by mobiscroll and finally calls the application's 'before' callback, if it is
+     * defined.
+     *
+     * @param source
+     * @param scroller
+     */
+    beforeShow: function(source, scroller) {
+        var source = null;
+        var date = null;
+
+        /* try to set the date picker's initial date based on its source */
+        if(this.hasSource && this.useSourceDateAsInitialDate) {
+            source = M.ViewManager.getViewById(this.source);
+            if(source.value) {
+                try {
+                    date = D8.create(source.value);
+                } catch(e) {
+
+                }
+                if(date) {
+                    if(date.format('yyyy') < this.startYear) {
+                        if(this.hasOwnProperty('startYear')) {
+                            M.Logger.log('The given date of the source (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
+                        } else {
+                            M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the given date of the source (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
+                            $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
+                            $('#' + this.source).scroller('setDate', date.date);
+                        }
+                    } else {
+                        $('#' + this.source).scroller('setDate', date.date);
+                    }
+                }
+            }
+        }
+
+        /* if there is no source or the retrieval of the date went wrong, try to set it based on the initial date property */
+        if(this.initialDate && !date) {
+            if(this.initialDate.date) {
+                date = this.initialDate;
+            } else {
+                try {
+                    date = D8.create(this.initialDate);
+                } catch(e) {
+
+                }
+            }
+            if(date) {
+                if(date.format('yyyy') < this.startYear) {
+                    if(this.hasOwnProperty('startYear')) {
+                        M.Logger.log('The specified initial date (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
+                    } else {
+                        M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the specified initial date (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
+                        $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
+                        $('#' + this.source).scroller('setDate', date.date);
+                    }
+                } else {
+                    $('#' + this.source).scroller('setDate', date.date);
+                }
+            }
+        }
+
+        /* now we got the date (or use the current date as default), lets compute this as a formatted text for the callback */
+        value = scroller.formatDate(
+            this.showDatePicker ? this.dateFormat + (this.showTimePicker ? ' ' + this.timeFormat : '') : this.timeFormat,
+            scroller.getDate()
+        );
+
+        /* kill parts of the scoller */
+        $('.dwv').remove();
+
+        /* give it some shiny jqm style */
+        window.setTimeout(function() {
+            $('.dw').addClass('ui-btn-up-a');
+        }, 1);
+
+        /* disable scrolling for the background */
+        $('.dwo').bind('touchmove', function(e) {
+            e.preventDefault();
+        });
+
+        /* inject TMP buttons*/
+        var confirmButton = M.ButtonView.design({
+            value: this.confirmButtonValue,
+            cssClass: 'b tmp-dialog-smallerbtn-confirm',
+            events: {
+                tap: {
+                    action: function() {
+                        $('#dw_set').trigger('click');
+                    }
+                }
+            }
+        });
+        var cancelButton = M.ButtonView.design({
+            value: this.cancelButtonValue,
+            cssClass: 'd tmp-dialog-smallerbtn-confirm',
+            events: {
+                tap: {
+                    action: function() {
+                        $('#dw_cancel').trigger('click');
+                    }
+                }
+            }
+        });
+
+        if(this.showDatePicker) {
+            var grid = M.GridView.design({
+                childViews: 'confirm cancel',
+                layout: M.TWO_COLUMNS,
+                cssClass: 'tmp-datepicker-buttongrid',
+                confirm: confirmButton,
+                cancel: cancelButton
+            });
+
+            var html = grid.render();
+            $('.dw').append(html);
+            grid.theme();
+            grid.registerEvents();
+        } else {
+            var html = confirmButton.render();
+            html += cancelButton.render();
+            $('.dw').append(html);
+            confirmButton.theme();
+            confirmButton.registerEvents();
+            cancelButton.theme();
+            cancelButton.registerEvents();
+        }
+
+        /* hide default buttons */
+        $('#dw_cancel').hide();
+        $('#dw_set').hide();
+
+        /* add class to body as selector for showing/hiding labels */
+        if(!this.showLabels) {
+            $('body').addClass('tmp-datepicker-no-label');
+        }
+
+        /* call callback */
+        if(this.callbacks && this.callbacks['before'] && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
+            M.EventDispatcher.callHandler(this.callbacks['before'], null, NO, [value, date]);
+        }
+    },
+
+    onClose: function(value, scroller) {
+        /* set value if one was selected */
+        var source = null;
+        var date = null;
+        if(this.isValueSelected) {
+            /* first compute the date */
+            try {
+                date = D8.create(scroller.getDate());
+            } catch(e) {
+
+            }
+
+            /* now, if there is a source, auto-update its value */
+            if(this.hasSource) {
+                source = M.ViewManager.getViewById(this.source);
+                if(source) {
+                    source.setValue(value, NO, YES);
+                }
+            }
+        }
+
+        /* remove class from body as selector for showing/hiding labels */
+        if(!this.showLabels) {
+            $('body').removeClass('tmp-datepicker-no-label');
+        }
+
+        /* call cancel callback */
+        if(!this.isValueSelected && this.callbacks && this.callbacks['cancel'] && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
+            M.EventDispatcher.callHandler(this.callbacks['cancel'], null, NO, []);
+        } else if(this.isValueSelected && this.callbacks && this.callbacks['confirm'] && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
+            M.EventDispatcher.callHandler(this.callbacks['confirm'], null, NO, [value, date]);
+        }
+
+        /* kill the datepicker */
+        Object.getPrototypeOf(this).isActive = NO;
+        $('#' + this.source).scroller('destroy');
+        $('.dwo').remove();
+        $('.dw').remove();
+        this.destroy();
+    },
+
+    onSelect: function(value) {
+        /* mark the datepicker as 'valueSelected' */
+        this.isValueSelected = YES;
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6414,7 +7105,7 @@ M.MapView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      04.02.2011
+// Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -6423,683 +7114,113 @@ M.MapView = M.View.extend(
 /**
  * @class
  *
- * This defines the prototype for a date picker view. A date picker is a special view, that can
- * be called out of a controller. It is shown as a date picker popup, based on the mobiscroll
- * library. You can either connect a date picker with an existing view and automatically pass
- * the selected date to the source's value property, or you can simply use the date picker to
- * select a date, return it to the controller (respectively the callback) and handle the date
- * by yourself.
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
  *
  * @extends M.View
  */
-M.DatePickerView = M.View.extend(
-/** @scope M.DatePickerView.prototype */ {
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.DatePickerView',
+    type: 'M.ImageView',
 
     /**
-     * This property is used to link the date picker to a source. You can either pass the DOM id of
-     * the corresponding source or the javascript object itself. Linking the date picker directly
-     * to a source results in automatic value updates of this source.
-     *
-     * Note: Valid sources need to provide a setValue() method.
-     *
-     * If you do not pass a source, the date picker isn't linked to any view. It simply returns the
-     * selected value/date to given callbacks. So you can call the date picker out of a controller
-     * and handle the selected date all by yourself.
-     *
-     * @type String|Object
-     */
-    source: null,
-
-    /**
-     * This property can be used to specify several callbacks for the date picker view. There are
-     * three types of callbacks available:
-     *
-     *     - before
-     *         This callback gets called, right before the date picker is shown. It passes along two
-     *         parameters:
-     *             - value      -> The initial date of the date picker, formatted as a string
-     *             - date       -> The initial date of the date picker as d8 object
-     *     - confirm
-     *         This callback gets called, when a selected date was confirmed. It passes along two
-     *         parameters:
-     *             - value      -> The selected date of the date picker, formatted as a string
-     *             - date       -> The selected date of the date picker as d8 object
-     *     - cancel
-     *         This callback gets called, when the cancel button is hit. It doesn't pass any
-     *         parameters.
-     *
-     * Setting up one of those callbacks works the same as with other controls of The-M-Project. You
-     * simply have to specify an object containing a target function, e.g.:
-     *
-     * callbacks: {
-     *     confirm: {
-     *         target: this,
-     *         action: 'dateSelected'
-     *     },
-     *     cancel: {
-     *         action: function() {
-     *             // do something
-     *         }
-     *     }
-     * }
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This property can be used to specify the initial date for the date picker. If you use the
-     * date picker without a source, this date is always picked as the initial date. If nothing is
-     * specified, the current date will be displayed.
-     *
-     * If you use the date picker with a valid source, the initial date is picked as long as there
-     * is no valid date available by the source. Once a date was selected and assigned to the source,
-     * this is taken as initial date the next time the date picker is opened.
-     *
-     * @type Object|String
-     */
-    initialDate: null,
-
-    /**
-     * This property can be used to determine whether to use the data source's value as initial date
-     * or not. If there is no source specified, this property is irrelevant.
-     *
-     * Note: If there is a source specified and this property is set to NO, the 'initialDate' property
-     * will be used anyway if there is no date value available for the source!
-     *
-     * @type Boolean
-     */
-    useSourceDateAsInitialDate: YES,
-
-    /**
-     * This property can be used to specify whether to show scrollers for picking a date or not.
-     *
-     * Note: If both this and the 'showTimePicker' property are set to NO, no date picker will
-     * be shown!
-     *
-     * @type Boolean
-     */
-    showDatePicker: YES,
-
-    /**
-     * This property can be used to specify whether to show scrollers for picking a time or not.
-     *
-     * Note: If both this and the 'showDatePicker' property are set to NO, no date picker will
-     * be shown!
-     *
-     * @type Boolean
-     */
-    showTimePicker: YES,
-
-    /**
-     * This property can be used to specify whether or not to show labels above of the scrollers.
-     * If set to YES, the labels specified with the '...Label' properties are displayed above of
-     * the corresponding scroller.
-     *
-     * @type Boolean
-     */
-    showLabels: YES,
-
-    /**
-     * This property specified the label shown above of the 'year' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    yearLabel: 'Year',
-
-    /**
-     * This property specified the label shown above of the 'month' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    monthLabel: 'Month',
-
-    /**
-     * This property specified the label shown above of the 'day' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    dayLabel: 'Day',
-
-    /**
-     * This property specified the label shown above of the 'hours' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    hoursLabel: 'Hours',
-
-    /**
-     * This property specified the label shown above of the 'minutes' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    minutesLabel: 'Minutes',
-
-    /**
-     * You can use this property to enable or disable the AM/PM scroller. If set to NO, the
-     * date picker will use the 24h format.
-     *
-     * @type Boolean
-     */
-    showAmPm: YES,
-
-    /**
-     * This property can be used to specify the first year of the 'year' scroller. By default,
-     * this will be set to 20 years before the current year.
-     *
-     * @type Number
-     */
-    startYear: null,
-
-    /**
-     * This property can be used to specify the last year of the 'year' scroller. By default,
-     * this will be set to 20 years after the current year.
-     *
-     * @type Number
-     */
-    endYear: null,
-
-    /**
-     * This property can be used to customize the date format of the date picker. This is important
-     * if you use the date picker on a valid source since the date picker will then automatically
-     * push the selected date/datetime to the 'value' property of the source - based on this format.
-     *
-     * The possible keys:
-     *
-     *     - m      -> month (without leading zero)
-     *     - mm     -> month (two-digit)
-     *     - M      -> month name (short)
-     *     - MM     -> month name (long)
-     *     - d      -> day (without leading zero)
-     *     - d      -> day (two digit)
-     *     - D      -> day name (short)
-     *     - DD     -> day name (long)
-     *     - y      -> year (two digit)
-     *     - yy     -> year (four digit)
-     *
-     * @type String
-     */
-    dateFormat: 'M dd, yy',
-
-    /**
-     * This property can be used to customize the date format of the date picker if it is associated
-     * with a text input with the type 'month'. It works the same as the dateFormat property.
-     *
-     * @type String
-     */
-    dateFormatMonthOnly: 'MM yy',
-
-    /**
-     * This property can be used to customize the time format of the date picker. This is important
-     * if you use the date picker on a valid source since the date picker will then automatically
-     * push the selected time/datetime to the 'value' property of the source - based on this format.
-     *
-     * The possible keys:
-     *
-     *     - h      -> hours (without leading zero, 12h format)
-     *     - hh     -> hours (two-digit, 12h format)
-     *     - H      -> hours (without leading zero, 24h format)
-     *     - HH     -> hours (two-digit, 24h format)
-     *     - i      -> minutes (without leading zero)
-     *     - ii     -> minutes (two-digit)
-     *     - A      -> AM/PM
-     *
-     * @type String
-     */
-    timeFormat: 'h:ii A',
-
-    /**
-     * This property determines the order and formating of the date scrollers. The following keys
-     * are possible:
-     *
-     *     - m      -> month (without leading zero)
-     *     - mm     -> month (two-digit)
-     *     - M      -> month name (short)
-     *     - MM     -> month name (long)
-     *     - d      -> day (without leading zero)
-     *     - d      -> day (two digit)
-     *     - y      -> year (two digit)
-     *     - yy     -> year (four digit)
-     *
-     * By default, we use this format: Mddyy
-     *
-     * @type String
-     */
-    dateOrder: 'Mddyy',
-
-    /**
-     * This property determines the order and formating of the date scrollers if it is associated
-     * with an input field of type 'month'. It works the same as the dateOrder property.
-     *
-     * By default, we use this format: MMyy
-     *
-     * @type String
-     */
-    dateOrderMonthOnly: 'MMyy',
-
-
-
-    /**
-     * This property specifies a list of full month names.
+     * This property specifies the recommended events for this type of view.
      *
      * @type Array
      */
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
 
     /**
-     * This property specifies a list of short month names.
-     *
-     * @type Array
-     */
-    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-
-    /**
-     * This property specifies a list of full day names.
-     *
-     * @type Array
-     */
-    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-
-    /**
-     * This property specifies a list of short day names.
-     *
-     * @type Array
-     */
-    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-
-    /**
-     * This property can be used to specify the label of the date picker's cancel button. By default
-     * it shows 'Cancel'.
-     *
-     * @type String
-     */
-    cancelButtonValue: 'Cancel',
-
-    /**
-     * This property can be used to specify the label of the date picker's cancel button. By default
-     * it shows 'Ok'.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * This property can be used to specify the steps between hours in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepHour: 1,
-
-    /**
-     * This property can be used to specify the steps between minutes in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepMinute: 1,
-
-    /**
-     * This property can be used to specify the steps between seconds in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepSecond: 1,
-
-    /**
-     * This property can be used to activate the seconds wheel on a time/date-time picker.
-     *
-     * @type Boolean
-     */
-    seconds: NO,
-
-    /**
-     * This property is used internally to indicate whether the current date picker works on a valid
-     * source or was called without one. This is important for stuff like auto-updating the source's
-     * DOM representation.
+     * Renders an image view based on the specified layout.
      *
      * @private
+     * @returns {String} The image view's html representation.
      */
-    hasSource: YES,
-
-    /**
-     * This property is used internally to state whether a value, respectively a date, was selected
-     * or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isValueSelected: NO,
-
-    /**
-     * This property is used internally to state whether a the date picker is currently activated
-     * or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This method is the only important method of a date picker view for 'the outside world'. From within
-     * an application, simply call this method and pass along an object, containing all the properties
-     * you want to set, different from default.
-     *
-     * A sample call:
-     *
-     * M.DatePickerView.show({
-     *     source: M.ViewManager.getView('mainPage', 'myTextField')
-     *     initialDate: D8.create('30.04.1985 10:30'),
-     *     callbacks: {
-     *          confirm: {
-     *              target: this,
-     *              action: function(value, date) {
-     *                  // do something...
-     *              }
-     *          }
-     *     }
-     * });
-     *
-     * @param obj
-     */
-    show: function(obj) {
-        var datepicker = M.DatePickerView.design(obj);
-
-        /* if a datepicker is active already, return */
-        if(Object.getPrototypeOf(datepicker).isActive) {
-            return;
-        /* otherwise go on and set the flag to active */
-        } else {
-            Object.getPrototypeOf(datepicker).isActive = YES;
-        }
-
-        /* check if it's worth the work at all */
-        if(!(datepicker.showDatePicker || datepicker.showTimePicker)) {
-            M.Logger.log('In order to use the M.DatepickerView, you have to set the \'showDatePicker\' or \'showTimePicker\' property to YES.', M.ERR);
-            return;
-        }
-
-        /* calculate the default start and end years */
-        this.startYear = this.startYear ? this.startYear : D8.now().format('yyyy') - 20;
-        this.endYear = this.endYear ? this.endYear : D8.now().format('yyyy') + 20;
-
-        /* check if we got a valid source */
-        if(datepicker.source) {
-            /* if we got a view, get its id */
-            datepicker.source = typeof(datepicker.source) === 'object' && datepicker.source.type ? datepicker.source.id : datepicker.source;
-
-            var view = M.ViewManager.getViewById(datepicker.source);
-            if(view && typeof(view.setValue) === 'function' && $('#' + datepicker.source) && $('#' + datepicker.source).length > 0) {
-                datepicker.init();
-            } else {
-                M.Logger.log('The specified source for the M.DatepickerView is invalid!', M.ERR);
-            }
-        } else {
-            /* use default source (the current page) */
-            datepicker.hasSource = NO;
-            var page = M.ViewManager.getCurrentPage();
-            if(page) {
-                datepicker.source = page.id;
-                datepicker.init();
-            }
-        }
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
     },
 
     /**
-     * This method is used internally to communicate with the mobiscroll library. It actually initializes
-     * the creation of the date picker and is responsible for reacting on events. If the cancel or confirm
-     * button is hit, this method dispatches the events to the corresponding callbacks.
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
      *
-     * @private
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
      */
-    init: function() {
-        var that = this;
-        $('#' + this.source).scroller({
-            preset: (this.showDatePicker && this.showTimePicker ? 'datetime' : (this.showDatePicker ? 'date' : (this.showTimePicker ? 'time' : null))),
-            ampm: this.showAmPm,
-            startYear: this.startYear,
-            endYear: this.endYear,
-            dateFormat: this.dateFormat,
-            timeFormat: this.timeFormat,
-            dateOrder: this.dateOrder,
-            dayText: this.dayLabel,
-            hourText: this.hoursLabel,
-            minuteText: this.minutesLabel,
-            monthText: this.monthLabel,
-            yearText: this.yearLabel,
-            monthNames: this.monthNames,
-            monthNamesShort: this.monthNamesShort,
-            dayNames: this.dayNames,
-            dayNamesShort: this.dayNamesShort,
-            cancelText: this.cancelButtonValue,
-            setText: this.confirmButtonValue,
-            stepHour: this.stepHour,
-            stepMinute: this.stepMinute,
-            stepSecond: this.stepSecond,
-            seconds: this.seconds,
-
-            /* now set the width of the scrollers */
-            width: (M.Environment.getWidth() - 20) / 3 - 20 > 90 ? 90 : (M.Environment.getWidth() - 20) / 3 - 20,
-
-            beforeShow: function(input, scroller) {
-                that.bindToCaller(that, that.beforeShow, [input, scroller])();
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
             },
-            onClose: function(value, scroller) {
-                that.bindToCaller(that, that.onClose, [value, scroller])();
-            },
-            onSelect: function(value, scroller) {
-                that.bindToCaller(that, that.onSelect, [value, scroller])();
+            load: {
+                target: this,
+                action: 'sourceIsValid'
             }
-        });
-        $('#' + this.source).scroller('show');
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
     },
 
     /**
-     * This method is used internally to handle the 'beforeShow' event. It does some adjustments to the
-     * rendered scroller by mobiscroll and finally calls the application's 'before' callback, if it is
-     * defined.
+     * Triggers the rendering engine, jQuery mobile, to style the image.
      *
-     * @param source
-     * @param scroller
+     * @private
      */
-    beforeShow: function(source, scroller) {
-        var source = null;
-        var date = null;
-
-        /* try to set the date picker's initial date based on its source */
-        if(this.hasSource && this.useSourceDateAsInitialDate) {
-            source = M.ViewManager.getViewById(this.source);
-            if(source.value) {
-                try {
-                    date = D8.create(source.value);
-                } catch(e) {
-
-                }
-                if(date) {
-                    if(date.format('yyyy') < this.startYear) {
-                        if(this.hasOwnProperty('startYear')) {
-                            M.Logger.log('The given date of the source (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
-                        } else {
-                            M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the given date of the source (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
-                            $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
-                            $('#' + this.source).scroller('setDate', date.date);
-                        }
-                    } else {
-                        $('#' + this.source).scroller('setDate', date.date);
-                    }
-                }
-            }
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
         }
+        return html;
+    },
 
-        /* if there is no source or the retrieval of the date went wrong, try to set it based on the initial date property */
-        if(this.initialDate && !date) {
-            if(this.initialDate.date) {
-                date = this.initialDate;
-            } else {
-                try {
-                    date = D8.create(this.initialDate);
-                } catch(e) {
+    sourceIsInvalid: function(id, event, nextEvent) {
+        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
 
-                }
-            }
-            if(date) {
-                if(date.format('yyyy') < this.startYear) {
-                    if(this.hasOwnProperty('startYear')) {
-                        M.Logger.log('The specified initial date (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
-                    } else {
-                        M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the specified initial date (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
-                        $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
-                        $('#' + this.source).scroller('setDate', date.date);
-                    }
-                } else {
-                    $('#' + this.source).scroller('setDate', date.date);
-                }
-            }
-        }
-
-        /* now we got the date (or use the current date as default), lets compute this as a formatted text for the callback */
-        value = scroller.formatDate(
-            this.showDatePicker ? this.dateFormat + (this.showTimePicker ? ' ' + this.timeFormat : '') : this.timeFormat,
-            scroller.getDate()
-        );
-
-        /* kill parts of the scoller */
-        $('.dwv').remove();
-
-        /* give it some shiny jqm style */
-        window.setTimeout(function() {
-            $('.dw').addClass('ui-btn-up-a');
-        }, 1);
-
-        /* disable scrolling for the background */
-        $('.dwo').bind('touchmove', function(e) {
-            e.preventDefault();
-        });
-
-        /* inject TMP buttons*/
-        var confirmButton = M.ButtonView.design({
-            value: this.confirmButtonValue,
-            cssClass: 'b tmp-dialog-smallerbtn-confirm',
-            events: {
-                tap: {
-                    action: function() {
-                        $('#dw_set').trigger('click');
-                    }
-                }
-            }
-        });
-        var cancelButton = M.ButtonView.design({
-            value: this.cancelButtonValue,
-            cssClass: 'd tmp-dialog-smallerbtn-confirm',
-            events: {
-                tap: {
-                    action: function() {
-                        $('#dw_cancel').trigger('click');
-                    }
-                }
-            }
-        });
-
-        if(this.showDatePicker) {
-            var grid = M.GridView.design({
-                childViews: 'confirm cancel',
-                layout: M.TWO_COLUMNS,
-                cssClass: 'tmp-datepicker-buttongrid',
-                confirm: confirmButton,
-                cancel: cancelButton
-            });
-
-            var html = grid.render();
-            $('.dw').append(html);
-            grid.theme();
-            grid.registerEvents();
-        } else {
-            var html = confirmButton.render();
-            html += cancelButton.render();
-            $('.dw').append(html);
-            confirmButton.theme();
-            confirmButton.registerEvents();
-            cancelButton.theme();
-            cancelButton.registerEvents();
-        }
-
-        /* hide default buttons */
-        $('#dw_cancel').hide();
-        $('#dw_set').hide();
-
-        /* add class to body as selector for showing/hiding labels */
-        if(!this.showLabels) {
-            $('body').addClass('tmp-datepicker-no-label');
-        }
-
-        /* call callback */
-        if(this.callbacks && this.callbacks['before'] && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
-            M.EventDispatcher.callHandler(this.callbacks['before'], null, NO, [value, date]);
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
     },
 
-    onClose: function(value, scroller) {
-        /* set value if one was selected */
-        var source = null;
-        var date = null;
-        if(this.isValueSelected) {
-            /* first compute the date */
-            try {
-                date = D8.create(scroller.getDate());
-            } catch(e) {
-
-            }
-
-            /* now, if there is a source, auto-update its value */
-            if(this.hasSource) {
-                source = M.ViewManager.getViewById(this.source);
-                if(source) {
-                    source.setValue(value, NO, YES);
-                }
-            }
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
-
-        /* remove class from body as selector for showing/hiding labels */
-        if(!this.showLabels) {
-            $('body').removeClass('tmp-datepicker-no-label');
-        }
-
-        /* call cancel callback */
-        if(!this.isValueSelected && this.callbacks && this.callbacks['cancel'] && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
-            M.EventDispatcher.callHandler(this.callbacks['cancel'], null, NO, []);
-        } else if(this.isValueSelected && this.callbacks && this.callbacks['confirm'] && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
-            M.EventDispatcher.callHandler(this.callbacks['confirm'], null, NO, [value, date]);
-        }
-
-        /* kill the datepicker */
-        Object.getPrototypeOf(this).isActive = NO;
-        $('#' + this.source).scroller('destroy');
-        $('.dwo').remove();
-        $('.dw').remove();
-        this.destroy();
-    },
-
-    onSelect: function(value) {
-        /* mark the datepicker as 'valueSelected' */
-        this.isValueSelected = YES;
     }
 
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -7291,10 +7412,9 @@ M.PanelView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      04.11.2010
+// Date:      17.11.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -7303,86 +7423,190 @@ M.PanelView = M.View.extend(
 /**
  * @class
  *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
  *
  * @extends M.View
  */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.ImageView',
+    type: 'M.SliderView',
+
+    /**
+     * This property contains the slider's value.
+     */
+    value: 0,
+
+    /**
+     * This property contains the slider's initial value.
+     *
+     * @private
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
 
     /**
      * This property specifies the recommended events for this type of view.
      *
      * @type Array
      */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
+    recommendedEvents: ['change'],
 
     /**
-     * Renders an image view based on the specified layout.
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
      *
      * @private
-     * @returns {String} The image view's html representation.
+     * @returns {String} The slider view's html representation.
      */
     render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
         return this.html;
     },
 
     /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
+     * This method registers the change event to internally re-set the value of the
+     * slider.
      */
     registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
+                }
             }
         }
         this.bindToCaller(this, M.View.registerEvents)();
     },
 
-
     /**
-     * Updates the value of the label with DOM access by jQuery.
+     * Updates a SliderView with DOM access by jQuery.
      *
      * @private
      */
     renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
     },
 
     /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
      *
-     * @private
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
      */
-    theme: function() {
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
     },
-    
+
     /**
-     * Applies some style-attributes to the image view.
+     * Applies some style-attributes to the slider.
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The slider's styling as html representation.
      */
     style: function() {
         var html = '';
@@ -7392,24 +7616,48 @@ M.ImageView = M.View.extend(
         return html;
     },
 
-    sourceIsInvalid: function(id, event, nextEvent) {
-        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
 
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        if(!this.isEnabled) {
+            this.disable();
         }
     },
 
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
     }
 
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7663,254 +7911,6 @@ M.ToolbarView = M.View.extend(
         return html;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
