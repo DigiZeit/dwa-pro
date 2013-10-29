@@ -308,6 +308,1053 @@ M.TableView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for horizontal alignment.
+ *
+ * @type String
+ */
+M.HORIZONTAL = 'horizontal';
+
+/**
+ * A constant value for vertical alignment.
+ *
+ * @type String
+ */
+M.VERTICAL = 'vertical';
+
+
+/**
+ * @class
+ *
+ * A button group is a vertically or / and horizontally aligned group of buttons. There
+ * are basically three different types of a button group:
+ *
+ * - horizontally aligned buttons
+ *     1 - 2 - 3
+ *
+ * - vertically aligned buttons
+ *     1
+ *     |
+ *     2
+ *     |
+ *     3
+ *
+ * - horizontally and vertically aligned buttons
+ *     1 - 2
+ *     |   |
+ *     3 - 4
+ * 
+ * @extends M.View
+ */
+M.ButtonGroupView = M.View.extend(
+/** @scope M.ButtonGroupView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonGroupView',
+
+    /**
+     * This property determines whether to render the button group horizontally
+     * or vertically. Default: horizontal.
+     *
+     * Possible values are:
+     * - M.HORIZONTAL: horizontal
+     * - M.VERTICAL: vertical
+     *
+     * @type String
+     */
+    direction: M.HORIZONTAL,
+
+    /**
+     * Determines whether to display the button group view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * Determines whether to display the button group compact, i.e. without top/bottom
+     * margin. This property only is relevant in combination with multiple lines of
+     * buttons (c.p.: buttonsPerLine property).
+     *
+     * @type Boolean
+     */
+    isCompact: YES,
+
+    /**
+     * This property, if set, defines how many buttons are rendered per line. If there
+     * are more buttons defined that fitting into one line, the following buttons are
+     * rendered into a new line. Make sure, the number of your buttons is divisible by
+     * the number of buttons per line, since only full lines are displayed. So if you
+     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
+     * visible.
+     *
+     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
+     * be as follows:
+     *
+     *     1 -- 2
+     *     3 -- 4
+     *
+     * @type Number
+     */
+    buttonsPerLine: null,
+
+    /**
+     * This property is used to internally store the number of lines that are necessary
+     * to render all buttons according to the buttonsPerLine property.
+     *
+     * @private
+     * @type Number
+     */
+    numberOfLines: null,
+
+    /**
+     * This property refers to the currently rendered line, if there is more than one.
+     *
+     * @private
+     * @type Number
+     */
+    currentLine: null,
+
+    /**
+     * This property contains an array of html ids referring to the several lines of grouped
+     * buttons, if there is more than one at all.
+     *
+     * @private
+     * @type Array
+     */
+    lines: null,
+
+    /**
+     * This property contains a reference to the currently selected button.
+     *
+     * @private
+     * @type Object
+     */
+    activeButton: null,
+
+    /**
+     * This property determines whether the buttons of this button group are selectable or not. If
+     * set to YES, a click on one of the buttons will set this button as the currently active button
+     * and automatically change its styling to visualize its selection.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * Renders a button group as a div container and calls the renderChildViews
+     * method to render the included buttons.
+     *
+     * @private
+     * @returns {String} The button group view's html representation.
+     */
+    render: function() {
+        /* check if multiple lines are necessary before rendering */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
+                var numberOfButtons = 0;
+                for(var i in childViews) {
+                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                        numberOfButtons = numberOfButtons + 1;
+                    }
+                }
+                if(this.buttonsPerLine < numberOfButtons) {
+                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
+                }
+            }
+        }
+        this.html = '';
+        /* if there are multiple lines, render multiple horizontally aligned button groups */
+        if(this.numberOfLines) {
+            /* set the direction to horizontally, no matter what it was set to before */
+            this.direction = M.HORIZONTAL;
+
+            /* this is a wrapper for the multiple button groups.
+               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
+            this.html += '<div id="' + this.id + '"';
+            this.html += this.style();
+            this.html += '>';
+
+            /* create a button group for every line */
+            this.lines = [];
+            for(var i = 0; i < this.numberOfLines; i++) {
+                this.currentLine = i + 1;
+                /* store current line in lines property for use in renderChildViews() */
+                this.lines.push(this.id + '_' + i);
+
+                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
+
+                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
+                if(!this.isInset || this.isCompact) {
+                    if(i == 0) {
+                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
+                    } else if(i > 0 && i < this.numberOfLines - 1) {
+                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
+                    } else if(i < this.numberOfLines) {
+                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
+                    }
+                }
+
+                this.html += '>';
+
+                /* render the buttons for the current line */
+                this.renderChildViews();
+
+                this.html += '</div>';
+            }
+            this.html += '</div>';
+        } else {
+            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
+
+            this.renderChildViews();
+
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.ButtonGroupView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var currentButtonIndex = 0;
+
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    currentButtonIndex = currentButtonIndex + 1;
+
+                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
+
+                        var button = this[childViews[i]];
+                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
+                        button.html = '';
+
+                        button.parentView = this;
+                        button.internalEvents = {
+                            tap: {
+                                target: this,
+                                action: 'buttonSelected'
+                            }
+                        }
+
+                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
+                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
+                           the right of the button group */
+                        if(this.direction === M.HORIZONTAL) {
+                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
+                        }
+
+                        /* set the button's _name property */
+                        this[childViews[i]]._name = childViews[i];
+
+                        /* finally render the button and add it to the button groups html */
+                        this.html += this[childViews[i]].render();
+                    }
+                } else {
+                    M.Logger.log('childview of button group is no button.', M.WARN);
+                }
+            }
+        }
+    },
+
+    /**
+     * This method themes the button group and activates one of the included buttons
+     * if its isActive property is set.
+     *
+     * @private
+     */
+    theme: function() {
+        /* if there are multiple lines of buttons, it's getting heavy */
+        if(this.numberOfLines) {
+            
+            /* iterate through all lines */
+            for(var line in this.lines) {
+                line = parseInt(line);
+
+                /* style the current line */
+                $('#' + this.lines[line]).controlgroup();
+                var childViews = this.getChildViewsAsArray();
+                var currentButtonIndex = 0;
+                
+                /* if isCompact, iterate through all buttons */
+                if(this.isCompact) {
+                    for(var i in childViews) {
+                        i = parseInt(i);
+                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                            currentButtonIndex = currentButtonIndex + 1;
+                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
+                            var button = this[childViews[i]];
+
+                            /* if the button belongs to the current line adjust its styling according to its position,
+                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
+                            if(line === currentLine) {
+
+                                /* first line */
+                                if(line === 0 && this.numberOfLines > 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tl');
+                                        }
+                                    /* last button */
+                                    } else if(currentButtonIndex === this.buttonsPerLine) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tr');
+                                        }
+                                    }
+                                /* last line */
+                                } else if(line === this.numberOfLines - 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        $('#' + button.id).addClass('ui-corner-bl');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        $('#' + button.id).addClass('ui-corner-br');
+                                    }
+                                /* all other lines */
+                                } else {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        /* if there is only on row, simply style that button group */
+        } else {
+            $('#' + this.id).controlgroup();
+        }
+
+        /* iterate through all buttons and activate on of them, according to the button's isActive property */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    var button = this[childViews[i]];
+                    if(button.isActive) {
+                        this.setActiveButton(button.id);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * This method returns the currently selected button of this button group. If no
+     * button is selected, null is returned.
+     *
+     * @returns {M.ButtonView} The currently active button of this button group.
+     */
+    getActiveButton: function() {
+        return this.activeButton;  
+    },
+
+    /**
+     * This method activates one button within the button group.
+     *
+     * @param {M.ButtonView, String} button The button to be set active or its id.
+     */
+    setActiveButton: function(button) {
+        if(this.isSelectable) {
+            if(this.activeButton) {
+                this.activeButton.removeCssClass('ui-btn-active');
+                this.activeButton.isActive = NO;
+            }
+
+            var obj = this[button];
+            if(!obj){
+                obj = M.ViewManager.getViewById(button);
+            }
+            if(!obj) {
+                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
+                    obj = button;
+                }
+            }
+            if(obj) {
+                obj.addCssClass('ui-btn-active');
+                obj.isActive = YES;
+                this.activeButton = obj;
+            }
+        }
+    },
+
+    /**
+     * This method activates one button within the button group at the given index.
+     *
+     * @param {Number} index The index of the button to be set active.
+     */
+    setActiveButtonAtIndex: function(index) {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var button = this[childViews[index]];
+            if(button && button.type === 'M.ButtonView') {
+                this.setActiveButton(button);
+            }
+        }
+    },
+
+    /**
+     * This method is called everytime a button is activated / clicked.
+     *
+     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
+     */
+    buttonSelected: function(id, event, nextEvent) {
+        /* if selected button is disabled, do nothing */
+        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
+            return;
+        }
+
+        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
+            if(this.isSelectable) {
+                if(this.activeButton) {
+                    this.activeButton.removeCssClass('ui-btn-active');
+                    this.activeButton.isActive = NO;
+                }
+
+                var button = M.ViewManager.getViewById(id);
+                if(!button) {
+                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
+                        button = id;
+                    }
+                }
+                if(button) {
+                    button.addCssClass('ui-btn-active');
+                    button.isActive = YES;
+                    this.activeButton = button;
+                }
+            }
+
+            /* trigger change event for the button group */
+            $('#' + this.id).trigger('change');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button group.
+     *
+     * @private
+     * @returns {String} The button group's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.numberOfLines && !this.isInset) {
+            html += ' class="ui-listview';
+        }
+        if(this.cssClass) {
+            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitView = M.View.extend(
+/** @scope M.SplitView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitView',
+
+    menu: null,
+
+    content: null,
+
+    isInitialized: NO,
+
+    selectedItem: null,
+
+    orientation: null,
+
+    headerheight: null,
+
+    footerheight: null,
+
+    itemheight: null,
+
+    contentLoaded: NO,
+
+    scrollviewsInitialized: NO,
+
+    hasMenuScrollview: NO,
+
+    shouldHaveScrollview: YES,
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if (this.childViews || this.contentBinding) {
+            var childViews = this.getChildViewsAsArray();
+            if (childViews.length > 0 || this.contentBinding) {
+                this.menu = M.ScrollView.design({
+                    childViews: 'menu',
+                    menu: M.ListView.design({})
+                });
+                this.menu.parentView = this;
+                this.menu.menu.parentView = this.menu;
+                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
+                this.html += this.menu.render();
+
+                this.content = M.ScrollView.design({});
+                this.content.parentView = this;
+                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
+                this.html += this.content.render();
+
+                return this.html;
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var content = null;
+
+        if (this.contentBinding) {
+            content = this.value;
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            content = [];
+            for (var i = 0; i < childViews.length; i++) {
+                content.push(this[childViews[i]]);
+            }
+        }
+
+        if (content) {
+            if (content.length > 0) {
+
+                /* reset menu list before filling it up again */
+                this.menu.menu.removeAllItems();
+
+                var entryItem = null;
+                var currentItem = 0;
+                for (var i in content) {
+                    if (content[i] && content[i].type === 'M.SplitItemView') {
+                        /* add item to list */
+                        var item = M.ListItemView.design({
+                            childViews: 'label',
+                            parentView: this.menu.menu,
+                            splitViewItem: content[i],
+                            label: M.LabelView.design({
+                                value: content[i].value
+                            }),
+                            events: {
+                                tap: {
+                                    target: this,
+                                    action: 'listItemSelected'
+                                }
+                            }
+                        });
+                        this.menu.menu.addItem(item.render());
+
+                        /* register events for item */
+                        item.registerEvents();
+
+                        /* save id of the current item if it is either the first item or isActive is set */
+                        if (currentItem === 0 || content[i].isActive) {
+                            entryItem = item.id;
+                        }
+
+                        /* increase item counter */
+                        currentItem++;
+                    } else {
+                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
+                    }
+                }
+
+                /* theme the list */
+                this.menu.menu.themeUpdate();
+
+                /* now set the active list item */
+                this.menu.menu.setActiveListItem(entryItem);
+
+                /* finally show the active list item's content */
+                this.listItemSelected(entryItem);
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+
+        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
+        if (!this.contentLoaded) {
+            var that = this;
+            $(document).bind('DOMContentLoaded', function() {
+                that.initializeVar();
+            });
+        }
+    },
+
+    themeUpdate: function() {
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+
+        /* landscape mode */
+        if (M.Environment.getWidth() > M.Environment.getHeight()) {
+            this.orientation = 'landscape';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseInt($('#' + this.menu.id).css('border-right-width'))) + 'px');
+            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('#' + this.menu.id).css('border-right-width')) + 'px');
+
+            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
+            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+        /* portrait mode */
+        } else {
+            this.orientation = 'portrait';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.content.id).css('width', width - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', '0px');
+
+            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
+        }
+
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* set the min height of the page based on if there's a footer or not */
+        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
+            $('#' + page.id).css('min-height', height + 'px');
+        } else {
+            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
+        }
+
+        /* set the height of the menu based on header/footer */
+        if ($('#' + page.id + ' .ui-footer').length === 0) {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
+        } else {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
+        }
+
+        /* initialize the scrolling stuff (if not done yet) */
+        if (!this.scrollviewsInitialized) {
+            $('#' + this.content.id).scrollview({
+                direction: 'y'
+            });
+
+            /* check whether scrolling is required or not for the menu */
+            if (this.orientation === 'landscape') {
+                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
+                var itemCount = $('#' + this.menu.menu.id).find('li').length;
+
+                if (this.itemheight !== 0) {
+                    var menuHeight = M.Environment.getHeight();
+                    var itemListHeight = itemCount * this.itemheight;
+                    if (menuHeight < itemListHeight) {
+                        $('#' + this.menu.menu.id).scrollview({
+                            direction: 'y'
+                        });
+                        this.hasMenuScrollview = YES;
+                    } else {
+                        this.shouldHaveScrollview = NO;
+                    }
+                }
+                this.scrollviewsInitialized = YES;
+            }
+
+        }
+    },
+
+    /**
+     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
+     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
+     */
+    initializeVar: function() {
+        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
+        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
+        this.contentLoaded = YES;
+        this.themeUpdate();
+    },
+
+    registerEvents: function() {
+        /* register for orientation change events of the current page */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        M.EventDispatcher.registerEvent(
+            'orientationdidchange',
+            page.id,
+            {
+                target: this,
+                action:  function() {
+                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
+                    var that = this;
+                    window.setTimeout(function() {
+                        that.orientationDidChange();
+                    }, 100);
+                }
+            },
+            ['orientationdidchange'],
+            null,
+            NO,
+            YES
+        );
+    },
+
+    listItemSelected: function(id) {
+        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
+
+        if (!contentView) {
+            return;
+        }
+
+        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+        if (!this.isInitialized) {
+            if (contentView.html) {
+                $('#' + this.content.id).html(contentView.html);
+            } else {
+                $('#' + this.content.id).html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            this.isInitialized = YES;
+        } else {
+            if (contentView.html) {
+                $('#' + this.content.id + ' div:first').html(contentView.html);
+            } else {
+                $('#' + this.content.id + ' div:first').html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+        }
+
+        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        var that = this;
+        if (page) {
+            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
+                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
+                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
+                    $('#' + toolbar.id + ' h1').html(toolbar.value);
+
+                    /* now link the menu with the toolbar if not yet done */
+                    if (!toolbar.parentView.splitview) {
+                        toolbar.parentView.splitview = that;
+                    }
+                }
+            });
+
+            /* add special css class if there is no footer */
+            if ($('#' + page.id + ' .ui-footer').length === 0) {
+                page.addCssClass('tmp-splitview-no-footer');
+            }
+
+            /* add special css class if there is no header */
+            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
+                page.addCssClass('tmp-splitview-no-header');
+            }
+        }
+    },
+
+    orientationDidChange: function() {
+        var orientation = M.Environment.getOrientation();
+        var that = this;
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* portrait */
+        if (M.Environment.getHeight() > M.Environment.getWidth()) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        /* landscape */
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+
+            /* hide the popover */
+            var toolbar;
+            if (page) {
+                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
+                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
+                        toolbar.parentView.popover.hide();
+                    }
+                });
+            }
+
+            /* update the menu */
+            var id;
+            $('#' + this.menu.id).find('li').each(function() {
+                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
+                    id = $(this).attr('id');
+                }
+            });
+
+            /* activate the current item */
+            if (id) {
+                this.menu.menu.setActiveListItem(id);
+            }
+
+            /* set the selected item */
+            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+            /* scroll the menu so we def. see the selected item */
+            this.scrollListToRightPosition(id);
+        }
+
+        /* scroll content to top */
+        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+
+        /* call theme update */
+        this.themeUpdate();
+    },
+
+    scrollListToRightPosition: function(id) {
+        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + id).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
+        var middle = menuHeight / 2;
+        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < middle) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - middle);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < middle) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - middle);
+            }
+        }
+
+        /* if there already is a scroll view, just scroll */
+        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
+            $('#' + this.menu.menu.id).scrollview({
+                direction: 'y'
+            });
+        }
+        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
+ * used as a child view of a tab bar view.
+ *
+ * @extends M.View
+ */
+M.TabBarItemView = M.View.extend(
+/** @scope M.TabBarItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarItemView',
+
+    /**
+     * Determines whether this TabBarItem is active or not.
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a tab bar item as a li-element inside of a parent tab bar view.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.id.lastIndexOf('_') == 1) {
+            this.id = this.id + '_' + this.parentView.usageCounter;
+        } else {
+            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
+        }
+        M.ViewManager.register(this);
+
+        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'switchPage'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method is automatically called if a tab bar item is clicked. It delegates the
+     * page switching job to M.Controller's switchToTab().
+     */
+    switchPage: function() {
+    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+    	if(this.page) {
+        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
+            M.Controller.switchToTab(this);
+        } else {
+            this.parentView.setActiveTab(this);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the tab bar item.
+     *
+     * @private
+     * @returns {String} The tab bar item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.isActive) {
+            html += html != '' ? '' : ' class="';
+            html += 'ui-btn-active';
+            html += '"';
+        }
+        if(this.icon) {
+            html += ' data-icon="';
+            html += this.icon;
+            html += '" data-iconpos="top"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1418,566 +2465,6 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitView = M.View.extend(
-/** @scope M.SplitView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitView',
-
-    menu: null,
-
-    content: null,
-
-    isInitialized: NO,
-
-    selectedItem: null,
-
-    orientation: null,
-
-    headerheight: null,
-
-    footerheight: null,
-
-    itemheight: null,
-
-    contentLoaded: NO,
-
-    scrollviewsInitialized: NO,
-
-    hasMenuScrollview: NO,
-
-    shouldHaveScrollview: YES,
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if (this.childViews || this.contentBinding) {
-            var childViews = this.getChildViewsAsArray();
-            if (childViews.length > 0 || this.contentBinding) {
-                this.menu = M.ScrollView.design({
-                    childViews: 'menu',
-                    menu: M.ListView.design({})
-                });
-                this.menu.parentView = this;
-                this.menu.menu.parentView = this.menu;
-                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
-                this.html += this.menu.render();
-
-                this.content = M.ScrollView.design({});
-                this.content.parentView = this;
-                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
-                this.html += this.content.render();
-
-                return this.html;
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var content = null;
-
-        if (this.contentBinding) {
-            content = this.value;
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            content = [];
-            for (var i = 0; i < childViews.length; i++) {
-                content.push(this[childViews[i]]);
-            }
-        }
-
-        if (content) {
-            if (content.length > 0) {
-
-                /* reset menu list before filling it up again */
-                this.menu.menu.removeAllItems();
-
-                var entryItem = null;
-                var currentItem = 0;
-                for (var i in content) {
-                    if (content[i] && content[i].type === 'M.SplitItemView') {
-                        /* add item to list */
-                        var item = M.ListItemView.design({
-                            childViews: 'label',
-                            parentView: this.menu.menu,
-                            splitViewItem: content[i],
-                            label: M.LabelView.design({
-                                value: content[i].value
-                            }),
-                            events: {
-                                tap: {
-                                    target: this,
-                                    action: 'listItemSelected'
-                                }
-                            }
-                        });
-                        this.menu.menu.addItem(item.render());
-
-                        /* register events for item */
-                        item.registerEvents();
-
-                        /* save id of the current item if it is either the first item or isActive is set */
-                        if (currentItem === 0 || content[i].isActive) {
-                            entryItem = item.id;
-                        }
-
-                        /* increase item counter */
-                        currentItem++;
-                    } else {
-                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
-                    }
-                }
-
-                /* theme the list */
-                this.menu.menu.themeUpdate();
-
-                /* now set the active list item */
-                this.menu.menu.setActiveListItem(entryItem);
-
-                /* finally show the active list item's content */
-                this.listItemSelected(entryItem);
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-
-        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
-        if (!this.contentLoaded) {
-            var that = this;
-            $(document).bind('DOMContentLoaded', function() {
-                that.initializeVar();
-            });
-        }
-    },
-
-    themeUpdate: function() {
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-
-        /* landscape mode */
-        if (M.Environment.getWidth() > M.Environment.getHeight()) {
-            this.orientation = 'landscape';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseInt($('#' + this.menu.id).css('border-right-width'))) + 'px');
-            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('#' + this.menu.id).css('border-right-width')) + 'px');
-
-            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
-            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-        /* portrait mode */
-        } else {
-            this.orientation = 'portrait';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.content.id).css('width', width - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', '0px');
-
-            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
-        }
-
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* set the min height of the page based on if there's a footer or not */
-        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
-            $('#' + page.id).css('min-height', height + 'px');
-        } else {
-            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
-        }
-
-        /* set the height of the menu based on header/footer */
-        if ($('#' + page.id + ' .ui-footer').length === 0) {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
-        } else {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
-        }
-
-        /* initialize the scrolling stuff (if not done yet) */
-        if (!this.scrollviewsInitialized) {
-            $('#' + this.content.id).scrollview({
-                direction: 'y'
-            });
-
-            /* check whether scrolling is required or not for the menu */
-            if (this.orientation === 'landscape') {
-                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
-                var itemCount = $('#' + this.menu.menu.id).find('li').length;
-
-                if (this.itemheight !== 0) {
-                    var menuHeight = M.Environment.getHeight();
-                    var itemListHeight = itemCount * this.itemheight;
-                    if (menuHeight < itemListHeight) {
-                        $('#' + this.menu.menu.id).scrollview({
-                            direction: 'y'
-                        });
-                        this.hasMenuScrollview = YES;
-                    } else {
-                        this.shouldHaveScrollview = NO;
-                    }
-                }
-                this.scrollviewsInitialized = YES;
-            }
-
-        }
-    },
-
-    /**
-     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
-     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
-     */
-    initializeVar: function() {
-        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
-        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
-        this.contentLoaded = YES;
-        this.themeUpdate();
-    },
-
-    registerEvents: function() {
-        /* register for orientation change events of the current page */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        M.EventDispatcher.registerEvent(
-            'orientationdidchange',
-            page.id,
-            {
-                target: this,
-                action:  function() {
-                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
-                    var that = this;
-                    window.setTimeout(function() {
-                        that.orientationDidChange();
-                    }, 100);
-                }
-            },
-            ['orientationdidchange'],
-            null,
-            NO,
-            YES
-        );
-    },
-
-    listItemSelected: function(id) {
-        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
-
-        if (!contentView) {
-            return;
-        }
-
-        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-        if (!this.isInitialized) {
-            if (contentView.html) {
-                $('#' + this.content.id).html(contentView.html);
-            } else {
-                $('#' + this.content.id).html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            this.isInitialized = YES;
-        } else {
-            if (contentView.html) {
-                $('#' + this.content.id + ' div:first').html(contentView.html);
-            } else {
-                $('#' + this.content.id + ' div:first').html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-        }
-
-        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        var that = this;
-        if (page) {
-            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
-                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
-                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
-                    $('#' + toolbar.id + ' h1').html(toolbar.value);
-
-                    /* now link the menu with the toolbar if not yet done */
-                    if (!toolbar.parentView.splitview) {
-                        toolbar.parentView.splitview = that;
-                    }
-                }
-            });
-
-            /* add special css class if there is no footer */
-            if ($('#' + page.id + ' .ui-footer').length === 0) {
-                page.addCssClass('tmp-splitview-no-footer');
-            }
-
-            /* add special css class if there is no header */
-            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
-                page.addCssClass('tmp-splitview-no-header');
-            }
-        }
-    },
-
-    orientationDidChange: function() {
-        var orientation = M.Environment.getOrientation();
-        var that = this;
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* portrait */
-        if (M.Environment.getHeight() > M.Environment.getWidth()) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        /* landscape */
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-
-            /* hide the popover */
-            var toolbar;
-            if (page) {
-                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
-                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
-                        toolbar.parentView.popover.hide();
-                    }
-                });
-            }
-
-            /* update the menu */
-            var id;
-            $('#' + this.menu.id).find('li').each(function() {
-                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
-                    id = $(this).attr('id');
-                }
-            });
-
-            /* activate the current item */
-            if (id) {
-                this.menu.menu.setActiveListItem(id);
-            }
-
-            /* set the selected item */
-            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-            /* scroll the menu so we def. see the selected item */
-            this.scrollListToRightPosition(id);
-        }
-
-        /* scroll content to top */
-        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-
-        /* call theme update */
-        this.themeUpdate();
-    },
-
-    scrollListToRightPosition: function(id) {
-        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + id).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
-        var middle = menuHeight / 2;
-        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < middle) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - middle);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < middle) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - middle);
-            }
-        }
-
-        /* if there already is a scroll view, just scroll */
-        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
-            $('#' + this.menu.menu.id).scrollview({
-                direction: 'y'
-            });
-        }
-        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
- * used as a child view of a tab bar view.
- *
- * @extends M.View
- */
-M.TabBarItemView = M.View.extend(
-/** @scope M.TabBarItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarItemView',
-
-    /**
-     * Determines whether this TabBarItem is active or not.
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a tab bar item as a li-element inside of a parent tab bar view.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.id.lastIndexOf('_') == 1) {
-            this.id = this.id + '_' + this.parentView.usageCounter;
-        } else {
-            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
-        }
-        M.ViewManager.register(this);
-
-        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'switchPage'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method is automatically called if a tab bar item is clicked. It delegates the
-     * page switching job to M.Controller's switchToTab().
-     */
-    switchPage: function() {
-    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
-    	if(this.page) {
-        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
-            M.Controller.switchToTab(this);
-        } else {
-            this.parentView.setActiveTab(this);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the tab bar item.
-     *
-     * @private
-     * @returns {String} The tab bar item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.isActive) {
-            html += html != '' ? '' : ' class="';
-            html += 'ui-btn-active';
-            html += '"';
-        }
-        if(this.icon) {
-            html += ' data-icon="';
-            html += this.icon;
-            html += '" data-iconpos="top"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      04.02.2011
@@ -2669,493 +3156,6 @@ M.DatePickerView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for horizontal alignment.
- *
- * @type String
- */
-M.HORIZONTAL = 'horizontal';
-
-/**
- * A constant value for vertical alignment.
- *
- * @type String
- */
-M.VERTICAL = 'vertical';
-
-
-/**
- * @class
- *
- * A button group is a vertically or / and horizontally aligned group of buttons. There
- * are basically three different types of a button group:
- *
- * - horizontally aligned buttons
- *     1 - 2 - 3
- *
- * - vertically aligned buttons
- *     1
- *     |
- *     2
- *     |
- *     3
- *
- * - horizontally and vertically aligned buttons
- *     1 - 2
- *     |   |
- *     3 - 4
- * 
- * @extends M.View
- */
-M.ButtonGroupView = M.View.extend(
-/** @scope M.ButtonGroupView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonGroupView',
-
-    /**
-     * This property determines whether to render the button group horizontally
-     * or vertically. Default: horizontal.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /**
-     * Determines whether to display the button group view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * Determines whether to display the button group compact, i.e. without top/bottom
-     * margin. This property only is relevant in combination with multiple lines of
-     * buttons (c.p.: buttonsPerLine property).
-     *
-     * @type Boolean
-     */
-    isCompact: YES,
-
-    /**
-     * This property, if set, defines how many buttons are rendered per line. If there
-     * are more buttons defined that fitting into one line, the following buttons are
-     * rendered into a new line. Make sure, the number of your buttons is divisible by
-     * the number of buttons per line, since only full lines are displayed. So if you
-     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
-     * visible.
-     *
-     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
-     * be as follows:
-     *
-     *     1 -- 2
-     *     3 -- 4
-     *
-     * @type Number
-     */
-    buttonsPerLine: null,
-
-    /**
-     * This property is used to internally store the number of lines that are necessary
-     * to render all buttons according to the buttonsPerLine property.
-     *
-     * @private
-     * @type Number
-     */
-    numberOfLines: null,
-
-    /**
-     * This property refers to the currently rendered line, if there is more than one.
-     *
-     * @private
-     * @type Number
-     */
-    currentLine: null,
-
-    /**
-     * This property contains an array of html ids referring to the several lines of grouped
-     * buttons, if there is more than one at all.
-     *
-     * @private
-     * @type Array
-     */
-    lines: null,
-
-    /**
-     * This property contains a reference to the currently selected button.
-     *
-     * @private
-     * @type Object
-     */
-    activeButton: null,
-
-    /**
-     * This property determines whether the buttons of this button group are selectable or not. If
-     * set to YES, a click on one of the buttons will set this button as the currently active button
-     * and automatically change its styling to visualize its selection.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Renders a button group as a div container and calls the renderChildViews
-     * method to render the included buttons.
-     *
-     * @private
-     * @returns {String} The button group view's html representation.
-     */
-    render: function() {
-        /* check if multiple lines are necessary before rendering */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
-                var numberOfButtons = 0;
-                for(var i in childViews) {
-                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                        numberOfButtons = numberOfButtons + 1;
-                    }
-                }
-                if(this.buttonsPerLine < numberOfButtons) {
-                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
-                }
-            }
-        }
-        this.html = '';
-        /* if there are multiple lines, render multiple horizontally aligned button groups */
-        if(this.numberOfLines) {
-            /* set the direction to horizontally, no matter what it was set to before */
-            this.direction = M.HORIZONTAL;
-
-            /* this is a wrapper for the multiple button groups.
-               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
-            this.html += '<div id="' + this.id + '"';
-            this.html += this.style();
-            this.html += '>';
-
-            /* create a button group for every line */
-            this.lines = [];
-            for(var i = 0; i < this.numberOfLines; i++) {
-                this.currentLine = i + 1;
-                /* store current line in lines property for use in renderChildViews() */
-                this.lines.push(this.id + '_' + i);
-
-                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
-
-                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
-                if(!this.isInset || this.isCompact) {
-                    if(i == 0) {
-                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
-                    } else if(i > 0 && i < this.numberOfLines - 1) {
-                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
-                    } else if(i < this.numberOfLines) {
-                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
-                    }
-                }
-
-                this.html += '>';
-
-                /* render the buttons for the current line */
-                this.renderChildViews();
-
-                this.html += '</div>';
-            }
-            this.html += '</div>';
-        } else {
-            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
-
-            this.renderChildViews();
-
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonGroupView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var currentButtonIndex = 0;
-
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    currentButtonIndex = currentButtonIndex + 1;
-
-                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
-
-                        var button = this[childViews[i]];
-                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
-                        button.html = '';
-
-                        button.parentView = this;
-                        button.internalEvents = {
-                            tap: {
-                                target: this,
-                                action: 'buttonSelected'
-                            }
-                        }
-
-                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
-                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
-                           the right of the button group */
-                        if(this.direction === M.HORIZONTAL) {
-                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
-                        }
-
-                        /* set the button's _name property */
-                        this[childViews[i]]._name = childViews[i];
-
-                        /* finally render the button and add it to the button groups html */
-                        this.html += this[childViews[i]].render();
-                    }
-                } else {
-                    M.Logger.log('childview of button group is no button.', M.WARN);
-                }
-            }
-        }
-    },
-
-    /**
-     * This method themes the button group and activates one of the included buttons
-     * if its isActive property is set.
-     *
-     * @private
-     */
-    theme: function() {
-        /* if there are multiple lines of buttons, it's getting heavy */
-        if(this.numberOfLines) {
-            
-            /* iterate through all lines */
-            for(var line in this.lines) {
-                line = parseInt(line);
-
-                /* style the current line */
-                $('#' + this.lines[line]).controlgroup();
-                var childViews = this.getChildViewsAsArray();
-                var currentButtonIndex = 0;
-                
-                /* if isCompact, iterate through all buttons */
-                if(this.isCompact) {
-                    for(var i in childViews) {
-                        i = parseInt(i);
-                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                            currentButtonIndex = currentButtonIndex + 1;
-                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
-                            var button = this[childViews[i]];
-
-                            /* if the button belongs to the current line adjust its styling according to its position,
-                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
-                            if(line === currentLine) {
-
-                                /* first line */
-                                if(line === 0 && this.numberOfLines > 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tl');
-                                        }
-                                    /* last button */
-                                    } else if(currentButtonIndex === this.buttonsPerLine) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tr');
-                                        }
-                                    }
-                                /* last line */
-                                } else if(line === this.numberOfLines - 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        $('#' + button.id).addClass('ui-corner-bl');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        $('#' + button.id).addClass('ui-corner-br');
-                                    }
-                                /* all other lines */
-                                } else {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        /* if there is only on row, simply style that button group */
-        } else {
-            $('#' + this.id).controlgroup();
-        }
-
-        /* iterate through all buttons and activate on of them, according to the button's isActive property */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    var button = this[childViews[i]];
-                    if(button.isActive) {
-                        this.setActiveButton(button.id);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
-     * This method returns the currently selected button of this button group. If no
-     * button is selected, null is returned.
-     *
-     * @returns {M.ButtonView} The currently active button of this button group.
-     */
-    getActiveButton: function() {
-        return this.activeButton;  
-    },
-
-    /**
-     * This method activates one button within the button group.
-     *
-     * @param {M.ButtonView, String} button The button to be set active or its id.
-     */
-    setActiveButton: function(button) {
-        if(this.isSelectable) {
-            if(this.activeButton) {
-                this.activeButton.removeCssClass('ui-btn-active');
-                this.activeButton.isActive = NO;
-            }
-
-            var obj = this[button];
-            if(!obj){
-                obj = M.ViewManager.getViewById(button);
-            }
-            if(!obj) {
-                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
-                    obj = button;
-                }
-            }
-            if(obj) {
-                obj.addCssClass('ui-btn-active');
-                obj.isActive = YES;
-                this.activeButton = obj;
-            }
-        }
-    },
-
-    /**
-     * This method activates one button within the button group at the given index.
-     *
-     * @param {Number} index The index of the button to be set active.
-     */
-    setActiveButtonAtIndex: function(index) {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var button = this[childViews[index]];
-            if(button && button.type === 'M.ButtonView') {
-                this.setActiveButton(button);
-            }
-        }
-    },
-
-    /**
-     * This method is called everytime a button is activated / clicked.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    buttonSelected: function(id, event, nextEvent) {
-        /* if selected button is disabled, do nothing */
-        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
-            return;
-        }
-
-        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
-            if(this.isSelectable) {
-                if(this.activeButton) {
-                    this.activeButton.removeCssClass('ui-btn-active');
-                    this.activeButton.isActive = NO;
-                }
-
-                var button = M.ViewManager.getViewById(id);
-                if(!button) {
-                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
-                        button = id;
-                    }
-                }
-                if(button) {
-                    button.addCssClass('ui-btn-active');
-                    button.isActive = YES;
-                    this.activeButton = button;
-                }
-            }
-
-            /* trigger change event for the button group */
-            $('#' + this.id).trigger('change');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button group.
-     *
-     * @private
-     * @returns {String} The button group's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.numberOfLines && !this.isInset) {
-            html += ' class="ui-listview';
-        }
-        if(this.cssClass) {
-            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -3288,125 +3288,6 @@ M.SplitToolbarView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -3524,6 +3405,125 @@ M.DashboardItemView = M.View.extend(
         return html;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5087,170 +5087,6 @@ M.SelectionListView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
 /**
  * @class
  *
@@ -5474,6 +5310,170 @@ M.ToggleSwitchView = M.View.extend(
 
 
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5803,135 +5803,6 @@ M.SplitItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * Comment ...
- *
- * @extends M.View
- */
-M.WebView = M.View.extend(
-/** @scope M.WebView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.WebView',
-
-    /**
-     * This property can be used to specify wheter a user should be able to srcoll
-     * within the web view or not.
-     *
-     * Note: If set to NO, the external web content must take care of fitting in the
-     * web view. Otherwise some part of the web page won't be visible.
-     *
-     * @type Boolean
-     */
-    isScrollable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['load'],
-
-    /**
-     * This method renders a web view as a simple iFrame element.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.checkURL();
-        this.html = '<div id="' + this.id + '"></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-    },
-
-    /**
-     * This method is called whenever the content bound by content binding changes.
-     * It forces the web view to re-render meaning to load the updated url stored
-     * in the value property.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.value) {
-            this.computeValue();
-            this.checkURL();
-        }
-
-        if(this.value && this.html && this.html.indexOf('<div') === 0) {
-            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
-            $('#' + this.id).replaceWith(this.html);
-            this.registerEvents();
-        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
-            $('#' + this.id).attr('src', this.value);
-        }
-    },
-
-    /**
-     * This method is used to check the given URL and to make sure there is an
-     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
-     *
-     * @private
-     */
-    checkURL: function() {
-        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
-            this.value = 'http://' + this.value;
-        }
-    },
-
-    /**
-     * This method simply applies an internal CSS class to the web view and,
-     * if available, the CSS class specified by the cssClass property of that
-     * view element.
-     *
-     * @private
-     * @returns {String} The web view's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-webview';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    },
-
-    /**
-     * This method can be used to force the web view to reload its original
-     * URL. This can either be the one specified by the value property or the
-     * one specified by the currently bound content.
-     */
-    reload: function() {
-        $('#' + this.id).attr('src', this.value);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -6057,6 +5928,135 @@ M.FormView = M.View.extend(
      */
     getFormValues: function() {
         return this.getValues();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * Comment ...
+ *
+ * @extends M.View
+ */
+M.WebView = M.View.extend(
+/** @scope M.WebView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.WebView',
+
+    /**
+     * This property can be used to specify wheter a user should be able to srcoll
+     * within the web view or not.
+     *
+     * Note: If set to NO, the external web content must take care of fitting in the
+     * web view. Otherwise some part of the web page won't be visible.
+     *
+     * @type Boolean
+     */
+    isScrollable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['load'],
+
+    /**
+     * This method renders a web view as a simple iFrame element.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.checkURL();
+        this.html = '<div id="' + this.id + '"></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+    },
+
+    /**
+     * This method is called whenever the content bound by content binding changes.
+     * It forces the web view to re-render meaning to load the updated url stored
+     * in the value property.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        if(this.value) {
+            this.computeValue();
+            this.checkURL();
+        }
+
+        if(this.value && this.html && this.html.indexOf('<div') === 0) {
+            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
+            $('#' + this.id).replaceWith(this.html);
+            this.registerEvents();
+        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
+            $('#' + this.id).attr('src', this.value);
+        }
+    },
+
+    /**
+     * This method is used to check the given URL and to make sure there is an
+     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
+     *
+     * @private
+     */
+    checkURL: function() {
+        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
+            this.value = 'http://' + this.value;
+        }
+    },
+
+    /**
+     * This method simply applies an internal CSS class to the web view and,
+     * if available, the CSS class specified by the cssClass property of that
+     * view element.
+     *
+     * @private
+     * @returns {String} The web view's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-webview';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    },
+
+    /**
+     * This method can be used to force the web view to reload its original
+     * URL. This can either be the one specified by the value property or the
+     * one specified by the currently bound content.
+     */
+    reload: function() {
+        $('#' + this.id).attr('src', this.value);
     }
 
 });
@@ -7102,6 +7102,127 @@ M.MapView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      10.04.12
@@ -7541,260 +7662,6 @@ M.SliderView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the anchor location: top.
- *
- * @type String
- */
-M.TOP = 'header';
-
-/**
- * A constant value for the anchor location: bottom.
- *
- * @type String
- */
-M.BOTTOM = 'footer';
-
-/**
- * A constant value for the anchor location: left.
- *
- * @type Number
- */
-M.LEFT = 'LEFT';
-
-/**
- * A constant value for the anchor location: center.
- *
- * @type Number
- */
-M.CENTER = 'CENTER';
-
-/**
- * A constant value for the anchor location: right.
- *
- * @type Number
- */
-M.RIGHT = 'RIGHT';
-
-/**
- * @class
- *
- * The root object for ToolbarViews.
- *
- * @extends M.View
- */
-M.ToolbarView = M.View.extend(
-/** @scope M.ToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToolbarView',
-
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer bar
-     * - M.TOP => is a header bar
-     *
-     * @type String
-     */
-    anchorLocation: M.TOP,
-
-    /**
-     * Determines whether to display an auto-generated back-button on the left side
-     * of the toolbar view or not.
-     *
-     * @type Boolean
-     */
-    showBackButton: NO,
-
-    /**
-     * If the showBackButton property is set to yes, this property will be used to
-     * save a reference to the M.ButtonView.
-     */
-    backButton: null,
-
-    /**
-     * This property determines whether to fix the toolbar to the top / bottom of a
-     * page. By default this is set to YES.
-     *
-     * @type Boolean
-     */
-    isFixed: YES,
-
-
-    /**
-     * This property determines whether the toolbar is persistent or not.
-     * By default this is set to YES.
-     * If you like to customize the behavior you can simply define you own identifier. Every M.Toolbar with the same identifier is with each other persistent.
-     * If you simply set it to YES the header is persistent to each other header with the flag YES.
-     * If it is set to NO, then there is the old style page switch
-     *
-     * @type Boolean or String
-     */
-
-    isPersistent: YES,
-
-    /**
-     * This property determines whether to toggle the toolbar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
-    /**
-     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
-     * h1 child tag (representing the title of the header)
-     *
-     * @private
-     * @returns {String} The toolbar view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="' + this.anchorLocation + '" data-tap-toggle="' + this.toggleOnTap + '"' + this.style();
-
-        if(this.isFixed) {
-            this.html += ' data-position="fixed"';
-        }
-
-        if(this.isPersistent) {
-            if(typeof(this.isPersistent) === "string"){
-                this.html += ' data-id="' + this.isPersistent + '"';
-            }else{
-                this.html += ' data-id="themprojectpersistenttoolbar"';
-            }
-        }
-
-        this.html += ' data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"';
-
-        this.html += '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children or simply display the value as a label,
-     * if it is set.
-     */
-    renderChildViews: function() {
-        if(this.value && this.showBackButton) {
-            /* create the toolbar's back button */
-            this.backButton = M.ButtonView.design({
-                value: 'Back',
-                icon: 'arrow-l',
-                internalEvents: {
-                    tap: {
-                        action: function() {
-                            history.back(-1);
-                        }
-                    }
-                }
-            });
-
-            /* render the back button and add it to the toolbar's html*/
-            this.html += '<div class="ui-btn-left">';
-            this.html += this.backButton.render();
-            this.html += '</div>';
-
-            /* render the centered value */
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if(this.value) {
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var viewPositions = {};
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                view._name = childViews[i];
-                if( viewPositions[view.anchorLocation] ) {
-                    M.Logger.log('ToolbarView has two items positioned at M.' +
-                        view.anchorLocation + 
-                        '.  Only one item permitted in each location', M.WARN);
-                    return;
-                }
-                viewPositions[view.anchorLocation] = YES;
-                switch (view.anchorLocation) {
-                    case M.LEFT:
-                        this.html += '<div class="ui-btn-left">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    case M.CENTER:
-                        this.html += '<h1>';
-                        this.html += view.render();
-                        this.html += '</h1>';
-                        break;
-                    case M.RIGHT:
-                        this.html += '<div class="ui-btn-right">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    default:
-                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
-                        return;
-                }
-            }
-        }
-    },
-
-    /**
-     * Updates the value of the toolbar with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id + ' h1').text(this.value);
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(this.backButton) {
-            this.backButton.registerEvents();
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the toolbar.
-     *
-     * @private
-     * @returns {String} The toolbar's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -8116,48 +7983,224 @@ M.MovableLabelView = M.LabelView.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
+// Creator:   Sebastian
+// Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
+ * A constant value for the anchor location: top.
+ *
+ * @type String
+ */
+M.TOP = 'header';
+
+/**
+ * A constant value for the anchor location: bottom.
+ *
+ * @type String
+ */
+M.BOTTOM = 'footer';
+
+/**
+ * A constant value for the anchor location: left.
+ *
+ * @type Number
+ */
+M.LEFT = 'LEFT';
+
+/**
+ * A constant value for the anchor location: center.
+ *
+ * @type Number
+ */
+M.CENTER = 'CENTER';
+
+/**
+ * A constant value for the anchor location: right.
+ *
+ * @type Number
+ */
+M.RIGHT = 'RIGHT';
+
+/**
  * @class
  *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
+ * The root object for ToolbarViews.
  *
  * @extends M.View
  */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
+M.ToolbarView = M.View.extend(
+/** @scope M.ToolbarView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.ImageView',
+    type: 'M.ToolbarView',
 
-    /**
-     * This property specifies the recommended events for this type of view.
+     /**
+     * Defines the position of the TabBar. Possible values are:
      *
-     * @type Array
+     * - M.BOTTOM => is a footer bar
+     * - M.TOP => is a header bar
+     *
+     * @type String
      */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
+    anchorLocation: M.TOP,
 
     /**
-     * Renders an image view based on the specified layout.
+     * Determines whether to display an auto-generated back-button on the left side
+     * of the toolbar view or not.
+     *
+     * @type Boolean
+     */
+    showBackButton: NO,
+
+    /**
+     * If the showBackButton property is set to yes, this property will be used to
+     * save a reference to the M.ButtonView.
+     */
+    backButton: null,
+
+    /**
+     * This property determines whether to fix the toolbar to the top / bottom of a
+     * page. By default this is set to YES.
+     *
+     * @type Boolean
+     */
+    isFixed: YES,
+
+
+    /**
+     * This property determines whether the toolbar is persistent or not.
+     * By default this is set to YES.
+     * If you like to customize the behavior you can simply define you own identifier. Every M.Toolbar with the same identifier is with each other persistent.
+     * If you simply set it to YES the header is persistent to each other header with the flag YES.
+     * If it is set to NO, then there is the old style page switch
+     *
+     * @type Boolean or String
+     */
+
+    isPersistent: YES,
+
+    /**
+     * This property determines whether to toggle the toolbar on tap on the content area
+     * or not. By default this is set to NO.
+     *
+     * @type Boolean
+     */
+    toggleOnTap: NO,
+
+    /**
+     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
+     * h1 child tag (representing the title of the header)
      *
      * @private
-     * @returns {String} The image view's html representation.
+     * @returns {String} The toolbar view's html representation.
      */
     render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        this.html = '<div id="' + this.id + '" data-role="' + this.anchorLocation + '" data-tap-toggle="' + this.toggleOnTap + '"' + this.style();
+
+        if(this.isFixed) {
+            this.html += ' data-position="fixed"';
+        }
+
+        if(this.isPersistent) {
+            if(typeof(this.isPersistent) === "string"){
+                this.html += ' data-id="' + this.isPersistent + '"';
+            }else{
+                this.html += ' data-id="themprojectpersistenttoolbar"';
+            }
+        }
+
+        this.html += ' data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"';
+
+        this.html += '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
         return this.html;
+    },
+
+    /**
+     * Triggers render() on all children or simply display the value as a label,
+     * if it is set.
+     */
+    renderChildViews: function() {
+        if(this.value && this.showBackButton) {
+            /* create the toolbar's back button */
+            this.backButton = M.ButtonView.design({
+                value: 'Back',
+                icon: 'arrow-l',
+                internalEvents: {
+                    tap: {
+                        action: function() {
+                            history.back(-1);
+                        }
+                    }
+                }
+            });
+
+            /* render the back button and add it to the toolbar's html*/
+            this.html += '<div class="ui-btn-left">';
+            this.html += this.backButton.render();
+            this.html += '</div>';
+
+            /* render the centered value */
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if(this.value) {
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var viewPositions = {};
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                view._name = childViews[i];
+                if( viewPositions[view.anchorLocation] ) {
+                    M.Logger.log('ToolbarView has two items positioned at M.' +
+                        view.anchorLocation + 
+                        '.  Only one item permitted in each location', M.WARN);
+                    return;
+                }
+                viewPositions[view.anchorLocation] = YES;
+                switch (view.anchorLocation) {
+                    case M.LEFT:
+                        this.html += '<div class="ui-btn-left">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    case M.CENTER:
+                        this.html += '<h1>';
+                        this.html += view.render();
+                        this.html += '</h1>';
+                        break;
+                    case M.RIGHT:
+                        this.html += '<div class="ui-btn-right">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    default:
+                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
+                        return;
+                }
+            }
+        }
+    },
+
+    /**
+     * Updates the value of the toolbar with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id + ' h1').text(this.value);
     },
 
     /**
@@ -8165,47 +8208,21 @@ M.ImageView = M.View.extend(
      * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
      * events.
      *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
      */
     registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
+        if(this.backButton) {
+            this.backButton.registerEvents();
         }
         this.bindToCaller(this, M.View.registerEvents)();
     },
 
-
     /**
-     * Updates the value of the label with DOM access by jQuery.
+     * Applies some style-attributes to the toolbar.
      *
      * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The toolbar's styling as html representation.
      */
     style: function() {
         var html = '';
@@ -8213,26 +8230,9 @@ M.ImageView = M.View.extend(
             html += ' class="' + this.cssClass + '"';
         }
         return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
     }
-
+    
 });
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
