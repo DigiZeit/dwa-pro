@@ -12683,7 +12683,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4449
+    , softwareVersion: 4450
 
 
     /**
@@ -25122,6 +25122,44 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterZeitenTemplateView = M.ListItemV
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: DashboardTemplateView
+// ==========================================================================
+
+DigiWebApp.DashboardTemplateView = M.ListItemView.design({
+
+    isSelectable: NO
+
+    , childViews: 'icon label'
+
+    , events: {
+        tap: {
+            target: DigiWebApp.DashboardController,
+            action: 'itemSelected'
+        }
+    }
+
+    , icon: M.ImageView.design({
+    	cssClass: 'unselectable'
+        , computedValue: {
+            valuePattern: '<%= icon %>'
+            , operation: function(v) {
+                return 'theme/images/' + v;
+            }
+        }
+    })
+
+    , label: M.LabelView.design({
+    	cssClass: 'unselectable'
+        , valuePattern: '<%= label %>'
+    })
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: ZeitbuchungDetailsPage
 // ==========================================================================
 
@@ -25765,44 +25803,6 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
     })
 });
 
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: DashboardTemplateView
-// ==========================================================================
-
-DigiWebApp.DashboardTemplateView = M.ListItemView.design({
-
-    isSelectable: NO
-
-    , childViews: 'icon label'
-
-    , events: {
-        tap: {
-            target: DigiWebApp.DashboardController,
-            action: 'itemSelected'
-        }
-    }
-
-    , icon: M.ImageView.design({
-    	cssClass: 'unselectable'
-        , computedValue: {
-            valuePattern: '<%= icon %>'
-            , operation: function(v) {
-                return 'theme/images/' + v;
-            }
-        }
-    })
-
-    , label: M.LabelView.design({
-    	cssClass: 'unselectable'
-        , valuePattern: '<%= label %>'
-    })
-
-});
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -27254,7 +27254,7 @@ DigiWebApp.InfoPage = M.PageView.design({
 //                    	outString = outString + ' (' + DigiWebApp.SettingsController.mitarbeiterNameVorname + ')';
 //                    }
                     if (DigiWebApp.SettingsController.getSetting("mitarbeiterVorname") !== "" || DigiWebApp.SettingsController.getSetting("mitarbeiterNachname") !== "") { 
-                    	outString = outString + " (" + DigiWebApp.SettingsController.getSetting("mitarbeiterVorname") + " " + DigiWebApp.SettingsController.getSetting("mitarbeiterNachname") + ")";
+                    	outString = outString + " (" + DigiWebApp.SettingsController.getSetting("mitarbeiterVorname") + " " + DigiWebApp.SettingsController.getSetting("mitarbeiterNachname") + ", MitarbeiterID " + DigiWebApp.SettingsController.getSetting("mitarbeiterId") + ")";
                     }
                     return outString;
                 }
@@ -27302,7 +27302,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4449'
+              value: 'Build: 4450'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -29082,283 +29082,6 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
     
 });
 
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: MediaListTemplateView
-// ==========================================================================
-
-DigiWebApp.MediaListTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'icon timeStamp order position activity latitude longitude remark'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFile'));
-					var doShow = NO;
-				    var view = M.ViewManager.getViewById(id);
-				    var mediaFile_modelId = view.modelId;
-				    _.each(DigiWebApp.MediaListController.items, function(MediaListItem) {
-						if (MediaListItem.m_id === mediaFile_modelId) {
-							//if (MediaListItem.get("datum") !== "-") {
-								DigiWebApp.EditPicturePageController.set('myMediaFile', MediaListItem);
-								doShow = YES;
-							//}
-						}
-					});
-					if (doShow === YES) {
-						DigiWebApp.NavigationController.toEditPicturePageTransition();
-					} else {
-						DigiWebApp.ApplicationController.DigiLoaderView.hide();
-					}
-			}
-        }
-    }
-
-    , icon: M.ImageView.design({
-          cssClass: 'icon'
-        , computedValue: {
-              valuePattern: '<%= icon %>'
-            , operation: function(v) {
-			        if (v) {
-			        	return 'theme/images/' + v;
-			        } else {
-			        	return '';
-			        }
-            }
-        }
-    })
-
-	, timeStamp: M.LabelView.design({
-          cssClass: 'date'
-        , computedValue: {
-              valuePattern: '<%= timeStamp %>'
-            //, value: '01.01.2011, 08:01:02
-            , operation: function(v) {
-                var date1 = M.Date.create(Number(v));
-                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM:ss');
-
-            }
-        }
-    })
-
-    , order: M.LabelView.design({
-          cssClass: 'application'
-        , computedValue: {
-              valuePattern: '<%= orderId %>'
-            , operation: function(v) {
-                var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
-                	if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
-                });
-                if(order && order.length > 0) {
-                    order = order[0];
-                    if (DigiWebApp.SettingsController.globalDebugMode) {
-                    	return M.I18N.l('order') + ': ' + order.get('name') + ' (' + order.get('id') + ')';
-                    } else {
-                    	return M.I18N.l('order') + ': ' + order.get('name');
-                    }
-                } else {
-                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
-                }
-            }
-        }
-    })
-
-    , position: M.LabelView.design({
-          cssClass: 'position'
-        , computedValue: {
-              valuePattern: '<%= positionId %>'
-            , operation: function(v) {
-                if(v) {
-                    var position = _.select(DigiWebApp.Position.findSorted(), function(p) {
-                    	if (p) return v == p.get('id');
-                    });
-                    if(position && position.length > 0) {
-                        position = position[0];
-                        return M.I18N.l('position') + ': ' + position.get('name');
-                    } else {
-                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
-                    }
-                } else {
-                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
-                }
-
-            }
-        }
-    })
-
-    , activity: M.LabelView.design({
-          cssClass: 'activity'
-        , computedValue: {
-              valuePattern: '<%= activityId %>'
-            , operation: function(v) {
-                if(v) {
-                    var activity = _.select(DigiWebApp.Activity.findSorted(), function(a) {
-                    	if (a) return v == a.get('id');
-                    });
-                    if(activity && activity.length > 0) {
-                        activity = activity[0];
-                        return M.I18N.l('activity') + ': ' + activity.get('name');
-                    } else {
-                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
-                    }
-
-                } else {
-                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
-                }
-            }
-        }
-    })
-    
-    , latitude: M.LabelView.design({
-          cssClass: 'location'
-        , computedValue: {
-              valuePattern: '<%= latitude %>'
-            , operation: function(v) {
-                if(v > 0) {
-                	var str = v;
-               		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
-                } else {
-                    //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
-                	return '';
-                }
-            }
-        }
-    })
-
-    , longitude: M.LabelView.design({
-          cssClass: 'location'
-        , computedValue: {
-              valuePattern: '<%= longitude %>'
-            , operation: function(v) {
-                if (v > 0) { 
-                	var str = v;
-               		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
-                } else {
-                    //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
-                    return '';
-                }
-            }
-        }
-    })
-    
-    , remark: M.LabelView.design({
-          cssClass: 'remark unselectable'
-        , computedValue: {
-              valuePattern: '<%= remark %>'
-            , operation: function(v) {
-                if (v) { 
-               		return M.I18N.l('remark') + ': ' + v;
-                } else {
-                    return '';
-                }
-            }
-        }
-    })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: MediaListPage
-// ==========================================================================
-
-m_require('app/views/MediaListTemplateView.js');
-m_require('app/views/MediaActionTemplateView.js');
-
-DigiWebApp.MediaListPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		pagebeforeshow: {
-              target: DigiWebApp.MediaListController
-            , action: 'init'
-        }
-    }
-
-    , needsUpdate: true
-
-    , childViews: 'header actions mediafiles'
-
-    , cssClass: 'mediaListPage unselectable'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title newButton'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('mediaList')
-            , anchorLocation: M.CENTER
-        })
-                , newButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchAdd')
-            , icon: 'new'
-            , anchorLocation: M.RIGHT
-            , events: {
-                tap: {
-        			action: function() {
-						DigiWebApp.MediaListController.neu();
-					}
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , mediafiles: M.ScrollView.design({
-
-          childViews: 'mediafileslist'
-
-        , cssClass: 'mediafilesList'
-        	
-        , mediafileslist: M.ListView.design({
-              contentBinding: {
-                  target: DigiWebApp.MediaListController
-                , property: 'items'
-              }
-            , listItemTemplateView: DigiWebApp.MediaListTemplateView
-        })
-    })
-    
-    , actions: M.ScrollView.design({
-
-          childViews: 'actionslist'
-        	  
-        , cssClass: 'actionsList'
-
-        , actionslist: M.ListView.design({
-              contentBinding: {
-                  target: DigiWebApp.MediaListController
-                , property: 'actions'
-              }
-            , listItemTemplateView: DigiWebApp.MediaActionTemplateView
-        })
-    })
-    
-});
 
 
 // ==========================================================================
@@ -31854,6 +31577,283 @@ DigiWebApp.StudieChecklistePage = M.PageView.design({
                 }
                 , listItemTemplateView: DigiWebApp.StudieChecklisteTemplateView
             })
+    })
+    
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: MediaListTemplateView
+// ==========================================================================
+
+DigiWebApp.MediaListTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'icon timeStamp order position activity latitude longitude remark'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFile'));
+					var doShow = NO;
+				    var view = M.ViewManager.getViewById(id);
+				    var mediaFile_modelId = view.modelId;
+				    _.each(DigiWebApp.MediaListController.items, function(MediaListItem) {
+						if (MediaListItem.m_id === mediaFile_modelId) {
+							//if (MediaListItem.get("datum") !== "-") {
+								DigiWebApp.EditPicturePageController.set('myMediaFile', MediaListItem);
+								doShow = YES;
+							//}
+						}
+					});
+					if (doShow === YES) {
+						DigiWebApp.NavigationController.toEditPicturePageTransition();
+					} else {
+						DigiWebApp.ApplicationController.DigiLoaderView.hide();
+					}
+			}
+        }
+    }
+
+    , icon: M.ImageView.design({
+          cssClass: 'icon'
+        , computedValue: {
+              valuePattern: '<%= icon %>'
+            , operation: function(v) {
+			        if (v) {
+			        	return 'theme/images/' + v;
+			        } else {
+			        	return '';
+			        }
+            }
+        }
+    })
+
+	, timeStamp: M.LabelView.design({
+          cssClass: 'date'
+        , computedValue: {
+              valuePattern: '<%= timeStamp %>'
+            //, value: '01.01.2011, 08:01:02
+            , operation: function(v) {
+                var date1 = M.Date.create(Number(v));
+                return date1.format('dd.mm.yyyy') + ', ' + date1.format('HH:MM:ss');
+
+            }
+        }
+    })
+
+    , order: M.LabelView.design({
+          cssClass: 'application'
+        , computedValue: {
+              valuePattern: '<%= orderId %>'
+            , operation: function(v) {
+                var order = _.select(DigiWebApp.Order.findSorted().concat(DigiWebApp.HandOrder.findSorted()), function(o) {
+                	if (o) return v == o.get('id') || v == o.get('name'); // || get('name') is for checking handOrders also
+                });
+                if(order && order.length > 0) {
+                    order = order[0];
+                    if (DigiWebApp.SettingsController.globalDebugMode) {
+                    	return M.I18N.l('order') + ': ' + order.get('name') + ' (' + order.get('id') + ')';
+                    } else {
+                    	return M.I18N.l('order') + ': ' + order.get('name');
+                    }
+                } else {
+                    return M.I18N.l('order') + ': ' + M.I18N.l('notDefined');
+                }
+            }
+        }
+    })
+
+    , position: M.LabelView.design({
+          cssClass: 'position'
+        , computedValue: {
+              valuePattern: '<%= positionId %>'
+            , operation: function(v) {
+                if(v) {
+                    var position = _.select(DigiWebApp.Position.findSorted(), function(p) {
+                    	if (p) return v == p.get('id');
+                    });
+                    if(position && position.length > 0) {
+                        position = position[0];
+                        return M.I18N.l('position') + ': ' + position.get('name');
+                    } else {
+                        return M.I18N.l('position') + ': ' + M.I18N.l('notDefined');
+                    }
+                } else {
+                    return M.I18N.l('position') + ': ' + M.I18N.l('unknown');
+                }
+
+            }
+        }
+    })
+
+    , activity: M.LabelView.design({
+          cssClass: 'activity'
+        , computedValue: {
+              valuePattern: '<%= activityId %>'
+            , operation: function(v) {
+                if(v) {
+                    var activity = _.select(DigiWebApp.Activity.findSorted(), function(a) {
+                    	if (a) return v == a.get('id');
+                    });
+                    if(activity && activity.length > 0) {
+                        activity = activity[0];
+                        return M.I18N.l('activity') + ': ' + activity.get('name');
+                    } else {
+                        return M.I18N.l('activity') + ': ' + M.I18N.l('notDefined');
+                    }
+
+                } else {
+                    return M.I18N.l('activity') + ': ' + M.I18N.l('unknown');
+                }
+            }
+        }
+    })
+    
+    , latitude: M.LabelView.design({
+          cssClass: 'location'
+        , computedValue: {
+              valuePattern: '<%= latitude %>'
+            , operation: function(v) {
+                if(v > 0) {
+                	var str = v;
+               		return M.I18N.l('latitude') + ': ' + str.toFixed(6);
+                } else {
+                    //return M.I18N.l('latitude') + ': ' + M.I18N.l('GPSnotactive');
+                	return '';
+                }
+            }
+        }
+    })
+
+    , longitude: M.LabelView.design({
+          cssClass: 'location'
+        , computedValue: {
+              valuePattern: '<%= longitude %>'
+            , operation: function(v) {
+                if (v > 0) { 
+                	var str = v;
+               		return M.I18N.l('longitude') + ': ' + str.toFixed(6);
+                } else {
+                    //return M.I18N.l('longitude') + ': ' + M.I18N.l('GPSnotactive');
+                    return '';
+                }
+            }
+        }
+    })
+    
+    , remark: M.LabelView.design({
+          cssClass: 'remark unselectable'
+        , computedValue: {
+              valuePattern: '<%= remark %>'
+            , operation: function(v) {
+                if (v) { 
+               		return M.I18N.l('remark') + ': ' + v;
+                } else {
+                    return '';
+                }
+            }
+        }
+    })
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: MediaListPage
+// ==========================================================================
+
+m_require('app/views/MediaListTemplateView.js');
+m_require('app/views/MediaActionTemplateView.js');
+
+DigiWebApp.MediaListPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		pagebeforeshow: {
+              target: DigiWebApp.MediaListController
+            , action: 'init'
+        }
+    }
+
+    , needsUpdate: true
+
+    , childViews: 'header actions mediafiles'
+
+    , cssClass: 'mediaListPage unselectable'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title newButton'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('mediaList')
+            , anchorLocation: M.CENTER
+        })
+                , newButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchAdd')
+            , icon: 'new'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+        			action: function() {
+						DigiWebApp.MediaListController.neu();
+					}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , mediafiles: M.ScrollView.design({
+
+          childViews: 'mediafileslist'
+
+        , cssClass: 'mediafilesList'
+        	
+        , mediafileslist: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.MediaListController
+                , property: 'items'
+              }
+            , listItemTemplateView: DigiWebApp.MediaListTemplateView
+        })
+    })
+    
+    , actions: M.ScrollView.design({
+
+          childViews: 'actionslist'
+        	  
+        , cssClass: 'actionsList'
+
+        , actionslist: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.MediaListController
+                , property: 'actions'
+              }
+            , listItemTemplateView: DigiWebApp.MediaActionTemplateView
+        })
     })
     
 });
