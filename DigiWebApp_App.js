@@ -12689,7 +12689,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4464
+    , softwareVersion: 4465
 
 
     /**
@@ -15548,7 +15548,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
             _.each(data['return'], function(el) {
             	if (
             			(DigiWebApp.HandOrder.find({query:{identifier: 'id', operator: '=', value: el.handauftragsId}}).length === 0)
-            			(DigiWebApp.HandOrder.find({query:{identifier: 'name', operator: '=', value: el.handauftragsBezeichnung}}).length === 0)
+            		&&	(DigiWebApp.HandOrder.find({query:{identifier: 'name', operator: '=', value: el.handauftragsBezeichnung}}).length === 0)
             	) {
 	                rec = DigiWebApp.HandOrder.createRecord({
 	                      id: el.handauftragsId
@@ -27464,7 +27464,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4464'
+              value: 'Build: 4465'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
