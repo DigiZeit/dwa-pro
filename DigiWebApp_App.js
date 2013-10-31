@@ -12689,7 +12689,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4459
+    , softwareVersion: 4460
 
 
     /**
@@ -14774,7 +14774,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	            }
 	        } else {
 	        	DigiWebApp.NavigationController.toBookTimePage();
-	        	this.startsync();
+	        	DigiWebApp.ApplicationController.startsync();
 	        }
         };
         
@@ -27450,7 +27450,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4459'
+              value: 'Build: 4460'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
