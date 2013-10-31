@@ -12689,7 +12689,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4460
+    , softwareVersion: 4461
 
 
     /**
@@ -14764,7 +14764,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	                }
 	            }
 	            //if (DigiWebApp.SettingsController.globalDebugMode) console.log('isCurrentBookingAvailable = ' + isCurrentBookingAvailable);
-	            if(isCurrentBookingAvailable === YES) {
+	            if (isCurrentBookingAvailable === YES) {
 	            	//alert("go to BookTimePage");
 	            	DigiWebApp.NavigationController.toBookTimePage();
 	                return;
@@ -27450,7 +27450,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4460'
+              value: 'Build: 4461'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
