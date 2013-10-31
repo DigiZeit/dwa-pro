@@ -2150,6 +2150,8 @@ DigiWebApp.Settings = M.Model.create({
     , auftragsDetailsKoppeln: M.Model.attr('Boolean')
 
     , detailierteZeitdaten: M.Model.attr('Boolean')
+    
+    , vibrationsDauer: M.Model.attr('String')
 
 }, M.DataProviderLocalStorage);
 
@@ -5703,7 +5705,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
     }
 
     , itemSelected: function(id, m_id) {
-    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
     	var that = this;
         if (this.latestId) {
             $('#' + this.latestId).removeClass('selected');
@@ -9115,7 +9117,7 @@ DigiWebApp.MediaListController = M.Controller.extend({
 	}
 
 	, itemSelected: function(id, m_id) {
-		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2s){} 
+		try{DigiWebApp.ApplicationController.vibrate();}catch(e2s){} 
         if (this.latestId) {
             $('#' + this.latestId).removeClass('selected');
         }
@@ -9619,7 +9621,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 
     , book: function() {
     	this.currentBookingTimesStampBook = new Date();
-    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
     	if (DigiWebApp.SettingsController.getSetting("debug")) console.log("in book");
 		if (this.checkBooking()) { // checkBooking checks for all booking-problems
 			if (this.currentBooking) {
@@ -10862,7 +10864,7 @@ DigiWebApp.BookingController = M.Controller.extend({
      */
     , closeDay: function() {
     	this.currentBookingTimesStampBook = new Date();
-    	try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e19){}
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e19){}
     	var that = DigiWebApp.BookingController;
         if (that.currentBooking) {
         	
@@ -12689,7 +12691,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 4480
+    , softwareVersion: 4482
 
 
     /**
@@ -14819,6 +14821,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			try{$('[id=' + DigiWebApp.SettingsPage.content.daysToHoldBookingsOnDeviceSliderContainer.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 			try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 			try{$('[id=' + DigiWebApp.SettingsPage.content.detailierteZeitdaten.id  + ']').each(function() { $(this).hide(); });}catch(e){}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.vibrationsDauerSliderContainer.id  + ']').each(function() { $(this).hide(); });}catch(e){}
 		} else {
 			//if (debug) console.log("enforcing ChefToolOnly, SHOW");
 	    	// show tabbar
@@ -14838,6 +14841,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			if (DigiWebApp.SettingsController.featureAvailable('406')) { 
 				try{$('[id=' + DigiWebApp.SettingsPage.content.auftragsDetailsKoppeln.id  + ']').each(function() { $(this).show(); });}catch(e){}
 			}
+			try{$('[id=' + DigiWebApp.SettingsPage.content.vibrationsDauerSliderContainer.id  + ']').each(function() { $(this).show(); });}catch(e){}
 		}
 		
 
@@ -16276,6 +16280,18 @@ DigiWebApp.ApplicationController = M.Controller.extend({
     
     , sonderzeichenCheck: function(str) {
         return ( /[^\w\säöüÄÖÜß \x40"(){}*%\$§€=/\\!?.,;:+-]+/.test(str) );
+    }
+    
+    , vibrate: function() {
+    	try {
+	    	var vibrationsDauer = DigiWebApp.ApplicationController.CONSTVibrateDuration;
+	    	if (typeof(DigiWebApp.SettingsController.getSetting("vibrationsDauer")) !== "undefined") {
+	    		vibrationsDauer = DigiWebApp.SettingsController.getSetting("vibrationsDauer");
+	    	}
+	    	if (vibrationsDauer > 0) {
+	    		navigator.notification.vibrate(vibrationsDauer)
+	    	}
+    	} catch (vibrateError) {}
     }
 
 });
@@ -17951,6 +17967,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , mitarbeiterId: "0"
         , auftragsDetailsKoppeln: false
         , detailierteZeitdaten: true
+        , vibrationsDauer: 100
     }
 
     , defaultsettings: null
@@ -18082,7 +18099,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                     , label: 'treatAllAsPhone'
                     , isSelected: record.get('treatAllAsPhone')
                 }]
-                , daysToHoldBookingsOnDevice: daysToHoldBookingsOnDevice
+                , daysToHoldBookingsOnDevice: record.get('daysToHoldBookingsOnDevice')
                 , company: record.get('company')
                 , password: record.get('password')
                 , connectionCode: record.get('connectionCode')
@@ -18179,6 +18196,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                 , label: M.I18N.l('auftragsDetailsKoppeln')
 	                 , isSelected: record.get('auftragsDetailsKoppeln')
 	           }]
+               , vibrationsDauer: record.get('vibrationsDauer')
 
             };
         /* default values */
@@ -18279,6 +18297,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                  value: DigiWebApp.SettingsController.defaultsettings.get("auftragsDetailsKoppeln")
 	                , label: M.I18N.l('auftragsDetailsKoppeln')
 	            }]
+                , vibrationsDauer: DigiWebApp.SettingsController.defaultsettings.get("vibrationsDauer")
 
             };
             
@@ -18474,6 +18493,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         var mitarbeiterNachname              = DigiWebApp.SettingsController.getSetting('mitarbeiterNachname');
         var mitarbeiterId                    = DigiWebApp.SettingsController.getSetting('mitarbeiterId');
         var auftragsDetailsKoppeln			 = $('#' + M.ViewManager.getView('settingsPage', 'auftragsDetailsKoppeln').id + ' label.ui-checkbox-on').length > 0 ? YES : NO;
+    	var vibrationsDauer                  = $('#' + M.ViewManager.getView('settingsPage', 'vibrationsDauerSlider').id).val();
 
         var numberRegex = /^[0-9]+$/;
         if (company) {
@@ -18582,6 +18602,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                                     record.set('mitarbeiterId', mitarbeiterId);
                                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                                    record.set('vibrationsDauer', vibrationsDauer);
 
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -18655,6 +18676,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('mitarbeiterNachname', mitarbeiterNachname);
                                     record.set('mitarbeiterId', mitarbeiterId);
                                     record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                    record.set('vibrationsDauer', vibrationsDauer);
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -18702,6 +18724,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('mitarbeiterId', mitarbeiterId);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                record.set('vibrationsDauer', vibrationsDauer);
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -18749,6 +18772,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mitarbeiterNachname', mitarbeiterNachname);
                                 record.set('mitarbeiterId', mitarbeiterId);
                                 record.set('auftragsDetailsKoppeln', auftragsDetailsKoppeln);
+                                record.set('vibrationsDauer', vibrationsDauer);
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -18798,6 +18822,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , mitarbeiterNachname: mitarbeiterNachname
                                 , mitarbeiterId: mitarbeiterId
                                 , auftragsDetailsKoppeln: auftragsDetailsKoppeln
+                                , vibrationsDauer: vibrationsDauer
 
                           });
 
@@ -20482,7 +20507,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
                 tap: {
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToBautagebuchMaterialienListePageTransition'
-        			action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} history.back();}
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
                 }
             }
         })
@@ -20497,7 +20522,7 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchMaterialienDetailsController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.deleteMaterialbuchung();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.deleteMaterialbuchung();}
                 }
             }
         })
@@ -21052,7 +21077,7 @@ DigiWebApp.AnwesenheitslistePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.backToDashboardPage();}
                 }
             }
         })
@@ -21067,7 +21092,7 @@ DigiWebApp.AnwesenheitslistePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
 			    		DigiWebApp.AnwesenheitslisteController.set('items', {});
 			    		DigiWebApp.AnwesenheitslisteController.items = null;
 						DigiWebApp.AnwesenheitslisteController.init();
@@ -21130,7 +21155,7 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
                 }
             }
         })
@@ -22283,7 +22308,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
                 }
             }
         })
@@ -22297,7 +22322,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
             , events: {
 	            tap: {
 	                action: function() {
-            			try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+            			try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
 				  		if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
 								return;
 						}
@@ -22350,7 +22375,7 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
                       //target: DigiWebApp.BautagebuchBautageberichtDetailsController
                     //, action: 'delete'
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
         				DigiWebApp.BautagebuchBautageberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
         			}
                 }
@@ -22811,6 +22836,195 @@ DigiWebApp.BautagebuchBautageberichtDetailsPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: SpesenPage
+// ==========================================================================
+
+DigiWebApp.SpesenPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		pagebeforeshow: {
+            //target: DigiWebApp.BookingController
+            //, action: 'init'
+			action: function() {
+	
+				var i;
+				if (DigiWebApp.SpesenAuswahlOption.find().length === 0) {
+					i = 1;
+					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "keine Spesen"}).saveSorted(); i = i + 1;						// 1
+					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "Tagesspesen"}).saveSorted(); i = i + 1;						// 2
+					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "mehrtägige Spesen"}).saveSorted(); i = i + 1;				// 3
+				}
+
+				if (DigiWebApp.UebernachtungAuswahlOption.find().length === 0) {
+					i = 1;
+					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "keine Übernachtung"}).saveSorted(); i = i + 1;		// 1
+					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "Übernachtung mit Pauschale"}).saveSorted(); i = i + 1;// 2
+					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "Übernachtung mit Beleg"}).saveSorted(); i = i + 1;	// 3
+				}
+				
+		        var spesenOptionen = DigiWebApp.SpesenAuswahlOption.findSorted();
+		        spesenOptionen = _.map(spesenOptionen, function(opt) {
+		        	if (opt) {
+		                var obj = { label: opt.get('beschreibung'), value: opt.get('id') };
+		                if(opt.get('id') === 1) {
+		                    obj.isSelected = YES;
+		                }
+		                return obj;
+		        	}
+		        });
+		        spesenOptionen = _.compact(spesenOptionen);/* remove falsy values from positions with _.compact() */
+		        DigiWebApp.BookingController.set("spesenOptionen", spesenOptionen);
+
+
+		        var uebernachtungOptionen = DigiWebApp.UebernachtungAuswahlOption.findSorted();
+		        uebernachtungOptionen = _.map(uebernachtungOptionen, function(opt) {
+		        	if (opt) {
+		                var obj = { label: opt.get('beschreibung'), value: opt.get('id') };
+		                if(opt.get('id') === 1) {
+		                    obj.isSelected = YES;
+		                }
+		                return obj;
+		        	}
+		        });
+		        uebernachtungOptionen = _.compact(uebernachtungOptionen);/* remove falsy values from positions with _.compact() */
+		        DigiWebApp.BookingController.set("uebernachtungOptionen", uebernachtungOptionen);
+
+			}
+        }
+    }
+
+    , myCallback: function() {
+
+    }
+        
+    , tab_action_timeoutvar: null    
+    
+    , tab_action: function() {
+    	clearTimeout(DigiWebApp.SpesenPage.tab_action_timeoutvar);
+    		            	
+		// save to currentBooking
+		DigiWebApp.BookingController.currentBooking.set('spesenAuswahl', M.ViewManager.getView('spesenPage', 'spesenAuswahl').getSelection(YES).value);
+		DigiWebApp.BookingController.currentBooking.set('uebernachtungAuswahl', M.ViewManager.getView('spesenPage', 'uebernachtungAuswahl').getSelection(YES).value);
+		DigiWebApp.BookingController.currentBooking.save();
+
+		DigiWebApp.SpesenPage.myCallback();
+    }
+    
+    , childViews: 'header content'
+
+    , cssClass: 'remarkPage'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBookTimePagePOP();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('Spesen_Ausloese')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'spesenAuswahl uebernachtungAuswahl spacer grid'
+
+        , spacer: M.LabelView.design({
+            value: '&nbsp;<br />'
+        })
+        
+        , spesenAuswahl: M.SelectionListView.design({
+                  selectionMode: M.SINGLE_SELECTION_DIALOG
+                , initialText: M.I18N.l('noData')
+                , label: M.I18N.l('Spesen')
+                //, cssClass: 'unselectable'
+                , applyTheme: NO
+                , contentBinding: {
+                      target: DigiWebApp.BookingController
+                    , property: 'spesenOptionen'
+                }
+                , events: {
+                    change: {
+                          target: DigiWebApp.BookingController
+                        , action: function() {
+                            //this.setPositions();
+                        }
+                    }
+                }
+        })
+            
+        , uebernachtungAuswahl: M.SelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , label: M.I18N.l('Uebernachtung')
+            , initialText: M.I18N.l('noData')
+            //, cssClass: 'unselectable'
+            , applyTheme: NO
+            , contentBinding: {
+                  target: DigiWebApp.BookingController
+                , property: 'uebernachtungOptionen'
+            }
+            , events: {
+                change: {
+                      target: DigiWebApp.BookingController
+                    , action: function() {
+                        //this.setActivities(YES);
+                    }
+                }
+            }
+        })
+        	  
+        , grid: M.GridView.design({
+        	
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'digiButton'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('SpeichernUndBuchen')
+                , cssClass: 'digiButton'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+                        //  target: DigiWebApp.NavigationController
+                        //, action: 'toSettingsPage'
+            			action: function() {
+        					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('Save'));
+        					DigiWebApp.SpesenPage.tab_action_timeoutvar = setTimeout("DigiWebApp.SpesenPage.tab_action();", 50);
+            			}
+                    }
+                }
+            })
+            
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+            
+        })
+    })
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: BautagebuchMaterialienTemplateView
 // ==========================================================================
 
@@ -22952,7 +23166,7 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
                 }
             }
         })
@@ -22967,7 +23181,7 @@ DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
         				DigiWebApp.BautagebuchMaterialienListeController.neu();
 					}
                 }
@@ -23229,7 +23443,7 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
                 }
             }
         })
@@ -23244,7 +23458,7 @@ DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
         				DigiWebApp.BautagebuchZeitenListeController.neu();
 					}
                 }
@@ -23308,195 +23522,6 @@ DigiWebApp.TimeDataSentDaysTemplateView = M.ListItemView.design({
 
 });
 
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: SpesenPage
-// ==========================================================================
-
-DigiWebApp.SpesenPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		pagebeforeshow: {
-            //target: DigiWebApp.BookingController
-            //, action: 'init'
-			action: function() {
-	
-				var i;
-				if (DigiWebApp.SpesenAuswahlOption.find().length === 0) {
-					i = 1;
-					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "keine Spesen"}).saveSorted(); i = i + 1;						// 1
-					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "Tagesspesen"}).saveSorted(); i = i + 1;						// 2
-					DigiWebApp.SpesenAuswahlOption.createRecord({id: i, beschreibung: "mehrtägige Spesen"}).saveSorted(); i = i + 1;				// 3
-				}
-
-				if (DigiWebApp.UebernachtungAuswahlOption.find().length === 0) {
-					i = 1;
-					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "keine Übernachtung"}).saveSorted(); i = i + 1;		// 1
-					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "Übernachtung mit Pauschale"}).saveSorted(); i = i + 1;// 2
-					DigiWebApp.UebernachtungAuswahlOption.createRecord({id: i, beschreibung: "Übernachtung mit Beleg"}).saveSorted(); i = i + 1;	// 3
-				}
-				
-		        var spesenOptionen = DigiWebApp.SpesenAuswahlOption.findSorted();
-		        spesenOptionen = _.map(spesenOptionen, function(opt) {
-		        	if (opt) {
-		                var obj = { label: opt.get('beschreibung'), value: opt.get('id') };
-		                if(opt.get('id') === 1) {
-		                    obj.isSelected = YES;
-		                }
-		                return obj;
-		        	}
-		        });
-		        spesenOptionen = _.compact(spesenOptionen);/* remove falsy values from positions with _.compact() */
-		        DigiWebApp.BookingController.set("spesenOptionen", spesenOptionen);
-
-
-		        var uebernachtungOptionen = DigiWebApp.UebernachtungAuswahlOption.findSorted();
-		        uebernachtungOptionen = _.map(uebernachtungOptionen, function(opt) {
-		        	if (opt) {
-		                var obj = { label: opt.get('beschreibung'), value: opt.get('id') };
-		                if(opt.get('id') === 1) {
-		                    obj.isSelected = YES;
-		                }
-		                return obj;
-		        	}
-		        });
-		        uebernachtungOptionen = _.compact(uebernachtungOptionen);/* remove falsy values from positions with _.compact() */
-		        DigiWebApp.BookingController.set("uebernachtungOptionen", uebernachtungOptionen);
-
-			}
-        }
-    }
-
-    , myCallback: function() {
-
-    }
-        
-    , tab_action_timeoutvar: null    
-    
-    , tab_action: function() {
-    	clearTimeout(DigiWebApp.SpesenPage.tab_action_timeoutvar);
-    		            	
-		// save to currentBooking
-		DigiWebApp.BookingController.currentBooking.set('spesenAuswahl', M.ViewManager.getView('spesenPage', 'spesenAuswahl').getSelection(YES).value);
-		DigiWebApp.BookingController.currentBooking.set('uebernachtungAuswahl', M.ViewManager.getView('spesenPage', 'uebernachtungAuswahl').getSelection(YES).value);
-		DigiWebApp.BookingController.currentBooking.save();
-
-		DigiWebApp.SpesenPage.myCallback();
-    }
-    
-    , childViews: 'header content'
-
-    , cssClass: 'remarkPage'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBookTimePagePOP();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('Spesen_Ausloese')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'spesenAuswahl uebernachtungAuswahl spacer grid'
-
-        , spacer: M.LabelView.design({
-            value: '&nbsp;<br />'
-        })
-        
-        , spesenAuswahl: M.SelectionListView.design({
-                  selectionMode: M.SINGLE_SELECTION_DIALOG
-                , initialText: M.I18N.l('noData')
-                , label: M.I18N.l('Spesen')
-                //, cssClass: 'unselectable'
-                , applyTheme: NO
-                , contentBinding: {
-                      target: DigiWebApp.BookingController
-                    , property: 'spesenOptionen'
-                }
-                , events: {
-                    change: {
-                          target: DigiWebApp.BookingController
-                        , action: function() {
-                            //this.setPositions();
-                        }
-                    }
-                }
-        })
-            
-        , uebernachtungAuswahl: M.SelectionListView.design({
-              selectionMode: M.SINGLE_SELECTION_DIALOG
-            , label: M.I18N.l('Uebernachtung')
-            , initialText: M.I18N.l('noData')
-            //, cssClass: 'unselectable'
-            , applyTheme: NO
-            , contentBinding: {
-                  target: DigiWebApp.BookingController
-                , property: 'uebernachtungOptionen'
-            }
-            , events: {
-                change: {
-                      target: DigiWebApp.BookingController
-                    , action: function() {
-                        //this.setActivities(YES);
-                    }
-                }
-            }
-        })
-        	  
-        , grid: M.GridView.design({
-        	
-              childViews: 'button icon'
-            , layout: {
-                  cssClass: 'digiButton'
-                , columns: {
-                      0: 'button'
-                    , 1: 'icon'
-                }
-            }
-            
-            , button: M.ButtonView.design({
-                  value: M.I18N.l('SpeichernUndBuchen')
-                , cssClass: 'digiButton'
-                , anchorLocation: M.RIGHT
-                , events: {
-                    tap: {
-                        //  target: DigiWebApp.NavigationController
-                        //, action: 'toSettingsPage'
-            			action: function() {
-        					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('Save'));
-        					DigiWebApp.SpesenPage.tab_action_timeoutvar = setTimeout("DigiWebApp.SpesenPage.tab_action();", 50);
-            			}
-                    }
-                }
-            })
-            
-            , icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
-            
-        })
-    })
-});
 
 
 // ==========================================================================
@@ -23611,7 +23636,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
                 tap: {
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToBautagebuchZeitenListePageTransition'
-        			action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e8){} history.back();}
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e8){} history.back();}
                 }
             }
         })
@@ -23626,7 +23651,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchZeitenDetailsController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e9){} this.deleteZeitbuchung();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e9){} this.deleteZeitbuchung();}
                 }
             }
         })
@@ -24358,7 +24383,7 @@ DigiWebApp.TimeDataArchivePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToTimeDataPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToTimeDataPage();}
                 }
             }
         })
@@ -24794,7 +24819,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToTimeDataPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToTimeDataPage();}
                 }
             }
         })
@@ -24880,7 +24905,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
                 , events: {
                     tap: {
             			action: function() {
-            				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+            				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
             				DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('Save'));
             				DigiWebApp.EditTimeDataPage.tab_action_timeoutvar = setTimeout("DigiWebApp.EditTimeDataPage.tab_action();", 50);
             			}
@@ -24998,7 +25023,7 @@ DigiWebApp.RemarkPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBookTimePagePOP();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBookTimePagePOP();}
                 }
             }
         })
@@ -25904,7 +25929,7 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToDashboardPagePOP'
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
 						if (DigiWebApp.SettingsController.featureAvailable('404')) {
 			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
 						} else {
@@ -25955,7 +25980,7 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
 //            					console.log("\"" + $('#' + DigiWebApp.SettingsPasswordPage.content.passwordGrid.passwordInput.id).val() + "\"");
 //            					console.log("\"" + DigiWebApp.SettingsController.getSetting('settingsPassword') + "\"");
 //            				}
-            				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+            				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
             				if ($('#' + DigiWebApp.SettingsPasswordPage.content.passwordGrid.passwordInput.id).val() === DigiWebApp.SettingsController.getSetting('settingsPassword')) {
             					DigiWebApp.NavigationController.toSettingsPage();
             				} else {
@@ -26065,7 +26090,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
                 tap: {
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToBautagebuchMedienListePageTransition'
-        			action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} history.back();}
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
                 }
             }
         })
@@ -26080,7 +26105,7 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchMedienDetailsController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.deleteMedienBuchung();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.deleteMedienBuchung();}
                 }
             }
         })
@@ -26771,7 +26796,7 @@ DigiWebApp.TimeDataPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -26959,7 +26984,7 @@ DigiWebApp.FileChooserPage = M.PageView.design({
 	              	//  target: DigiWebApp.NavigationController
 	              	//, action: DigiWebApp.FileChooserPage.NavigationControllerMethodToReturnTo
 	    			action: function() {
-	    				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} 
+	    				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
 	    				history.back();
 	    			}
 	          	}
@@ -27040,7 +27065,7 @@ DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
                 }
             }
         })
@@ -27325,7 +27350,7 @@ DigiWebApp.InfoPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -27340,7 +27365,7 @@ DigiWebApp.InfoPage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
 			        	DigiWebApp.SettingsController.mitarbeiterNameVorname = "";
 				        var settings = DigiWebApp.Settings.find();    		
 				    	var MitarbeiterWebAppID = "0";
@@ -27397,7 +27422,7 @@ DigiWebApp.InfoPage = M.PageView.design({
                     }
 			        , tap: {
 						action: function() {
-			        		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e5){}
+			        		try{DigiWebApp.ApplicationController.vibrate();}catch(e5){}
 							}
 			        }
                 }
@@ -27477,7 +27502,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 4480'
+              value: 'Build: 4482'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -27744,7 +27769,7 @@ DigiWebApp.BookingPage = M.PageView.design({
                     }
 	                , tap: {
 	    				action: function() {
-	                		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+	                		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
 		  				}
 	                }
                 }
@@ -27769,7 +27794,7 @@ DigiWebApp.BookingPage = M.PageView.design({
                 }
 	            , tap: {
 					action: function() {
-	            		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+	            		try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
 	  				}
 	            }
             }
@@ -27794,7 +27819,7 @@ DigiWebApp.BookingPage = M.PageView.design({
                 }
 	            , tap: {
 					action: function() {
-	            		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+	            		try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
 	  				}
 	            }
             }
@@ -27890,7 +27915,7 @@ DigiWebApp.SettingsPage = M.PageView.design({
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToDashboardPage'
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
         				if (!DigiWebApp.SettingsController.showCredentialsAlert) {
         					DigiWebApp.NavigationController.backToDashboardPage();
         				}
@@ -27907,7 +27932,7 @@ DigiWebApp.SettingsPage = M.PageView.design({
 
     , content: M.ScrollView.design({
         //  childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory autoSaveGPSData GPSDataIsMandatory useTransitionsSetting grid'
-          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory remarkIsOptional autoSaveGPSData detailierteZeitdaten useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer bautagebuchLimit_autoStartUhrzeit ServiceApp_ermittleGeokoordinate ServiceApp_datenUebertragen ServiceApp_engeKopplung ServiceApp_PORTGrid ServiceApp_FallBack auftragsDetailsKoppeln grid'
+          childViews: 'companyGrid passwordGrid connectionCodeGrid workerIdGrid autoTransferAfterBookTimeCheck autoTransferAfterClosingDayCheck autoSyncAfterBookTimeCheck remarkIsMandatory remarkIsOptional autoSaveGPSData detailierteZeitdaten useTransitionsSetting daysToHoldBookingsOnDeviceSliderContainer bautagebuchLimit_autoStartUhrzeit ServiceApp_ermittleGeokoordinate ServiceApp_datenUebertragen ServiceApp_engeKopplung ServiceApp_PORTGrid ServiceApp_FallBack auftragsDetailsKoppeln vibrationsDauerSliderContainer grid'
         , daysToHoldBookingsOnDeviceSliderContainer: M.ContainerView.design({
       	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
 		        , daysToHoldBookingsOnDeviceSlider: M.SliderView.design({
@@ -27919,6 +27944,20 @@ DigiWebApp.SettingsPage = M.PageView.design({
 		            , contentBinding: {
 		                  target: DigiWebApp.SettingsController
 		                , property: 'settings.daysToHoldBookingsOnDevice'
+		            }
+		        })
+        })
+        , vibrationsDauerSliderContainer: M.ContainerView.design({
+      	  		  childViews: 'vibrationsDauerSlider'
+		        , vibrationsDauerSlider: M.SliderView.design({
+		        	  label: M.I18N.l('vibrationsDauerLabel')
+		        	, min: 1
+		        	, max: 40
+		        	, highlightLeftPart: YES
+		        	, cssClass: 'vibrationsDauerSlider'
+		            , contentBinding: {
+		                  target: DigiWebApp.SettingsController
+		                , property: 'settings.vibrationsDauer'
 		            }
 		        })
         })
@@ -28120,7 +28159,7 @@ DigiWebApp.SettingsPage = M.PageView.design({
                 , events: {
                     tap: {
                           target: DigiWebApp.SettingsController
-                        , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.save();}
+                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
                     }
                 }
             })
@@ -28171,7 +28210,7 @@ DigiWebApp.HandOrderPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -28203,7 +28242,7 @@ DigiWebApp.HandOrderPage = M.PageView.design({
                 , events: {
                     tap: {
                           target: DigiWebApp.HandOrderController
-                        , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.save();}
+                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
                     }
                 }
             })
@@ -28383,7 +28422,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     , anchorLocation: M.RIGHT
                     , events: {
                         tap: {
-		    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+		    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
                 				DigiWebApp.ScholppBookingController.bucheArbeitsende();
 		        			}
                         }
@@ -28393,7 +28432,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                       value: 'theme/images/48x48_plain_home.png'
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
 	          	  					DigiWebApp.ScholppBookingController.bucheArbeitsende();
 		          				}
 		                  }
@@ -28416,7 +28455,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     , anchorLocation: M.RIGHT
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
 	          	  					DigiWebApp.ScholppBookingController.bucheUnterbrechung();
 		          				}
 		                  }
@@ -28426,7 +28465,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                       value: 'theme/images/48x48_plain_clock_pause.png'
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e5){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e5){}
 	          	  					DigiWebApp.ScholppBookingController.bucheUnterbrechung();
 		          				}
 		                  }
@@ -28449,7 +28488,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     , anchorLocation: M.RIGHT
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e6){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e6){}
 	          	  					//DigiWebApp.ScholppBookingController.buchePause();
 		          				}
 		                  }
@@ -28459,7 +28498,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                       value: ''
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e7){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e7){}
 	          	  					//DigiWebApp.ScholppBookingController.buchePause();
 		          				}
 		                  }
@@ -28487,7 +28526,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   , anchorLocation: M.RIGHT
                   , events: {
                       tap: {
-		    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e8){}
+		    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e8){}
             	  				DigiWebApp.ScholppBookingController.bucheFahrzeit();
               				}
                       }
@@ -28497,7 +28536,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     value: 'theme/images/48x48_plain_car_compact_grey.png'
                   , events: {
 	                  tap: {
-		    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e9){}
+		    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e9){}
             	  				DigiWebApp.ScholppBookingController.bucheFahrzeit();
 	          				}
 	                  }
@@ -28519,7 +28558,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     , anchorLocation: M.RIGHT
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e10){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e10){}
 	          	  					DigiWebApp.ScholppBookingController.bucheArbeitszeit();
 		          				}
 		                  }
@@ -28529,7 +28568,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                       value: 'theme/images/48x48_plain_wrench.png'
                     , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e11){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e11){}
 	          	  					DigiWebApp.ScholppBookingController.bucheArbeitszeit();
 		          				}
 		                  }
@@ -28551,7 +28590,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                   , anchorLocation: M.RIGHT
                   , events: {
 		                  tap: {
-			    				action: function() { try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e12){}
+			    				action: function() { try{DigiWebApp.ApplicationController.vibrate();}catch(e12){}
 	          	  					//DigiWebApp.ScholppBookingController.bucheArbeitszeit();
 		          				}
 		                  }
@@ -28561,7 +28600,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     value: ''
                   , events: {
 		                  tap: {
-			    				action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e13){}
+			    				action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e13){}
 	          	  					//DigiWebApp.ScholppBookingController.bucheArbeitszeit();
 		          				}
 		                  }
@@ -28590,7 +28629,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                     }
 	                , tap: {
 	    				action: function() {
-	                		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e14){}
+	                		try{DigiWebApp.ApplicationController.vibrate();}catch(e14){}
 		  				}
 	                }
                 }
@@ -28615,7 +28654,7 @@ DigiWebApp.BookingPageWithIconsScholpp = M.PageView.design({
                 }
 	            , tap: {
 					action: function() {
-	            		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e15){}
+	            		try{DigiWebApp.ApplicationController.vibrate();}catch(e15){}
 	  				}
 	            }
             }
@@ -28819,7 +28858,7 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
                 tap: {
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToBautagebuchNotizenListePageTransition'
-        			action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} history.back();}
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
                 }
             }
         })
@@ -28834,7 +28873,7 @@ DigiWebApp.BautagebuchNotizenDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.BautagebuchNotizenDetailsController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} this.deleteNotiz();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.deleteNotiz();}
                 }
             }
         })
@@ -29264,6 +29303,119 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: ButtonDashboardTemplateView
+// ==========================================================================
+
+DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
+
+    isSelectable: NO
+
+    , childViews: 'button icon'
+
+    , events: {
+        tap: {
+            target: DigiWebApp.DashboardController,
+            action: 'itemSelected'
+        }
+    }
+
+	, button: M.ButtonView.design({
+		cssClass: 'scholppButton'
+      , computedValue: {
+	        valuePattern: '<%= label %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return v;
+				}
+	        }
+	  }
+	    , events: {
+	        tap: {
+	            target: DigiWebApp.DashboardController,
+	            action: 'itemSelected'
+	        }
+	    }
+	})
+	
+    , icon: M.ImageView.design({
+		  cssClass: 'scholppButtonMenuIcon'
+        , computedValue: {
+	          valuePattern: '<%= icon %>'
+	        , operation: function(v) {
+				if (v === null || typeof(v) === "undefined") {
+					return null;
+				} else {
+					return 'theme/images/' + v;
+				}
+	        }
+	  }
+    })
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: DashboardPage
+// ==========================================================================
+
+m_require('app/views/TabBar.js');
+m_require('app/views/ButtonDashboardTemplateView.js');
+
+DigiWebApp.ButtonDashboardPage = M.PageView.design({
+
+    childViews: 'header content tabBar'
+
+    , cssClass: 'buttonDashboardPage unselectable'
+
+    , events: {
+		  pagebeforeshow: {
+            target: DigiWebApp.DashboardController,
+            action: 'initButtons'
+        }
+        , pageshow: {
+        	action: function() {
+        		DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem2);
+        	}
+        }
+    }
+    
+    , needsUpdate: true
+
+    , header: M.ToolbarView.design({
+        value: M.I18N.l('menu')
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+
+        childViews: 'list'
+
+        , list: M.ListView.design({
+            contentBinding: {
+                target: DigiWebApp.DashboardController,
+                property: 'itemsButtons'
+            }
+            , listItemTemplateView: DigiWebApp.ButtonDashboardTemplateView
+        })
+    })
+
+    , tabBar: DigiWebApp.TabBar
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: MediaListTemplateView
 // ==========================================================================
 
@@ -29480,7 +29632,7 @@ DigiWebApp.MediaListPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -29594,7 +29746,7 @@ DigiWebApp.EmployeePage = M.PageView.design({
                 , events: {
                     tap: {
                           target: DigiWebApp.EmployeeController
-                        , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.saveEmployeeSelection();}
+                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.saveEmployeeSelection();}
                     }
                 }
             })
@@ -29730,7 +29882,7 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
                 }
             }
         })
@@ -29745,7 +29897,7 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
 						DigiWebApp.BautagebuchNotizenListeController.neu();
 					}
                 }
@@ -29764,119 +29916,6 @@ DigiWebApp.BautagebuchNotizenListePage = M.PageView.design({
             , listItemTemplateView: DigiWebApp.BautagebuchNotizenTemplateView
         })
     })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: ButtonDashboardTemplateView
-// ==========================================================================
-
-DigiWebApp.ButtonDashboardTemplateView = M.ListItemView.design({
-
-    isSelectable: NO
-
-    , childViews: 'button icon'
-
-    , events: {
-        tap: {
-            target: DigiWebApp.DashboardController,
-            action: 'itemSelected'
-        }
-    }
-
-	, button: M.ButtonView.design({
-		cssClass: 'scholppButton'
-      , computedValue: {
-	        valuePattern: '<%= label %>'
-	        , operation: function(v) {
-				if (v === null || typeof(v) === "undefined") {
-					return null;
-				} else {
-					return v;
-				}
-	        }
-	  }
-	    , events: {
-	        tap: {
-	            target: DigiWebApp.DashboardController,
-	            action: 'itemSelected'
-	        }
-	    }
-	})
-	
-    , icon: M.ImageView.design({
-		  cssClass: 'scholppButtonMenuIcon'
-        , computedValue: {
-	          valuePattern: '<%= icon %>'
-	        , operation: function(v) {
-				if (v === null || typeof(v) === "undefined") {
-					return null;
-				} else {
-					return 'theme/images/' + v;
-				}
-	        }
-	  }
-    })
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: DashboardPage
-// ==========================================================================
-
-m_require('app/views/TabBar.js');
-m_require('app/views/ButtonDashboardTemplateView.js');
-
-DigiWebApp.ButtonDashboardPage = M.PageView.design({
-
-    childViews: 'header content tabBar'
-
-    , cssClass: 'buttonDashboardPage unselectable'
-
-    , events: {
-		  pagebeforeshow: {
-            target: DigiWebApp.DashboardController,
-            action: 'initButtons'
-        }
-        , pageshow: {
-        	action: function() {
-        		DigiWebApp.TabBar.setActiveTab(DigiWebApp.TabBar.tabItem2);
-        	}
-        }
-    }
-    
-    , needsUpdate: true
-
-    , header: M.ToolbarView.design({
-        value: M.I18N.l('menu')
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-
-        childViews: 'list'
-
-        , list: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.DashboardController,
-                property: 'itemsButtons'
-            }
-            , listItemTemplateView: DigiWebApp.ButtonDashboardTemplateView
-        })
-    })
-
-    , tabBar: DigiWebApp.TabBar
 
 });
 
@@ -29978,7 +30017,7 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
         , page: 'zeitbuchungenPage'
         , icon: 'arrow-l'
         , switchPage: function() {
-    		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} 
+    		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
 			that.backwardHandler();
     	}
     })
@@ -29998,7 +30037,7 @@ DigiWebApp.BautagebuchTabBar = M.TabBarView.design({
         , page: 'zeitbuchungenPage'
         , icon: 'arrow-r'
         , switchPage: function() {
-			try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+			try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
     		that.forwardHandler();
     	}
     })
@@ -30055,7 +30094,7 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -30070,7 +30109,7 @@ DigiWebApp.BautagebuchBautageberichteListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
         				DigiWebApp.BautagebuchBautageberichteListeController.neu();
 					}
                 }
@@ -30406,7 +30445,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                target: DigiWebApp.OrderInfoController,
-	                action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.saveAsContact();}
+	                action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.saveAsContact();}
 	            }
 	          }
 	    })
@@ -30418,7 +30457,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                action: function(buttonid, ev) {
-	    				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+	    				try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
 	    				if (DigiWebApp.OrderInfoController.items.length === 0) {
 	    					DigiWebApp.OrderInfoController.set('items', DigiWebApp.OrderDetailsController.positionForDetails);
 	    				}
@@ -30488,7 +30527,7 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 	        , events: {
 	            tap: {
 	                action: function() {
-	    				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e7){}
+	    				try{DigiWebApp.ApplicationController.vibrate();}catch(e7){}
 						if (DigiWebApp.OrderInfoController.items.length === 0) {
 							DigiWebApp.OrderInfoController.set('items', DigiWebApp.OrderDetailsController.positionForDetails);
 						}
@@ -30586,7 +30625,7 @@ DigiWebApp.OrderDetailsPage = M.PageView.design({
             , events: {
                 tap: {
                     target: DigiWebApp.NavigationController,
-                    action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToZeitbuchungDetailsPageTransition();}
+                    action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToZeitbuchungDetailsPageTransition();}
                 }
             }
         })
@@ -30648,7 +30687,7 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
             , events: {
                 tap: {
                     target: DigiWebApp.NavigationController,
-                    action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                    action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
@@ -30697,7 +30736,7 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 	            }
 		        , tap: {
 					action: function() {
-	            		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+	            		try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
 	  				}
 	            }
 	        }
@@ -30738,7 +30777,7 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 	            }
 		        , tap: {
 					action: function() {
-	            		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){}
+	            		try{DigiWebApp.ApplicationController.vibrate();}catch(e4){}
 	  				}
 	            }
 	        }
@@ -30781,7 +30820,7 @@ DigiWebApp.VorZurueckTabBar = M.TabBarView.design({
         , page: 'zeitbuchungenPage'
         , icon: 'arrow-l'
         , switchPage: function() {
-    		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){}
+    		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
 			DigiWebApp.VorZurueckTabBar.backwardHandler();
     	}
     })
@@ -30797,7 +30836,7 @@ DigiWebApp.VorZurueckTabBar = M.TabBarView.design({
         , page: 'zeitbuchungenPage'
         , icon: 'arrow-r'
         , switchPage: function() {
-    		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){}
+    		try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
     		DigiWebApp.VorZurueckTabBar.forwardHandler();
     	}
     })
@@ -30854,7 +30893,7 @@ DigiWebApp.ZeitbuchungenPage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToAnwesenheitslistePageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToAnwesenheitslistePageTransition();}
                 }
             }
         })
@@ -31004,7 +31043,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichtDetailsPageTransition();}
                 }
             }
         })
@@ -31019,7 +31058,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
             , events: {
                 tap: {
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
 						DigiWebApp.BautagebuchMedienListeController.neu();
 					}
                 }
@@ -31134,7 +31173,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
                 tap: {
                     //  target: DigiWebApp.NavigationController
                     //, action: 'backToBautagebuchBautageberichtDetailsPageTransition'
-        			action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} history.back();}
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
                 }
             }
         })
@@ -31151,7 +31190,7 @@ DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
                       //target: DigiWebApp.BautagebuchBautageberichtDetailsController
                     //, action: 'delete'
         			action: function() {
-        				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
         				DigiWebApp.BautagebuchBautageberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautageberichteListePageTransition);
         			}
                 }
@@ -31705,7 +31744,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	    	, events: {
 	          	tap: {
 	              	  target: DigiWebApp.NavigationController
-	              	, action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToMediaListPageTransition();}
+	              	, action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToMediaListPageTransition();}
 	          	}
 	      	  }
 	    })
@@ -31718,7 +31757,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 	              	//target: DigiWebApp.NavigationController,
 	              	//action: 'backToMediaListPageTransition'
 	    			action: function() {
-	    				try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e3){} 
+	    				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
 	    				DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('deleteMediaFile'));
 	    				DigiWebApp.EditPicturePageController.myMediaFile.deleteFile(
 	    						  DigiWebApp.EditPicturePageController.deleteMediaFileFromLocalStorage
@@ -31859,7 +31898,7 @@ DigiWebApp.EditPicturePage = M.PageView.design({
 			  				//  target: DigiWebApp.CameraPage
 			  				//, action: 'savePicture'
 			  				action: function() {
-			  					try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e4){} 
+			  					try{DigiWebApp.ApplicationController.vibrate();}catch(e4){} 
 			  					DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('saveMediaFile'));
 			  					DigiWebApp.EditPicturePage.savePicture();
 			  				}
@@ -31963,7 +32002,7 @@ DigiWebApp.StudieChecklisteTemplateView = M.DigiListItemView.design({
 //			      }
 //			      , tap: {
 //						action: function() {
-//			      		try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e){}
+//			      		try{DigiWebApp.ApplicationController.vibrate();}catch(e){}
 //						}
 //			      }
 //			  }
@@ -32008,7 +32047,7 @@ DigiWebApp.StudieChecklistePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                      , action: function() {try{navigator.notification.vibrate(DigiWebApp.ApplicationController.CONSTVibrateDuration);}catch(e2){} this.backToDashboardPage();}
+                      , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
                 }
             }
         })
