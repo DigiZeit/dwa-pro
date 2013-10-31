@@ -3288,125 +3288,6 @@ M.SplitToolbarView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -3524,6 +3405,125 @@ M.DashboardItemView = M.View.extend(
         return html;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7280,6 +7280,138 @@ M.CarouselItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.11.2011
@@ -7523,138 +7655,6 @@ M.SliderView = M.View.extend(
     enable: function() {
         this.isEnabled = YES;
         $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
     }
 
 });
