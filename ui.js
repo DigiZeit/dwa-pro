@@ -64,248 +64,6 @@ M.ScrollView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
- *
- * @extends M.View
- */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TableView',
-
-    /**
-     * Determines whether to remove all content rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeContentRowsOnUpdate: YES,
-
-    /**
-     * Determines whether to remove the header rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeHeaderRowOnUpdate: NO,
-
-    /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the table.
-     *
-     * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
-     */
-    theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
-    },
-
-    /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
-        }
-
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
-        }
-    },
-
-    /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
-     */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
-        }
-    },
-
-    /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
-     */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -819,6 +577,248 @@ M.ToggleView = M.View.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
+    }
+
+});
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -3715,6 +3715,221 @@ M.DialogView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any action sheet dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a action sheet dialog view specific render method.
+ *
+ * @extends M.DialogView 
+ */
+M.ActionSheetDialogView = M.DialogView.extend(
+/** @scope M.ActionSheetDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ActionSheetDialogView',
+
+    /**
+     * The default title of an action sheet dialog.
+     *
+     * @type String
+     */
+    title: 'ActionSheet',
+
+    /**
+     * Defines the value of the destructive button (the one button that is showed in red)
+     *
+     * @type String
+     */
+    destructiveButtonValue: null,
+
+    /**
+     * Defines the value of the cancel button
+     *
+     * @type String
+     */
+    cancelButtonValue: null,
+
+    /**
+     * Contains the values of all other buttons as strings
+     *
+     * @type Array
+     */
+    otherButtonValues: null,
+
+    /**
+     * Contains the tags of all other buttons as strings
+     *
+     * @type Array
+     */
+    otherButtonTags: null,
+
+    /**
+     * Delay between action sheet slide out animation finished and deleting it from DOM and deleting the object
+     */
+    deletionDelay: 1000,
+
+    /**
+     * If set, contains the dialog's callbacks in sub objects named 'destruction', 'cancel' and 'other' or as  functions named confirm, cancel and other.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an action sheet dialog as a slide-up.
+     *
+     * @private
+     * @returns {String} The action sheet dialog view's html representation.
+     */
+
+    render: function() {
+        /* render half transparent grey background */
+        this.html = '<div class="tmp-dialog-background"></div>';
+
+        /* render title */
+        this.html += '<div id="' + this.id + '" class="tmp-actionsheet">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+
+        /* render footer that contains all buttons */
+        this.html += '<div class="tmp-dialog-footer">';
+
+        var that = this;
+
+        var buttons = [];
+        if(this.destructiveButtonValue) {
+            buttons.push(M.ButtonView.design({
+                value: this.destructiveButtonValue,
+                tag: 'destruction',
+                dataTheme: 'a tmp-actionsheet-destructive-button',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            }));
+        }
+        if(this.otherButtonValues) {
+            if(this.otherButtonTags && !(_.isArray(this.otherButtonTags)) && !(_.isArray(this.otherButtonValues))) {
+                M.Logger.log('Error in Action Sheet: Values and (optional) tags must be passed as string in an array! Rendering will not proceed.', M.WARN);
+                return '';
+            }
+            /* First check if passed number of values matches number of labels passed */
+            /* If not, do not use values, but use incremented buttonNr as value */
+            if(this.otherButtonTags && this.otherButtonTags.length !== this.otherButtonValues.length) {
+                M.Logger.log('Mismatch in Action Sheet: Number of other button\'s tags doesn\'t match number of values. Will not use given values, but use generated numbers as values.', M.WARN);
+                this.otherButtonTags = null;
+            }
+
+            var buttonNr = 0;
+
+            _.each(this.otherButtonValues, function(btn) {
+                buttons.push(M.ButtonView.design({
+                    value: btn,
+                    tag: that.otherButtonTags ? that.otherButtonTags[buttonNr++] : buttonNr++,
+                    events: {
+                        tap: {
+                            target: that,
+                            action: 'handleCallback'
+                        }
+                    }
+                }));
+            });
+        }
+        
+        if(this.cancelButtonValue) {
+            buttons.push(M.ButtonView.design({
+                value: this.cancelButtonValue,
+                tag: 'cancel',
+                dataTheme: 'a',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            }));
+        }
+
+
+        /* render each button saved in the buttons array */
+        for(var i in buttons) {
+            this.html += buttons[i].render();
+        };
+
+        this.html += '</div>';
+        this.html += '</div>';
+
+        $('body').append(this.html);
+
+        /* register events for each designed and rendered button and theme it afterwards
+         * must be performed AFTER button has been inserted to DOM
+         */
+        for(var i in buttons) {
+            buttons[i].registerEvents();
+            buttons[i].theme();
+        };
+    },
+
+    show: function() {
+        /* call the dialog's render() */
+        this.render();
+        var dialog = $('#' + this.id);
+        var background = $('.tmp-dialog-background');
+        background.hide();
+
+        /* disable scrolling to enable a "real" dialog behaviour */
+//        $(document).bind('touchmove', function(e) {
+//            e.preventDefault();
+//        });
+
+        /* slide the dialog in */
+        dialog.removeClass('slideup out reverse');
+        dialog.addClass('slideup in');
+
+        /* reposition, but wait a second */
+        var that = this;
+        window.setTimeout(function() {
+            background.show();
+            that.positionBackground(background);
+
+            /* click on background cancels the action sheet */
+            $('.tmp-dialog-background').bind('click tap', function() {
+                that.hide();
+            });
+        }, 1);
+    },
+
+    handleCallback: function(viewId, event) {
+        this.hide();
+        var button = M.ViewManager.getViewById(viewId);
+        var buttonType = (button.tag === 'destruction' || button.tag === 'cancel') ? button.tag : 'other';
+
+        if(this.callbacks && buttonType && M.EventDispatcher.checkHandler(this.callbacks[buttonType])){
+            this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
+        }
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -3966,221 +4181,6 @@ M.ConfirmDialogView = M.DialogView.extend(
         }
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any action sheet dialog view. It is derived from M.DialogView
- * and mainly used for implementing a action sheet dialog view specific render method.
- *
- * @extends M.DialogView 
- */
-M.ActionSheetDialogView = M.DialogView.extend(
-/** @scope M.ActionSheetDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ActionSheetDialogView',
-
-    /**
-     * The default title of an action sheet dialog.
-     *
-     * @type String
-     */
-    title: 'ActionSheet',
-
-    /**
-     * Defines the value of the destructive button (the one button that is showed in red)
-     *
-     * @type String
-     */
-    destructiveButtonValue: null,
-
-    /**
-     * Defines the value of the cancel button
-     *
-     * @type String
-     */
-    cancelButtonValue: null,
-
-    /**
-     * Contains the values of all other buttons as strings
-     *
-     * @type Array
-     */
-    otherButtonValues: null,
-
-    /**
-     * Contains the tags of all other buttons as strings
-     *
-     * @type Array
-     */
-    otherButtonTags: null,
-
-    /**
-     * Delay between action sheet slide out animation finished and deleting it from DOM and deleting the object
-     */
-    deletionDelay: 1000,
-
-    /**
-     * If set, contains the dialog's callbacks in sub objects named 'destruction', 'cancel' and 'other' or as  functions named confirm, cancel and other.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an action sheet dialog as a slide-up.
-     *
-     * @private
-     * @returns {String} The action sheet dialog view's html representation.
-     */
-
-    render: function() {
-        /* render half transparent grey background */
-        this.html = '<div class="tmp-dialog-background"></div>';
-
-        /* render title */
-        this.html += '<div id="' + this.id + '" class="tmp-actionsheet">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-
-        /* render footer that contains all buttons */
-        this.html += '<div class="tmp-dialog-footer">';
-
-        var that = this;
-
-        var buttons = [];
-        if(this.destructiveButtonValue) {
-            buttons.push(M.ButtonView.design({
-                value: this.destructiveButtonValue,
-                tag: 'destruction',
-                dataTheme: 'a tmp-actionsheet-destructive-button',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            }));
-        }
-        if(this.otherButtonValues) {
-            if(this.otherButtonTags && !(_.isArray(this.otherButtonTags)) && !(_.isArray(this.otherButtonValues))) {
-                M.Logger.log('Error in Action Sheet: Values and (optional) tags must be passed as string in an array! Rendering will not proceed.', M.WARN);
-                return '';
-            }
-            /* First check if passed number of values matches number of labels passed */
-            /* If not, do not use values, but use incremented buttonNr as value */
-            if(this.otherButtonTags && this.otherButtonTags.length !== this.otherButtonValues.length) {
-                M.Logger.log('Mismatch in Action Sheet: Number of other button\'s tags doesn\'t match number of values. Will not use given values, but use generated numbers as values.', M.WARN);
-                this.otherButtonTags = null;
-            }
-
-            var buttonNr = 0;
-
-            _.each(this.otherButtonValues, function(btn) {
-                buttons.push(M.ButtonView.design({
-                    value: btn,
-                    tag: that.otherButtonTags ? that.otherButtonTags[buttonNr++] : buttonNr++,
-                    events: {
-                        tap: {
-                            target: that,
-                            action: 'handleCallback'
-                        }
-                    }
-                }));
-            });
-        }
-        
-        if(this.cancelButtonValue) {
-            buttons.push(M.ButtonView.design({
-                value: this.cancelButtonValue,
-                tag: 'cancel',
-                dataTheme: 'a',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            }));
-        }
-
-
-        /* render each button saved in the buttons array */
-        for(var i in buttons) {
-            this.html += buttons[i].render();
-        };
-
-        this.html += '</div>';
-        this.html += '</div>';
-
-        $('body').append(this.html);
-
-        /* register events for each designed and rendered button and theme it afterwards
-         * must be performed AFTER button has been inserted to DOM
-         */
-        for(var i in buttons) {
-            buttons[i].registerEvents();
-            buttons[i].theme();
-        };
-    },
-
-    show: function() {
-        /* call the dialog's render() */
-        this.render();
-        var dialog = $('#' + this.id);
-        var background = $('.tmp-dialog-background');
-        background.hide();
-
-        /* disable scrolling to enable a "real" dialog behaviour */
-//        $(document).bind('touchmove', function(e) {
-//            e.preventDefault();
-//        });
-
-        /* slide the dialog in */
-        dialog.removeClass('slideup out reverse');
-        dialog.addClass('slideup in');
-
-        /* reposition, but wait a second */
-        var that = this;
-        window.setTimeout(function() {
-            background.show();
-            that.positionBackground(background);
-
-            /* click on background cancels the action sheet */
-            $('.tmp-dialog-background').bind('click tap', function() {
-                that.hide();
-            });
-        }, 1);
-    },
-
-    handleCallback: function(viewId, event) {
-        this.hide();
-        var button = M.ViewManager.getViewById(viewId);
-        var buttonType = (button.tag === 'destruction' || button.tag === 'cancel') ? button.tag : 'other';
-
-        if(this.callbacks && buttonType && M.EventDispatcher.checkHandler(this.callbacks[buttonType])){
-            this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
-        }
-    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5536,69 +5536,6 @@ M.ContainerView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -5801,6 +5738,69 @@ M.PopoverView = M.View.extend(
     }
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitItemView',
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // ...
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2012 panacoda GmbH. All rights reserved.
@@ -7102,6 +7102,63 @@ M.MapView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      10.04.12
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A carousel item view is the one and only valid sub view of a carousel view. It basically
+ * serves as a container that allows you to put anything into such an element. Simply
+ * apply as much child views as you like and let this view (in combination with the carousel)
+ * take care of the rest.
+ *
+ * @extends M.View
+ */
+M.CarouselItemView = M.View.extend(
+/** @scope M.CarouselItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CarouselItemView',
+
+    /**
+     * This property can be used to specify a tag, that is independent from the carousel
+     * item's content. This allows you to identify a carousel item e.g. within the callback
+     * of the carousel's change event.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This method renders a carousel item and its content with an li element as the
+     * surrounding element.
+     *
+     * @private
+     * @returns {String} The carousel item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+
+        this.renderChildViews();
+
+        this.html += '</li>';
+
+        return this.html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -7221,195 +7278,6 @@ M.ImageView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
- *
- * @extends M.View
- */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CarouselItemView',
-
-    /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
-     *
-     * @private
-     * @returns {String} The carousel item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
-
-        this.renderChildViews();
-
-        this.html += '</li>';
-
-        return this.html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -7655,6 +7523,138 @@ M.SliderView = M.View.extend(
     enable: function() {
         this.isEnabled = YES;
         $('#' + this.id).slider('enable');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
     }
 
 });
@@ -9556,560 +9556,6 @@ M.DashboardView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for input type: text
- *
- * @type String
- */
-M.INPUT_TEXT = 'text';
-
-/**
- * A constant value for input type: password
- *
- * @type String
- */
-M.INPUT_PASSWORD = 'password';
-
-/**
- * A constant value for input type: number
- *
- * @type String
- */
-M.INPUT_NUMBER = 'number';
-
-/**
- * A constant value for input type: tel
- *
- * @type String
- */
-M.INPUT_TELEPHONE = 'tel';
-
-/**
- * A constant value for input type: url
- *
- * @type String
- */
-M.INPUT_URL = 'url';
-
-/**
- * A constant value for input type: email
- *
- * @type String
- */
-M.INPUT_EMAIL = 'email';
-
-/**
- * A constant value for input type: time
- *
- * @type String
- */
-M.INPUT_TIME = 'time';
-
-/**
- * A constant value for input type: date
- *
- * @type String
- */
-M.INPUT_DATE = 'date';
-
-/**
- * A constant value for input type: month
- *
- * @type String
- */
-M.INPUT_MONTH = 'month';
-
-/**
- * A constant value for input type: week
- *
- * @type String
- */
-M.INPUT_WEEK = 'week';
-
-/**
- * A constant value for input type: datetime
- *
- * @type String
- */
-M.INPUT_DATETIME = 'datetime';
-
-/**
- * A constant value for input type: datetime-local
- *
- * @type String
- */
-M.INPUT_DATETIME_LOCAL = 'datetime-local';
-
-/**
- * @class
- *
- * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
- * a single line text field and a multiple line text field. If it is styled as a multiple
- * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
- * depending on the number of lines of text a user enters.
- *
- * @extends M.View
- */
-M.TextFieldView = M.View.extend(
-/** @scope M.TextFieldView.prototype */ {
-
-   /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TextFieldView',
-
-   /**
-    * The name of the text field. During the rendering, this property gets assigned to the name
-    * property of the text field's html representation. This can be used to manually access the
-    * text field's DOM representation later on.
-    *
-    * @type String
-    */
-    name: null,
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
-     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * The initial text shown inside the text field describing the input or making a suggestion for input
-     * e.g. "Please enter your Name."
-     *
-     * @type String
-     */
-    initialText: '',
-
-    /**
-     * Determines whether to display the textfield grouped with the label specified with the label property.
-     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
-     * the box'. If set to NO, custom styling could be necessary.
-     *
-     * If there is no label specified, this property is ignored by default.
-     *
-     * @type Boolean
-     */
-    isGrouped: NO,
-
-    /**
-     * Defines whether the text field has multiple lines respectively is a text area.
-     *
-     * @type Boolean
-     */
-    hasMultipleLines: NO,
-
-    /**
-     * This property specifies the input type of this input field. Possible values are:
-     *
-     *   - M.INPUT_TEXT --> text input (default)
-     *   - M.INPUT_PASSWORD --> password
-     *   - M.INPUT_NUMBER --> number
-     *   - M.INPUT_TELEPHONE --> tel
-     *   - M.INPUT_URL --> url
-     *   - M.INPUT_EMAIL --> email
-     *
-     * Note, that these types are not yet supported by all browsers!
-     *
-     * @type String
-     */
-    inputType: M.INPUT_TEXT,
-
-    /**
-     * This property is used internally to determine all the possible input types for a
-     * date textfield.
-     *
-     * @private
-     * @type Array
-     */
-    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
-
-    /**
-     * This property can be used to specify the allowed number if chars for this text field
-     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
-     * be set.
-     *
-     * @type Number
-     */
-    numberOfChars: null,
-
-    /**
-     * This property can be used to specify whether to use the native implementation
-     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
-     * will render its own date/time picker controls to the corresponding input
-     * type. If set to no, the native implementation will be disabled.
-     *
-     * @type Boolean
-     */
-    useNativeImplementationIfAvailable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a TextFieldView
-     * 
-     * @private
-     * @returns {String} The text field view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-            if(this.hasAsteriskOnLabel) {
-                if(this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
-        var placeholder = '';
-        if(this.initialText) {
-            placeholder = ' placeholder="' + this.initialText + '" ';
-
-        }
-
-        if(this.hasMultipleLines) {
-            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
-            
-        } else {
-            var type = this.inputType;
-            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-                type = 'text';
-            }
-            
-            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
-        }
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            focus: {
-                target: this,
-                action: 'gotFocus'
-            },
-            blur: {
-                target: this,
-                action: 'lostFocus'
-            },
-            keyup: {
-                target: this,
-                action: 'setValueFromDOM'
-            }
-        };
-        /* add TAP handler only if needed */
-        var type = this.inputType;
-        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-            this.internalEvents['tap'] = {
-                target:this,
-                action:'handleTap'
-            };
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * The contentDidChange method is automatically called by the observable when the
-     * observable's state did change. It then updates the view's value property based
-     * on the specified content binding.
-     *
-     * This is a special implementation for M.TextFieldView.
-     */
-    contentDidChange: function(){
-        /* if the text field has the focus, we do not apply the content binding */
-        if(this.hasFocus) {
-            return;
-        }
-
-        /* let M.View do the real job */
-        this.bindToCaller(this, M.View.contentDidChange)();
-
-        this.renderUpdate();
-        this.delegateValueUpdate();
-    },
-
-    /**
-     * Updates a TextFieldView with DOM access by jQuery.
-     *
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     * @private
-     */
-    renderUpdate: function(preventValueComputing) {
-        if(!preventValueComputing) {
-            this.computeValue();
-        }
-        $('#' + this.id).val(this.value);
-        this.styleUpdate();
-    },
-
-    /**
-     * This method is called whenever the view is taped/clicked. Typically a text
-     * field view would not use a tap event. But since a tap is called before the
-     * focus event, we use this to do some input type depending stuff, e.g. show
-     * a date picker.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    handleTap: function(id, event, nextEvent) {
-        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
-            M.DatePickerView.show({
-                source: this,
-                useSourceDateAsInitialDate: YES,
-                showDatePicker: (this.inputType !== M.INPUT_TIME),
-                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
-                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
-                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
-            });
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view gets the focus.
-     * If there is a initial text specified and the value of this text field
-     * still equals this initial text, the value is emptied.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    gotFocus: function(id, event, nextEvent) {
-        this.hasFocus = YES;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view lost the focus.
-     * If there is a initial text specified and the value of this text field
-     * is empty, the value is set to the initial text.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    lostFocus: function(id, event, nextEvent) {
-        this.setValueFromDOM();
-
-        this.hasFocus = NO;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Method to append css styles inline to the rendered text field.
-     *
-     * @private
-     * @returns {String} The text field's styling as html representation.
-     */
-    style: function() {
-        var html = ' style="';
-        if(this.isInline) {
-            html += 'display:inline;';
-        }
-        html += '"';
-
-        if(!this.isEnabled) {
-            html += ' disabled="disabled"';
-        }
-        
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-
-        return html;
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the text field.
-     *
-     * @private
-     */
-    theme: function() {
-        /* trigger keyup event to make the text field autogrow */
-        var jDom = $('#'  + this.id);
-        if(this.value) {
-            jDom.trigger('keyup').textinput();
-            if(!this.isEnabled){
-	            jDom.textinput('disable');
-	        }
-        }
-
-        /* add container-css class */
-        jDom.parent().addClass(this.cssClass + '_container');
-    },
-
-    /**
-     * Method to append css styles inline to the rendered view on the fly.
-     *
-     * @private
-     */
-    styleUpdate: function() {
-        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
-        if(this.value) {
-            $('#' + this.id).removeAttr('disabled');
-            $('#'  + this.id).trigger('keyup');
-        }
-
-        if(this.isInline) {
-            $('#' + this.id).attr('display', 'inline');
-        } else {
-            $('#' + this.id).removeAttr('display');
-        }
-
-        if(!this.isEnabled) {
-            $('#' + this.id).attr('disabled', 'disabled');
-        } else {
-            $('#' + this.id).removeAttr('disabled');
-        }
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = this.secure($('#' + this.id).val());
-        this.delegateValueUpdate();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method sets the text field's value, initiates its re-rendering
-     * and call the delegateValueUpdate().
-     *
-     * @param {String} value The value to be applied to the text field view.
-     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     */
-    setValue: function(value, delegateUpdate, preventValueComputing) {
-        this.value = value;
-
-        this.renderUpdate(preventValueComputing);
-
-        if(delegateUpdate) {
-            this.delegateValueUpdate();
-        }
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method clears the text field's value, both in the DOM and within the JS object.
-     */
-    clearValue: function() {
-        this.setValue('');
-
-        /* call lostFocus() to get the initial text displayed */
-        this.lostFocus();
-    },
-
-    /**
-     * This method returns the text field view's value.
-     *
-     * @returns {String} The text field view's value.
-     */
-    getValue: function() {
-        return this.value;
-    },
-	/**
-     *
-     * Set a new label for this text field
-     * @param txt the new label value
-     */
-    setLabel: function(txt){
-        if(this.label){
-            $('label[for="' + this.id + '"]').html(txt);
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      26.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -11112,6 +10558,560 @@ M.ListView = M.View.extend(
                 M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
             }
         });
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for input type: text
+ *
+ * @type String
+ */
+M.INPUT_TEXT = 'text';
+
+/**
+ * A constant value for input type: password
+ *
+ * @type String
+ */
+M.INPUT_PASSWORD = 'password';
+
+/**
+ * A constant value for input type: number
+ *
+ * @type String
+ */
+M.INPUT_NUMBER = 'number';
+
+/**
+ * A constant value for input type: tel
+ *
+ * @type String
+ */
+M.INPUT_TELEPHONE = 'tel';
+
+/**
+ * A constant value for input type: url
+ *
+ * @type String
+ */
+M.INPUT_URL = 'url';
+
+/**
+ * A constant value for input type: email
+ *
+ * @type String
+ */
+M.INPUT_EMAIL = 'email';
+
+/**
+ * A constant value for input type: time
+ *
+ * @type String
+ */
+M.INPUT_TIME = 'time';
+
+/**
+ * A constant value for input type: date
+ *
+ * @type String
+ */
+M.INPUT_DATE = 'date';
+
+/**
+ * A constant value for input type: month
+ *
+ * @type String
+ */
+M.INPUT_MONTH = 'month';
+
+/**
+ * A constant value for input type: week
+ *
+ * @type String
+ */
+M.INPUT_WEEK = 'week';
+
+/**
+ * A constant value for input type: datetime
+ *
+ * @type String
+ */
+M.INPUT_DATETIME = 'datetime';
+
+/**
+ * A constant value for input type: datetime-local
+ *
+ * @type String
+ */
+M.INPUT_DATETIME_LOCAL = 'datetime-local';
+
+/**
+ * @class
+ *
+ * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
+ * a single line text field and a multiple line text field. If it is styled as a multiple
+ * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
+ * depending on the number of lines of text a user enters.
+ *
+ * @extends M.View
+ */
+M.TextFieldView = M.View.extend(
+/** @scope M.TextFieldView.prototype */ {
+
+   /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TextFieldView',
+
+   /**
+    * The name of the text field. During the rendering, this property gets assigned to the name
+    * property of the text field's html representation. This can be used to manually access the
+    * text field's DOM representation later on.
+    *
+    * @type String
+    */
+    name: null,
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
+     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * The initial text shown inside the text field describing the input or making a suggestion for input
+     * e.g. "Please enter your Name."
+     *
+     * @type String
+     */
+    initialText: '',
+
+    /**
+     * Determines whether to display the textfield grouped with the label specified with the label property.
+     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
+     * the box'. If set to NO, custom styling could be necessary.
+     *
+     * If there is no label specified, this property is ignored by default.
+     *
+     * @type Boolean
+     */
+    isGrouped: NO,
+
+    /**
+     * Defines whether the text field has multiple lines respectively is a text area.
+     *
+     * @type Boolean
+     */
+    hasMultipleLines: NO,
+
+    /**
+     * This property specifies the input type of this input field. Possible values are:
+     *
+     *   - M.INPUT_TEXT --> text input (default)
+     *   - M.INPUT_PASSWORD --> password
+     *   - M.INPUT_NUMBER --> number
+     *   - M.INPUT_TELEPHONE --> tel
+     *   - M.INPUT_URL --> url
+     *   - M.INPUT_EMAIL --> email
+     *
+     * Note, that these types are not yet supported by all browsers!
+     *
+     * @type String
+     */
+    inputType: M.INPUT_TEXT,
+
+    /**
+     * This property is used internally to determine all the possible input types for a
+     * date textfield.
+     *
+     * @private
+     * @type Array
+     */
+    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
+
+    /**
+     * This property can be used to specify the allowed number if chars for this text field
+     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
+     * be set.
+     *
+     * @type Number
+     */
+    numberOfChars: null,
+
+    /**
+     * This property can be used to specify whether to use the native implementation
+     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
+     * will render its own date/time picker controls to the corresponding input
+     * type. If set to no, the native implementation will be disabled.
+     *
+     * @type Boolean
+     */
+    useNativeImplementationIfAvailable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this textfield.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a TextFieldView
+     * 
+     * @private
+     * @returns {String} The text field view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
+            if(this.hasAsteriskOnLabel) {
+                if(this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
+        var placeholder = '';
+        if(this.initialText) {
+            placeholder = ' placeholder="' + this.initialText + '" ';
+
+        }
+
+        if(this.hasMultipleLines) {
+            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
+            
+        } else {
+            var type = this.inputType;
+            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+                type = 'text';
+            }
+            
+            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
+        }
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for text field views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            focus: {
+                target: this,
+                action: 'gotFocus'
+            },
+            blur: {
+                target: this,
+                action: 'lostFocus'
+            },
+            keyup: {
+                target: this,
+                action: 'setValueFromDOM'
+            }
+        };
+        /* add TAP handler only if needed */
+        var type = this.inputType;
+        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+            this.internalEvents['tap'] = {
+                target:this,
+                action:'handleTap'
+            };
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * The contentDidChange method is automatically called by the observable when the
+     * observable's state did change. It then updates the view's value property based
+     * on the specified content binding.
+     *
+     * This is a special implementation for M.TextFieldView.
+     */
+    contentDidChange: function(){
+        /* if the text field has the focus, we do not apply the content binding */
+        if(this.hasFocus) {
+            return;
+        }
+
+        /* let M.View do the real job */
+        this.bindToCaller(this, M.View.contentDidChange)();
+
+        this.renderUpdate();
+        this.delegateValueUpdate();
+    },
+
+    /**
+     * Updates a TextFieldView with DOM access by jQuery.
+     *
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     * @private
+     */
+    renderUpdate: function(preventValueComputing) {
+        if(!preventValueComputing) {
+            this.computeValue();
+        }
+        $('#' + this.id).val(this.value);
+        this.styleUpdate();
+    },
+
+    /**
+     * This method is called whenever the view is taped/clicked. Typically a text
+     * field view would not use a tap event. But since a tap is called before the
+     * focus event, we use this to do some input type depending stuff, e.g. show
+     * a date picker.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    handleTap: function(id, event, nextEvent) {
+        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
+            M.DatePickerView.show({
+                source: this,
+                useSourceDateAsInitialDate: YES,
+                showDatePicker: (this.inputType !== M.INPUT_TIME),
+                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
+                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
+                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
+            });
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view gets the focus.
+     * If there is a initial text specified and the value of this text field
+     * still equals this initial text, the value is emptied.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    gotFocus: function(id, event, nextEvent) {
+        this.hasFocus = YES;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view lost the focus.
+     * If there is a initial text specified and the value of this text field
+     * is empty, the value is set to the initial text.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    lostFocus: function(id, event, nextEvent) {
+        this.setValueFromDOM();
+
+        this.hasFocus = NO;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Method to append css styles inline to the rendered text field.
+     *
+     * @private
+     * @returns {String} The text field's styling as html representation.
+     */
+    style: function() {
+        var html = ' style="';
+        if(this.isInline) {
+            html += 'display:inline;';
+        }
+        html += '"';
+
+        if(!this.isEnabled) {
+            html += ' disabled="disabled"';
+        }
+        
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+
+        return html;
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the text field.
+     *
+     * @private
+     */
+    theme: function() {
+        /* trigger keyup event to make the text field autogrow */
+        var jDom = $('#'  + this.id);
+        if(this.value) {
+            jDom.trigger('keyup').textinput();
+            if(!this.isEnabled){
+	            jDom.textinput('disable');
+	        }
+        }
+
+        /* add container-css class */
+        jDom.parent().addClass(this.cssClass + '_container');
+    },
+
+    /**
+     * Method to append css styles inline to the rendered view on the fly.
+     *
+     * @private
+     */
+    styleUpdate: function() {
+        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
+        if(this.value) {
+            $('#' + this.id).removeAttr('disabled');
+            $('#'  + this.id).trigger('keyup');
+        }
+
+        if(this.isInline) {
+            $('#' + this.id).attr('display', 'inline');
+        } else {
+            $('#' + this.id).removeAttr('display');
+        }
+
+        if(!this.isEnabled) {
+            $('#' + this.id).attr('disabled', 'disabled');
+        } else {
+            $('#' + this.id).removeAttr('disabled');
+        }
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = this.secure($('#' + this.id).val());
+        this.delegateValueUpdate();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method sets the text field's value, initiates its re-rendering
+     * and call the delegateValueUpdate().
+     *
+     * @param {String} value The value to be applied to the text field view.
+     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     */
+    setValue: function(value, delegateUpdate, preventValueComputing) {
+        this.value = value;
+
+        this.renderUpdate(preventValueComputing);
+
+        if(delegateUpdate) {
+            this.delegateValueUpdate();
+        }
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method clears the text field's value, both in the DOM and within the JS object.
+     */
+    clearValue: function() {
+        this.setValue('');
+
+        /* call lostFocus() to get the initial text displayed */
+        this.lostFocus();
+    },
+
+    /**
+     * This method returns the text field view's value.
+     *
+     * @returns {String} The text field view's value.
+     */
+    getValue: function() {
+        return this.value;
+    },
+	/**
+     *
+     * Set a new label for this text field
+     * @param txt the new label value
+     */
+    setLabel: function(txt){
+        if(this.label){
+            $('label[for="' + this.id + '"]').html(txt);
+        }
     }
 
 });
