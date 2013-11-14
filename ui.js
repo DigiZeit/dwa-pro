@@ -4187,6 +4187,657 @@ M.ConfirmDialogView = M.DialogView.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      01.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A container view renders a simple div container that can be used to display
+ * any html valid content, e.g. by third party frameworks.
+ *
+ * @extends M.View
+ */
+M.ContainerView = M.View.extend(
+/** @scope M.ContainerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ContainerView',
+
+    /**
+     * Renders a simple div container and applies css classes if specified.
+     *
+     * @private
+     * @returns {String} The container view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the container view.
+     *
+     * @private
+     * @returns {String} The container's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      15.08.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This ...
+ *
+ * @extends M.View
+ */
+M.PopoverView = M.View.extend(
+/** @scope M.PopoverView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PopoverView',
+
+    menu: null,
+
+    scrollview: null,
+
+    hasPopScrollview: NO,
+
+    selectedItemInPopover: null,
+
+    render: function() {
+        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
+
+        /* render a toolbar as the popover's header */
+        var toolbar = M.ToolbarView.design({
+            value: 'Menu',
+            cssClass: 'tmp-popover-header'
+        });
+        this.html += toolbar.render();
+
+        this.menu = M.ListView.design({});
+
+        /* render a scrollview as the content container */
+        this.scrollview = M.ScrollView.design({
+            cssClass: 'tmp-popover-content',
+            childViews: 'list',
+            list: this.menu
+        });
+        this.html += this.scrollview.render();
+
+        /* add the border (with the arrow at the top) */
+        this.html += '<div class="tmp-popover-arrow"></div>';
+
+        this.html += '</div>';
+
+        /* push to DOM */
+        $('body').append(this.html);
+
+        /* now render items */
+        this.selectedItemInPopover = null;
+        for (var i in this.items) {
+            var item = M.ListItemView.design({
+                childViews: 'label',
+                parentView: this.splitview.menu.menu,
+                splitViewItem: this.items[i],
+                label: M.LabelView.design({
+                    value: this.items[i].value
+                }),
+                events: {
+                    tap: {
+                        target: this,
+                        action: 'itemSelected'
+                    }
+                }
+            });
+            this.scrollview.list.addItem(item.render());
+
+            /* check if this item has to be selected afterwards */
+            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
+                this.selectedItemInPopover = item.id;
+            }
+
+            /* register events for item */
+            item.registerEvents();
+        }
+
+        /* now set the active list item */
+        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
+
+        /* finally show the active list item's content */
+        this.splitview.listItemSelected(this.selectedItemInPopover);
+    },
+
+    renderUpdate: function() {
+        /* get id of selected item */
+        var id;
+        var that = this;
+        $('#' + this.menu.id).find('li').each(function() {
+            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
+                id = $(this).attr('id');
+            }
+        });
+        /* activate item */
+        if (id) {
+            this.menu.setActiveListItem(id);
+            this.selectedItemInPopover = id;
+        }
+    },
+
+    show: function() {
+        this.render();
+        this.theme();
+        this.toggle();
+    },
+
+    hide: function() {
+        $('#' + this.id).hide();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
+    },
+
+
+    /**
+     * This method calculates the popup's height, checks if a scrollview is required and,
+     * if neccessary, scrollt the list to make the selected item visible.
+     */
+    resizePopup: function() {
+        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
+        var itemCount = $('#' + this.menu.id).find('li').length;
+        var popoverSize = M.Environment.getHeight() * 0.7;
+        var itemListHeight = itemCount * itemHeight;
+        if (popoverSize < itemListHeight) {
+            $('#' + this.menu.id).css('height', popoverSize);
+            // Add a scrollview to List
+            $('#' + this.menu.id).scrollview({
+                direction: 'y'
+            });
+            this.hasPopScrollview = YES;
+        }
+        else {
+            $('#' + this.menu.id).css('height', itemListHeight);
+        }
+        //Scrolling to right position is only needed when the popover has a scrollview
+        if (this.hasPopScrollview) {
+            this.scrollListToRightPosition();
+        }
+    },
+
+    toggle: function() {
+        $('#' + this.id).toggle();
+        this.resizePopup();
+    },
+
+    itemSelected: function(id, event, nextEvent) {
+        this.toggle();
+        this.splitview.listItemSelected(id);
+    },
+
+    scrollListToRightPosition: function() {
+        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() * 0.7;
+        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
+        var center = menuHeight / 2;
+        var distanceToListEnd = completeItemListHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < center) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - center);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < center) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - center);
+            }
+        }
+        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+});
+
+/**
+ * @class
+ *
+ * This defines the prototype of a toggle switch view
+ *
+ * General spoken it is an Boolean switch.
+ *
+ * @extends M.View
+ */
+M.ToggleSwitchView = M.View.extend(
+    /** @scope M.ToggleSwitchView.prototype */ {
+
+        /**
+         * The type of this object.
+         *
+         * @type String
+         */
+        type:'M.ToggleSwitchView',
+
+        /**
+         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
+         *
+         * @type Boolean
+         */
+        isMini:NO,
+
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        onLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        offLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         *
+         * @default YES
+         * @type Boolean but could be anything
+         */
+
+        onValue:YES,
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         *
+         * @default NO
+         * @type Boolean but could be anything
+         */
+        offValue:NO,
+
+        /**
+         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
+         * @default YES
+         * @type Boolean
+         */
+        fieldcontain:NO,
+
+
+        /**
+         * This property specifies the recommended events for this type of view.
+         *
+         * @type Array
+         */
+        recommendedEvents: ['change'],
+
+
+        /**
+         * Renders a selection list.
+         *
+         * @private
+         * @returns {String} The toggle switch view's html representation.
+         */
+        render:function () {
+
+            this.html = '';
+            /* if there is no label put the value as label */
+            if (!this.onLabel) {
+                this.onLabel = this.onValue;
+            }
+
+            /* if there is no label put the value as label */
+            if (!this.offLabel) {
+                this.offLabel = this.offValue;
+            }
+
+            var dataRoleFieldContain = '';
+
+            /*is there is a fieldcontain defined use it*/
+            if (this.fieldcontain) {
+                dataRoleFieldContain = ' data-role="fieldcontain" ';
+            }
+
+            /*should the element be inline?*/
+            var isInline = '';
+            if (this.isInline) {
+                isInline = ' style="display: inline-block" ';
+            }
+
+            /*add the label to the view*/
+            if (this.label) {
+                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
+            }
+
+            /* build the markup as jquerymobile likes it */
+            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
+            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
+            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
+            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
+            this.html += '</select>';
+
+            this.html += '</div>';
+
+
+            /* return the markup*/
+            return this.html;
+        },
+
+        theme: function(){
+
+        },
+
+        /**
+         *
+         * add the class attribute to the HTML
+         *
+         * @return {String}
+         */
+
+        style:function () {
+            var html = ' class="';
+            if (this.cssClass) {
+                html += this.cssClass;
+            }
+            html += '" ';
+            return html;
+        },
+
+
+        /**
+         *
+         * returns the value of the selection
+         *
+         * @return {*} the value of the selection
+         */
+        getValue:function () {
+            var val = $('#' + this.id).val();
+            return val;
+        },
+
+        /**
+         *
+         * pass either the name of the option or its value to set the option and toggle the slider
+         *
+         * @param val the value to be set
+         */
+        setValue:function (val) {
+            //if the name matchs set the option to selected otherwise test the given parameter to the option value
+            var useValue = true;
+            $('#' + this.id + ' option').each(function () {
+                if ($(this).html() === val) {
+                    $(this).attr('selected', 'selected');
+                    useValue = false;
+                }
+            });
+            if (useValue) {
+                //is there an option with the paramet as value. if so then select it
+                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
+            }
+            //toggle the view
+            $('#' + this.id).slider('refresh');
+        },
+
+
+        /**
+         * sets the value of the toggle switch to onValue
+         */
+        on:function () {
+            this.setValue(this.onValue);
+        },
+
+        /**
+         * sets the value of the toggle switch to offValue
+         */
+        off:function () {
+            this.setValue(this.offValue);
+        },
+
+
+        /**
+         * enable the toggle switch view
+         */
+        enable:function () {
+            $('#' + this.id).slider('enable');
+        },
+
+
+        /**
+         * disable the toggle switch view
+         */
+        disable:function () {
+            $('#' + this.id).slider('disable');
+        }
+
+    })
+
+
+
+
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      30.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5090,657 +5741,6 @@ M.SelectionListView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
-/**
- * @class
- *
- * This defines the prototype of a toggle switch view
- *
- * General spoken it is an Boolean switch.
- *
- * @extends M.View
- */
-M.ToggleSwitchView = M.View.extend(
-    /** @scope M.ToggleSwitchView.prototype */ {
-
-        /**
-         * The type of this object.
-         *
-         * @type String
-         */
-        type:'M.ToggleSwitchView',
-
-        /**
-         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
-         *
-         * @type Boolean
-         */
-        isMini:NO,
-
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        onLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        offLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         *
-         * @default YES
-         * @type Boolean but could be anything
-         */
-
-        onValue:YES,
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         *
-         * @default NO
-         * @type Boolean but could be anything
-         */
-        offValue:NO,
-
-        /**
-         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
-         * @default YES
-         * @type Boolean
-         */
-        fieldcontain:NO,
-
-
-        /**
-         * This property specifies the recommended events for this type of view.
-         *
-         * @type Array
-         */
-        recommendedEvents: ['change'],
-
-
-        /**
-         * Renders a selection list.
-         *
-         * @private
-         * @returns {String} The toggle switch view's html representation.
-         */
-        render:function () {
-
-            this.html = '';
-            /* if there is no label put the value as label */
-            if (!this.onLabel) {
-                this.onLabel = this.onValue;
-            }
-
-            /* if there is no label put the value as label */
-            if (!this.offLabel) {
-                this.offLabel = this.offValue;
-            }
-
-            var dataRoleFieldContain = '';
-
-            /*is there is a fieldcontain defined use it*/
-            if (this.fieldcontain) {
-                dataRoleFieldContain = ' data-role="fieldcontain" ';
-            }
-
-            /*should the element be inline?*/
-            var isInline = '';
-            if (this.isInline) {
-                isInline = ' style="display: inline-block" ';
-            }
-
-            /*add the label to the view*/
-            if (this.label) {
-                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
-            }
-
-            /* build the markup as jquerymobile likes it */
-            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
-            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
-            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
-            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
-            this.html += '</select>';
-
-            this.html += '</div>';
-
-
-            /* return the markup*/
-            return this.html;
-        },
-
-        theme: function(){
-
-        },
-
-        /**
-         *
-         * add the class attribute to the HTML
-         *
-         * @return {String}
-         */
-
-        style:function () {
-            var html = ' class="';
-            if (this.cssClass) {
-                html += this.cssClass;
-            }
-            html += '" ';
-            return html;
-        },
-
-
-        /**
-         *
-         * returns the value of the selection
-         *
-         * @return {*} the value of the selection
-         */
-        getValue:function () {
-            var val = $('#' + this.id).val();
-            return val;
-        },
-
-        /**
-         *
-         * pass either the name of the option or its value to set the option and toggle the slider
-         *
-         * @param val the value to be set
-         */
-        setValue:function (val) {
-            //if the name matchs set the option to selected otherwise test the given parameter to the option value
-            var useValue = true;
-            $('#' + this.id + ' option').each(function () {
-                if ($(this).html() === val) {
-                    $(this).attr('selected', 'selected');
-                    useValue = false;
-                }
-            });
-            if (useValue) {
-                //is there an option with the paramet as value. if so then select it
-                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
-            }
-            //toggle the view
-            $('#' + this.id).slider('refresh');
-        },
-
-
-        /**
-         * sets the value of the toggle switch to onValue
-         */
-        on:function () {
-            this.setValue(this.onValue);
-        },
-
-        /**
-         * sets the value of the toggle switch to offValue
-         */
-        off:function () {
-            this.setValue(this.offValue);
-        },
-
-
-        /**
-         * enable the toggle switch view
-         */
-        enable:function () {
-            $('#' + this.id).slider('enable');
-        },
-
-
-        /**
-         * disable the toggle switch view
-         */
-        disable:function () {
-            $('#' + this.id).slider('disable');
-        }
-
-    })
-
-
-
-
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      01.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A container view renders a simple div container that can be used to display
- * any html valid content, e.g. by third party frameworks.
- *
- * @extends M.View
- */
-M.ContainerView = M.View.extend(
-/** @scope M.ContainerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ContainerView',
-
-    /**
-     * Renders a simple div container and applies css classes if specified.
-     *
-     * @private
-     * @returns {String} The container view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the container view.
-     *
-     * @private
-     * @returns {String} The container's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      15.08.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This ...
- *
- * @extends M.View
- */
-M.PopoverView = M.View.extend(
-/** @scope M.PopoverView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PopoverView',
-
-    menu: null,
-
-    scrollview: null,
-
-    hasPopScrollview: NO,
-
-    selectedItemInPopover: null,
-
-    render: function() {
-        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
-
-        /* render a toolbar as the popover's header */
-        var toolbar = M.ToolbarView.design({
-            value: 'Menu',
-            cssClass: 'tmp-popover-header'
-        });
-        this.html += toolbar.render();
-
-        this.menu = M.ListView.design({});
-
-        /* render a scrollview as the content container */
-        this.scrollview = M.ScrollView.design({
-            cssClass: 'tmp-popover-content',
-            childViews: 'list',
-            list: this.menu
-        });
-        this.html += this.scrollview.render();
-
-        /* add the border (with the arrow at the top) */
-        this.html += '<div class="tmp-popover-arrow"></div>';
-
-        this.html += '</div>';
-
-        /* push to DOM */
-        $('body').append(this.html);
-
-        /* now render items */
-        this.selectedItemInPopover = null;
-        for (var i in this.items) {
-            var item = M.ListItemView.design({
-                childViews: 'label',
-                parentView: this.splitview.menu.menu,
-                splitViewItem: this.items[i],
-                label: M.LabelView.design({
-                    value: this.items[i].value
-                }),
-                events: {
-                    tap: {
-                        target: this,
-                        action: 'itemSelected'
-                    }
-                }
-            });
-            this.scrollview.list.addItem(item.render());
-
-            /* check if this item has to be selected afterwards */
-            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
-                this.selectedItemInPopover = item.id;
-            }
-
-            /* register events for item */
-            item.registerEvents();
-        }
-
-        /* now set the active list item */
-        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
-
-        /* finally show the active list item's content */
-        this.splitview.listItemSelected(this.selectedItemInPopover);
-    },
-
-    renderUpdate: function() {
-        /* get id of selected item */
-        var id;
-        var that = this;
-        $('#' + this.menu.id).find('li').each(function() {
-            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
-                id = $(this).attr('id');
-            }
-        });
-        /* activate item */
-        if (id) {
-            this.menu.setActiveListItem(id);
-            this.selectedItemInPopover = id;
-        }
-    },
-
-    show: function() {
-        this.render();
-        this.theme();
-        this.toggle();
-    },
-
-    hide: function() {
-        $('#' + this.id).hide();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
-    },
-
-
-    /**
-     * This method calculates the popup's height, checks if a scrollview is required and,
-     * if neccessary, scrollt the list to make the selected item visible.
-     */
-    resizePopup: function() {
-        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
-        var itemCount = $('#' + this.menu.id).find('li').length;
-        var popoverSize = M.Environment.getHeight() * 0.7;
-        var itemListHeight = itemCount * itemHeight;
-        if (popoverSize < itemListHeight) {
-            $('#' + this.menu.id).css('height', popoverSize);
-            // Add a scrollview to List
-            $('#' + this.menu.id).scrollview({
-                direction: 'y'
-            });
-            this.hasPopScrollview = YES;
-        }
-        else {
-            $('#' + this.menu.id).css('height', itemListHeight);
-        }
-        //Scrolling to right position is only needed when the popover has a scrollview
-        if (this.hasPopScrollview) {
-            this.scrollListToRightPosition();
-        }
-    },
-
-    toggle: function() {
-        $('#' + this.id).toggle();
-        this.resizePopup();
-    },
-
-    itemSelected: function(id, event, nextEvent) {
-        this.toggle();
-        this.splitview.listItemSelected(id);
-    },
-
-    scrollListToRightPosition: function() {
-        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() * 0.7;
-        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
-        var center = menuHeight / 2;
-        var distanceToListEnd = completeItemListHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < center) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - center);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < center) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - center);
-            }
-        }
-        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5927,136 +5927,6 @@ M.WebView = M.View.extend(
      */
     reload: function() {
         $('#' + this.id).attr('src', this.value);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.FormViews is the prototype of a form view, a container like view for grouping
- * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
- * validation of input views. There is no visible representation of an M.FormView,
- * it is only used to ease the validation process and its accessing out of a
- * controller.
- * 
- * @extends M.View
- */
-M.FormView = M.View.extend(
-/** @scope M.FormView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.FormView',
-
-    /**
-     * Determines whether to automatically show an alert dialog view out of the showError method
-     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
-     * dialog view once the showError method is called.
-     *
-     * @type Boolean
-     */
-    showAlertDialogOnError: YES,
-
-    /**
-     * The title of the alert view that comes up automatically if the validation fails, depending
-     * one the 'showAlertOnError' property.
-     *
-     * @type String
-     */
-     alertTitle: 'Validation Error(s)',
-
-    /**
-     * This method triggers the validate() on all child views, respectively on their validators. If
-     * a validation error occurs, the showErrors() will be called.
-     *
-     * @returns {Boolean} The result of the validation process: valid or not.
-     */
-    validate: function() {
-        var ids = this.getIds();
-        for(var name in ids) {
-            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
-                delete ids[name];
-            }
-        }
-
-        var isValid = YES;
-        M.Validator.clearErrorBuffer();
-
-        for(var name in ids) {
-            var view = M.ViewManager.getViewById(ids[name]);
-            if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
-                _.each(view.validators, function(validator) {
-                    if(!validator.validate(view, name)) {
-                        isValid = NO;
-                    }
-                });
-            }
-        }
-
-        if(!isValid) {
-            this.showErrors();
-        }
-
-        return isValid;
-    },
-
-    /**
-     * This method adds a css class specified by the cssClassOnError property to any
-     * view that caused a validation error and has this property specified.
-     *
-     * If the showAlertDialogOnError property is set to YES, a alert dialog view
-     * is display additionally, presenting the error messages of all invalid views.
-     */
-    showErrors: function() {
-        var errors = '';
-        _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
-            }
-        });
-
-        if(this.showAlertDialogOnError) {
-            M.DialogView.alert({
-                title: this.alertTitle,
-                message: errors
-            });
-        }
-    },
-
-    /**
-     * This method is a wrapper of M.View's clearValues() method.
-     */
-    clearForm: function() {
-        this.clearValues();
-    },
-
-    /**
-     * This method is a wrapper of M.View's getValues() method.
-     */
-    getFormValues: function() {
-        return this.getValues();
     }
 
 });
@@ -6493,6 +6363,136 @@ M.TabBarView = M.View.extend(
             $(this).addClass('ui-btn-active');
         });
 
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.FormViews is the prototype of a form view, a container like view for grouping
+ * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
+ * validation of input views. There is no visible representation of an M.FormView,
+ * it is only used to ease the validation process and its accessing out of a
+ * controller.
+ * 
+ * @extends M.View
+ */
+M.FormView = M.View.extend(
+/** @scope M.FormView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.FormView',
+
+    /**
+     * Determines whether to automatically show an alert dialog view out of the showError method
+     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
+     * dialog view once the showError method is called.
+     *
+     * @type Boolean
+     */
+    showAlertDialogOnError: YES,
+
+    /**
+     * The title of the alert view that comes up automatically if the validation fails, depending
+     * one the 'showAlertOnError' property.
+     *
+     * @type String
+     */
+     alertTitle: 'Validation Error(s)',
+
+    /**
+     * This method triggers the validate() on all child views, respectively on their validators. If
+     * a validation error occurs, the showErrors() will be called.
+     *
+     * @returns {Boolean} The result of the validation process: valid or not.
+     */
+    validate: function() {
+        var ids = this.getIds();
+        for(var name in ids) {
+            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
+                delete ids[name];
+            }
+        }
+
+        var isValid = YES;
+        M.Validator.clearErrorBuffer();
+
+        for(var name in ids) {
+            var view = M.ViewManager.getViewById(ids[name]);
+            if(view && view.validators) {
+                if(view.cssClassOnError) {
+                    view.removeCssClass(view.cssClassOnError);
+                }
+
+                _.each(view.validators, function(validator) {
+                    if(!validator.validate(view, name)) {
+                        isValid = NO;
+                    }
+                });
+            }
+        }
+
+        if(!isValid) {
+            this.showErrors();
+        }
+
+        return isValid;
+    },
+
+    /**
+     * This method adds a css class specified by the cssClassOnError property to any
+     * view that caused a validation error and has this property specified.
+     *
+     * If the showAlertDialogOnError property is set to YES, a alert dialog view
+     * is display additionally, presenting the error messages of all invalid views.
+     */
+    showErrors: function() {
+        var errors = '';
+        _.each(M.Validator.validationErrors, function(error) {
+            if(error && error.errObj) {
+                var view = M.ViewManager.getViewById(error.errObj.viewId);
+                if(view && view.cssClassOnError) {
+                    view.addCssClass(view.cssClassOnError);
+                }
+                errors += '<li>' + error.msg + '</li>';
+            }
+        });
+
+        if(this.showAlertDialogOnError) {
+            M.DialogView.alert({
+                title: this.alertTitle,
+                message: errors
+            });
+        }
+    },
+
+    /**
+     * This method is a wrapper of M.View's clearValues() method.
+     */
+    clearForm: function() {
+        this.clearValues();
+    },
+
+    /**
+     * This method is a wrapper of M.View's getValues() method.
+     */
+    getFormValues: function() {
+        return this.getValues();
     }
 
 });
