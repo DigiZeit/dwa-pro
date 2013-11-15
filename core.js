@@ -1171,182 +1171,6 @@ M.StringBuilder = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1612,6 +1436,182 @@ M.Environment = M.Object.extend(
             return YES;
         }
         return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
     }
 
 });
@@ -5306,6 +5306,188 @@ M.DataProviderDummy = M.DataProvider.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      15.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5621,188 +5803,6 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
-     * @type Object
-     */
-    config: null,
-
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
-            });
-        }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
-        }
-        callback(result);
-    },
-
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
-    },
-
-    /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
-     */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
-
-}); 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5958,6 +5958,82 @@ M.DateValidator = M.Validator.extend(
             return YES;
         }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
+ *
+ * @extends M.Validator
+ */
+M.PresenceValidator = M.Validator.extend(
+/** @scope M.PresenceValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PresenceValidator',
+    
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @param {String} key
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        if(obj.value === null || obj.value === undefined || obj.value === '') {
+            if(obj.isView) {
+
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is required and is not set.',
+                        viewId: obj.id,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                
+            } else {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+            }
+            return NO;
+        }
+        return YES;
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6176,82 +6252,6 @@ M.NotMinusValidator = M.Validator.extend(
            return YES;
        }
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
- *
- * @extends M.Validator
- */
-M.PresenceValidator = M.Validator.extend(
-/** @scope M.PresenceValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PresenceValidator',
-    
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @param {String} key
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        if(obj.value === null || obj.value === undefined || obj.value === '') {
-            if(obj.isView) {
-
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is required and is not set.',
-                        viewId: obj.id,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                
-            } else {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-            }
-            return NO;
-        }
-        return YES;
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
