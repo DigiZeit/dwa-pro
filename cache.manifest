@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.1.4528 beta, Timestamp:1384535494054
+#Application:DigiWebApp, Version:1.7.1.4529 beta, Timestamp:1384536272756
 
 
 # Explicitly cached entries
@@ -22,10 +22,10 @@ digi_list.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 ui.js
+jquery_mobile.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-jquery_mobile.js
 core.js
 jquery.signaturepad.min.js
 json2.min.js
@@ -101,9 +101,9 @@ theme/images/320x480_90_SCHOLPP.png
 theme/images/icon_timeData.png
 theme/images/splash.png
 theme/images/arrow_grey.png
-theme/images/icon_ios_72.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_144.png
+theme/images/icon_ios_72.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/Auftrag.png
 theme/images/icon_media.png
