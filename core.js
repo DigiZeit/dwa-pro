@@ -667,6 +667,158 @@ M.ImagePreloader = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for mathematical flooring.
+ *
+ * @type String
+ */
+M.FLOOR = 'floor';
+
+/**
+ * A constant value for mathematical ceiling.
+ *
+ * @type String
+ */
+M.CEIL = 'ceil';
+
+/**
+ * A constant value for mathematical rounding.
+ *
+ * @type String
+ */
+M.ROUND = 'round';
+
+/**
+ * @class
+ *
+ * This prototype defines methods for simpler handling of mathematical operations.
+ *
+ * @extends M.Object
+ */
+M.Math = M.Object.extend(
+/** @scope M.Math.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Math',
+
+    /**
+     * This method returns the value of the base to the power of the exponent. So e.g.
+     * pow(2, 3) would return '2 to the power of 3' --> 8.
+     *
+     * @param {Number} base The base.
+     * @param {Number} exponent The exponent.
+     * @returns {Number} The result of the operation.
+     */
+    pow: function(base, exponent) {
+        return Math.pow(base, exponent);
+    },
+
+    /**
+     * The method returns a random number within the range given by the min property
+     * and the max property, including the min and max value.
+     *
+     * A test with 100.000 iterations for random(1, 3) created the following distribution:
+     * - 1: 33.2%
+     * - 2: 33.2%
+     * - 3: 33.6%
+     *
+     * @param {Number} min The minimal value.
+     * @param {Number} max The maximal value.
+     * @returns {Number} The result of the operation.
+     */
+    random: function(min, max) {
+        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
+    },
+
+    /**
+     * The method returns rounded version of the given input number. There are three
+     * types of rounding available:
+     *
+     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
+     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
+     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
+     *
+     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
+     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
+     * is 0.
+     *
+     * @param {Number} input The input value.
+     * @param {String} type The type of rounding.
+     * @param {Number} type The number of decimals (only available for M.ROUND).
+     * @returns {Number} The result of the operation.
+     */
+    round: function(input, type, decimals) {
+        if(decimals) {
+            input = input * (Math.pow(10, decimals));
+        }
+        var output = 0;
+        switch (type) {
+            case M.FLOOR:
+                output = Math.floor(input);
+                break;
+            case M.CEIL:
+                output = Math.ceil(input);
+                break;
+            case M.ROUND:
+                default:
+                output = Math.round(input);
+                break;
+        }
+        if(decimals) {
+            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
+            if(outputStr.length > 1) {
+                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
+            } else {
+                output = parseFloat(outputStr);
+            }
+        }
+
+        return output;
+    },
+
+    /**
+     * This method finds the closest number within an array of numbers that to a certain
+     * given number.
+     *
+     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
+     *
+     * @param {Array} numbers The array of numbers to search in.
+     * @param {Number} number The reference number.
+     * @returns {Number} The nearest number.
+     */
+    nearestNumber: function(numbers, number) {
+        var minDiff = null;
+        var nearestNumber = null;
+
+        _.each(numbers, function(n) {
+            var diff = Math.abs(n - number);
+            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
+                minDiff = diff;
+                nearestNumber = n;
+            }
+        });
+
+        return nearestNumber;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -849,158 +1001,6 @@ M.Location = M.Object.extend(
         } else {
             M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for mathematical flooring.
- *
- * @type String
- */
-M.FLOOR = 'floor';
-
-/**
- * A constant value for mathematical ceiling.
- *
- * @type String
- */
-M.CEIL = 'ceil';
-
-/**
- * A constant value for mathematical rounding.
- *
- * @type String
- */
-M.ROUND = 'round';
-
-/**
- * @class
- *
- * This prototype defines methods for simpler handling of mathematical operations.
- *
- * @extends M.Object
- */
-M.Math = M.Object.extend(
-/** @scope M.Math.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Math',
-
-    /**
-     * This method returns the value of the base to the power of the exponent. So e.g.
-     * pow(2, 3) would return '2 to the power of 3' --> 8.
-     *
-     * @param {Number} base The base.
-     * @param {Number} exponent The exponent.
-     * @returns {Number} The result of the operation.
-     */
-    pow: function(base, exponent) {
-        return Math.pow(base, exponent);
-    },
-
-    /**
-     * The method returns a random number within the range given by the min property
-     * and the max property, including the min and max value.
-     *
-     * A test with 100.000 iterations for random(1, 3) created the following distribution:
-     * - 1: 33.2%
-     * - 2: 33.2%
-     * - 3: 33.6%
-     *
-     * @param {Number} min The minimal value.
-     * @param {Number} max The maximal value.
-     * @returns {Number} The result of the operation.
-     */
-    random: function(min, max) {
-        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
-    },
-
-    /**
-     * The method returns rounded version of the given input number. There are three
-     * types of rounding available:
-     *
-     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
-     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
-     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
-     *
-     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
-     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
-     * is 0.
-     *
-     * @param {Number} input The input value.
-     * @param {String} type The type of rounding.
-     * @param {Number} type The number of decimals (only available for M.ROUND).
-     * @returns {Number} The result of the operation.
-     */
-    round: function(input, type, decimals) {
-        if(decimals) {
-            input = input * (Math.pow(10, decimals));
-        }
-        var output = 0;
-        switch (type) {
-            case M.FLOOR:
-                output = Math.floor(input);
-                break;
-            case M.CEIL:
-                output = Math.ceil(input);
-                break;
-            case M.ROUND:
-                default:
-                output = Math.round(input);
-                break;
-        }
-        if(decimals) {
-            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
-            if(outputStr.length > 1) {
-                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
-            } else {
-                output = parseFloat(outputStr);
-            }
-        }
-
-        return output;
-    },
-
-    /**
-     * This method finds the closest number within an array of numbers that to a certain
-     * given number.
-     *
-     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
-     *
-     * @param {Array} numbers The array of numbers to search in.
-     * @param {Number} number The reference number.
-     * @returns {Number} The nearest number.
-     */
-    nearestNumber: function(numbers, number) {
-        var minDiff = null;
-        var nearestNumber = null;
-
-        _.each(numbers, function(n) {
-            var diff = Math.abs(n - number);
-            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
-                minDiff = diff;
-                nearestNumber = n;
-            }
-        });
-
-        return nearestNumber;
     }
 
 });
@@ -3622,155 +3622,6 @@ M.Cypher = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      19.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The prototype for every validator. All validation logic is implemented in the specific validators.
- *
- * @extends M.Object
- */
-M.Validator = M.Object.extend(
-/** @scope M.Validator.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.Validator',
-
-    /**
-     * "Class-wide" array containing error objects.
-     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
-     * 
-     * Error object represent errors that occured during validation.
-     * E.g. error object:
-     *
-     * {
-     *   msg: 'E-Mail adress not valid.',
-     *   modelId: 'Task_123',
-     *   property: 'email',
-     *   viewId: 'm_123',
-     *   validator: 'EMAIL',
-     *   onSuccess: function(){proceed();}
-     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
-     * }
-     * 
-     *
-     * @type Array|Object
-     */
-    validationErrors: [],
-
-    /**
-     * extends this.
-     *
-     * Can be used to provide a custom error msg to a validator
-     * E.g.
-     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
-     *
-     * @param obj
-     * @returns {Object} The customized validator.
-     */
-    customize: function(obj) {
-        return this.extend(obj);
-    },
-
-    /**
-     * Empties the error buffer, is done before each new validation process
-     */
-    clearErrorBuffer: function() {
-        this.validationErrors.length = 0;
-    }
-
-
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4031,6 +3882,155 @@ M.DataProviderHybrid = M.Object.extend(
             break;
         }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      19.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The prototype for every validator. All validation logic is implemented in the specific validators.
+ *
+ * @extends M.Object
+ */
+M.Validator = M.Object.extend(
+/** @scope M.Validator.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.Validator',
+
+    /**
+     * "Class-wide" array containing error objects.
+     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
+     * 
+     * Error object represent errors that occured during validation.
+     * E.g. error object:
+     *
+     * {
+     *   msg: 'E-Mail adress not valid.',
+     *   modelId: 'Task_123',
+     *   property: 'email',
+     *   viewId: 'm_123',
+     *   validator: 'EMAIL',
+     *   onSuccess: function(){proceed();}
+     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
+     * }
+     * 
+     *
+     * @type Array|Object
+     */
+    validationErrors: [],
+
+    /**
+     * extends this.
+     *
+     * Can be used to provide a custom error msg to a validator
+     * E.g.
+     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
+     *
+     * @param obj
+     * @returns {Object} The customized validator.
+     */
+    customize: function(obj) {
+        return this.extend(obj);
+    },
+
+    /**
+     * Empties the error buffer, is done before each new validation process
+     */
+    clearErrorBuffer: function() {
+        this.validationErrors.length = 0;
+    }
+
+
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6118,74 +6118,6 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates if value represents a valid URL.
- *
- * @extends M.Validator
- */
-M.UrlValidator = M.Validator.extend(
-/** @scope M.UrlValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.UrlValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid web URL
-     */
-    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
-
-    /**
-     * Validation method. Executes url regex pattern to string.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-        
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
-            code: M.ERR_VALIDATION_URL,
-            errObj: {
-                msg: obj.value + ' is not a valid url.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
  * Validates if it represents a minus number. Works with numbers and strings containing just a number.
  *
  * @extends M.Validator
@@ -6252,6 +6184,74 @@ M.NotMinusValidator = M.Validator.extend(
            return YES;
        }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value represents a valid URL.
+ *
+ * @extends M.Validator
+ */
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.UrlValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid web URL
+     */
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+
+    /**
+     * Validation method. Executes url regex pattern to string.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+        
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
+            code: M.ERR_VALIDATION_URL,
+            errObj: {
+                msg: obj.value + ' is not a valid url.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
