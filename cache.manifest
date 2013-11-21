@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.1.4553 beta, Timestamp:1385047123089
+#Application:DigiWebApp, Version:1.7.1.4554 beta, Timestamp:1385047337422
 
 
 # Explicitly cached entries
@@ -7,11 +7,11 @@ CACHE:
 en_us.js
 es_es.js
 de_de.js
-fr_fr.js
 nl_nl.js
+fr_fr.js
 underscore-min.js
-d8-0.4.0.min.js
 theme/tmp.css
+d8-0.4.0.min.js
 bootstrap.js
 jquery.xml2json_1.3.js
 jstz.js
@@ -52,9 +52,9 @@ theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
 theme/images/icon_takePicture.png
 theme/images/icon_dataTransfer.png
-theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
+theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_gears.png
 theme/images/640x960_90_DIGI-WebApp.png
@@ -68,9 +68,9 @@ theme/images/ajax-loader_digi-transparent.gif
 theme/images/ic_launcher_xhdpi.png
 theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/Icon_2x.png
-theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
+theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/200x320_90_DIGI-WEBAPP-WHITE.png
@@ -118,20 +118,20 @@ theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_index.png
 theme/images/48x48_plain_text_code.png
-theme/images/icon_playbackAudio.png
 theme/images/icon_stop.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/icon_searchPicture.png
+theme/images/icon_playbackAudio.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/ic_launcher_hdpi.png
 theme/images/icon_settings.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
 theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_shelf.png
-theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/48x48_plain_wrench.png
 theme/images/1024x2048_90_DIGI-WebApp.png
+theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
 
 
