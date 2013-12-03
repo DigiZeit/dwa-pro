@@ -3155,126 +3155,6 @@ M.DatePickerView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard itm view contains an icon and a label and can be used as the only
- * kind of childviews for a dashboard view.
- *
- * @extends M.View
- */
-M.DashboardItemView = M.View.extend(
-/** @scope M.DashboardItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardItemView',
-
-    /**
-     * The path/url to the dashboard item's icon.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * The label for the dashboard item. If no label is specified, the value will be
-     * displayed instead.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
-
-    /**
-     * Renders a dashboard item.
-     *
-     * @private
-     * @returns {String} The dashboard item view's html representation.
-     */
-    render: function() {
-        //this.computeValue();
-
-        /* reset html property */
-        this.html = '';
-
-        if(!this.icon) {
-            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
-            return this.html;
-        }
-
-        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
-
-        /* add image */
-        var image = M.ImageView.design({
-            value: this.icon
-        });
-        this.html += image.render();
-
-        /* add label */
-        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            taphold: {
-                target: this.parentView,
-                action: 'editDashboard'
-            },
-            tap: {
-                target: this.parentView,
-                action: 'dispatchTapEvent'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard item.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.02.2011
@@ -3403,6 +3283,126 @@ M.SplitToolbarView = M.View.extend(
             }
             return this.html;
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard itm view contains an icon and a label and can be used as the only
+ * kind of childviews for a dashboard view.
+ *
+ * @extends M.View
+ */
+M.DashboardItemView = M.View.extend(
+/** @scope M.DashboardItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardItemView',
+
+    /**
+     * The path/url to the dashboard item's icon.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * The label for the dashboard item. If no label is specified, the value will be
+     * displayed instead.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
+
+    /**
+     * Renders a dashboard item.
+     *
+     * @private
+     * @returns {String} The dashboard item view's html representation.
+     */
+    render: function() {
+        //this.computeValue();
+
+        /* reset html property */
+        this.html = '';
+
+        if(!this.icon) {
+            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
+            return this.html;
+        }
+
+        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
+
+        /* add image */
+        var image = M.ImageView.design({
+            value: this.icon
+        });
+        this.html += image.render();
+
+        /* add label */
+        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            taphold: {
+                target: this.parentView,
+                action: 'editDashboard'
+            },
+            tap: {
+                target: this.parentView,
+                action: 'dispatchTapEvent'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard item.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
     }
 
 });
@@ -4179,170 +4179,6 @@ M.ConfirmDialogView = M.DialogView.extend(
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.cancel)){
             this.bindToCaller(this.callbacks.cancel.target, this.callbacks.cancel.action)();
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
     }
 
 });
@@ -5251,6 +5087,170 @@ M.SelectionListView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
 /**
  * @class
  *
