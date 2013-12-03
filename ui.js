@@ -649,178 +649,6 @@ M.PageView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
- * two child views and provides an easy mechanism to toggle between these two views. An
- * easy example would be to define two different button views that can be toggled, a more
- * complex scenario would be to define two content views (M.ScrollView) with own child views
- * and toggle between them.
- *
- * @extends M.View
- */
-M.ToggleView = M.View.extend(
-/** @scope M.ToggleView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToggleView',
-
-    /**
-     * States whether the toggle view currently displays its first child view or its second
-     * child view.
-     *
-     * @type Boolean
-     */
-    isInFirstState: YES,
-
-    /**
-     * Determines whether to toggle the view on click. This might be useful if the child views
-     * are e.g. buttons.
-     *
-     * @type Boolean
-     */
-    toggleOnClick: NO,
-
-    /**
-     * Contains a reference to the currently displayed view.
-     *
-     * @type M.View
-     */
-    currentView: null,
-
-    /**
-     * Renders a ToggleView and its child views.
-     *
-     * @private
-     * @returns {String} The toggle view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method renders one child view of the toggle view, based on the isInFirstState
-     * property: YES = first child view, NO = second child view.
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            if(childViews.length !== 2) {
-                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
-            } else {
-                for(var i in childViews) {
-                    if(this[childViews[i]]) {
-                        if(this.toggleOnClick) {
-                            this[childViews[i]].internalEvents = {
-                                vclick: {
-                                    target: this,
-                                    action: 'toggleView'
-                                }
-                            }
-                        }
-                        this[childViews[i]]._name = childViews[i];
-                        this[childViews[i]].parentView = this;
-                        
-                        this.html += '<div id="' + this.id + '_' + i + '">';
-                        this.html += this[childViews[i]].render();
-                        this.html += '</div>';
-                    }
-                }
-                this.currentView = this[childViews[0]];
-            }
-        }
-    },
-
-    /**
-     * This method toggles the child views by first emptying the toggle view's content
-     * and then rendering the next child view by calling renderUpdateChildViews().
-     */
-    toggleView: function(id, event, nextEvent) {
-        this.isInFirstState = !this.isInFirstState;
-        var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        $('#' + this.id + '_' + currentViewIndex).show();
-
-        /* set current view */
-        var childViews = this.getChildViewsAsArray();
-        if(this[childViews[currentViewIndex]]) {
-            this.currentView = this[childViews[currentViewIndex]];
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
-     * the view, its id or its name.
-     *
-     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
-     * done.
-     *
-     * @param {Object|String} view The corresponding view.
-     */
-    setView: function(view) {
-        if(typeof(view) === 'string') {
-            /* assume a name was given */
-            var childViews = this.getChildViewsAsArray();
-            if(_.indexOf(childViews, view) >= 0) {
-                view = this[view];
-            /* assume an id was given */
-            } else {
-                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
-            }
-        }
-
-        if(view && typeof(view) === 'object' && view.parentView === this) {
-            if(this.currentView !== view) {
-                this.toggleView();
-            }
-        } else {
-            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.currentView) {
-            this.themeChildViews();
-            var currentViewIndex = this.isInFirstState ? 0 : 1;
-
-            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      10.04.12
@@ -1415,6 +1243,178 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
+ *
+ * @extends M.View
+ */
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ToggleView',
+
+    /**
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
+     *
+     * @type Boolean
+     */
+    isInFirstState: YES,
+
+    /**
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
+     *
+     * @type Boolean
+     */
+    toggleOnClick: NO,
+
+    /**
+     * Contains a reference to the currently displayed view.
+     *
+     * @type M.View
+     */
+    currentView: null,
+
+    /**
+     * Renders a ToggleView and its child views.
+     *
+     * @private
+     * @returns {String} The toggle view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method renders one child view of the toggle view, based on the isInFirstState
+     * property: YES = first child view, NO = second child view.
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            if(childViews.length !== 2) {
+                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
+            } else {
+                for(var i in childViews) {
+                    if(this[childViews[i]]) {
+                        if(this.toggleOnClick) {
+                            this[childViews[i]].internalEvents = {
+                                vclick: {
+                                    target: this,
+                                    action: 'toggleView'
+                                }
+                            }
+                        }
+                        this[childViews[i]]._name = childViews[i];
+                        this[childViews[i]].parentView = this;
+                        
+                        this.html += '<div id="' + this.id + '_' + i + '">';
+                        this.html += this[childViews[i]].render();
+                        this.html += '</div>';
+                    }
+                }
+                this.currentView = this[childViews[0]];
+            }
+        }
+    },
+
+    /**
+     * This method toggles the child views by first emptying the toggle view's content
+     * and then rendering the next child view by calling renderUpdateChildViews().
+     */
+    toggleView: function(id, event, nextEvent) {
+        this.isInFirstState = !this.isInFirstState;
+        var currentViewIndex = this.isInFirstState ? 0 : 1;
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        $('#' + this.id + '_' + currentViewIndex).show();
+
+        /* set current view */
+        var childViews = this.getChildViewsAsArray();
+        if(this[childViews[currentViewIndex]]) {
+            this.currentView = this[childViews[currentViewIndex]];
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
+     * the view, its id or its name.
+     *
+     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
+     * done.
+     *
+     * @param {Object|String} view The corresponding view.
+     */
+    setView: function(view) {
+        if(typeof(view) === 'string') {
+            /* assume a name was given */
+            var childViews = this.getChildViewsAsArray();
+            if(_.indexOf(childViews, view) >= 0) {
+                view = this[view];
+            /* assume an id was given */
+            } else {
+                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
+            }
+        }
+
+        if(view && typeof(view) === 'object' && view.parentView === this) {
+            if(this.currentView !== view) {
+                this.toggleView();
+            }
+        } else {
+            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.currentView) {
+            this.themeChildViews();
+            var currentViewIndex = this.isInFirstState ? 0 : 1;
+
+            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        }
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8363,496 +8363,6 @@ M.CanvasView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically used for triggering an action, e.g. switching to another page, firing a
- * request or opening a dialog.
- *
- * @extends M.View
- */
-M.ButtonView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonView',
-
-    /**
-     * Determines whether this button is active or not.
-     *
-     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * Determines whether to display the button ony with an icon but no text or not.
-     *
-     * @type Boolean
-     */
-    isIconOnly: NO,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this button. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this button. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property can be used to specify a tag, that is independent from the button's
-     * value. This allows you to identify a button, without having to worry about changes
-     * to its value.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This property can be used to specifically set the data-theme property of a button view
-     * as it is used by jquery mobile.
-     *
-     * @type String
-     */
-    dataTheme: '',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'vclick'],
-
-    /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
-                    break;
-            }
-        } else {
-            this.html += 'href="#"';
-        }
-
-        this.html += '>' + this.value + '</a>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                tap: {
-                    target: this,
-                    action: 'dispatchEvent'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates the value of the button with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id + ' .ui-btn-text').text(this.value);
-    },
-
-    /**
-     * Sets the button's value and calls renderUpdate() to make the value update visible.
-     *
-     * @param {String} value The button's new value.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the button.
-     *
-     * @private
-     */
-    theme: function() {
-        /* theme only if not already done */
-        if(!$('#' + this.id).hasClass('ui-btn')) {
-            $('#' + this.id).buttonMarkup();
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' data-inline="true"';
-        }
-        if(this.icon) {
-            html += ' data-icon="' + this.icon + '"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.dataTheme) {
-            html += ' data-theme="' + this.dataTheme + '"';
-        }
-        if(this.isIconOnly) {
-            html += ' data-iconpos="notext"';
-        }
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    dispatchEvent: function(id, event, nextEvent) {
-        if(this.isEnabled && nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to disable the button. This leads to a visual 'disabled' look and
-     * disabled the buttons tap/click events.
-     */
-    disable: function() {
-        if(this.isEnabled) {
-            var html = $('#' + this.id).html();
-            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
-            $('#' + this.id).html(html);
-            this.isEnabled = NO;
-        }
-    },
-
-    /**
-     * This method can be used to enable a disabled button and make it usable again.
-     */
-    enable: function() {
-        if(!this.isEnabled) {
-            var html = $('#' + this.id + ' div').html();
-            $('#' + this.id).html(html);
-            this.isEnabled = YES;
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/button.js');
-
-/**
- * @class
- *
- * This is the prototype for any list item view. It can only be used as child view of a list
- * view (M.ListView).
- *
- * @extends M.View
- */
-M.ListItemView = M.View.extend(
-/** @scope M.ListItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ListItemView',
-
-    /**
-     * States whether the list view item is currently in edit mode or not. This is mainly used by
-     * the built-in toggleRemove() functionality of list views.
-     *
-     * @type Boolean
-     */
-    inEditMode: NO,
-
-    /**
-     * This property determines whether a list item has one single action that is triggered
-     * once there is a click anywhere inside the list item or if there are specific actions
-     * defined for single ui elements within one list item.
-     *
-     * @type Boolean
-     */
-    hasSingleAction: YES,
-
-    /**
-     * This property contains the list item's delete button that is automatically shown if the
-     * list view's built-in toggleRemove() functionality is used.
-     *
-     * @type M.ButtonView
-     */
-    deleteButton: M.ButtonView.design({
-        icon: 'delete',
-        value: ''
-    }),
-
-    /**
-     * This property determines whether the list item is a divider or not.
-     *
-     * @type Boolean
-     */
-    isDivider: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This property can be used to specify whether a list item can be selected or not. Note, that this
-     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property can be used to specify a button that appears on a swipe left or swipe right
-     * gesture (as known from the iphone). Simply specify a tap event for that button and provide a
-     * custom method to handle the event. This can e.g. be used as a delete button.
-     *
-     * By default the button will look like a delete button (in red) and display 'delete'. To change this,
-     * simply pass a value to set the label and make use of the cssClass property. To get a standard button
-     * as you now it from the other parts of the framework, set the cssClass property's value to:
-     *
-     *   - 'a'  ->  black
-     *   - 'b'  ->  blue
-     *   - 'c'  ->  light grey
-     *   - 'd'  ->  white
-     *   - 'e'  ->  yellow
-     *
-     * Check the jQM docs for further information and visual samples of these themes:
-     * http://jquerymobile.com/test/docs/buttons/buttons-themes.html
-     *
-     * A valid and usefull configuration of such a swipe button could e.g. look like the following:
-     *
-     *   swipeButton: M.ButtonView.design({
-     *     events: {
-     *       tap: {
-     *         target: MyApp.MyController,
-     *         action: 'removeItem'
-     *       }
-     *     },
-     *     cssClass: 'e'
-     *   })
-     *
-     * The event handler (removeItem() in the sample above) will be called with two parameters:
-     *
-     *   - domID  ->  The DOM id of the list item view, e.g. 'm_123'
-     *   - id  ->  The id/recordId of the list item based on the bound data
-     *
-     * @type M.ButtonView
-     */
-    swipeButton: null,
-
-    /**
-     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
-     *
-     * @private
-     * @returns {String} The list item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '"' + this.style();
-
-        if(this.isDivider) {
-            this.html += ' data-role="list-divider"';
-        }
-
-        this.html += '>';
-
-        if(this.childViews) {
-            if(this.inEditMode) {
-                this.html += '<a href="#">';
-                this.renderChildViews();
-                this.html += '</a>';
-
-                this.html += this.deleteButton.render();
-            } else {
-                if(this.isSelectable) {
-                    this.html += '<a href="#">';
-                    this.renderChildViews();
-                    this.html += '</a>';
-                } else {
-                    this.renderChildViews();
-                }
-            }
-        } else if(this.value) {
-            this.html += this.value;
-        }
-
-        this.html += '</li>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children. This method defines a special rendering behaviour for a list item
-     * view's child views.
-     *
-     * @override
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                var childView = this[childViews[i]];
-                if(childView) {
-                    childView._name = childViews[i];
-                    childView.parentView = this;
-
-                    if(childView.type === 'M.ButtonView') {
-                        this.html += '<div>' + childView.render() + '</div>';
-                    } else {
-                        this.html += childView.render();
-                    }
-                } else {
-                    this.childViews = this.childViews.replace(childViews[i], ' ');
-                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
-                }
-            }
-            return this.html;
-        }
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this.parentView,
-                action: 'setActiveListItem'
-            }
-        };
-        if(this.swipeButton) {
-            $.extend(this.internalEvents, {
-                swipeleft: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                },
-                swiperight: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                }
-            })
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the list item.
-     *
-     * @private
-     * @returns {String} The list item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is used as the event handler of the tap event of a swipe button. All it does
-     * is to collect the required information for the external handler (domID, modelID) and call
-     * this external handler (if there is one specified).
-     *
-     * @private
-     */
-    swipeButtonClicked: function(id, event, nextEvent) {
-        id = this.id;
-        var modelId = M.ViewManager.getViewById(id).modelId;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -9549,6 +9059,496 @@ M.DashboardView = M.View.extend(
             html += ' class="tmp-dashboard ' + this.cssClass + '"';
         }
         return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically used for triggering an action, e.g. switching to another page, firing a
+ * request or opening a dialog.
+ *
+ * @extends M.View
+ */
+M.ButtonView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonView',
+
+    /**
+     * Determines whether this button is active or not.
+     *
+     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * Determines whether to display the button ony with an icon but no text or not.
+     *
+     * @type Boolean
+     */
+    isIconOnly: NO,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this button. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this button. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property can be used to specify a tag, that is independent from the button's
+     * value. This allows you to identify a button, without having to worry about changes
+     * to its value.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This property can be used to specifically set the data-theme property of a button view
+     * as it is used by jquery mobile.
+     *
+     * @type String
+     */
+    dataTheme: '',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'vclick'],
+
+    /**
+     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
+                    break;
+            }
+        } else {
+            this.html += 'href="#"';
+        }
+
+        this.html += '>' + this.value + '</a>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                tap: {
+                    target: this,
+                    action: 'dispatchEvent'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates the value of the button with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id + ' .ui-btn-text').text(this.value);
+    },
+
+    /**
+     * Sets the button's value and calls renderUpdate() to make the value update visible.
+     *
+     * @param {String} value The button's new value.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the button.
+     *
+     * @private
+     */
+    theme: function() {
+        /* theme only if not already done */
+        if(!$('#' + this.id).hasClass('ui-btn')) {
+            $('#' + this.id).buttonMarkup();
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' data-inline="true"';
+        }
+        if(this.icon) {
+            html += ' data-icon="' + this.icon + '"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.dataTheme) {
+            html += ' data-theme="' + this.dataTheme + '"';
+        }
+        if(this.isIconOnly) {
+            html += ' data-iconpos="notext"';
+        }
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    dispatchEvent: function(id, event, nextEvent) {
+        if(this.isEnabled && nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to disable the button. This leads to a visual 'disabled' look and
+     * disabled the buttons tap/click events.
+     */
+    disable: function() {
+        if(this.isEnabled) {
+            var html = $('#' + this.id).html();
+            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
+            $('#' + this.id).html(html);
+            this.isEnabled = NO;
+        }
+    },
+
+    /**
+     * This method can be used to enable a disabled button and make it usable again.
+     */
+    enable: function() {
+        if(!this.isEnabled) {
+            var html = $('#' + this.id + ' div').html();
+            $('#' + this.id).html(html);
+            this.isEnabled = YES;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/button.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any list item view. It can only be used as child view of a list
+ * view (M.ListView).
+ *
+ * @extends M.View
+ */
+M.ListItemView = M.View.extend(
+/** @scope M.ListItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ListItemView',
+
+    /**
+     * States whether the list view item is currently in edit mode or not. This is mainly used by
+     * the built-in toggleRemove() functionality of list views.
+     *
+     * @type Boolean
+     */
+    inEditMode: NO,
+
+    /**
+     * This property determines whether a list item has one single action that is triggered
+     * once there is a click anywhere inside the list item or if there are specific actions
+     * defined for single ui elements within one list item.
+     *
+     * @type Boolean
+     */
+    hasSingleAction: YES,
+
+    /**
+     * This property contains the list item's delete button that is automatically shown if the
+     * list view's built-in toggleRemove() functionality is used.
+     *
+     * @type M.ButtonView
+     */
+    deleteButton: M.ButtonView.design({
+        icon: 'delete',
+        value: ''
+    }),
+
+    /**
+     * This property determines whether the list item is a divider or not.
+     *
+     * @type Boolean
+     */
+    isDivider: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This property can be used to specify whether a list item can be selected or not. Note, that this
+     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property can be used to specify a button that appears on a swipe left or swipe right
+     * gesture (as known from the iphone). Simply specify a tap event for that button and provide a
+     * custom method to handle the event. This can e.g. be used as a delete button.
+     *
+     * By default the button will look like a delete button (in red) and display 'delete'. To change this,
+     * simply pass a value to set the label and make use of the cssClass property. To get a standard button
+     * as you now it from the other parts of the framework, set the cssClass property's value to:
+     *
+     *   - 'a'  ->  black
+     *   - 'b'  ->  blue
+     *   - 'c'  ->  light grey
+     *   - 'd'  ->  white
+     *   - 'e'  ->  yellow
+     *
+     * Check the jQM docs for further information and visual samples of these themes:
+     * http://jquerymobile.com/test/docs/buttons/buttons-themes.html
+     *
+     * A valid and usefull configuration of such a swipe button could e.g. look like the following:
+     *
+     *   swipeButton: M.ButtonView.design({
+     *     events: {
+     *       tap: {
+     *         target: MyApp.MyController,
+     *         action: 'removeItem'
+     *       }
+     *     },
+     *     cssClass: 'e'
+     *   })
+     *
+     * The event handler (removeItem() in the sample above) will be called with two parameters:
+     *
+     *   - domID  ->  The DOM id of the list item view, e.g. 'm_123'
+     *   - id  ->  The id/recordId of the list item based on the bound data
+     *
+     * @type M.ButtonView
+     */
+    swipeButton: null,
+
+    /**
+     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
+     *
+     * @private
+     * @returns {String} The list item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '"' + this.style();
+
+        if(this.isDivider) {
+            this.html += ' data-role="list-divider"';
+        }
+
+        this.html += '>';
+
+        if(this.childViews) {
+            if(this.inEditMode) {
+                this.html += '<a href="#">';
+                this.renderChildViews();
+                this.html += '</a>';
+
+                this.html += this.deleteButton.render();
+            } else {
+                if(this.isSelectable) {
+                    this.html += '<a href="#">';
+                    this.renderChildViews();
+                    this.html += '</a>';
+                } else {
+                    this.renderChildViews();
+                }
+            }
+        } else if(this.value) {
+            this.html += this.value;
+        }
+
+        this.html += '</li>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children. This method defines a special rendering behaviour for a list item
+     * view's child views.
+     *
+     * @override
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                var childView = this[childViews[i]];
+                if(childView) {
+                    childView._name = childViews[i];
+                    childView.parentView = this;
+
+                    if(childView.type === 'M.ButtonView') {
+                        this.html += '<div>' + childView.render() + '</div>';
+                    } else {
+                        this.html += childView.render();
+                    }
+                } else {
+                    this.childViews = this.childViews.replace(childViews[i], ' ');
+                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
+                }
+            }
+            return this.html;
+        }
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this.parentView,
+                action: 'setActiveListItem'
+            }
+        };
+        if(this.swipeButton) {
+            $.extend(this.internalEvents, {
+                swipeleft: {
+                    target: this.parentView,
+                    action: 'showSwipeButton'
+                },
+                swiperight: {
+                    target: this.parentView,
+                    action: 'showSwipeButton'
+                }
+            })
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the list item.
+     *
+     * @private
+     * @returns {String} The list item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is used as the event handler of the tap event of a swipe button. All it does
+     * is to collect the required information for the external handler (domID, modelID) and call
+     * this external handler (if there is one specified).
+     *
+     * @private
+     */
+    swipeButtonClicked: function(id, event, nextEvent) {
+        id = this.id;
+        var modelId = M.ViewManager.getViewById(id).modelId;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
+        }
     }
 
 });
