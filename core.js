@@ -395,6 +395,158 @@ M.ImagePreloader = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for mathematical flooring.
+ *
+ * @type String
+ */
+M.FLOOR = 'floor';
+
+/**
+ * A constant value for mathematical ceiling.
+ *
+ * @type String
+ */
+M.CEIL = 'ceil';
+
+/**
+ * A constant value for mathematical rounding.
+ *
+ * @type String
+ */
+M.ROUND = 'round';
+
+/**
+ * @class
+ *
+ * This prototype defines methods for simpler handling of mathematical operations.
+ *
+ * @extends M.Object
+ */
+M.Math = M.Object.extend(
+/** @scope M.Math.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Math',
+
+    /**
+     * This method returns the value of the base to the power of the exponent. So e.g.
+     * pow(2, 3) would return '2 to the power of 3' --> 8.
+     *
+     * @param {Number} base The base.
+     * @param {Number} exponent The exponent.
+     * @returns {Number} The result of the operation.
+     */
+    pow: function(base, exponent) {
+        return Math.pow(base, exponent);
+    },
+
+    /**
+     * The method returns a random number within the range given by the min property
+     * and the max property, including the min and max value.
+     *
+     * A test with 100.000 iterations for random(1, 3) created the following distribution:
+     * - 1: 33.2%
+     * - 2: 33.2%
+     * - 3: 33.6%
+     *
+     * @param {Number} min The minimal value.
+     * @param {Number} max The maximal value.
+     * @returns {Number} The result of the operation.
+     */
+    random: function(min, max) {
+        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
+    },
+
+    /**
+     * The method returns rounded version of the given input number. There are three
+     * types of rounding available:
+     *
+     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
+     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
+     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
+     *
+     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
+     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
+     * is 0.
+     *
+     * @param {Number} input The input value.
+     * @param {String} type The type of rounding.
+     * @param {Number} type The number of decimals (only available for M.ROUND).
+     * @returns {Number} The result of the operation.
+     */
+    round: function(input, type, decimals) {
+        if(decimals) {
+            input = input * (Math.pow(10, decimals));
+        }
+        var output = 0;
+        switch (type) {
+            case M.FLOOR:
+                output = Math.floor(input);
+                break;
+            case M.CEIL:
+                output = Math.ceil(input);
+                break;
+            case M.ROUND:
+                default:
+                output = Math.round(input);
+                break;
+        }
+        if(decimals) {
+            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
+            if(outputStr.length > 1) {
+                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
+            } else {
+                output = parseFloat(outputStr);
+            }
+        }
+
+        return output;
+    },
+
+    /**
+     * This method finds the closest number within an array of numbers that to a certain
+     * given number.
+     *
+     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
+     *
+     * @param {Array} numbers The array of numbers to search in.
+     * @param {Number} number The reference number.
+     * @returns {Number} The nearest number.
+     */
+    nearestNumber: function(numbers, number) {
+        var minDiff = null;
+        var nearestNumber = null;
+
+        _.each(numbers, function(n) {
+            var diff = Math.abs(n - number);
+            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
+                minDiff = diff;
+                nearestNumber = n;
+            }
+        });
+
+        return nearestNumber;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -577,158 +729,6 @@ M.Location = M.Object.extend(
         } else {
             M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for mathematical flooring.
- *
- * @type String
- */
-M.FLOOR = 'floor';
-
-/**
- * A constant value for mathematical ceiling.
- *
- * @type String
- */
-M.CEIL = 'ceil';
-
-/**
- * A constant value for mathematical rounding.
- *
- * @type String
- */
-M.ROUND = 'round';
-
-/**
- * @class
- *
- * This prototype defines methods for simpler handling of mathematical operations.
- *
- * @extends M.Object
- */
-M.Math = M.Object.extend(
-/** @scope M.Math.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Math',
-
-    /**
-     * This method returns the value of the base to the power of the exponent. So e.g.
-     * pow(2, 3) would return '2 to the power of 3' --> 8.
-     *
-     * @param {Number} base The base.
-     * @param {Number} exponent The exponent.
-     * @returns {Number} The result of the operation.
-     */
-    pow: function(base, exponent) {
-        return Math.pow(base, exponent);
-    },
-
-    /**
-     * The method returns a random number within the range given by the min property
-     * and the max property, including the min and max value.
-     *
-     * A test with 100.000 iterations for random(1, 3) created the following distribution:
-     * - 1: 33.2%
-     * - 2: 33.2%
-     * - 3: 33.6%
-     *
-     * @param {Number} min The minimal value.
-     * @param {Number} max The maximal value.
-     * @returns {Number} The result of the operation.
-     */
-    random: function(min, max) {
-        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
-    },
-
-    /**
-     * The method returns rounded version of the given input number. There are three
-     * types of rounding available:
-     *
-     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
-     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
-     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
-     *
-     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
-     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
-     * is 0.
-     *
-     * @param {Number} input The input value.
-     * @param {String} type The type of rounding.
-     * @param {Number} type The number of decimals (only available for M.ROUND).
-     * @returns {Number} The result of the operation.
-     */
-    round: function(input, type, decimals) {
-        if(decimals) {
-            input = input * (Math.pow(10, decimals));
-        }
-        var output = 0;
-        switch (type) {
-            case M.FLOOR:
-                output = Math.floor(input);
-                break;
-            case M.CEIL:
-                output = Math.ceil(input);
-                break;
-            case M.ROUND:
-                default:
-                output = Math.round(input);
-                break;
-        }
-        if(decimals) {
-            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
-            if(outputStr.length > 1) {
-                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
-            } else {
-                output = parseFloat(outputStr);
-            }
-        }
-
-        return output;
-    },
-
-    /**
-     * This method finds the closest number within an array of numbers that to a certain
-     * given number.
-     *
-     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
-     *
-     * @param {Array} numbers The array of numbers to search in.
-     * @param {Number} number The reference number.
-     * @returns {Number} The nearest number.
-     */
-    nearestNumber: function(numbers, number) {
-        var minDiff = null;
-        var nearestNumber = null;
-
-        _.each(numbers, function(n) {
-            var diff = Math.abs(n - number);
-            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
-                minDiff = diff;
-                nearestNumber = n;
-            }
-        });
-
-        return nearestNumber;
     }
 
 });
@@ -2290,6 +2290,119 @@ m_require('core/foundation/object.js');
 /**
  * @class
  *
+ * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
+ * normally don't call this object respectively its methods directly, but let M.Cypher handle
+ * this.
+ *
+ * @extends M.Object
+ */
+M.Base64 = M.Object.extend(
+/** @scope M.Base64.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Base64',
+
+    /**
+     * The key string for the base 64 decoding and encoding.
+     *
+     * @type String
+     */
+    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
+
+    /**
+     * This method encodes a given input string, using the base64 encoding.
+     *
+     * @param {String} input The string to be encoded.
+     * @returns {String} The base64 encoded string.
+     */
+    encode: function(input) {
+        var output = '';
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = M.Cypher.utf8_encode(input);
+
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if(isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if(isNaN(chr3)) {
+                enc4 = 64;
+            }
+
+            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
+        }
+
+        return output;
+    },
+
+    /**
+     * This method decodes a given input string, using the base64 decoding.
+     *
+     * @param {String} input The string to be decoded.
+     * @returns {String} The base64 decoded string.
+     */
+    decode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        while (i < input.length) {
+            enc1 = this.keyString.indexOf(input.charAt(i++));
+            enc2 = this.keyString.indexOf(input.charAt(i++));
+            enc3 = this.keyString.indexOf(input.charAt(i++));
+            enc4 = this.keyString.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if(enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            
+            if(enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+
+        return M.Cypher.utf8_decode(output);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      11.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
  * This prototype defines a hashing mechanism based on the SHA256 algorithm. You normally
  * don't call this object respectively its methods directly, but let M.Cypher handle
  * this.
@@ -2472,119 +2585,6 @@ M.SHA256 = M.Object.extend(
                     hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
         }
         return str;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      11.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
- * normally don't call this object respectively its methods directly, but let M.Cypher handle
- * this.
- *
- * @extends M.Object
- */
-M.Base64 = M.Object.extend(
-/** @scope M.Base64.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Base64',
-
-    /**
-     * The key string for the base 64 decoding and encoding.
-     *
-     * @type String
-     */
-    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
-
-    /**
-     * This method encodes a given input string, using the base64 encoding.
-     *
-     * @param {String} input The string to be encoded.
-     * @returns {String} The base64 encoded string.
-     */
-    encode: function(input) {
-        var output = '';
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = M.Cypher.utf8_encode(input);
-
-        while (i < input.length) {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if(isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if(isNaN(chr3)) {
-                enc4 = 64;
-            }
-
-            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
-        }
-
-        return output;
-    },
-
-    /**
-     * This method decodes a given input string, using the base64 decoding.
-     *
-     * @param {String} input The string to be decoded.
-     * @returns {String} The base64 decoded string.
-     */
-    decode: function(input) {
-        var output = "";
-        var chr1, chr2, chr3;
-        var enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        while (i < input.length) {
-            enc1 = this.keyString.indexOf(input.charAt(i++));
-            enc2 = this.keyString.indexOf(input.charAt(i++));
-            enc3 = this.keyString.indexOf(input.charAt(i++));
-            enc4 = this.keyString.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if(enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            
-            if(enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-        }
-
-        return M.Cypher.utf8_decode(output);
     }
 
 });
@@ -6080,6 +6080,82 @@ M.NumberValidator = M.Validator.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
+ *
+ * @extends M.Validator
+ */
+M.PresenceValidator = M.Validator.extend(
+/** @scope M.PresenceValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PresenceValidator',
+    
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @param {String} key
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        if(obj.value === null || obj.value === undefined || obj.value === '') {
+            if(obj.isView) {
+
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is required and is not set.',
+                        viewId: obj.id,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                
+            } else {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+            }
+            return NO;
+        }
+        return YES;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6225,82 +6301,6 @@ M.NotMinusValidator = M.Validator.extend(
            return YES;
        }
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
- *
- * @extends M.Validator
- */
-M.PresenceValidator = M.Validator.extend(
-/** @scope M.PresenceValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PresenceValidator',
-    
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @param {String} key
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        if(obj.value === null || obj.value === undefined || obj.value === '') {
-            if(obj.isView) {
-
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is required and is not set.',
-                        viewId: obj.id,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                
-            } else {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-            }
-            return NO;
-        }
-        return YES;
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
