@@ -1,69 +1,6 @@
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      05.12.11
@@ -2346,6 +2283,69 @@ M.SplitView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      16.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -3715,6 +3715,120 @@ M.DialogView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
+ *
+ * @extends M.DialogView
+ */
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.AlertDialogView',
+
+    /**
+     * The default title of an alert dialog.
+     *
+     * @type String
+     */
+    title: 'Alert',
+
+    /**
+     * The default message of an alert dialog.
+     *
+     * @type String
+     */
+    message: '',
+
+    /**
+     * Determines whether the alert dialog gets a default ok button.
+     *
+     * @type Boolean
+     */
+    hasConfirmButton: YES,
+
+    /**
+     * Determines the value of the button, means the text label on it.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an alert dialog as a pop up
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
+     */
+    render: function() {
+        this.html = '<div class="tmp-dialog-background"></div>';
+        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+        this.html += '<div class="tmp-dialog-content">';
+        this.html += this.message;
+        this.html +='</div>';
+        var button;
+        if(this.hasConfirmButton) {
+            this.html += '<div class="tmp-dialog-footer">';
+            var that = this;
+            button = M.ButtonView.design({
+                value: this.confirmButtonValue,
+                dataTheme: 'b tmp-dialog-smallerbtn',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            });
+            this.html += button.render();
+            this.html += '</div>';
+        }
+        this.html += '</div>';
+
+        $('body').append(this.html);
+        if(button.type) {
+            button.registerEvents();
+            button.theme();
+        }
+    },
+
+    handleCallback: function() {
+        this.hide();
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
+            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
@@ -3926,120 +4040,6 @@ M.ActionSheetDialogView = M.DialogView.extend(
             this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
         }
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any alert dialog view. It is derived from M.DialogView
- * and mainly used for implementing a alert dialog view specific render method.
- *
- * @extends M.DialogView
- */
-M.AlertDialogView = M.DialogView.extend(
-/** @scope M.AlertDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.AlertDialogView',
-
-    /**
-     * The default title of an alert dialog.
-     *
-     * @type String
-     */
-    title: 'Alert',
-
-    /**
-     * The default message of an alert dialog.
-     *
-     * @type String
-     */
-    message: '',
-
-    /**
-     * Determines whether the alert dialog gets a default ok button.
-     *
-     * @type Boolean
-     */
-    hasConfirmButton: YES,
-
-    /**
-     * Determines the value of the button, means the text label on it.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an alert dialog as a pop up
-     *
-     * @private
-     * @returns {String} The alert dialog view's html representation.
-     */
-    render: function() {
-        this.html = '<div class="tmp-dialog-background"></div>';
-        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-        this.html += '<div class="tmp-dialog-content">';
-        this.html += this.message;
-        this.html +='</div>';
-        var button;
-        if(this.hasConfirmButton) {
-            this.html += '<div class="tmp-dialog-footer">';
-            var that = this;
-            button = M.ButtonView.design({
-                value: this.confirmButtonValue,
-                dataTheme: 'b tmp-dialog-smallerbtn',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            });
-            this.html += button.render();
-            this.html += '</div>';
-        }
-        this.html += '</div>';
-
-        $('body').append(this.html);
-        if(button.type) {
-            button.registerEvents();
-            button.theme();
-        }
-    },
-
-    handleCallback: function() {
-        this.hide();
-        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
-            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
-        }
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5087,6 +5087,170 @@ M.SelectionListView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
 /**
  * @class
  *
@@ -5310,170 +5474,6 @@ M.ToggleSwitchView = M.View.extend(
 
 
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7662,260 +7662,6 @@ M.SliderView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the anchor location: top.
- *
- * @type String
- */
-M.TOP = 'header';
-
-/**
- * A constant value for the anchor location: bottom.
- *
- * @type String
- */
-M.BOTTOM = 'footer';
-
-/**
- * A constant value for the anchor location: left.
- *
- * @type Number
- */
-M.LEFT = 'LEFT';
-
-/**
- * A constant value for the anchor location: center.
- *
- * @type Number
- */
-M.CENTER = 'CENTER';
-
-/**
- * A constant value for the anchor location: right.
- *
- * @type Number
- */
-M.RIGHT = 'RIGHT';
-
-/**
- * @class
- *
- * The root object for ToolbarViews.
- *
- * @extends M.View
- */
-M.ToolbarView = M.View.extend(
-/** @scope M.ToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToolbarView',
-
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer bar
-     * - M.TOP => is a header bar
-     *
-     * @type String
-     */
-    anchorLocation: M.TOP,
-
-    /**
-     * Determines whether to display an auto-generated back-button on the left side
-     * of the toolbar view or not.
-     *
-     * @type Boolean
-     */
-    showBackButton: NO,
-
-    /**
-     * If the showBackButton property is set to yes, this property will be used to
-     * save a reference to the M.ButtonView.
-     */
-    backButton: null,
-
-    /**
-     * This property determines whether to fix the toolbar to the top / bottom of a
-     * page. By default this is set to YES.
-     *
-     * @type Boolean
-     */
-    isFixed: YES,
-
-
-    /**
-     * This property determines whether the toolbar is persistent or not.
-     * By default this is set to YES.
-     * If you like to customize the behavior you can simply define you own identifier. Every M.Toolbar with the same identifier is with each other persistent.
-     * If you simply set it to YES the header is persistent to each other header with the flag YES.
-     * If it is set to NO, then there is the old style page switch
-     *
-     * @type Boolean or String
-     */
-
-    isPersistent: YES,
-
-    /**
-     * This property determines whether to toggle the toolbar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
-    /**
-     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
-     * h1 child tag (representing the title of the header)
-     *
-     * @private
-     * @returns {String} The toolbar view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="' + this.anchorLocation + '" data-tap-toggle="' + this.toggleOnTap + '"' + this.style();
-
-        if(this.isFixed) {
-            this.html += ' data-position="fixed"';
-        }
-
-        if(this.isPersistent) {
-            if(typeof(this.isPersistent) === "string"){
-                this.html += ' data-id="' + this.isPersistent + '"';
-            }else{
-                this.html += ' data-id="themprojectpersistenttoolbar"';
-            }
-        }
-
-        this.html += ' data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"';
-
-        this.html += '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children or simply display the value as a label,
-     * if it is set.
-     */
-    renderChildViews: function() {
-        if(this.value && this.showBackButton) {
-            /* create the toolbar's back button */
-            this.backButton = M.ButtonView.design({
-                value: 'Back',
-                icon: 'arrow-l',
-                internalEvents: {
-                    tap: {
-                        action: function() {
-                            history.back(-1);
-                        }
-                    }
-                }
-            });
-
-            /* render the back button and add it to the toolbar's html*/
-            this.html += '<div class="ui-btn-left">';
-            this.html += this.backButton.render();
-            this.html += '</div>';
-
-            /* render the centered value */
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if(this.value) {
-            this.html += '<h1>' + this.value + '</h1>';
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var viewPositions = {};
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                view._name = childViews[i];
-                if( viewPositions[view.anchorLocation] ) {
-                    M.Logger.log('ToolbarView has two items positioned at M.' +
-                        view.anchorLocation + 
-                        '.  Only one item permitted in each location', M.WARN);
-                    return;
-                }
-                viewPositions[view.anchorLocation] = YES;
-                switch (view.anchorLocation) {
-                    case M.LEFT:
-                        this.html += '<div class="ui-btn-left">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    case M.CENTER:
-                        this.html += '<h1>';
-                        this.html += view.render();
-                        this.html += '</h1>';
-                        break;
-                    case M.RIGHT:
-                        this.html += '<div class="ui-btn-right">';
-                        this.html += view.render();
-                        this.html += '</div>';
-                        break;
-                    default:
-                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
-                        return;
-                }
-            }
-        }
-    },
-
-    /**
-     * Updates the value of the toolbar with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id + ' h1').text(this.value);
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(this.backButton) {
-            this.backButton.registerEvents();
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the toolbar.
-     *
-     * @private
-     * @returns {String} The toolbar's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -8230,6 +7976,131 @@ M.MovableLabelView = M.LabelView.extend(
     setValue: function(value) {
         this.value = value;
         this.renderUpdate();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
     }
 
 });
@@ -8725,128 +8596,257 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
+ * A constant value for the anchor location: top.
+ *
+ * @type String
+ */
+M.TOP = 'header';
+
+/**
+ * A constant value for the anchor location: bottom.
+ *
+ * @type String
+ */
+M.BOTTOM = 'footer';
+
+/**
+ * A constant value for the anchor location: left.
+ *
+ * @type Number
+ */
+M.LEFT = 'LEFT';
+
+/**
+ * A constant value for the anchor location: center.
+ *
+ * @type Number
+ */
+M.CENTER = 'CENTER';
+
+/**
+ * A constant value for the anchor location: right.
+ *
+ * @type Number
+ */
+M.RIGHT = 'RIGHT';
+
+/**
  * @class
  *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
+ * The root object for ToolbarViews.
  *
  * @extends M.View
  */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
+M.ToolbarView = M.View.extend(
+/** @scope M.ToolbarView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.CanvasView',
+    type: 'M.ToolbarView',
 
-    /**
-     * This property specifies the recommended events for this type of view.
+     /**
+     * Defines the position of the TabBar. Possible values are:
      *
-     * @type Array
+     * - M.BOTTOM => is a footer bar
+     * - M.TOP => is a header bar
+     *
+     * @type String
      */
-    recommendedEvents: ['tap'],
+    anchorLocation: M.TOP,
 
     /**
-     * This method simply renders a canvas view as a html canvas element.
+     * Determines whether to display an auto-generated back-button on the left side
+     * of the toolbar view or not.
+     *
+     * @type Boolean
+     */
+    showBackButton: NO,
+
+    /**
+     * If the showBackButton property is set to yes, this property will be used to
+     * save a reference to the M.ButtonView.
+     */
+    backButton: null,
+
+    /**
+     * This property determines whether to fix the toolbar to the top / bottom of a
+     * page. By default this is set to YES.
+     *
+     * @type Boolean
+     */
+    isFixed: YES,
+
+
+    /**
+     * This property determines whether the toolbar is persistent or not.
+     * By default this is set to YES.
+     * If you like to customize the behavior you can simply define you own identifier. Every M.Toolbar with the same identifier is with each other persistent.
+     * If you simply set it to YES the header is persistent to each other header with the flag YES.
+     * If it is set to NO, then there is the old style page switch
+     *
+     * @type Boolean or String
+     */
+
+    isPersistent: YES,
+
+    /**
+     * This property determines whether to toggle the toolbar on tap on the content area
+     * or not. By default this is set to NO.
+     *
+     * @type Boolean
+     */
+    toggleOnTap: NO,
+
+    /**
+     * Renders a toolbar as a div tag with corresponding data-role attribute and inner
+     * h1 child tag (representing the title of the header)
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The toolbar view's html representation.
      */
     render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
+        this.html = '<div id="' + this.id + '" data-role="' + this.anchorLocation + '" data-tap-toggle="' + this.toggleOnTap + '"' + this.style();
+
+        if(this.isFixed) {
+            this.html += ' data-position="fixed"';
+        }
+
+        if(this.isPersistent) {
+            if(typeof(this.isPersistent) === "string"){
+                this.html += ' data-id="' + this.isPersistent + '"';
+            }else{
+                this.html += ' data-id="themprojectpersistenttoolbar"';
+            }
+        }
+
+        this.html += ' data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"';
+
+        this.html += '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
 
         return this.html;
     },
 
     /**
-     * Updates the canvas (e.g. with content binding).
+     * Triggers render() on all children or simply display the value as a label,
+     * if it is set.
+     */
+    renderChildViews: function() {
+        if(this.value && this.showBackButton) {
+            /* create the toolbar's back button */
+            this.backButton = M.ButtonView.design({
+                value: 'Back',
+                icon: 'arrow-l',
+                internalEvents: {
+                    tap: {
+                        action: function() {
+                            history.back(-1);
+                        }
+                    }
+                }
+            });
+
+            /* render the back button and add it to the toolbar's html*/
+            this.html += '<div class="ui-btn-left">';
+            this.html += this.backButton.render();
+            this.html += '</div>';
+
+            /* render the centered value */
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if(this.value) {
+            this.html += '<h1>' + this.value + '</h1>';
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var viewPositions = {};
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                view._name = childViews[i];
+                if( viewPositions[view.anchorLocation] ) {
+                    M.Logger.log('ToolbarView has two items positioned at M.' +
+                        view.anchorLocation + 
+                        '.  Only one item permitted in each location', M.WARN);
+                    return;
+                }
+                viewPositions[view.anchorLocation] = YES;
+                switch (view.anchorLocation) {
+                    case M.LEFT:
+                        this.html += '<div class="ui-btn-left">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    case M.CENTER:
+                        this.html += '<h1>';
+                        this.html += view.render();
+                        this.html += '</h1>';
+                        break;
+                    case M.RIGHT:
+                        this.html += '<div class="ui-btn-right">';
+                        this.html += view.render();
+                        this.html += '</div>';
+                        break;
+                    default:
+                        M.Logger.log('ToolbarView children must have an anchorLocation of M.LEFT, M.CENTER, or M.RIGHT', M.WARN);
+                        return;
+                }
+            }
+        }
+    },
+
+    /**
+     * Updates the value of the toolbar with DOM access by jQuery.
      *
      * @private
      */
     renderUpdate: function() {
-        // nothing so far...
+        this.computeValue();
+        $('#' + this.id + ' h1').text(this.value);
     },
 
     /**
-     * This method returns the canvas' DOM representation.
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
      *
-     * @returns {Object} The canvas' DOM representation.
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
      */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
+    registerEvents: function() {
+        if(this.backButton) {
+            this.backButton.registerEvents();
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
     },
 
     /**
-     * This method returns the canvas' context.
+     * Applies some style-attributes to the toolbar.
      *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
+     * @private
+     * @returns {String} The toolbar's styling as html representation.
      */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
     }
-
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -9016,542 +9016,6 @@ M.GridView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard view displays images and a corresponding text in a grid-like view
- * and serves as the homescreen of an application. By tapping on of the icons, a
- * user can access certain features of an app. By default, there are three icons
- * in a row and three rows per page possible. But you can easily adjust this to
- * your custom needs.
- *
- * @extends M.View
- */
-M.DashboardView = M.View.extend(
-/** @scope M.DashboardView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardView',
-
-    /**
-     * This property can be used to customize the number of items a dashboard
-     * shows per line. By default this is set to three.
-     *
-     * @type Number
-     */
-    itemsPerLine: 3,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This property is used internally for storing the items of a dashboard, when using
-     * the content binding feature.
-     *
-     * @private
-     */
-    items: [],
-
-    /**
-     * This property can be used to specify whether or not the dashboard can be re-arranged
-     * by a user.
-     *
-     * @type Boolean
-     */
-    isEditable: NO,
-
-    /**
-     * This property is used internally to indicate whether the dashboard is currently in
-     * edit mode or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInEditMode: NO,
-
-    /**
-     * This property defines the dashboard's name. This is used internally to identify
-     * the dashboard inside the DOM.
-     *
-     * Note: If you are using more than one dashboard inside your application, make sure
-     * you provide different names.
-     *
-     * @type String
-     */
-    name: 'dashboard',
-
-    /**
-     * This property is used internally to track the position of touch events.
-     *
-     * @private
-     */
-    touchPositions: null,
-
-    /**
-     * This property is used internally to know of what type the latest touch events was.
-     *
-     * @private
-     */
-    latestTouchEventType: null,
-
-    /**
-     * Renders a dashboard.
-     *
-     * @private
-     * @returns {String} The dashboard view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
-        this.renderChildViews();
-        this.html += '</div>';
-
-        /* clear floating */
-        this.html += '<div class="tmp-dashboard-line-clear"></div>';
-
-        /* init the touchPositions property */
-        this.touchPositions = {};
-
-        return this.html;
-    },
-
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* lets gather the html together */
-            for(var i in childViews) {
-                /* set the dashboard item's _name and parentView property */
-                this[childViews[i]].parentView = this;
-                this[childViews[i]]._name = childViews[i];
-
-                this.html += this.renderDashboardItemView(this[childViews[i]], i);
-            }
-        }
-    },
-
-    renderUpdate: function() {
-        if(this.contentBinding) {
-            this.removeAllItems();
-
-            /* do we have something in locale storage? */
-            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
-            values = values ? JSON.parse(values) : null;
-
-            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
-            this.items = [];
-            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
-            var html = '';
-
-            /* lets gather the html together */
-            for(var i in items) {
-                html += this.renderDashboardItemView(items[i], i);
-            }
-
-            /* add the items to the DOM */
-            this.addItems(html);
-
-            /* now the items are in DOM, finally register events */
-            for(var i in this.items) {
-                this.items[i].registerEvents();
-            }
-        }
-    },
-
-    /**
-     * This method adds a given html string, contain the dasboard's items, to the DOM.
-     *
-     * @param {String} item The html representation of the dashboard items to be added.
-     */
-    addItems: function(items) {
-        $('#' + this.id).append(items);
-    },
-
-    /**
-     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        $('#' + this.id).empty();
-    },
-
-    renderDashboardItemView: function(item, itemIndex) {
-        if(item && item.value && item.icon) {
-            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
-                value: item.value ? item.value : '',
-                icon: item.icon ? item.icon : '',
-                label: item.label ? item.label : (item.value ? item.value : ''),
-                parentView: this,
-                events: item.events
-            });
-            var html = '';
-
-            /* add item to array for later use */
-            this.items.push(obj);
-
-            /* is new line starting? */
-            if(itemIndex % this.itemsPerLine === 0) {
-                html += '<div class="tmp-dashboard-line">';
-            }
-
-            /* assign the desired width */
-            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
-
-            /* finally render the dashboard item and add it to the dashboard's html */
-            html += obj.render();
-
-            /* is a line finished? */
-            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
-                html += '</div><div class="tmp-dashboard-line-clear"></div>';
-            }
-
-            /* return the html */
-            return html;
-        } else {
-            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally for dispatching the tap event for a dashboard view. If the
-     * dashboard view is in edit mode, we do not dispatch the event to the application.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     *
-     * @private
-     */
-    dispatchTapEvent: function(id, event, nextEvent) {
-        /* now first call special handler for this item */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-
-        /* now call global tap-event handler (if set) */
-        if(this.events && this.events.tap) {
-            M.EventDispatcher.callHandler(this.events.tap, event, YES);
-        }
-
-        /* now store timestamp for last tap event to kill a possible false taphold event */
-        this.latestTapEventTimestamp = +new Date();
-    },
-
-    /**
-     * This method is automatically called when a taphold event is triggered for one
-     * of the dashboard's
-     */
-    editDashboard: function(id, event, nextEvent) {
-        this.touchPositions.touchstart = {};
-        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
-            return;
-        }
-
-        if(this.isInEditMode && event) {
-            this.stopEditMode();
-        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
-            M.EventDispatcher.unregisterEvents(this.id);
-            this.isInEditMode = YES;
-            _.each(this.items, function(item) {
-                item.addCssClass('rotate' + M.Math.random(1, 2));
-                M.EventDispatcher.unregisterEvents(item.id);
-                if($.support.touch) {
-                    M.EventDispatcher.registerEvent(
-                        'touchstart',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchStart'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchend',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchEnd'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchmove',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchMove'
-                        },
-                        item.recommendedEvents
-                    );
-                } else {
-                    M.EventDispatcher.registerEvent(
-                        'mousedown',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseDown'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'mouseup',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseUp'
-                        },
-                        item.recommendedEvents
-                    );
-                }
-            });
-        }
-    },
-
-    stopEditMode: function() {
-        this.isInEditMode = NO;
-        _.each(this.items, function(item) {
-            item.removeCssClass('rotate1');
-            item.removeCssClass('rotate2');
-            M.EventDispatcher.unregisterEvents(item.id);
-            item.registerEvents();
-        });
-    },
-
-    setValue: function(items) {
-        this.value = items;
-        var values = [];
-        _.each(items, function(item) {
-            values.push(item.value);
-        });
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
-        }
-    },
-
-    sortItemsByValues: function(items, values) {
-        var itemsSorted = [];
-        _.each(values, function(value) {
-            _.each(items, function(item) {
-                if(item.value === value) {
-                    itemsSorted.push(item);
-                }
-            });
-        });
-        return itemsSorted;
-    },
-
-    editTouchStart: function(id, event) {
-        this.latestTouchEventType = 'touchstart';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        this.touchPositions.touchstart = {
-            x: latest.clientX,
-            y: latest.clientY,
-            date: +new Date()
-        };
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'touchstart') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editTouchMove: function(id, event) {
-        this.latestTouchEventType = 'touchmove';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-
-        if(latest) {
-            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
-            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
-            $('#' + id).css('position', 'absolute');
-            $('#' + id).css('left', left + 'px');
-            $('#' + id).css('top', top + 'px');
-
-            /* if end event is within certain radius of start event and it took a certain time, and editing */
-            /*if(this.touchPositions.touchstart) {
-                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                        this.stopEditMode();
-                        this.editTouchEnd(id, event);
-                    }
-                }
-            }*/
-        }
-    },
-
-    editTouchEnd: function(id, event) {
-        this.latestTouchEventType = 'touchend';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    editMouseDown: function(id, event) {
-        this.latestTouchEventType = 'mousedown';
-
-        this.touchPositions.touchstart = {
-            x: event.clientX,
-            y: event.clientY,
-            date: +new Date()
-        };
-
-        /* enable mouse move for selected item */
-        M.EventDispatcher.registerEvent(
-            'mousemove',
-            id,
-            {
-                target: this,
-                action: 'editMouseMove'
-            },
-            M.ViewManager.getViewById(id).recommendedEvents
-        );
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'mousedown') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editMouseMove: function(id, event) {
-        this.latestTouchEventType = 'mousemove';
-
-        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
-        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
-        $('#' + id).css('position', 'absolute');
-        $('#' + id).css('left', left + 'px');
-        $('#' + id).css('top', top + 'px');
-
-        /* if end event is within certain radius of start event and it took a certain time, and editing */
-        /*if(this.touchPositions.touchstart) {
-            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                    this.stopEditMode();
-                    this.editTouchEnd(id, event);
-                }
-            }
-        }*/
-    },
-
-    editMouseUp: function(id, event) {
-        this.latestTouchEventType = 'mouseup';
-
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-
-                /* disable mouse move for all item */
-                M.EventDispatcher.unregisterEvent('mousemove', item.id);
-
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard view.
-     *
-     * @private
-     * @returns {String} The dashboard's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -10562,6 +10026,542 @@ M.ListView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard view displays images and a corresponding text in a grid-like view
+ * and serves as the homescreen of an application. By tapping on of the icons, a
+ * user can access certain features of an app. By default, there are three icons
+ * in a row and three rows per page possible. But you can easily adjust this to
+ * your custom needs.
+ *
+ * @extends M.View
+ */
+M.DashboardView = M.View.extend(
+/** @scope M.DashboardView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardView',
+
+    /**
+     * This property can be used to customize the number of items a dashboard
+     * shows per line. By default this is set to three.
+     *
+     * @type Number
+     */
+    itemsPerLine: 3,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This property is used internally for storing the items of a dashboard, when using
+     * the content binding feature.
+     *
+     * @private
+     */
+    items: [],
+
+    /**
+     * This property can be used to specify whether or not the dashboard can be re-arranged
+     * by a user.
+     *
+     * @type Boolean
+     */
+    isEditable: NO,
+
+    /**
+     * This property is used internally to indicate whether the dashboard is currently in
+     * edit mode or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInEditMode: NO,
+
+    /**
+     * This property defines the dashboard's name. This is used internally to identify
+     * the dashboard inside the DOM.
+     *
+     * Note: If you are using more than one dashboard inside your application, make sure
+     * you provide different names.
+     *
+     * @type String
+     */
+    name: 'dashboard',
+
+    /**
+     * This property is used internally to track the position of touch events.
+     *
+     * @private
+     */
+    touchPositions: null,
+
+    /**
+     * This property is used internally to know of what type the latest touch events was.
+     *
+     * @private
+     */
+    latestTouchEventType: null,
+
+    /**
+     * Renders a dashboard.
+     *
+     * @private
+     * @returns {String} The dashboard view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+        this.renderChildViews();
+        this.html += '</div>';
+
+        /* clear floating */
+        this.html += '<div class="tmp-dashboard-line-clear"></div>';
+
+        /* init the touchPositions property */
+        this.touchPositions = {};
+
+        return this.html;
+    },
+
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* lets gather the html together */
+            for(var i in childViews) {
+                /* set the dashboard item's _name and parentView property */
+                this[childViews[i]].parentView = this;
+                this[childViews[i]]._name = childViews[i];
+
+                this.html += this.renderDashboardItemView(this[childViews[i]], i);
+            }
+        }
+    },
+
+    renderUpdate: function() {
+        if(this.contentBinding) {
+            this.removeAllItems();
+
+            /* do we have something in locale storage? */
+            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
+            values = values ? JSON.parse(values) : null;
+
+            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
+            this.items = [];
+            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
+            var html = '';
+
+            /* lets gather the html together */
+            for(var i in items) {
+                html += this.renderDashboardItemView(items[i], i);
+            }
+
+            /* add the items to the DOM */
+            this.addItems(html);
+
+            /* now the items are in DOM, finally register events */
+            for(var i in this.items) {
+                this.items[i].registerEvents();
+            }
+        }
+    },
+
+    /**
+     * This method adds a given html string, contain the dasboard's items, to the DOM.
+     *
+     * @param {String} item The html representation of the dashboard items to be added.
+     */
+    addItems: function(items) {
+        $('#' + this.id).append(items);
+    },
+
+    /**
+     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).empty();
+    },
+
+    renderDashboardItemView: function(item, itemIndex) {
+        if(item && item.value && item.icon) {
+            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
+                value: item.value ? item.value : '',
+                icon: item.icon ? item.icon : '',
+                label: item.label ? item.label : (item.value ? item.value : ''),
+                parentView: this,
+                events: item.events
+            });
+            var html = '';
+
+            /* add item to array for later use */
+            this.items.push(obj);
+
+            /* is new line starting? */
+            if(itemIndex % this.itemsPerLine === 0) {
+                html += '<div class="tmp-dashboard-line">';
+            }
+
+            /* assign the desired width */
+            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
+
+            /* finally render the dashboard item and add it to the dashboard's html */
+            html += obj.render();
+
+            /* is a line finished? */
+            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
+                html += '</div><div class="tmp-dashboard-line-clear"></div>';
+            }
+
+            /* return the html */
+            return html;
+        } else {
+            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally for dispatching the tap event for a dashboard view. If the
+     * dashboard view is in edit mode, we do not dispatch the event to the application.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     *
+     * @private
+     */
+    dispatchTapEvent: function(id, event, nextEvent) {
+        /* now first call special handler for this item */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+
+        /* now call global tap-event handler (if set) */
+        if(this.events && this.events.tap) {
+            M.EventDispatcher.callHandler(this.events.tap, event, YES);
+        }
+
+        /* now store timestamp for last tap event to kill a possible false taphold event */
+        this.latestTapEventTimestamp = +new Date();
+    },
+
+    /**
+     * This method is automatically called when a taphold event is triggered for one
+     * of the dashboard's
+     */
+    editDashboard: function(id, event, nextEvent) {
+        this.touchPositions.touchstart = {};
+        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
+            return;
+        }
+
+        if(this.isInEditMode && event) {
+            this.stopEditMode();
+        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
+            M.EventDispatcher.unregisterEvents(this.id);
+            this.isInEditMode = YES;
+            _.each(this.items, function(item) {
+                item.addCssClass('rotate' + M.Math.random(1, 2));
+                M.EventDispatcher.unregisterEvents(item.id);
+                if($.support.touch) {
+                    M.EventDispatcher.registerEvent(
+                        'touchstart',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchStart'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchend',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchEnd'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchmove',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchMove'
+                        },
+                        item.recommendedEvents
+                    );
+                } else {
+                    M.EventDispatcher.registerEvent(
+                        'mousedown',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseDown'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'mouseup',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseUp'
+                        },
+                        item.recommendedEvents
+                    );
+                }
+            });
+        }
+    },
+
+    stopEditMode: function() {
+        this.isInEditMode = NO;
+        _.each(this.items, function(item) {
+            item.removeCssClass('rotate1');
+            item.removeCssClass('rotate2');
+            M.EventDispatcher.unregisterEvents(item.id);
+            item.registerEvents();
+        });
+    },
+
+    setValue: function(items) {
+        this.value = items;
+        var values = [];
+        _.each(items, function(item) {
+            values.push(item.value);
+        });
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
+        }
+    },
+
+    sortItemsByValues: function(items, values) {
+        var itemsSorted = [];
+        _.each(values, function(value) {
+            _.each(items, function(item) {
+                if(item.value === value) {
+                    itemsSorted.push(item);
+                }
+            });
+        });
+        return itemsSorted;
+    },
+
+    editTouchStart: function(id, event) {
+        this.latestTouchEventType = 'touchstart';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        this.touchPositions.touchstart = {
+            x: latest.clientX,
+            y: latest.clientY,
+            date: +new Date()
+        };
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'touchstart') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editTouchMove: function(id, event) {
+        this.latestTouchEventType = 'touchmove';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+
+        if(latest) {
+            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
+            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
+            $('#' + id).css('position', 'absolute');
+            $('#' + id).css('left', left + 'px');
+            $('#' + id).css('top', top + 'px');
+
+            /* if end event is within certain radius of start event and it took a certain time, and editing */
+            /*if(this.touchPositions.touchstart) {
+                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                        this.stopEditMode();
+                        this.editTouchEnd(id, event);
+                    }
+                }
+            }*/
+        }
+    },
+
+    editTouchEnd: function(id, event) {
+        this.latestTouchEventType = 'touchend';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    editMouseDown: function(id, event) {
+        this.latestTouchEventType = 'mousedown';
+
+        this.touchPositions.touchstart = {
+            x: event.clientX,
+            y: event.clientY,
+            date: +new Date()
+        };
+
+        /* enable mouse move for selected item */
+        M.EventDispatcher.registerEvent(
+            'mousemove',
+            id,
+            {
+                target: this,
+                action: 'editMouseMove'
+            },
+            M.ViewManager.getViewById(id).recommendedEvents
+        );
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'mousedown') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editMouseMove: function(id, event) {
+        this.latestTouchEventType = 'mousemove';
+
+        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
+        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
+        $('#' + id).css('position', 'absolute');
+        $('#' + id).css('left', left + 'px');
+        $('#' + id).css('top', top + 'px');
+
+        /* if end event is within certain radius of start event and it took a certain time, and editing */
+        /*if(this.touchPositions.touchstart) {
+            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                    this.stopEditMode();
+                    this.editTouchEnd(id, event);
+                }
+            }
+        }*/
+    },
+
+    editMouseUp: function(id, event) {
+        this.latestTouchEventType = 'mouseup';
+
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+
+                /* disable mouse move for all item */
+                M.EventDispatcher.unregisterEvent('mousemove', item.id);
+
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard view.
+     *
+     * @private
+     * @returns {String} The dashboard's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="tmp-dashboard ' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
