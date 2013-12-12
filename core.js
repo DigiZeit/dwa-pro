@@ -3622,6 +3622,80 @@ M.Cypher = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -3887,8 +3961,8 @@ M.DataProviderHybrid = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
+// Creator:   Sebastian
+// Date:      18.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -3899,139 +3973,114 @@ m_require('core/utility/logger.js');
 /**
  * @class
  *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
+ * M.ModelAttribute encapsulates all meta information about a model record's property:
+ * * is it required?
+ * * what data type is it of? (important for mapping to relational database schemas)
+ * * what validators shall be applied
+ * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
+ * Each ModelAttribute is saved with the record properties name as key.
+ * That means:
+ *
+ * model.record[propA] is the value of the property.
+ * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
  *
  * @extends M.Object
  */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
+M.ModelAttribute = M.Object.extend(
+/** @scope M.ModelAttribute.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.DataProvider',
+    type: 'M.ModelAttribute',
 
     /**
-     * Indicates whether data provider operates asynchronously or not.
+     * The data type for the model record property.
+     * Extremely important e.g. to map model to relational database table.
      *
+     * @type String
+     */
+    dataType: null,
+
+    /**
+     * Indicates whether this property is required to be set before persisting.
+     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
+     * 
      * @type Boolean
      */
-    isAsync: NO,
+    isRequired: NO,
 
     /**
-     * Interface method.
-     * Implemented by specific data provider.
+     * Indicates whether an update has been performed on this property with the set method or not.
+     * @type Boolean
      */
-    find: function(query) {
-        
-    },
+    isUpdated: NO,
 
     /**
-     * Interface method.
-     * Implemented by specific data provider.
+     * Array containing all validators for this model record property.
+     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
+     * @type Object
      */
-    save: function() {
-        
-    },
+    validators: null,
 
     /**
-     * Interface method.
-     * Implemented by specific data provider.
+     * Record properties that define references have their referenced entity saved here.
+     * @type Object
      */
-    del: function() {
-
-    },
+    refEntity: null,
 
     /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
+     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
+     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
      */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
+    validate: function(obj) {
+        var isValid = YES;
+        for (var i in this.validators) {
+            if(!this.validators[i].validate(obj)) {
+               isValid = NO; 
+            }
+        }
+        return isValid;
     }
-
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      19.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
 
-m_require('core/utility/logger.js');
+//
+// CLASS METHODS
+//
 
 /**
- * @class
+ * Returns a model attribute.
  *
- * The prototype for every validator. All validation logic is implemented in the specific validators.
- *
- * @extends M.Object
+ * @param dataType The data type of the attribute: e.g. String 
+ * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
+ * @returns {Object} {@link M.ModelAttribute} object
  */
-M.Validator = M.Object.extend(
-/** @scope M.Validator.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.Validator',
-
-    /**
-     * "Class-wide" array containing error objects.
-     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
-     * 
-     * Error object represent errors that occured during validation.
-     * E.g. error object:
-     *
-     * {
-     *   msg: 'E-Mail adress not valid.',
-     *   modelId: 'Task_123',
-     *   property: 'email',
-     *   viewId: 'm_123',
-     *   validator: 'EMAIL',
-     *   onSuccess: function(){proceed();}
-     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
-     * }
-     * 
-     *
-     * @type Array|Object
-     */
-    validationErrors: [],
-
-    /**
-     * extends this.
-     *
-     * Can be used to provide a custom error msg to a validator
-     * E.g.
-     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
-     *
-     * @param obj
-     * @returns {Object} The customized validator.
-     */
-    customize: function(obj) {
-        return this.extend(obj);
-    },
-
-    /**
-     * Empties the error buffer, is done before each new validation process
-     */
-    clearErrorBuffer: function() {
-        this.validationErrors.length = 0;
+M.ModelAttribute.attr = function(dataType, opts) {
+    //console.log('attr in model_attribute');
+    if (!opts) {
+        opts = {};
+    }
+    if (!opts.dataType) {
+        opts.dataType = dataType || 'String';
     }
 
+    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
+    if (!opts.validators && opts.isRequired) {
+        opts.validators = [];
+    }
 
-
-});
+    /* if model attribute is required, presence validator is automatically inserted */
+    if (opts.isRequired) {
+        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
+        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
+            opts.validators.push(M.PresenceValidator);
+        }
+    }
+    return this.extend(opts);
+};
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -4276,7 +4325,7 @@ M.DataConsumer = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      18.11.2010
+// Date:      19.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -4287,114 +4336,65 @@ m_require('core/utility/logger.js');
 /**
  * @class
  *
- * M.ModelAttribute encapsulates all meta information about a model record's property:
- * * is it required?
- * * what data type is it of? (important for mapping to relational database schemas)
- * * what validators shall be applied
- * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
- * Each ModelAttribute is saved with the record properties name as key.
- * That means:
- *
- * model.record[propA] is the value of the property.
- * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
+ * The prototype for every validator. All validation logic is implemented in the specific validators.
  *
  * @extends M.Object
  */
-M.ModelAttribute = M.Object.extend(
-/** @scope M.ModelAttribute.prototype */ {
+M.Validator = M.Object.extend(
+/** @scope M.Validator.prototype */ {
 
     /**
      * The type of this object.
-     *
      * @type String
      */
-    type: 'M.ModelAttribute',
+    type: 'M.Validator',
 
     /**
-     * The data type for the model record property.
-     * Extremely important e.g. to map model to relational database table.
-     *
-     * @type String
-     */
-    dataType: null,
-
-    /**
-     * Indicates whether this property is required to be set before persisting.
-     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
+     * "Class-wide" array containing error objects.
+     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
      * 
-     * @type Boolean
+     * Error object represent errors that occured during validation.
+     * E.g. error object:
+     *
+     * {
+     *   msg: 'E-Mail adress not valid.',
+     *   modelId: 'Task_123',
+     *   property: 'email',
+     *   viewId: 'm_123',
+     *   validator: 'EMAIL',
+     *   onSuccess: function(){proceed();}
+     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
+     * }
+     * 
+     *
+     * @type Array|Object
      */
-    isRequired: NO,
+    validationErrors: [],
 
     /**
-     * Indicates whether an update has been performed on this property with the set method or not.
-     * @type Boolean
+     * extends this.
+     *
+     * Can be used to provide a custom error msg to a validator
+     * E.g.
+     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
+     *
+     * @param obj
+     * @returns {Object} The customized validator.
      */
-    isUpdated: NO,
+    customize: function(obj) {
+        return this.extend(obj);
+    },
 
     /**
-     * Array containing all validators for this model record property.
-     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
-     * @type Object
+     * Empties the error buffer, is done before each new validation process
      */
-    validators: null,
-
-    /**
-     * Record properties that define references have their referenced entity saved here.
-     * @type Object
-     */
-    refEntity: null,
-
-    /**
-     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
-     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
-     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
-     */
-    validate: function(obj) {
-        var isValid = YES;
-        for (var i in this.validators) {
-            if(!this.validators[i].validate(obj)) {
-               isValid = NO; 
-            }
-        }
-        return isValid;
+    clearErrorBuffer: function() {
+        this.validationErrors.length = 0;
     }
+
+
+
 });
-
-//
-// CLASS METHODS
-//
-
-/**
- * Returns a model attribute.
- *
- * @param dataType The data type of the attribute: e.g. String 
- * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
- * @returns {Object} {@link M.ModelAttribute} object
- */
-M.ModelAttribute.attr = function(dataType, opts) {
-    //console.log('attr in model_attribute');
-    if (!opts) {
-        opts = {};
-    }
-    if (!opts.dataType) {
-        opts.dataType = dataType || 'String';
-    }
-
-    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
-    if (!opts.validators && opts.isRequired) {
-        opts.validators = [];
-    }
-
-    /* if model attribute is required, presence validator is automatically inserted */
-    if (opts.isRequired) {
-        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
-        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
-            opts.validators.push(M.PresenceValidator);
-        }
-    }
-    return this.extend(opts);
-};
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5306,6 +5306,188 @@ M.DataProviderDummy = M.DataProvider.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      15.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5616,188 +5798,6 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
-     * @type Object
-     */
-    config: null,
-
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
-            });
-        }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
-        }
-        callback(result);
-    },
-
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
-    },
-
-    /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
-     */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
-
-}); 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
