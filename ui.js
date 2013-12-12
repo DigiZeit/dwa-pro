@@ -1,6 +1,69 @@
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      05.12.11
@@ -241,69 +304,6 @@ M.TableView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -3288,6 +3288,125 @@ M.SplitToolbarView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.08.2011
@@ -3405,125 +3524,6 @@ M.DashboardItemView = M.View.extend(
         return html;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5803,6 +5803,533 @@ M.SplitItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * Comment ...
+ *
+ * @extends M.View
+ */
+M.WebView = M.View.extend(
+/** @scope M.WebView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.WebView',
+
+    /**
+     * This property can be used to specify wheter a user should be able to srcoll
+     * within the web view or not.
+     *
+     * Note: If set to NO, the external web content must take care of fitting in the
+     * web view. Otherwise some part of the web page won't be visible.
+     *
+     * @type Boolean
+     */
+    isScrollable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['load'],
+
+    /**
+     * This method renders a web view as a simple iFrame element.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.checkURL();
+        this.html = '<div id="' + this.id + '"></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+    },
+
+    /**
+     * This method is called whenever the content bound by content binding changes.
+     * It forces the web view to re-render meaning to load the updated url stored
+     * in the value property.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        if(this.value) {
+            this.computeValue();
+            this.checkURL();
+        }
+
+        if(this.value && this.html && this.html.indexOf('<div') === 0) {
+            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
+            $('#' + this.id).replaceWith(this.html);
+            this.registerEvents();
+        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
+            $('#' + this.id).attr('src', this.value);
+        }
+    },
+
+    /**
+     * This method is used to check the given URL and to make sure there is an
+     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
+     *
+     * @private
+     */
+    checkURL: function() {
+        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
+            this.value = 'http://' + this.value;
+        }
+    },
+
+    /**
+     * This method simply applies an internal CSS class to the web view and,
+     * if available, the CSS class specified by the cssClass property of that
+     * view element.
+     *
+     * @private
+     * @returns {String} The web view's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-webview';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    },
+
+    /**
+     * This method can be used to force the web view to reload its original
+     * URL. This can either be the one specified by the value property or the
+     * one specified by the currently bound content.
+     */
+    reload: function() {
+        $('#' + this.id).attr('src', this.value);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.FormViews is the prototype of a form view, a container like view for grouping
+ * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
+ * validation of input views. There is no visible representation of an M.FormView,
+ * it is only used to ease the validation process and its accessing out of a
+ * controller.
+ * 
+ * @extends M.View
+ */
+M.FormView = M.View.extend(
+/** @scope M.FormView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.FormView',
+
+    /**
+     * Determines whether to automatically show an alert dialog view out of the showError method
+     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
+     * dialog view once the showError method is called.
+     *
+     * @type Boolean
+     */
+    showAlertDialogOnError: YES,
+
+    /**
+     * The title of the alert view that comes up automatically if the validation fails, depending
+     * one the 'showAlertOnError' property.
+     *
+     * @type String
+     */
+     alertTitle: 'Validation Error(s)',
+
+    /**
+     * This method triggers the validate() on all child views, respectively on their validators. If
+     * a validation error occurs, the showErrors() will be called.
+     *
+     * @returns {Boolean} The result of the validation process: valid or not.
+     */
+    validate: function() {
+        var ids = this.getIds();
+        for(var name in ids) {
+            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
+                delete ids[name];
+            }
+        }
+
+        var isValid = YES;
+        M.Validator.clearErrorBuffer();
+
+        for(var name in ids) {
+            var view = M.ViewManager.getViewById(ids[name]);
+            if(view && view.validators) {
+                if(view.cssClassOnError) {
+                    view.removeCssClass(view.cssClassOnError);
+                }
+
+                _.each(view.validators, function(validator) {
+                    if(!validator.validate(view, name)) {
+                        isValid = NO;
+                    }
+                });
+            }
+        }
+
+        if(!isValid) {
+            this.showErrors();
+        }
+
+        return isValid;
+    },
+
+    /**
+     * This method adds a css class specified by the cssClassOnError property to any
+     * view that caused a validation error and has this property specified.
+     *
+     * If the showAlertDialogOnError property is set to YES, a alert dialog view
+     * is display additionally, presenting the error messages of all invalid views.
+     */
+    showErrors: function() {
+        var errors = '';
+        _.each(M.Validator.validationErrors, function(error) {
+            if(error && error.errObj) {
+                var view = M.ViewManager.getViewById(error.errObj.viewId);
+                if(view && view.cssClassOnError) {
+                    view.addCssClass(view.cssClassOnError);
+                }
+                errors += '<li>' + error.msg + '</li>';
+            }
+        });
+
+        if(this.showAlertDialogOnError) {
+            M.DialogView.alert({
+                title: this.alertTitle,
+                message: errors
+            });
+        }
+    },
+
+    /**
+     * This method is a wrapper of M.View's clearValues() method.
+     */
+    clearForm: function() {
+        this.clearValues();
+    },
+
+    /**
+     * This method is a wrapper of M.View's getValues() method.
+     */
+    getFormValues: function() {
+        return this.getValues();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the map's marker animation type: none
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_NONE = 'NONE';
+
+/**
+ * A constant value for the map's marker animation type: drop
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_DROP = 'DROP';
+
+/**
+ * A constant value for the map's marker animation type: bounce
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
+
+/**
+ * @class
+ *
+ * M.MapMarkerView is the prototype of a map marker view. It defines a set
+ * of methods for adding, removing and managing the markers of a M.MapView.
+ *
+ * The M.MapMarkerView is based on google maps markers.
+ *
+ * @extends M.View
+ */
+M.MapMarkerView = M.View.extend(
+/** @scope M.MapMarkerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapMarkerView',
+
+    /**
+     * This property is used to save a reference to the actual google map marker.
+     * It is set automatically when the map marker is firstly initialized.
+     *
+     * @type Object
+     */
+    marker: null,
+
+    /**
+     * This property can be used to store additional information about a marker.
+     * Since this property is an object, you can store pretty much anything in
+     * this property.
+     *
+     * This can be useful especially if you are using the click event for map
+     * markers. So you can store any information with a marker and retrieve
+     * this information on the click event.
+     *
+     * @type Object
+     */
+    data: null,
+
+    /**
+     * This property contains a reference to the marker's map view.
+     *
+     * @type M.MapView
+     */
+    map: null,
+
+    /**
+     * This property specifies the title of a map marker view. It can be used in
+     * an annotation.
+     *
+     * @type String
+     */
+    title: null,
+
+    /**
+     * This property specifies the message of a map marker view respectively for
+     * its annotation.
+     *
+     * @type String
+     */
+    message: null,
+
+    /**
+     * This property can be used to specify whether or not to show the annotation,
+     * if title and / or message are defined, automatically on click event.
+     *
+     * @type Boolean
+     */
+    showAnnotationOnClick: NO,
+
+    /**
+     * This property contains a reference to a google maps info window that is
+     * connected to this map marker. By calling either the showAnnotation() or
+     * the hideAnnotation() method, this info window can be toggled.
+     *
+     * Additionally the info window will be automatically set to visible if the
+     * showAnnotationOnClick property is set to YES.
+     *
+     * @type Object
+     */
+    annotation: null,
+
+    /**
+     * This property specifies whether the marker is draggable or not. If set
+     * to NO, a user won't be able to move the marker. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: NO,
+
+    /**
+     * This property specifies the location for this map marker view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the position
+     * property of a google maps marker. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type M.Location
+     */
+    location: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property can be used to specify the animation type for this map marker
+     * view. If this property is set, the markerAnimationType property of the parent
+     * map view is ignored. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: null,
+
+    /**
+     * This property can be used to specify a custom marker icon. Simply pass a valid
+     * path to an image and it will be shown instead of google's default marker.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * This property can be used to specify the display size of the icon used for the
+     * marker. This is important if you want to support e.g. the iphone's retina display.
+     *
+     * Pass along an object containing the desired width and height, e.g.:
+     *
+     *     {
+     *         width: 20,
+     *         height: 20
+     *     }
+     *
+     * @type Object
+     */
+    iconSize: null,
+
+    /**
+     * This property can be used to display a map marker icon centered about its location.
+     * By default a map marker is positioned with its bottom center at the location.
+     *
+     * @type Boolean
+     */
+    isIconCentered: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This method initializes an M.MapMarkerView. It connects a map marker directly with
+     * the parent map view and returns the created M.MapMarkerView object.
+     *
+     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
+     * initialized and can no be displayed by using the map view's addMarker() method or via
+     * content binding.
+     *
+     * @param {Object} options The options for the map marker view.
+     */
+    init: function(options) {
+        var marker = this.extend(options);
+
+        if(marker.annotation || marker.message) {
+            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
+            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
+            
+            marker.annotation = new google.maps.InfoWindow({
+                content: content,
+                maxWidth: 100
+            });
+        }
+
+        return marker;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'showAnnotation'
+            }
+        }
+
+        var that = this;
+        google.maps.event.addListener(this.marker, 'click', function() {
+            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        });
+    },
+
+    /**
+     * This method can be used to remove a map marker from a map view.
+     */
+    remove: function() {
+        this.map.removeMarker(this);
+    },
+
+    /**
+     * This method can be used to show a map markers annotation.
+     */
+    showAnnotation: function(id, event, nextEvent) {
+        if(this.annotation) {
+            this.annotation.open(this.map.map, this.marker);
+        }
+
+        /* delegate event to external handler, if specified */
+        if(this.events || this.map.events) {
+            var events = this.events ? this.events : this.map.events;
+            for(var e in events) {
+                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+                }
+            }
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -6696,135 +7223,6 @@ M.ImageView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * Comment ...
- *
- * @extends M.View
- */
-M.WebView = M.View.extend(
-/** @scope M.WebView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.WebView',
-
-    /**
-     * This property can be used to specify wheter a user should be able to srcoll
-     * within the web view or not.
-     *
-     * Note: If set to NO, the external web content must take care of fitting in the
-     * web view. Otherwise some part of the web page won't be visible.
-     *
-     * @type Boolean
-     */
-    isScrollable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['load'],
-
-    /**
-     * This method renders a web view as a simple iFrame element.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.checkURL();
-        this.html = '<div id="' + this.id + '"></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-    },
-
-    /**
-     * This method is called whenever the content bound by content binding changes.
-     * It forces the web view to re-render meaning to load the updated url stored
-     * in the value property.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.value) {
-            this.computeValue();
-            this.checkURL();
-        }
-
-        if(this.value && this.html && this.html.indexOf('<div') === 0) {
-            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
-            $('#' + this.id).replaceWith(this.html);
-            this.registerEvents();
-        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
-            $('#' + this.id).attr('src', this.value);
-        }
-    },
-
-    /**
-     * This method is used to check the given URL and to make sure there is an
-     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
-     *
-     * @private
-     */
-    checkURL: function() {
-        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
-            this.value = 'http://' + this.value;
-        }
-    },
-
-    /**
-     * This method simply applies an internal CSS class to the web view and,
-     * if available, the CSS class specified by the cssClass property of that
-     * view element.
-     *
-     * @private
-     * @returns {String} The web view's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-webview';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    },
-
-    /**
-     * This method can be used to force the web view to reload its original
-     * URL. This can either be the one specified by the value property or the
-     * one specified by the currently bound content.
-     */
-    reload: function() {
-        $('#' + this.id).attr('src', this.value);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      10.04.12
@@ -6877,136 +7275,6 @@ M.CarouselItemView = M.View.extend(
         this.html += '</li>';
 
         return this.html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.FormViews is the prototype of a form view, a container like view for grouping
- * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
- * validation of input views. There is no visible representation of an M.FormView,
- * it is only used to ease the validation process and its accessing out of a
- * controller.
- * 
- * @extends M.View
- */
-M.FormView = M.View.extend(
-/** @scope M.FormView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.FormView',
-
-    /**
-     * Determines whether to automatically show an alert dialog view out of the showError method
-     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
-     * dialog view once the showError method is called.
-     *
-     * @type Boolean
-     */
-    showAlertDialogOnError: YES,
-
-    /**
-     * The title of the alert view that comes up automatically if the validation fails, depending
-     * one the 'showAlertOnError' property.
-     *
-     * @type String
-     */
-     alertTitle: 'Validation Error(s)',
-
-    /**
-     * This method triggers the validate() on all child views, respectively on their validators. If
-     * a validation error occurs, the showErrors() will be called.
-     *
-     * @returns {Boolean} The result of the validation process: valid or not.
-     */
-    validate: function() {
-        var ids = this.getIds();
-        for(var name in ids) {
-            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
-                delete ids[name];
-            }
-        }
-
-        var isValid = YES;
-        M.Validator.clearErrorBuffer();
-
-        for(var name in ids) {
-            var view = M.ViewManager.getViewById(ids[name]);
-            if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
-                _.each(view.validators, function(validator) {
-                    if(!validator.validate(view, name)) {
-                        isValid = NO;
-                    }
-                });
-            }
-        }
-
-        if(!isValid) {
-            this.showErrors();
-        }
-
-        return isValid;
-    },
-
-    /**
-     * This method adds a css class specified by the cssClassOnError property to any
-     * view that caused a validation error and has this property specified.
-     *
-     * If the showAlertDialogOnError property is set to YES, a alert dialog view
-     * is display additionally, presenting the error messages of all invalid views.
-     */
-    showErrors: function() {
-        var errors = '';
-        _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
-            }
-        });
-
-        if(this.showAlertDialogOnError) {
-            M.DialogView.alert({
-                title: this.alertTitle,
-                message: errors
-            });
-        }
-    },
-
-    /**
-     * This method is a wrapper of M.View's clearValues() method.
-     */
-    clearForm: function() {
-        this.clearValues();
-    },
-
-    /**
-     * This method is a wrapper of M.View's getValues() method.
-     */
-    getFormValues: function() {
-        return this.getValues();
     }
 
 });
@@ -8087,274 +8355,6 @@ M.CanvasView = M.View.extend(
      */
     getHeight: function() {
         return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the map's marker animation type: none
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_NONE = 'NONE';
-
-/**
- * A constant value for the map's marker animation type: drop
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_DROP = 'DROP';
-
-/**
- * A constant value for the map's marker animation type: bounce
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
-
-/**
- * @class
- *
- * M.MapMarkerView is the prototype of a map marker view. It defines a set
- * of methods for adding, removing and managing the markers of a M.MapView.
- *
- * The M.MapMarkerView is based on google maps markers.
- *
- * @extends M.View
- */
-M.MapMarkerView = M.View.extend(
-/** @scope M.MapMarkerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapMarkerView',
-
-    /**
-     * This property is used to save a reference to the actual google map marker.
-     * It is set automatically when the map marker is firstly initialized.
-     *
-     * @type Object
-     */
-    marker: null,
-
-    /**
-     * This property can be used to store additional information about a marker.
-     * Since this property is an object, you can store pretty much anything in
-     * this property.
-     *
-     * This can be useful especially if you are using the click event for map
-     * markers. So you can store any information with a marker and retrieve
-     * this information on the click event.
-     *
-     * @type Object
-     */
-    data: null,
-
-    /**
-     * This property contains a reference to the marker's map view.
-     *
-     * @type M.MapView
-     */
-    map: null,
-
-    /**
-     * This property specifies the title of a map marker view. It can be used in
-     * an annotation.
-     *
-     * @type String
-     */
-    title: null,
-
-    /**
-     * This property specifies the message of a map marker view respectively for
-     * its annotation.
-     *
-     * @type String
-     */
-    message: null,
-
-    /**
-     * This property can be used to specify whether or not to show the annotation,
-     * if title and / or message are defined, automatically on click event.
-     *
-     * @type Boolean
-     */
-    showAnnotationOnClick: NO,
-
-    /**
-     * This property contains a reference to a google maps info window that is
-     * connected to this map marker. By calling either the showAnnotation() or
-     * the hideAnnotation() method, this info window can be toggled.
-     *
-     * Additionally the info window will be automatically set to visible if the
-     * showAnnotationOnClick property is set to YES.
-     *
-     * @type Object
-     */
-    annotation: null,
-
-    /**
-     * This property specifies whether the marker is draggable or not. If set
-     * to NO, a user won't be able to move the marker. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: NO,
-
-    /**
-     * This property specifies the location for this map marker view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the position
-     * property of a google maps marker. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type M.Location
-     */
-    location: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property can be used to specify the animation type for this map marker
-     * view. If this property is set, the markerAnimationType property of the parent
-     * map view is ignored. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: null,
-
-    /**
-     * This property can be used to specify a custom marker icon. Simply pass a valid
-     * path to an image and it will be shown instead of google's default marker.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This method initializes an M.MapMarkerView. It connects a map marker directly with
-     * the parent map view and returns the created M.MapMarkerView object.
-     *
-     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
-     * initialized and can no be displayed by using the map view's addMarker() method or via
-     * content binding.
-     *
-     * @param {Object} options The options for the map marker view.
-     */
-    init: function(options) {
-        var marker = this.extend(options);
-
-        if(marker.annotation || marker.message) {
-            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
-            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
-            
-            marker.annotation = new google.maps.InfoWindow({
-                content: content,
-                maxWidth: 100
-            });
-        }
-
-        return marker;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'showAnnotation'
-            }
-        }
-
-        var that = this;
-        google.maps.event.addListener(this.marker, 'click', function() {
-            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
-        });
-    },
-
-    /**
-     * This method can be used to remove a map marker from a map view.
-     */
-    remove: function() {
-        this.map.removeMarker(this);
-    },
-
-    /**
-     * This method can be used to show a map markers annotation.
-     */
-    showAnnotation: function(id, event, nextEvent) {
-        if(this.annotation) {
-            this.annotation.open(this.map.map, this.marker);
-        }
-
-        /* delegate event to external handler, if specified */
-        if(this.events || this.map.events) {
-            var events = this.events ? this.events : this.map.events;
-            for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
-                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
-                }
-            }
-        }
     }
 
 });
