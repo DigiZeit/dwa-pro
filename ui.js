@@ -1418,6 +1418,446 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitView = M.View.extend(
+/** @scope M.SplitView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitView',
+
+    menu: null,
+
+    content: null,
+
+    isInitialized: NO,
+
+    selectedItem: null,
+
+    orientation: null,
+
+    headerheight: null,
+
+    footerheight: null,
+
+    itemheight: null,
+
+    contentLoaded: NO,
+
+    scrollviewsInitialized: NO,
+
+    hasMenuScrollview: NO,
+
+    shouldHaveScrollview: YES,
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if (this.childViews || this.contentBinding) {
+            var childViews = this.getChildViewsAsArray();
+            if (childViews.length > 0 || this.contentBinding) {
+                this.menu = M.ScrollView.design({
+                    childViews: 'menu',
+                    menu: M.ListView.design({})
+                });
+                this.menu.parentView = this;
+                this.menu.menu.parentView = this.menu;
+                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
+                this.html += this.menu.render();
+
+                this.content = M.ScrollView.design({});
+                this.content.parentView = this;
+                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
+                this.html += this.content.render();
+
+                return this.html;
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var content = null;
+
+        if (this.contentBinding) {
+            content = this.value;
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            content = [];
+            for (var i = 0; i < childViews.length; i++) {
+                content.push(this[childViews[i]]);
+            }
+        }
+
+        if (content) {
+            if (content.length > 0) {
+
+                /* reset menu list before filling it up again */
+                this.menu.menu.removeAllItems();
+
+                var entryItem = null;
+                var currentItem = 0;
+                for (var i in content) {
+                    if (content[i] && content[i].type === 'M.SplitItemView') {
+                        /* add item to list */
+                        var item = M.ListItemView.design({
+                            childViews: 'label',
+                            parentView: this.menu.menu,
+                            splitViewItem: content[i],
+                            label: M.LabelView.design({
+                                value: content[i].value
+                            }),
+                            events: {
+                                tap: {
+                                    target: this,
+                                    action: 'listItemSelected'
+                                }
+                            }
+                        });
+                        this.menu.menu.addItem(item.render());
+
+                        /* register events for item */
+                        item.registerEvents();
+
+                        /* save id of the current item if it is either the first item or isActive is set */
+                        if (currentItem === 0 || content[i].isActive) {
+                            entryItem = item.id;
+                        }
+
+                        /* increase item counter */
+                        currentItem++;
+                    } else {
+                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
+                    }
+                }
+
+                /* theme the list */
+                this.menu.menu.themeUpdate();
+
+                /* now set the active list item */
+                this.menu.menu.setActiveListItem(entryItem);
+
+                /* finally show the active list item's content */
+                this.listItemSelected(entryItem);
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+
+        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
+        if (!this.contentLoaded) {
+            var that = this;
+            $(document).bind('DOMContentLoaded', function() {
+                that.initializeVar();
+            });
+        }
+    },
+
+    themeUpdate: function() {
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+
+        /* landscape mode */
+        if (M.Environment.getWidth() > M.Environment.getHeight()) {
+            this.orientation = 'landscape';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseInt($('#' + this.menu.id).css('border-right-width'))) + 'px');
+            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('#' + this.menu.id).css('border-right-width')) + 'px');
+
+            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
+            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+        /* portrait mode */
+        } else {
+            this.orientation = 'portrait';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.content.id).css('width', width - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', '0px');
+
+            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
+        }
+
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* set the min height of the page based on if there's a footer or not */
+        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
+            $('#' + page.id).css('min-height', height + 'px');
+        } else {
+            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
+        }
+
+        /* set the height of the menu based on header/footer */
+        if ($('#' + page.id + ' .ui-footer').length === 0) {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
+        } else {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
+        }
+
+        /* initialize the scrolling stuff (if not done yet) */
+        if (!this.scrollviewsInitialized) {
+            $('#' + this.content.id).scrollview({
+                direction: 'y'
+            });
+
+            /* check whether scrolling is required or not for the menu */
+            if (this.orientation === 'landscape') {
+                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
+                var itemCount = $('#' + this.menu.menu.id).find('li').length;
+
+                if (this.itemheight !== 0) {
+                    var menuHeight = M.Environment.getHeight();
+                    var itemListHeight = itemCount * this.itemheight;
+                    if (menuHeight < itemListHeight) {
+                        $('#' + this.menu.menu.id).scrollview({
+                            direction: 'y'
+                        });
+                        this.hasMenuScrollview = YES;
+                    } else {
+                        this.shouldHaveScrollview = NO;
+                    }
+                }
+                this.scrollviewsInitialized = YES;
+            }
+
+        }
+    },
+
+    /**
+     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
+     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
+     */
+    initializeVar: function() {
+        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
+        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
+        this.contentLoaded = YES;
+        this.themeUpdate();
+    },
+
+    registerEvents: function() {
+        /* register for orientation change events of the current page */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        M.EventDispatcher.registerEvent(
+            'orientationdidchange',
+            page.id,
+            {
+                target: this,
+                action:  function() {
+                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
+                    var that = this;
+                    window.setTimeout(function() {
+                        that.orientationDidChange();
+                    }, 100);
+                }
+            },
+            ['orientationdidchange'],
+            null,
+            NO,
+            YES
+        );
+    },
+
+    listItemSelected: function(id) {
+        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
+
+        if (!contentView) {
+            return;
+        }
+
+        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+        if (!this.isInitialized) {
+            if (contentView.html) {
+                $('#' + this.content.id).html(contentView.html);
+            } else {
+                $('#' + this.content.id).html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            this.isInitialized = YES;
+        } else {
+            if (contentView.html) {
+                $('#' + this.content.id + ' div:first').html(contentView.html);
+            } else {
+                $('#' + this.content.id + ' div:first').html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+        }
+
+        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        var that = this;
+        if (page) {
+            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
+                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
+                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
+                    $('#' + toolbar.id + ' h1').html(toolbar.value);
+
+                    /* now link the menu with the toolbar if not yet done */
+                    if (!toolbar.parentView.splitview) {
+                        toolbar.parentView.splitview = that;
+                    }
+                }
+            });
+
+            /* add special css class if there is no footer */
+            if ($('#' + page.id + ' .ui-footer').length === 0) {
+                page.addCssClass('tmp-splitview-no-footer');
+            }
+
+            /* add special css class if there is no header */
+            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
+                page.addCssClass('tmp-splitview-no-header');
+            }
+        }
+    },
+
+    orientationDidChange: function() {
+        var orientation = M.Environment.getOrientation();
+        var that = this;
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* portrait */
+        if (M.Environment.getHeight() > M.Environment.getWidth()) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        /* landscape */
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+
+            /* hide the popover */
+            var toolbar;
+            if (page) {
+                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
+                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
+                        toolbar.parentView.popover.hide();
+                    }
+                });
+            }
+
+            /* update the menu */
+            var id;
+            $('#' + this.menu.id).find('li').each(function() {
+                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
+                    id = $(this).attr('id');
+                }
+            });
+
+            /* activate the current item */
+            if (id) {
+                this.menu.menu.setActiveListItem(id);
+            }
+
+            /* set the selected item */
+            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+            /* scroll the menu so we def. see the selected item */
+            this.scrollListToRightPosition(id);
+        }
+
+        /* scroll content to top */
+        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+
+        /* call theme update */
+        this.themeUpdate();
+    },
+
+    scrollListToRightPosition: function(id) {
+        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + id).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
+        var middle = menuHeight / 2;
+        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < middle) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - middle);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < middle) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - middle);
+            }
+        }
+
+        /* if there already is a scroll view, just scroll */
+        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
+            $('#' + this.menu.menu.id).scrollview({
+                direction: 'y'
+            });
+        }
+        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.12.2010
@@ -1898,446 +2338,6 @@ M.ButtonGroupView = M.View.extend(
         }
         html += '"';
         return html;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitView = M.View.extend(
-/** @scope M.SplitView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitView',
-
-    menu: null,
-
-    content: null,
-
-    isInitialized: NO,
-
-    selectedItem: null,
-
-    orientation: null,
-
-    headerheight: null,
-
-    footerheight: null,
-
-    itemheight: null,
-
-    contentLoaded: NO,
-
-    scrollviewsInitialized: NO,
-
-    hasMenuScrollview: NO,
-
-    shouldHaveScrollview: YES,
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if (this.childViews || this.contentBinding) {
-            var childViews = this.getChildViewsAsArray();
-            if (childViews.length > 0 || this.contentBinding) {
-                this.menu = M.ScrollView.design({
-                    childViews: 'menu',
-                    menu: M.ListView.design({})
-                });
-                this.menu.parentView = this;
-                this.menu.menu.parentView = this.menu;
-                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
-                this.html += this.menu.render();
-
-                this.content = M.ScrollView.design({});
-                this.content.parentView = this;
-                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
-                this.html += this.content.render();
-
-                return this.html;
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var content = null;
-
-        if (this.contentBinding) {
-            content = this.value;
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            content = [];
-            for (var i = 0; i < childViews.length; i++) {
-                content.push(this[childViews[i]]);
-            }
-        }
-
-        if (content) {
-            if (content.length > 0) {
-
-                /* reset menu list before filling it up again */
-                this.menu.menu.removeAllItems();
-
-                var entryItem = null;
-                var currentItem = 0;
-                for (var i in content) {
-                    if (content[i] && content[i].type === 'M.SplitItemView') {
-                        /* add item to list */
-                        var item = M.ListItemView.design({
-                            childViews: 'label',
-                            parentView: this.menu.menu,
-                            splitViewItem: content[i],
-                            label: M.LabelView.design({
-                                value: content[i].value
-                            }),
-                            events: {
-                                tap: {
-                                    target: this,
-                                    action: 'listItemSelected'
-                                }
-                            }
-                        });
-                        this.menu.menu.addItem(item.render());
-
-                        /* register events for item */
-                        item.registerEvents();
-
-                        /* save id of the current item if it is either the first item or isActive is set */
-                        if (currentItem === 0 || content[i].isActive) {
-                            entryItem = item.id;
-                        }
-
-                        /* increase item counter */
-                        currentItem++;
-                    } else {
-                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
-                    }
-                }
-
-                /* theme the list */
-                this.menu.menu.themeUpdate();
-
-                /* now set the active list item */
-                this.menu.menu.setActiveListItem(entryItem);
-
-                /* finally show the active list item's content */
-                this.listItemSelected(entryItem);
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-
-        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
-        if (!this.contentLoaded) {
-            var that = this;
-            $(document).bind('DOMContentLoaded', function() {
-                that.initializeVar();
-            });
-        }
-    },
-
-    themeUpdate: function() {
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-
-        /* landscape mode */
-        if (M.Environment.getWidth() > M.Environment.getHeight()) {
-            this.orientation = 'landscape';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseInt($('#' + this.menu.id).css('border-right-width'))) + 'px');
-            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('#' + this.menu.id).css('border-right-width')) + 'px');
-
-            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) - parseInt($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
-            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-        /* portrait mode */
-        } else {
-            this.orientation = 'portrait';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.content.id).css('width', width - (parseInt($('#' + this.content.id).css('padding-right')) + parseInt($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', '0px');
-
-            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
-        }
-
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* set the min height of the page based on if there's a footer or not */
-        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
-            $('#' + page.id).css('min-height', height + 'px');
-        } else {
-            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
-        }
-
-        /* set the height of the menu based on header/footer */
-        if ($('#' + page.id + ' .ui-footer').length === 0) {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
-        } else {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
-        }
-
-        /* initialize the scrolling stuff (if not done yet) */
-        if (!this.scrollviewsInitialized) {
-            $('#' + this.content.id).scrollview({
-                direction: 'y'
-            });
-
-            /* check whether scrolling is required or not for the menu */
-            if (this.orientation === 'landscape') {
-                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
-                var itemCount = $('#' + this.menu.menu.id).find('li').length;
-
-                if (this.itemheight !== 0) {
-                    var menuHeight = M.Environment.getHeight();
-                    var itemListHeight = itemCount * this.itemheight;
-                    if (menuHeight < itemListHeight) {
-                        $('#' + this.menu.menu.id).scrollview({
-                            direction: 'y'
-                        });
-                        this.hasMenuScrollview = YES;
-                    } else {
-                        this.shouldHaveScrollview = NO;
-                    }
-                }
-                this.scrollviewsInitialized = YES;
-            }
-
-        }
-    },
-
-    /**
-     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
-     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
-     */
-    initializeVar: function() {
-        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
-        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
-        this.contentLoaded = YES;
-        this.themeUpdate();
-    },
-
-    registerEvents: function() {
-        /* register for orientation change events of the current page */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        M.EventDispatcher.registerEvent(
-            'orientationdidchange',
-            page.id,
-            {
-                target: this,
-                action:  function() {
-                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
-                    var that = this;
-                    window.setTimeout(function() {
-                        that.orientationDidChange();
-                    }, 100);
-                }
-            },
-            ['orientationdidchange'],
-            null,
-            NO,
-            YES
-        );
-    },
-
-    listItemSelected: function(id) {
-        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
-
-        if (!contentView) {
-            return;
-        }
-
-        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-        if (!this.isInitialized) {
-            if (contentView.html) {
-                $('#' + this.content.id).html(contentView.html);
-            } else {
-                $('#' + this.content.id).html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            this.isInitialized = YES;
-        } else {
-            if (contentView.html) {
-                $('#' + this.content.id + ' div:first').html(contentView.html);
-            } else {
-                $('#' + this.content.id + ' div:first').html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-        }
-
-        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        var that = this;
-        if (page) {
-            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
-                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
-                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
-                    $('#' + toolbar.id + ' h1').html(toolbar.value);
-
-                    /* now link the menu with the toolbar if not yet done */
-                    if (!toolbar.parentView.splitview) {
-                        toolbar.parentView.splitview = that;
-                    }
-                }
-            });
-
-            /* add special css class if there is no footer */
-            if ($('#' + page.id + ' .ui-footer').length === 0) {
-                page.addCssClass('tmp-splitview-no-footer');
-            }
-
-            /* add special css class if there is no header */
-            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
-                page.addCssClass('tmp-splitview-no-header');
-            }
-        }
-    },
-
-    orientationDidChange: function() {
-        var orientation = M.Environment.getOrientation();
-        var that = this;
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* portrait */
-        if (M.Environment.getHeight() > M.Environment.getWidth()) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        /* landscape */
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-
-            /* hide the popover */
-            var toolbar;
-            if (page) {
-                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
-                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
-                        toolbar.parentView.popover.hide();
-                    }
-                });
-            }
-
-            /* update the menu */
-            var id;
-            $('#' + this.menu.id).find('li').each(function() {
-                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
-                    id = $(this).attr('id');
-                }
-            });
-
-            /* activate the current item */
-            if (id) {
-                this.menu.menu.setActiveListItem(id);
-            }
-
-            /* set the selected item */
-            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-            /* scroll the menu so we def. see the selected item */
-            this.scrollListToRightPosition(id);
-        }
-
-        /* scroll content to top */
-        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-
-        /* call theme update */
-        this.themeUpdate();
-    },
-
-    scrollListToRightPosition: function(id) {
-        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + id).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
-        var middle = menuHeight / 2;
-        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < middle) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - middle);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < middle) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - middle);
-            }
-        }
-
-        /* if there already is a scroll view, just scroll */
-        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
-            $('#' + this.menu.menu.id).scrollview({
-                direction: 'y'
-            });
-        }
-        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
     }
 
 });
@@ -6501,610 +6501,6 @@ M.TabBarView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      26.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for map type: roadmap
- *
- * @type String
- */
-M.MAP_ROADMAP = 'ROADMAP';
-
-/**
- * A constant value for map type: hybrid
- *
- * @type String
- */
-M.MAP_HYBRID = 'HYBRID';
-
-/**
- * A constant value for map type: satellite
- *
- * @type String
- */
-M.MAP_SATELLITE = 'SATELLITE';
-
-/**
- * A constant value for map type: terrain
- *
- * @type String
- */
-M.MAP_TERRAIN = 'TERRAIN';
-
-/**
- * A global reference to the first instances of M.MapView. We use this to have a accessible hook
- * to the map we can pass to google as a callback object.
- *
- * @type Object
- */
-M.INITIAL_MAP = null;
-
-/**
- * @class
- *
- * M.MapView is the prototype of a map view. It defines a set of methods for
- * displaying a map, setting markers and showing the current location. This
- * map view is based on google maps, but other implementations are possible.
- *
- * @extends M.View
- */
-M.MapView = M.View.extend(
-/** @scope M.MapView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapView',
-
-    /**
-     * This property is used to save a reference to the actual google map. It
-     * is set automatically when the map is firstly initialized.
-     *
-     * @type Object
-     */
-    map: null,
-
-    /**
-     * This property is used to store the map's M.MapMarkerViews. If a marker
-     * is set within the init() method or by calling the addMarker() method,
-     * it is automatically pushed into this array.
-     *
-     * @type Object
-     */
-    markers: null,
-
-    /**
-     * Determines whether to display the map view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * This property specifies the zoom level for this map view. It is directly
-     * mapped to the zoom property of a google map view. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Number
-     */
-    zoomLevel: 15,
-
-    /**
-     * This property specifies the map type for this map view. It is directly
-     * mapped to the 'mapTypeId' property of a google map view. Possible values
-     * for this property are:
-     *
-     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
-     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
-     *   - M.MAP_SATELLITE --> This map type displays satellite images.
-     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
-     *
-     * For further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type String
-     */
-    mapType: M.MAP_ROADMAP,
-
-    /**
-     * This property specifies whether or not to display the map type controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showMapTypeControl: NO,
-
-    /**
-     * This property specifies whether or not to display the navigation controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showNavigationControl: NO,
-
-    /**
-     * This property specifies whether or not to display the street view controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showStreetViewControl: NO,
-
-    /**
-     * This property specifies whether the map is draggable or not. If set to NO,
-     * a user won't be able to move the map, respectively the visible sector. For
-     * further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: YES,
-
-    /**
-     * This property specifies the initial location for this map view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the center
-     * property of a google map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type M.Location
-     */
-
-    initialLocation: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property determines whether or not to show a marker at the map view's
-     * initial location. This location can be specified by the initialLocation
-     * property of this map view.
-     *
-     * @type Boolean
-     */
-    setMarkerAtInitialLocation: NO,
-
-    /**
-     * This property can be used to specify the animation type for this map view's
-     * markers. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
-
-    /**
-     * This property spacifies whether or not this map has already been initialized.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property specifies whether or not to remove all existing markers on a
-     * map update. A map update can either be an automatic update due to content
-     * binding or a implicit call of the map view's updateMap() method.
-     *
-     * @type Boolean
-     */
-    removeMarkersOnUpdate: YES,
-
-    /**
-     * If set, contains the map view's callback in sub a object named 'error',
-     * which will be called if no connection is available and the map service
-     * (google maps api) can not be loaded.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This flag can be used to specify whether or not to load the google places
-     * library. By default this property is set to YES. If you do not need the
-     * library, you should set this to NO in order to save some bandwidth.
-     *
-     * @type Boolean
-     */
-    loadPlacesLibrary: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a map view, respectively a map view container.
-     *
-     * @private
-     * @returns {String} The map view's html representation.
-     */
-    render: function() {
-        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
-        this.html += !this.isInset ? ' class="ui-listview"' : '';
-        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is called if the bound content changed. This content must be
-     * an array of M.Location objects or M.MapMarkerView objects. This method
-     * will take care of a re-rendering of the map view and all of its bound
-     * markers.
-     *
-     * If M.Location objects are passed, the default settings for map markers
-     * of this map view are assigned.
-     *
-     * Note that you can not use individual click events for your markers if
-     * you pass M.Location objects.
-     */
-    renderUpdate: function() {
-        /* check if content binding is valid */
-        var content = null;
-        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
-            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
-            return;
-        }
-
-        /* get the marker / location objects from content binding */
-        var content = this.contentBinding.target[this.contentBinding.property];
-        var markers = [];
-
-        /* save a reference to the map */
-        var that = this;
-
-        /* if we got locations, transform to markers */
-        if(content && content[0] && content[0].type === 'M.Location') {
-            _.each(content, function(location) {
-                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
-                    markers.push(M.MapMarkerView.init({
-                        location: location,
-                        map: that
-                    }));
-                }
-            });
-        /* otherwise check and filter for map markers */
-        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
-            markers = _.select(content, function(marker) {
-                return (marker && marker.type === 'M.MapMarkerView')
-            })
-        }
-
-        /* remove current markers */
-        if(this.removeMarkersOnUpdate) {
-            this.removeAllMarkers();
-        }
-
-        /* add all new markers */
-        _.each(markers, function(marker) {
-            that.addMarker(marker);
-        })
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * We use this to disable event registration for M.MapView, since we only use the 'events' property
-     * for determining the handler for possible map markers of this map.
-     */
-    registerEvents: function() {
-
-    },
-
-    /**
-     * Applies some style-attributes to the map view.
-     *
-     * @private
-     * @returns {String} The maps view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is used to initialize a map view, typically out of a controller.
-     * With its options parameter you can set or update almost every parameter of
-     * a map view. This allows you to define a map view within your view, but then
-     * update its parameters later when you want this view to display a map.
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * Once the google api is initialized, the success callback specified with the
-     * options parameter is called. If an error occurs (e.g. no network connection),
-     * the error callback is called instead. They can be specified like the
-     * following:
-     *
-     *   {
-     *     callbacks: {
-     *       success: {
-     *         target: this,
-     *         action: function() {
-     *           // success callback
-     *         }
-     *       },
-     *       error: {
-     *         target: this,
-     *         action: function() {
-     *           // error callback
-     *         }
-     *       }
-     *     }
-     *   }
-     *   
-     * @param {Object} options The options for the map view.
-     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
-     */
-    initMap: function(options, isUpdate) {
-        if(!this.isInitialized || isUpdate) {
-            if(!isUpdate) {
-                this.markers = [];
-            }
-
-            if(typeof(google) === 'undefined') {
-                /* store the passed params and this map globally for further use */
-                M.INITIAL_MAP = {
-                    map: this,
-                    options: options,
-                    isUpdate: isUpdate
-                };
-
-                /* check the connection status */
-                M.Environment.getConnectionStatus({
-                    target: this,
-                    action: 'didRetrieveConnectionStatus'
-                });
-            } else {
-                this.googleDidLoad(options, isUpdate, true);
-            }
-        } else {
-            M.Logger.log('The M.MapView has already been initialized', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally to retrieve the connection status. If there is a connection
-     * available, we will include the google maps api.
-     *
-     * @private
-     */
-    didRetrieveConnectionStatus: function(connectionStatus) {
-        if(connectionStatus === M.ONLINE) {
-            $.getScript(
-                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
-            );
-        } else {
-            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
-            if(callback && M.EventDispatcher.checkHandler(callback.error)){
-                this.bindToCaller(callback.error.target, callback.error.action)();
-            }
-        }
-    },
-
-    /**
-     * This method is used internally to initialite the map if the google api hasn't been loaded
-     * before. If so, we use this method as callback for google.
-     *
-     * @private
-     */
-    googleDidLoad: function(options, isUpdate, isInternalCall) {
-        if(!isInternalCall) {
-            options = M.INITIAL_MAP.options;
-            isUpdate = M.INITIAL_MAP.isUpdate;
-        }
-
-        for(var i in options) {
-             switch (i) {
-                 case 'zoomLevel':
-                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
-                    break;
-                 case 'mapType':
-                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
-                    break;
-                 case 'markerAnimationType':
-                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
-                    break;
-                 case 'showMapTypeControl':
-                 case 'showNavigationControl':
-                 case 'showStreetViewControl':
-                 case 'isDraggable':
-                 case 'setMarkerAtInitialLocation':
-                 case 'removeMarkersOnUpdate':
-                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
-                    break;
-                 case 'initialLocation':
-                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
-                    break;
-                 case 'callbacks':
-                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
-                    break;
-                 default:
-                    break;
-             }
-        };
-        if(isUpdate) {
-            if(this.removeMarkersOnUpdate) {
-                this.removeAllMarkers();
-            }
-            this.map.setOptions({
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        } else {
-            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        }
-
-        if(this.setMarkerAtInitialLocation) {
-            var that = this;
-            this.addMarker(M.MapMarkerView.init({
-                location: this.initialLocation,
-                map: that.map
-            }));
-        }
-
-        this.isInitialized = YES;
-
-        /* now call callback of "the outside world" */
-        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
-            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
-        }
-    },
-
-    /**
-     * This method is used to update a map view, typically out of a controller.
-     * With its options parameter you can update or update almost every parameter
-     * of a map view. This allows you to define a map view within your view, but
-     * then update its parameters later when you want this view to display a map
-     * and to update those options over and over again for this map. 
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * @param {Object} options The options for the map view.
-     */
-    updateMap: function(options) {
-        this.initMap(options, YES);
-    },
-
-    /**
-     * This method can be used to add a marker to the map view. Simply pass a
-     * valid M.MapMarkerView object and a map marker is created automatically,
-     * displayed on the map and added to this map view's markers property.
-     *
-     * @param {M.MapMarkerView} marker The marker to be added.
-     */
-    addMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
-            var that = this;
-            marker.marker = new google.maps.Marker({
-                map: that.map,
-                draggable: NO,
-                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
-                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
-                icon: marker.icon ? new google.maps.MarkerImage(
-                    marker.icon,
-                    null,
-                    null,
-                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
-                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
-                ) : marker.icon
-            });
-            marker.registerEvents();
-            this.markers.push(
-                marker
-            );
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method can be used to remove a certain marker from the map view. In
-     * order to do this, you need to pass the M.MapMarkerView object that you
-     * want to be removed from the map view.
-     *
-     * @param {M.MapMarkerView} marker The marker to be removed.
-     */
-    removeMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
-            var didRemoveMarker = NO;
-            this.markers = _.select(this.markers, function(m) {
-                if(marker === m){
-                    m.marker.setMap(null);
-                    didRemoveMarker = YES;
-                }
-                return !(marker === m);
-            });
-            if(!didRemoveMarker) {
-                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
-            }
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method removes all markers from this map view. It both cleans up the
-     * markers array and deletes the marker's visual representation from the map
-     * view.
-     */
-    removeAllMarkers: function() {
-        _.each(this.markers, function(marker) {
-            marker.marker.setMap(null);
-        });
-        this.markers = [];
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -8230,6 +7626,610 @@ M.MovableLabelView = M.LabelView.extend(
     setValue: function(value) {
         this.value = value;
         this.renderUpdate();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for map type: roadmap
+ *
+ * @type String
+ */
+M.MAP_ROADMAP = 'ROADMAP';
+
+/**
+ * A constant value for map type: hybrid
+ *
+ * @type String
+ */
+M.MAP_HYBRID = 'HYBRID';
+
+/**
+ * A constant value for map type: satellite
+ *
+ * @type String
+ */
+M.MAP_SATELLITE = 'SATELLITE';
+
+/**
+ * A constant value for map type: terrain
+ *
+ * @type String
+ */
+M.MAP_TERRAIN = 'TERRAIN';
+
+/**
+ * A global reference to the first instances of M.MapView. We use this to have a accessible hook
+ * to the map we can pass to google as a callback object.
+ *
+ * @type Object
+ */
+M.INITIAL_MAP = null;
+
+/**
+ * @class
+ *
+ * M.MapView is the prototype of a map view. It defines a set of methods for
+ * displaying a map, setting markers and showing the current location. This
+ * map view is based on google maps, but other implementations are possible.
+ *
+ * @extends M.View
+ */
+M.MapView = M.View.extend(
+/** @scope M.MapView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapView',
+
+    /**
+     * This property is used to save a reference to the actual google map. It
+     * is set automatically when the map is firstly initialized.
+     *
+     * @type Object
+     */
+    map: null,
+
+    /**
+     * This property is used to store the map's M.MapMarkerViews. If a marker
+     * is set within the init() method or by calling the addMarker() method,
+     * it is automatically pushed into this array.
+     *
+     * @type Object
+     */
+    markers: null,
+
+    /**
+     * Determines whether to display the map view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * This property specifies the zoom level for this map view. It is directly
+     * mapped to the zoom property of a google map view. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Number
+     */
+    zoomLevel: 15,
+
+    /**
+     * This property specifies the map type for this map view. It is directly
+     * mapped to the 'mapTypeId' property of a google map view. Possible values
+     * for this property are:
+     *
+     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
+     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
+     *   - M.MAP_SATELLITE --> This map type displays satellite images.
+     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
+     *
+     * For further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type String
+     */
+    mapType: M.MAP_ROADMAP,
+
+    /**
+     * This property specifies whether or not to display the map type controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showMapTypeControl: NO,
+
+    /**
+     * This property specifies whether or not to display the navigation controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showNavigationControl: NO,
+
+    /**
+     * This property specifies whether or not to display the street view controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showStreetViewControl: NO,
+
+    /**
+     * This property specifies whether the map is draggable or not. If set to NO,
+     * a user won't be able to move the map, respectively the visible sector. For
+     * further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: YES,
+
+    /**
+     * This property specifies the initial location for this map view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the center
+     * property of a google map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type M.Location
+     */
+
+    initialLocation: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property determines whether or not to show a marker at the map view's
+     * initial location. This location can be specified by the initialLocation
+     * property of this map view.
+     *
+     * @type Boolean
+     */
+    setMarkerAtInitialLocation: NO,
+
+    /**
+     * This property can be used to specify the animation type for this map view's
+     * markers. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
+
+    /**
+     * This property spacifies whether or not this map has already been initialized.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property specifies whether or not to remove all existing markers on a
+     * map update. A map update can either be an automatic update due to content
+     * binding or a implicit call of the map view's updateMap() method.
+     *
+     * @type Boolean
+     */
+    removeMarkersOnUpdate: YES,
+
+    /**
+     * If set, contains the map view's callback in sub a object named 'error',
+     * which will be called if no connection is available and the map service
+     * (google maps api) can not be loaded.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This flag can be used to specify whether or not to load the google places
+     * library. By default this property is set to YES. If you do not need the
+     * library, you should set this to NO in order to save some bandwidth.
+     *
+     * @type Boolean
+     */
+    loadPlacesLibrary: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a map view, respectively a map view container.
+     *
+     * @private
+     * @returns {String} The map view's html representation.
+     */
+    render: function() {
+        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
+        this.html += !this.isInset ? ' class="ui-listview"' : '';
+        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is called if the bound content changed. This content must be
+     * an array of M.Location objects or M.MapMarkerView objects. This method
+     * will take care of a re-rendering of the map view and all of its bound
+     * markers.
+     *
+     * If M.Location objects are passed, the default settings for map markers
+     * of this map view are assigned.
+     *
+     * Note that you can not use individual click events for your markers if
+     * you pass M.Location objects.
+     */
+    renderUpdate: function() {
+        /* check if content binding is valid */
+        var content = null;
+        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
+            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
+            return;
+        }
+
+        /* get the marker / location objects from content binding */
+        var content = this.contentBinding.target[this.contentBinding.property];
+        var markers = [];
+
+        /* save a reference to the map */
+        var that = this;
+
+        /* if we got locations, transform to markers */
+        if(content && content[0] && content[0].type === 'M.Location') {
+            _.each(content, function(location) {
+                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
+                    markers.push(M.MapMarkerView.init({
+                        location: location,
+                        map: that
+                    }));
+                }
+            });
+        /* otherwise check and filter for map markers */
+        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
+            markers = _.select(content, function(marker) {
+                return (marker && marker.type === 'M.MapMarkerView')
+            })
+        }
+
+        /* remove current markers */
+        if(this.removeMarkersOnUpdate) {
+            this.removeAllMarkers();
+        }
+
+        /* add all new markers */
+        _.each(markers, function(marker) {
+            that.addMarker(marker);
+        })
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * We use this to disable event registration for M.MapView, since we only use the 'events' property
+     * for determining the handler for possible map markers of this map.
+     */
+    registerEvents: function() {
+
+    },
+
+    /**
+     * Applies some style-attributes to the map view.
+     *
+     * @private
+     * @returns {String} The maps view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is used to initialize a map view, typically out of a controller.
+     * With its options parameter you can set or update almost every parameter of
+     * a map view. This allows you to define a map view within your view, but then
+     * update its parameters later when you want this view to display a map.
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * Once the google api is initialized, the success callback specified with the
+     * options parameter is called. If an error occurs (e.g. no network connection),
+     * the error callback is called instead. They can be specified like the
+     * following:
+     *
+     *   {
+     *     callbacks: {
+     *       success: {
+     *         target: this,
+     *         action: function() {
+     *           // success callback
+     *         }
+     *       },
+     *       error: {
+     *         target: this,
+     *         action: function() {
+     *           // error callback
+     *         }
+     *       }
+     *     }
+     *   }
+     *   
+     * @param {Object} options The options for the map view.
+     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
+     */
+    initMap: function(options, isUpdate) {
+        if(!this.isInitialized || isUpdate) {
+            if(!isUpdate) {
+                this.markers = [];
+            }
+
+            if(typeof(google) === 'undefined') {
+                /* store the passed params and this map globally for further use */
+                M.INITIAL_MAP = {
+                    map: this,
+                    options: options,
+                    isUpdate: isUpdate
+                };
+
+                /* check the connection status */
+                M.Environment.getConnectionStatus({
+                    target: this,
+                    action: 'didRetrieveConnectionStatus'
+                });
+            } else {
+                this.googleDidLoad(options, isUpdate, true);
+            }
+        } else {
+            M.Logger.log('The M.MapView has already been initialized', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally to retrieve the connection status. If there is a connection
+     * available, we will include the google maps api.
+     *
+     * @private
+     */
+    didRetrieveConnectionStatus: function(connectionStatus) {
+        if(connectionStatus === M.ONLINE) {
+            $.getScript(
+                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
+            );
+        } else {
+            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
+            if(callback && M.EventDispatcher.checkHandler(callback.error)){
+                this.bindToCaller(callback.error.target, callback.error.action)();
+            }
+        }
+    },
+
+    /**
+     * This method is used internally to initialite the map if the google api hasn't been loaded
+     * before. If so, we use this method as callback for google.
+     *
+     * @private
+     */
+    googleDidLoad: function(options, isUpdate, isInternalCall) {
+        if(!isInternalCall) {
+            options = M.INITIAL_MAP.options;
+            isUpdate = M.INITIAL_MAP.isUpdate;
+        }
+
+        for(var i in options) {
+             switch (i) {
+                 case 'zoomLevel':
+                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
+                    break;
+                 case 'mapType':
+                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
+                    break;
+                 case 'markerAnimationType':
+                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
+                    break;
+                 case 'showMapTypeControl':
+                 case 'showNavigationControl':
+                 case 'showStreetViewControl':
+                 case 'isDraggable':
+                 case 'setMarkerAtInitialLocation':
+                 case 'removeMarkersOnUpdate':
+                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
+                    break;
+                 case 'initialLocation':
+                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
+                    break;
+                 case 'callbacks':
+                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
+                    break;
+                 default:
+                    break;
+             }
+        };
+        if(isUpdate) {
+            if(this.removeMarkersOnUpdate) {
+                this.removeAllMarkers();
+            }
+            this.map.setOptions({
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        } else {
+            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        }
+
+        if(this.setMarkerAtInitialLocation) {
+            var that = this;
+            this.addMarker(M.MapMarkerView.init({
+                location: this.initialLocation,
+                map: that.map
+            }));
+        }
+
+        this.isInitialized = YES;
+
+        /* now call callback of "the outside world" */
+        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
+            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
+        }
+    },
+
+    /**
+     * This method is used to update a map view, typically out of a controller.
+     * With its options parameter you can update or update almost every parameter
+     * of a map view. This allows you to define a map view within your view, but
+     * then update its parameters later when you want this view to display a map
+     * and to update those options over and over again for this map. 
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * @param {Object} options The options for the map view.
+     */
+    updateMap: function(options) {
+        this.initMap(options, YES);
+    },
+
+    /**
+     * This method can be used to add a marker to the map view. Simply pass a
+     * valid M.MapMarkerView object and a map marker is created automatically,
+     * displayed on the map and added to this map view's markers property.
+     *
+     * @param {M.MapMarkerView} marker The marker to be added.
+     */
+    addMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
+            var that = this;
+            marker.marker = new google.maps.Marker({
+                map: that.map,
+                draggable: NO,
+                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
+                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
+                icon: marker.icon ? new google.maps.MarkerImage(
+                    marker.icon,
+                    null,
+                    null,
+                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
+                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
+                ) : marker.icon
+            });
+            marker.registerEvents();
+            this.markers.push(
+                marker
+            );
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method can be used to remove a certain marker from the map view. In
+     * order to do this, you need to pass the M.MapMarkerView object that you
+     * want to be removed from the map view.
+     *
+     * @param {M.MapMarkerView} marker The marker to be removed.
+     */
+    removeMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
+            var didRemoveMarker = NO;
+            this.markers = _.select(this.markers, function(m) {
+                if(marker === m){
+                    m.marker.setMap(null);
+                    didRemoveMarker = YES;
+                }
+                return !(marker === m);
+            });
+            if(!didRemoveMarker) {
+                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
+            }
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method removes all markers from this map view. It both cleans up the
+     * markers array and deletes the marker's visual representation from the map
+     * view.
+     */
+    removeAllMarkers: function() {
+        _.each(this.markers, function(marker) {
+            marker.marker.setMap(null);
+        });
+        this.markers = [];
     }
 
 });
