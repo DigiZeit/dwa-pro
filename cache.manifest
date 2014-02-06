@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.2.4713 beta, Timestamp:1391714759990
+#Application:DigiWebApp, Version:1.7.2.4714, Timestamp:1391714889807
 
 
 # Explicitly cached entries
@@ -22,12 +22,10 @@ digi_list.js
 jquery-1.9.1.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-ui.js
 jquery_mobile.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-core.js
 jquery.signaturepad.min.js
 json2.min.js
 theme/journal.svg
@@ -44,7 +42,6 @@ theme/images/icons-36-white.png
 theme/images/icons-18-black.png
 theme/images/icons-36-black.png
 theme/images/icons-18-white.png
-DigiWebApp_App.js
 pen.cur
 theme/style.css
 theme/images/48x48_plain_home.png
@@ -72,11 +69,11 @@ theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
-theme/images/200x320_90_DIGI-WEBAPP-WHITE.png
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/48x48_plain_note_view.png
 theme/images/5000x5000_90_SCHOLPP.png
 theme/images/icon_handApplication.png
+theme/images/200x320_90_DIGI-WEBAPP-WHITE.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_car_compact_grey.png
@@ -84,9 +81,9 @@ theme/images/tabSprite.png
 theme/images/arrow_white.png
 theme/images/48x48_plain_folder_view.png
 theme/images/200x320_90_DIGI-WEBAPP-WHITE_mitLogo.png
-theme/images/48x48_plain_handauftrag.png
 theme/images/ic_launcher_ldpi.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
+theme/images/48x48_plain_handauftrag.png
 theme/images/ic_launcher_mdpi.png
 theme/images/1024x1024_90_SCHOLPP.png
 theme/images/48x48_plain_cup.png
@@ -106,8 +103,8 @@ theme/images/icon_ios_144.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/Auftrag.png
 theme/images/icon_media.png
-theme/images/icon_record.png
 theme/images/48x48_plain_clock_pause.png
+theme/images/icon_record.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_76.png
 theme/images/icon_ios_114.png
@@ -134,6 +131,9 @@ theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/48x48_plain_wrench.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
+core.js
+ui.js
+DigiWebApp_App.js
 
 
 # Resources that require the device/user to be online.
