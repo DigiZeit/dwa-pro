@@ -667,158 +667,6 @@ M.ImagePreloader = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for mathematical flooring.
- *
- * @type String
- */
-M.FLOOR = 'floor';
-
-/**
- * A constant value for mathematical ceiling.
- *
- * @type String
- */
-M.CEIL = 'ceil';
-
-/**
- * A constant value for mathematical rounding.
- *
- * @type String
- */
-M.ROUND = 'round';
-
-/**
- * @class
- *
- * This prototype defines methods for simpler handling of mathematical operations.
- *
- * @extends M.Object
- */
-M.Math = M.Object.extend(
-/** @scope M.Math.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Math',
-
-    /**
-     * This method returns the value of the base to the power of the exponent. So e.g.
-     * pow(2, 3) would return '2 to the power of 3' --> 8.
-     *
-     * @param {Number} base The base.
-     * @param {Number} exponent The exponent.
-     * @returns {Number} The result of the operation.
-     */
-    pow: function(base, exponent) {
-        return Math.pow(base, exponent);
-    },
-
-    /**
-     * The method returns a random number within the range given by the min property
-     * and the max property, including the min and max value.
-     *
-     * A test with 100.000 iterations for random(1, 3) created the following distribution:
-     * - 1: 33.2%
-     * - 2: 33.2%
-     * - 3: 33.6%
-     *
-     * @param {Number} min The minimal value.
-     * @param {Number} max The maximal value.
-     * @returns {Number} The result of the operation.
-     */
-    random: function(min, max) {
-        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
-    },
-
-    /**
-     * The method returns rounded version of the given input number. There are three
-     * types of rounding available:
-     *
-     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
-     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
-     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
-     *
-     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
-     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
-     * is 0.
-     *
-     * @param {Number} input The input value.
-     * @param {String} type The type of rounding.
-     * @param {Number} type The number of decimals (only available for M.ROUND).
-     * @returns {Number} The result of the operation.
-     */
-    round: function(input, type, decimals) {
-        if(decimals) {
-            input = input * (Math.pow(10, decimals));
-        }
-        var output = 0;
-        switch (type) {
-            case M.FLOOR:
-                output = Math.floor(input);
-                break;
-            case M.CEIL:
-                output = Math.ceil(input);
-                break;
-            case M.ROUND:
-                default:
-                output = Math.round(input);
-                break;
-        }
-        if(decimals) {
-            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
-            if(outputStr.length > 1) {
-                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
-            } else {
-                output = parseFloat(outputStr);
-            }
-        }
-
-        return output;
-    },
-
-    /**
-     * This method finds the closest number within an array of numbers that to a certain
-     * given number.
-     *
-     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
-     *
-     * @param {Array} numbers The array of numbers to search in.
-     * @param {Number} number The reference number.
-     * @returns {Number} The nearest number.
-     */
-    nearestNumber: function(numbers, number) {
-        var minDiff = null;
-        var nearestNumber = null;
-
-        _.each(numbers, function(n) {
-            var diff = Math.abs(n - number);
-            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
-                minDiff = diff;
-                nearestNumber = n;
-            }
-        });
-
-        return nearestNumber;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -1006,6 +854,158 @@ M.Location = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for mathematical flooring.
+ *
+ * @type String
+ */
+M.FLOOR = 'floor';
+
+/**
+ * A constant value for mathematical ceiling.
+ *
+ * @type String
+ */
+M.CEIL = 'ceil';
+
+/**
+ * A constant value for mathematical rounding.
+ *
+ * @type String
+ */
+M.ROUND = 'round';
+
+/**
+ * @class
+ *
+ * This prototype defines methods for simpler handling of mathematical operations.
+ *
+ * @extends M.Object
+ */
+M.Math = M.Object.extend(
+/** @scope M.Math.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Math',
+
+    /**
+     * This method returns the value of the base to the power of the exponent. So e.g.
+     * pow(2, 3) would return '2 to the power of 3' --> 8.
+     *
+     * @param {Number} base The base.
+     * @param {Number} exponent The exponent.
+     * @returns {Number} The result of the operation.
+     */
+    pow: function(base, exponent) {
+        return Math.pow(base, exponent);
+    },
+
+    /**
+     * The method returns a random number within the range given by the min property
+     * and the max property, including the min and max value.
+     *
+     * A test with 100.000 iterations for random(1, 3) created the following distribution:
+     * - 1: 33.2%
+     * - 2: 33.2%
+     * - 3: 33.6%
+     *
+     * @param {Number} min The minimal value.
+     * @param {Number} max The maximal value.
+     * @returns {Number} The result of the operation.
+     */
+    random: function(min, max) {
+        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
+    },
+
+    /**
+     * The method returns rounded version of the given input number. There are three
+     * types of rounding available:
+     *
+     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
+     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
+     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
+     *
+     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
+     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
+     * is 0.
+     *
+     * @param {Number} input The input value.
+     * @param {String} type The type of rounding.
+     * @param {Number} type The number of decimals (only available for M.ROUND).
+     * @returns {Number} The result of the operation.
+     */
+    round: function(input, type, decimals) {
+        if(decimals) {
+            input = input * (Math.pow(10, decimals));
+        }
+        var output = 0;
+        switch (type) {
+            case M.FLOOR:
+                output = Math.floor(input);
+                break;
+            case M.CEIL:
+                output = Math.ceil(input);
+                break;
+            case M.ROUND:
+                default:
+                output = Math.round(input);
+                break;
+        }
+        if(decimals) {
+            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
+            if(outputStr.length > 1) {
+                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
+            } else {
+                output = parseFloat(outputStr);
+            }
+        }
+
+        return output;
+    },
+
+    /**
+     * This method finds the closest number within an array of numbers that to a certain
+     * given number.
+     *
+     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
+     *
+     * @param {Array} numbers The array of numbers to search in.
+     * @param {Number} number The reference number.
+     * @returns {Number} The nearest number.
+     */
+    nearestNumber: function(numbers, number) {
+        var minDiff = null;
+        var nearestNumber = null;
+
+        _.each(numbers, function(n) {
+            var diff = Math.abs(n - number);
+            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
+                minDiff = diff;
+                nearestNumber = n;
+            }
+        });
+
+        return nearestNumber;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1079,6 +1079,270 @@ M.DeviceSwitch = M.Object.extend(
 });
 
 M.DS = M.DeviceSwitch;
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1348,270 +1612,6 @@ M.Environment = M.Object.extend(
             return YES;
         }
         return NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
     }
 
 });
