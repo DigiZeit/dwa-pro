@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.2.4777 beta, Timestamp:1395407093655
+#Application:DigiWebApp, Version:1.7.2.4778 beta, Timestamp:1395407187055
 
 
 # Explicitly cached entries
@@ -12,10 +12,10 @@ fr_fr.js
 underscore-min.js
 d8-0.4.0.min.js
 d8-0.1.3.min.js
-theme/tmp.css
-bootstrap.js
 jquery.xml2json_1.3.js
+theme/tmp.css
 jstz.js
+bootstrap.js
 digi_selection_list.js
 digi_selection_list_item.js
 digi_list_item.js
@@ -24,10 +24,10 @@ jquery-1.9.1.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 ui.js
-jquery_mobile.js
 barcodescanner.js
 childbrowser.js
 cordova.js
+jquery_mobile.js
 core.js
 jquery.signaturepad.min.js
 json2.min.js
@@ -93,16 +93,16 @@ theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
 theme/images/ic_launcher_mdpi.png
 theme/images/1024x1024_90_SCHOLPP.png
 theme/images/48x48_plain_cup.png
-theme/images/ajax-loader.png
 theme/images/NeuesLogo2013.png
+theme/images/ajax-loader.png
 theme/images/icon_ios_57.png
 theme/images/48x48_plain_refresh.png
 theme/images/720x960_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_about.png
 theme/images/icon_ios_152.png
+theme/images/320x480_90_SCHOLPP.png
 theme/images/icon_timeData.png
 theme/images/splash.png
-theme/images/320x480_90_SCHOLPP.png
 theme/images/arrow_grey.png
 theme/images/icon_ios_72.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
