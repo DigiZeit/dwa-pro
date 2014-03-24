@@ -1,69 +1,6 @@
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      05.12.11
@@ -304,6 +241,69 @@ M.TableView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -4187,66 +4187,6 @@ M.ConfirmDialogView = M.DialogView.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      01.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A container view renders a simple div container that can be used to display
- * any html valid content, e.g. by third party frameworks.
- *
- * @extends M.View
- */
-M.ContainerView = M.View.extend(
-/** @scope M.ContainerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ContainerView',
-
-    /**
-     * Renders a simple div container and applies css classes if specified.
-     *
-     * @private
-     * @returns {String} The container view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the container view.
-     *
-     * @private
-     * @returns {String} The container's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      30.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5149,208 +5089,168 @@ M.SelectionListView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      15.08.11
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
  * @class
  *
- * This ...
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
  *
  * @extends M.View
  */
-M.PopoverView = M.View.extend(
-/** @scope M.PopoverView.prototype */ {
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.PopoverView',
+    type: 'M.LabelView',
 
-    menu: null,
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
 
-    scrollview: null,
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
 
-    hasPopScrollview: NO,
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
 
-    selectedItemInPopover: null,
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
 
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
     render: function() {
-        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
 
-        /* render a toolbar as the popover's header */
-        var toolbar = M.ToolbarView.design({
-            value: 'Menu',
-            cssClass: 'tmp-popover-header'
-        });
-        this.html += toolbar.render();
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
 
-        this.menu = M.ListView.design({});
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
 
-        /* render a scrollview as the content container */
-        this.scrollview = M.ScrollView.design({
-            cssClass: 'tmp-popover-content',
-            childViews: 'list',
-            list: this.menu
-        });
-        this.html += this.scrollview.render();
-
-        /* add the border (with the arrow at the top) */
-        this.html += '<div class="tmp-popover-arrow"></div>';
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
 
         this.html += '</div>';
 
-        /* push to DOM */
-        $('body').append(this.html);
-
-        /* now render items */
-        this.selectedItemInPopover = null;
-        for (var i in this.items) {
-            var item = M.ListItemView.design({
-                childViews: 'label',
-                parentView: this.splitview.menu.menu,
-                splitViewItem: this.items[i],
-                label: M.LabelView.design({
-                    value: this.items[i].value
-                }),
-                events: {
-                    tap: {
-                        target: this,
-                        action: 'itemSelected'
-                    }
-                }
-            });
-            this.scrollview.list.addItem(item.render());
-
-            /* check if this item has to be selected afterwards */
-            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
-                this.selectedItemInPopover = item.id;
-            }
-
-            /* register events for item */
-            item.registerEvents();
-        }
-
-        /* now set the active list item */
-        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
-
-        /* finally show the active list item's content */
-        this.splitview.listItemSelected(this.selectedItemInPopover);
-    },
-
-    renderUpdate: function() {
-        /* get id of selected item */
-        var id;
-        var that = this;
-        $('#' + this.menu.id).find('li').each(function() {
-            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
-                id = $(this).attr('id');
-            }
-        });
-        /* activate item */
-        if (id) {
-            this.menu.setActiveListItem(id);
-            this.selectedItemInPopover = id;
-        }
-    },
-
-    show: function() {
-        this.render();
-        this.theme();
-        this.toggle();
-    },
-
-    hide: function() {
-        $('#' + this.id).hide();
+        return this.html;
     },
 
     /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
+     * Updates the value of the label with DOM access by jQuery.
      *
      * @private
      */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
     },
-
 
     /**
-     * This method calculates the popup's height, checks if a scrollview is required and,
-     * if neccessary, scrollt the list to make the selected item visible.
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
      */
-    resizePopup: function() {
-        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
-        var itemCount = $('#' + this.menu.id).find('li').length;
-        var popoverSize = M.Environment.getHeight() * 0.7;
-        var itemListHeight = itemCount * itemHeight;
-        if (popoverSize < itemListHeight) {
-            $('#' + this.menu.id).css('height', popoverSize);
-            // Add a scrollview to List
-            $('#' + this.menu.id).scrollview({
-                direction: 'y'
-            });
-            this.hasPopScrollview = YES;
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
         }
-        else {
-            $('#' + this.menu.id).css('height', itemListHeight);
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
         }
-        //Scrolling to right position is only needed when the popover has a scrollview
-        if (this.hasPopScrollview) {
-            this.scrollListToRightPosition();
-        }
+        return html;
     },
 
-    toggle: function() {
-        $('#' + this.id).toggle();
-        this.resizePopup();
-    },
-
-    itemSelected: function(id, event, nextEvent) {
-        this.toggle();
-        this.splitview.listItemSelected(id);
-    },
-
-    scrollListToRightPosition: function() {
-        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() * 0.7;
-        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
-        var center = menuHeight / 2;
-        var distanceToListEnd = completeItemListHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < center) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - center);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < center) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - center);
-            }
-        }
-        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
     }
-});
 
+});
 /**
  * @class
  *
@@ -5579,121 +5479,40 @@ M.ToggleSwitchView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      02.11.2010
+// Date:      01.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
  * @class
  *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
+ * A container view renders a simple div container that can be used to display
+ * any html valid content, e.g. by third party frameworks.
  *
  * @extends M.View
  */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
+M.ContainerView = M.View.extend(
+/** @scope M.ContainerView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.LabelView',
+    type: 'M.ContainerView',
 
     /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
+     * Renders a simple div container and applies css classes if specified.
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The container view's html representation.
      */
     render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+        this.html = '<div id="' + this.id + '"' + this.style() + '>';
 
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
+        this.renderChildViews();
 
         this.html += '</div>';
 
@@ -5701,43 +5520,224 @@ M.LabelView = M.View.extend(
     },
 
     /**
-     * Updates the value of the label with DOM access by jQuery.
+     * Applies some style-attributes to the container view.
      *
      * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
+     * @returns {String} The container's styling as html representation.
      */
     style: function() {
         var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
         if(this.cssClass) {
             html += ' class="' + this.cssClass + '"';
         }
         return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      15.08.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This ...
+ *
+ * @extends M.View
+ */
+M.PopoverView = M.View.extend(
+/** @scope M.PopoverView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PopoverView',
+
+    menu: null,
+
+    scrollview: null,
+
+    hasPopScrollview: NO,
+
+    selectedItemInPopover: null,
+
+    render: function() {
+        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
+
+        /* render a toolbar as the popover's header */
+        var toolbar = M.ToolbarView.design({
+            value: 'Menu',
+            cssClass: 'tmp-popover-header'
+        });
+        this.html += toolbar.render();
+
+        this.menu = M.ListView.design({});
+
+        /* render a scrollview as the content container */
+        this.scrollview = M.ScrollView.design({
+            cssClass: 'tmp-popover-content',
+            childViews: 'list',
+            list: this.menu
+        });
+        this.html += this.scrollview.render();
+
+        /* add the border (with the arrow at the top) */
+        this.html += '<div class="tmp-popover-arrow"></div>';
+
+        this.html += '</div>';
+
+        /* push to DOM */
+        $('body').append(this.html);
+
+        /* now render items */
+        this.selectedItemInPopover = null;
+        for (var i in this.items) {
+            var item = M.ListItemView.design({
+                childViews: 'label',
+                parentView: this.splitview.menu.menu,
+                splitViewItem: this.items[i],
+                label: M.LabelView.design({
+                    value: this.items[i].value
+                }),
+                events: {
+                    tap: {
+                        target: this,
+                        action: 'itemSelected'
+                    }
+                }
+            });
+            this.scrollview.list.addItem(item.render());
+
+            /* check if this item has to be selected afterwards */
+            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
+                this.selectedItemInPopover = item.id;
+            }
+
+            /* register events for item */
+            item.registerEvents();
+        }
+
+        /* now set the active list item */
+        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
+
+        /* finally show the active list item's content */
+        this.splitview.listItemSelected(this.selectedItemInPopover);
+    },
+
+    renderUpdate: function() {
+        /* get id of selected item */
+        var id;
+        var that = this;
+        $('#' + this.menu.id).find('li').each(function() {
+            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
+                id = $(this).attr('id');
+            }
+        });
+        /* activate item */
+        if (id) {
+            this.menu.setActiveListItem(id);
+            this.selectedItemInPopover = id;
+        }
+    },
+
+    show: function() {
+        this.render();
+        this.theme();
+        this.toggle();
+    },
+
+    hide: function() {
+        $('#' + this.id).hide();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
+    },
+
+
+    /**
+     * This method calculates the popup's height, checks if a scrollview is required and,
+     * if neccessary, scrollt the list to make the selected item visible.
+     */
+    resizePopup: function() {
+        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
+        var itemCount = $('#' + this.menu.id).find('li').length;
+        var popoverSize = M.Environment.getHeight() * 0.7;
+        var itemListHeight = itemCount * itemHeight;
+        if (popoverSize < itemListHeight) {
+            $('#' + this.menu.id).css('height', popoverSize);
+            // Add a scrollview to List
+            $('#' + this.menu.id).scrollview({
+                direction: 'y'
+            });
+            this.hasPopScrollview = YES;
+        }
+        else {
+            $('#' + this.menu.id).css('height', itemListHeight);
+        }
+        //Scrolling to right position is only needed when the popover has a scrollview
+        if (this.hasPopScrollview) {
+            this.scrollListToRightPosition();
+        }
+    },
+
+    toggle: function() {
+        $('#' + this.id).toggle();
+        this.resizePopup();
+    },
+
+    itemSelected: function(id, event, nextEvent) {
+        this.toggle();
+        this.splitview.listItemSelected(id);
+    },
+
+    scrollListToRightPosition: function() {
+        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() * 0.7;
+        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
+        var center = menuHeight / 2;
+        var distanceToListEnd = completeItemListHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < center) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - center);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < center) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - center);
+            }
+        }
+        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+});
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
