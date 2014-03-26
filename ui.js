@@ -308,6 +308,349 @@ M.TableView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
+ * M.Application. A page is the container view for all other views.
+ *
+ * @extends M.View
+ */
+M.PageView = M.View.extend(
+/** @scope M.PageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PageView',
+
+    /**
+     * States whether a page is loaded the first time or not. It is automatically set to NO
+     * once the page was first loaded.
+     *
+     * @type Boolean
+     */
+    isFirstLoad: YES,
+
+    /**
+     * Indicates whether the page has a tab bar or not.
+     *
+     * @type Boolean
+     */
+    hasTabBarView: NO,
+
+    /**
+     * The page's tab bar.
+     *
+     * @type M.TabBarView
+     */
+    tabBarView: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions. If
+     * there are external handlers specified for the same event, the internal handler is called first.
+     *
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * An associative array containing all list views used in this page. The key for a list view is
+     * its id. We do this to have direct access to a list view, so we can reset its selected item
+     * once the page was hidden.
+     *
+     * @type Object
+     */
+    listList: null,
+
+    /**
+     * This property contains the page's current orientation. This property is only used internally!
+     *
+     * @private
+     * @type Number
+     */
+    orientation: null,
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The page view's html representation.
+     */
+    render: function() {
+        /* store the currently rendered page as a reference for use in child views */
+        M.ViewManager.currentlyRenderedPage = this;
+        
+        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
+        this.registerEvents();
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for page views and its
+     * internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            pagebeforeshow: {
+                target: this,
+                action: 'pageWillLoad'
+            },
+            pageshow: {
+                target: this,
+                action: 'pageDidLoad'
+            },
+            pagebeforehide: {
+                target: this,
+                action: 'pageWillHide'
+            },
+            pagehide: {
+                target: this,
+                action: 'pageDidHide'
+            },
+            orientationdidchange: {
+                target: this,
+                action: 'orientationDidChange'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method writes the view's html string into the DOM. M.Page is the only view that does
+     * that. All other views just deliver their html representation to a page view.
+     */
+    writeToDOM: function() {
+    	if (restartOnBlackBerry) {
+    		if (document.readyState === "loading") {
+    			document.write(this.html);
+    		} else if (typeof($(this.html)[0]) !== undefined) {
+    			// append only if the page-id isn't already in the body 
+    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
+    				$('body').append(this.html);
+    			}
+    		}
+		} else {
+			document.write(this.html);
+		}
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillLoad: function(id, event, nextEvent) {
+        /* initialize the tabbar */
+        if(M.Application.isFirstLoad) {
+            M.Application.isFirstLoad = NO;
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage && currentPage.hasTabBarView) {
+                var tabBarView = currentPage.tabBarView;
+
+                if(tabBarView.childViews) {
+                    var childViews = tabBarView.getChildViewsAsArray();
+                    for(var i in childViews) {
+                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
+                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* initialize the loader for later use (if not already done) */
+        if(M.LoaderView) {
+            M.LoaderView.initialize();
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+            var that = this;
+            window.setTimeout(function() {
+                $(that).controlgroup();
+            }, 1);
+        });
+
+        /* reset the page's title */
+        document.title = M.Application.name;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was loaded. If a onLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidLoad: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+//            $(this).controlgroup();
+//        });
+
+        this.isFirstLoad = NO;
+    },
+
+    /**
+     * This method is called right before the page is hidden. If a beforeHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillHide: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was hidden. If a onHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidHide: function(id, event, nextEvent) {
+        /* if there is a list on the page, reset it: deactivate possible active list items */
+        if(this.listList) {
+            _.each(this.listList, function(list) {
+                list.resetActiveListItem();
+            });
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the device's orientation did change. If a action for
+     * orientationdidchange is defined for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    orientationDidChange: function(id, event, nextEvent) {
+        /* get the orientation */
+        var orientation = M.Environment.getOrientation();
+        
+        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
+        if(orientation === this.orientation) {
+            return;
+        }
+
+        /* auto-reposition opened dialogs */
+        $('.tmp-dialog').each(function() {
+            var id = $(this).attr('id');
+            var dialog = M.ViewManager.getViewById(id);
+            var dialogDOM = $(this);
+            window.setTimeout(function() {
+                dialog.positionDialog(dialogDOM);
+                dialog.positionBackground($('.tmp-dialog-background'));
+            }, 500);
+        });
+
+        /* auto-reposition carousels */
+        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
+            var carousel = M.ViewManager.getViewById($(this).attr('id'));
+            carousel.orientationDidChange();
+        });
+
+        /* set the current orientation */
+        this.orientation = orientation;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the page.
+     *
+     * @private
+     * @returns {String} The page's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            if(!html) {
+                html += ' class="';
+            }
+            html += this.cssClass;
+        }
+        if(html) {
+            html += '"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1072,349 +1415,6 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
- * M.Application. A page is the container view for all other views.
- *
- * @extends M.View
- */
-M.PageView = M.View.extend(
-/** @scope M.PageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PageView',
-
-    /**
-     * States whether a page is loaded the first time or not. It is automatically set to NO
-     * once the page was first loaded.
-     *
-     * @type Boolean
-     */
-    isFirstLoad: YES,
-
-    /**
-     * Indicates whether the page has a tab bar or not.
-     *
-     * @type Boolean
-     */
-    hasTabBarView: NO,
-
-    /**
-     * The page's tab bar.
-     *
-     * @type M.TabBarView
-     */
-    tabBarView: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions. If
-     * there are external handlers specified for the same event, the internal handler is called first.
-     *
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * An associative array containing all list views used in this page. The key for a list view is
-     * its id. We do this to have direct access to a list view, so we can reset its selected item
-     * once the page was hidden.
-     *
-     * @type Object
-     */
-    listList: null,
-
-    /**
-     * This property contains the page's current orientation. This property is only used internally!
-     *
-     * @private
-     * @type Number
-     */
-    orientation: null,
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The page view's html representation.
-     */
-    render: function() {
-        /* store the currently rendered page as a reference for use in child views */
-        M.ViewManager.currentlyRenderedPage = this;
-        
-        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        this.writeToDOM();
-        this.theme();
-        this.registerEvents();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for page views and its
-     * internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            pagebeforeshow: {
-                target: this,
-                action: 'pageWillLoad'
-            },
-            pageshow: {
-                target: this,
-                action: 'pageDidLoad'
-            },
-            pagebeforehide: {
-                target: this,
-                action: 'pageWillHide'
-            },
-            pagehide: {
-                target: this,
-                action: 'pageDidHide'
-            },
-            orientationdidchange: {
-                target: this,
-                action: 'orientationDidChange'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method writes the view's html string into the DOM. M.Page is the only view that does
-     * that. All other views just deliver their html representation to a page view.
-     */
-    writeToDOM: function() {
-    	if (restartOnBlackBerry) {
-    		if (document.readyState === "loading") {
-    			document.write(this.html);
-    		} else if (typeof($(this.html)[0]) !== undefined) {
-    			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
-    				$('body').append(this.html);
-    			}
-    		}
-		} else {
-			document.write(this.html);
-		}
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillLoad: function(id, event, nextEvent) {
-        /* initialize the tabbar */
-        if(M.Application.isFirstLoad) {
-            M.Application.isFirstLoad = NO;
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage && currentPage.hasTabBarView) {
-                var tabBarView = currentPage.tabBarView;
-
-                if(tabBarView.childViews) {
-                    var childViews = tabBarView.getChildViewsAsArray();
-                    for(var i in childViews) {
-                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
-                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* initialize the loader for later use (if not already done) */
-        if(M.LoaderView) {
-            M.LoaderView.initialize();
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-            var that = this;
-            window.setTimeout(function() {
-                $(that).controlgroup();
-            }, 1);
-        });
-
-        /* reset the page's title */
-        document.title = M.Application.name;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was loaded. If a onLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidLoad: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-//            $(this).controlgroup();
-//        });
-
-        this.isFirstLoad = NO;
-    },
-
-    /**
-     * This method is called right before the page is hidden. If a beforeHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillHide: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was hidden. If a onHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidHide: function(id, event, nextEvent) {
-        /* if there is a list on the page, reset it: deactivate possible active list items */
-        if(this.listList) {
-            _.each(this.listList, function(list) {
-                list.resetActiveListItem();
-            });
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the device's orientation did change. If a action for
-     * orientationdidchange is defined for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    orientationDidChange: function(id, event, nextEvent) {
-        /* get the orientation */
-        var orientation = M.Environment.getOrientation();
-        
-        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
-        if(orientation === this.orientation) {
-            return;
-        }
-
-        /* auto-reposition opened dialogs */
-        $('.tmp-dialog').each(function() {
-            var id = $(this).attr('id');
-            var dialog = M.ViewManager.getViewById(id);
-            var dialogDOM = $(this);
-            window.setTimeout(function() {
-                dialog.positionDialog(dialogDOM);
-                dialog.positionBackground($('.tmp-dialog-background'));
-            }, 500);
-        });
-
-        /* auto-reposition carousels */
-        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
-            var carousel = M.ViewManager.getViewById($(this).attr('id'));
-            carousel.orientationDidChange();
-        });
-
-        /* set the current orientation */
-        this.orientation = orientation;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the page.
-     *
-     * @private
-     * @returns {String} The page's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            if(!html) {
-                html += ' class="';
-            }
-            html += this.cssClass;
-        }
-        if(html) {
-            html += '"';
-        }
-        return html;
-    }
-    
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8363,6 +8363,174 @@ M.CanvasView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for a two column layout of a grid view.
+ *
+ * @type String
+ */
+M.TWO_COLUMNS = {
+    cssClass: 'ui-grid-a',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b'
+    }
+};
+
+/**
+ * A constant value for a three column layout of a grid view.
+ *
+ * @type String
+ */
+M.THREE_COLUMNS = {
+    cssClass: 'ui-grid-b',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c'
+    }
+};
+
+/**
+ * A constant value for a four column layout of a grid view.
+ *
+ * @type String
+ */
+M.FOUR_COLUMNS = {
+    cssClass: 'ui-grid-c',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c',
+        3: 'ui-block-d'
+    }
+};
+
+/**
+ * @class
+ *
+ * M.GridView defines a prototype of a grid view, that allows you to display several
+ * views horizontally aligned. Therefore you can either use a predefined layout or you
+ * can provide a custom layout.
+ * 
+ * @extends M.View
+ */
+M.GridView = M.View.extend(
+/** @scope M.GridView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.GridView',
+
+    /**
+     * The layout for the grid view. There are two predefined layouts available:
+     * 
+     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
+     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
+     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
+     *
+     * To specify your own layout, you will have to implement some css classes and
+     * then define your layout like:
+     *
+     *     cssClass: 'cssClassForWholeGrid',
+     *     columns: {
+     *         0: 'cssClassForColumn1',
+     *         1: 'cssClassForColumn2',
+     *         2: 'cssClassForColumn3',
+     *         3: 'cssClassForColumn4',
+     *         //........
+     *     }
+     *
+     * @type Object
+     */
+    layout: null,
+    
+    /**
+     * This property can be used to assign a css class to the view to get a custom styling.
+     *
+     * @type String
+     */
+    cssClass: '',
+
+    /**
+     * Renders a grid view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The grid view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children and includes some special grid view logic
+     * concerning the rendering of these child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            if(this.layout) {
+                var arr = this.childViews.split(' ');
+                for(var i in this.layout.columns) {
+                    if(this[arr[i]]) {
+                        this.html += '<div class="' + this.layout.columns[i] + '">';
+
+                        this[arr[i]]._name = arr[i];
+                        this.html += this[arr[i]].render();
+
+                        this.html += '</div>';
+                    }
+                }
+            } else {
+                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
+            }
+        }
+    },
+
+    /**
+     * This method themes the grid view, respectively its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the grid view.
+     *
+     * @private
+     * @returns {String} The grid view's styling as html representation.
+     */
+    style: function() {
+        if(this.layout) {
+            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
+            return html;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -8848,174 +9016,6 @@ M.ListItemView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for a two column layout of a grid view.
- *
- * @type String
- */
-M.TWO_COLUMNS = {
-    cssClass: 'ui-grid-a',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b'
-    }
-};
-
-/**
- * A constant value for a three column layout of a grid view.
- *
- * @type String
- */
-M.THREE_COLUMNS = {
-    cssClass: 'ui-grid-b',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c'
-    }
-};
-
-/**
- * A constant value for a four column layout of a grid view.
- *
- * @type String
- */
-M.FOUR_COLUMNS = {
-    cssClass: 'ui-grid-c',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c',
-        3: 'ui-block-d'
-    }
-};
-
-/**
- * @class
- *
- * M.GridView defines a prototype of a grid view, that allows you to display several
- * views horizontally aligned. Therefore you can either use a predefined layout or you
- * can provide a custom layout.
- * 
- * @extends M.View
- */
-M.GridView = M.View.extend(
-/** @scope M.GridView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.GridView',
-
-    /**
-     * The layout for the grid view. There are two predefined layouts available:
-     * 
-     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
-     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
-     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
-     *
-     * To specify your own layout, you will have to implement some css classes and
-     * then define your layout like:
-     *
-     *     cssClass: 'cssClassForWholeGrid',
-     *     columns: {
-     *         0: 'cssClassForColumn1',
-     *         1: 'cssClassForColumn2',
-     *         2: 'cssClassForColumn3',
-     *         3: 'cssClassForColumn4',
-     *         //........
-     *     }
-     *
-     * @type Object
-     */
-    layout: null,
-    
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: '',
-
-    /**
-     * Renders a grid view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The grid view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children and includes some special grid view logic
-     * concerning the rendering of these child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            if(this.layout) {
-                var arr = this.childViews.split(' ');
-                for(var i in this.layout.columns) {
-                    if(this[arr[i]]) {
-                        this.html += '<div class="' + this.layout.columns[i] + '">';
-
-                        this[arr[i]]._name = arr[i];
-                        this.html += this[arr[i]].render();
-
-                        this.html += '</div>';
-                    }
-                }
-            } else {
-                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * This method themes the grid view, respectively its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the grid view.
-     *
-     * @private
-     * @returns {String} The grid view's styling as html representation.
-     */
-    style: function() {
-        if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
-            return html;
-        }
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
