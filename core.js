@@ -3622,80 +3622,6 @@ M.Cypher = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -3961,6 +3887,80 @@ M.DataProviderHybrid = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      19.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4030,6 +4030,369 @@ M.Validator = M.Object.extend(
     }
 
 
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      18.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * M.ModelAttribute encapsulates all meta information about a model record's property:
+ * * is it required?
+ * * what data type is it of? (important for mapping to relational database schemas)
+ * * what validators shall be applied
+ * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
+ * Each ModelAttribute is saved with the record properties name as key.
+ * That means:
+ *
+ * model.record[propA] is the value of the property.
+ * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
+ *
+ * @extends M.Object
+ */
+M.ModelAttribute = M.Object.extend(
+/** @scope M.ModelAttribute.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ModelAttribute',
+
+    /**
+     * The data type for the model record property.
+     * Extremely important e.g. to map model to relational database table.
+     *
+     * @type String
+     */
+    dataType: null,
+
+    /**
+     * Indicates whether this property is required to be set before persisting.
+     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
+     * 
+     * @type Boolean
+     */
+    isRequired: NO,
+
+    /**
+     * Indicates whether an update has been performed on this property with the set method or not.
+     * @type Boolean
+     */
+    isUpdated: NO,
+
+    /**
+     * Array containing all validators for this model record property.
+     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
+     * @type Object
+     */
+    validators: null,
+
+    /**
+     * Record properties that define references have their referenced entity saved here.
+     * @type Object
+     */
+    refEntity: null,
+
+    /**
+     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
+     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
+     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
+     */
+    validate: function(obj) {
+        var isValid = YES;
+        for (var i in this.validators) {
+            if(!this.validators[i].validate(obj)) {
+               isValid = NO; 
+            }
+        }
+        return isValid;
+    }
+});
+
+//
+// CLASS METHODS
+//
+
+/**
+ * Returns a model attribute.
+ *
+ * @param dataType The data type of the attribute: e.g. String 
+ * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
+ * @returns {Object} {@link M.ModelAttribute} object
+ */
+M.ModelAttribute.attr = function(dataType, opts) {
+    //console.log('attr in model_attribute');
+    if (!opts) {
+        opts = {};
+    }
+    if (!opts.dataType) {
+        opts.dataType = dataType || 'String';
+    }
+
+    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
+    if (!opts.validators && opts.isRequired) {
+        opts.validators = [];
+    }
+
+    /* if model attribute is required, presence validator is automatically inserted */
+    if (opts.isRequired) {
+        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
+        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
+            opts.validators.push(M.PresenceValidator);
+        }
+    }
+    return this.extend(opts);
+};
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.07.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * A data consumer can be called a read-only data provider. It's only job is it to retrieve some data form
+ * remote services, e.g. a webservice, and to push them into the store.
+ *
+ * Note: So far we only support data in JSON format!
+ *
+ * @extends M.Object
+ */
+M.DataConsumer = M.Object.extend(
+/** @scope M.DataConsumer.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataConsumer',
+
+    /**
+     * This property can be used to specify the path to the desired data within
+     * the response. Simply name the path by concatenating the path parts with
+     * a '.', e.g.: 'path.to.my.desired.response'.
+     *
+     * @type String
+     */
+    responsePath: null,
+
+    /**
+     * This property specifies the used http method for the request. By default
+     * GET is used.
+     *
+     * @type String
+     */
+    httpMethod: 'GET',
+
+    /**
+     * This property can be used to specify whether or not to append any fetched
+     * data sets to the existing records. If set to NO, the model's records are
+     * removed whenever the find() method is called.
+     *
+     * @type Boolean
+     */
+    appendRecords: YES,
+
+    /**
+     * The urlParams property will be pushed to the url() method of your data
+     * consumer. This should look like:
+     *
+     *   url: function(query, rpp) {
+     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
+     *   }
+     *
+     * @type String
+     */
+    urlParams: null,
+
+    /**
+     * Use this method within your model to configure the data consumer. Set
+     * resp. override all the default object's properties, e.g.:
+     *
+     *   {
+     *     urlParams: {
+     *       query: 'html5',
+     *       rpp: 10
+     *     },
+     *     appendRecords: YES,
+     *     callbacks: {
+     *       success: {
+     *         target: MyApp.MyController,
+     *         action: 'itWorked'
+     *       },
+     *       error: {
+     *         action: function(e) {
+     *           console.log(e);
+     *         }
+     *       }
+     *     },
+     *     map: function(obj) {
+     *       return {
+     *         userName: obj.from_user,
+     *         userImage: obj.profile_image_url,
+     *         createdAt: obj.created_at,
+     *         tweet: obj.text
+     *       };
+     *     }
+     *   }
+     *
+     * @param {Object} obj The configuration parameters for the data consumer.
+     */
+    configure: function(obj) {
+        return this.extend(obj);
+    },
+
+    /**
+     * This method is automatically called by the model, if you call the model's
+     * find(). To execute the data consuming processs imply pass along an object
+     * specifying the call's parameters as follows:
+     *
+     * {
+     *   urlParams: {
+     *     query: 'html5',
+     *     rpp: 10
+     *   }
+     * }
+     *
+     * These parameters will automatically be added to the url, using the
+     * url() method of your data consumer.
+     *
+     * Depending on the success/failure of the call, the specified success
+     * resp. error callback will be called.
+     *
+     * @param {Object} obj The options for the call.
+     */
+    find: function(obj) {
+        this.include(obj);
+
+        var that = this;
+        M.Request.init({
+            url: this.bindToCaller(this, this.url, _.toArray(this.urlParams))(),
+            isJSON: YES,
+            callbacks: {
+                success: {
+                    target: this,
+                    action: function(data, message, request){
+                        /* if no data was returned, skip this */
+                        if(data) {
+                            /* apply response path */
+                            if(this.responsePath) {
+                                var responsePath = this.responsePath.split('.');
+                                _.each(responsePath, function(subPath) {
+                                    data = data[subPath];
+                                });
+                            }
+
+                            /* if no data was found inside responsePath, skip */
+                            if(data && !_.isArray(data) || _.isArray(data) && data.length > 0) {
+                                /* make sure we've got an array */
+                                if(!_.isArray(data)) {
+                                    data = [data];
+                                }
+
+                                /* apply map function and create a record for all data sets */
+                                var records = [];
+                                _.each(data, function(d) {
+                                    var record = obj.model.createRecord(that.map(d));
+                                    records.push(record);
+                                });
+
+                                /* call callback */
+                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [records]);
+                                }
+                            } else {
+                                /* log message, that there were no data sets found in given response path */
+                                M.Logger.log('There were no data sets found in response path \'' + this.responsePath + '\'.', M.INFO);
+
+                                /* call callback */
+                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
+                                }
+                            }
+                        } else {
+                            /* log message, this there were no data sets returned */
+                            M.Logger.log('There was no data returned for url \'' + this.bindToCaller(this, this.url, _.toArray(this.urlParams))() + '\'.', M.INFO);
+
+                            /* call callback */
+                            if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
+                            }
+                        }
+                    }
+                },
+                error: {
+                    target: this,
+                    action: function(request, message){
+                        /* call callback */
+                        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
+                            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, message);
+                        }
+                    }
+                }
+            }
+        }).send();
+    },
+
+    /**
+     * Override this method within the data consumer's configuration, to map
+     * the response object to your model's properties as follows:
+     *
+     *   map: function(obj) {
+     *       return {
+     *           userName: obj.from_user,
+     *           userImage: obj.profile_image_url,
+     *           createdAt: obj.created_at,
+     *           tweet: obj.text
+     *       };
+     *   }
+     *
+     * @param {Object} obj The response object.
+     * @interface
+     */
+    map: function(obj) {
+        // needs to be implemented by concrete data consumer object
+    },
+
+    /**
+     * Override this method within the data consumer's configuration, to tell
+     * the component which url to connect to and with which parameters as
+     * follows:
+     *
+     *   url: function(query, rpp) {
+     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
+     *   }
+     *
+     * The parameters passed to this method are defined by the configuration
+     * of your data consumer. See the urlParams property for further information
+     * about that.
+     *
+     * @interface
+     */
+    url: function() {
+        // needs to be implemented by concrete data consumer object
+    }
 
 });
 // ==========================================================================
@@ -4298,369 +4661,6 @@ M.Error = M.Object.extend(
     msg: '',
     errObj: null
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.07.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * A data consumer can be called a read-only data provider. It's only job is it to retrieve some data form
- * remote services, e.g. a webservice, and to push them into the store.
- *
- * Note: So far we only support data in JSON format!
- *
- * @extends M.Object
- */
-M.DataConsumer = M.Object.extend(
-/** @scope M.DataConsumer.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataConsumer',
-
-    /**
-     * This property can be used to specify the path to the desired data within
-     * the response. Simply name the path by concatenating the path parts with
-     * a '.', e.g.: 'path.to.my.desired.response'.
-     *
-     * @type String
-     */
-    responsePath: null,
-
-    /**
-     * This property specifies the used http method for the request. By default
-     * GET is used.
-     *
-     * @type String
-     */
-    httpMethod: 'GET',
-
-    /**
-     * This property can be used to specify whether or not to append any fetched
-     * data sets to the existing records. If set to NO, the model's records are
-     * removed whenever the find() method is called.
-     *
-     * @type Boolean
-     */
-    appendRecords: YES,
-
-    /**
-     * The urlParams property will be pushed to the url() method of your data
-     * consumer. This should look like:
-     *
-     *   url: function(query, rpp) {
-     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
-     *   }
-     *
-     * @type String
-     */
-    urlParams: null,
-
-    /**
-     * Use this method within your model to configure the data consumer. Set
-     * resp. override all the default object's properties, e.g.:
-     *
-     *   {
-     *     urlParams: {
-     *       query: 'html5',
-     *       rpp: 10
-     *     },
-     *     appendRecords: YES,
-     *     callbacks: {
-     *       success: {
-     *         target: MyApp.MyController,
-     *         action: 'itWorked'
-     *       },
-     *       error: {
-     *         action: function(e) {
-     *           console.log(e);
-     *         }
-     *       }
-     *     },
-     *     map: function(obj) {
-     *       return {
-     *         userName: obj.from_user,
-     *         userImage: obj.profile_image_url,
-     *         createdAt: obj.created_at,
-     *         tweet: obj.text
-     *       };
-     *     }
-     *   }
-     *
-     * @param {Object} obj The configuration parameters for the data consumer.
-     */
-    configure: function(obj) {
-        return this.extend(obj);
-    },
-
-    /**
-     * This method is automatically called by the model, if you call the model's
-     * find(). To execute the data consuming processs imply pass along an object
-     * specifying the call's parameters as follows:
-     *
-     * {
-     *   urlParams: {
-     *     query: 'html5',
-     *     rpp: 10
-     *   }
-     * }
-     *
-     * These parameters will automatically be added to the url, using the
-     * url() method of your data consumer.
-     *
-     * Depending on the success/failure of the call, the specified success
-     * resp. error callback will be called.
-     *
-     * @param {Object} obj The options for the call.
-     */
-    find: function(obj) {
-        this.include(obj);
-
-        var that = this;
-        M.Request.init({
-            url: this.bindToCaller(this, this.url, _.toArray(this.urlParams))(),
-            isJSON: YES,
-            callbacks: {
-                success: {
-                    target: this,
-                    action: function(data, message, request){
-                        /* if no data was returned, skip this */
-                        if(data) {
-                            /* apply response path */
-                            if(this.responsePath) {
-                                var responsePath = this.responsePath.split('.');
-                                _.each(responsePath, function(subPath) {
-                                    data = data[subPath];
-                                });
-                            }
-
-                            /* if no data was found inside responsePath, skip */
-                            if(data && !_.isArray(data) || _.isArray(data) && data.length > 0) {
-                                /* make sure we've got an array */
-                                if(!_.isArray(data)) {
-                                    data = [data];
-                                }
-
-                                /* apply map function and create a record for all data sets */
-                                var records = [];
-                                _.each(data, function(d) {
-                                    var record = obj.model.createRecord(that.map(d));
-                                    records.push(record);
-                                });
-
-                                /* call callback */
-                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [records]);
-                                }
-                            } else {
-                                /* log message, that there were no data sets found in given response path */
-                                M.Logger.log('There were no data sets found in response path \'' + this.responsePath + '\'.', M.INFO);
-
-                                /* call callback */
-                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
-                                }
-                            }
-                        } else {
-                            /* log message, this there were no data sets returned */
-                            M.Logger.log('There was no data returned for url \'' + this.bindToCaller(this, this.url, _.toArray(this.urlParams))() + '\'.', M.INFO);
-
-                            /* call callback */
-                            if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
-                            }
-                        }
-                    }
-                },
-                error: {
-                    target: this,
-                    action: function(request, message){
-                        /* call callback */
-                        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
-                            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, message);
-                        }
-                    }
-                }
-            }
-        }).send();
-    },
-
-    /**
-     * Override this method within the data consumer's configuration, to map
-     * the response object to your model's properties as follows:
-     *
-     *   map: function(obj) {
-     *       return {
-     *           userName: obj.from_user,
-     *           userImage: obj.profile_image_url,
-     *           createdAt: obj.created_at,
-     *           tweet: obj.text
-     *       };
-     *   }
-     *
-     * @param {Object} obj The response object.
-     * @interface
-     */
-    map: function(obj) {
-        // needs to be implemented by concrete data consumer object
-    },
-
-    /**
-     * Override this method within the data consumer's configuration, to tell
-     * the component which url to connect to and with which parameters as
-     * follows:
-     *
-     *   url: function(query, rpp) {
-     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
-     *   }
-     *
-     * The parameters passed to this method are defined by the configuration
-     * of your data consumer. See the urlParams property for further information
-     * about that.
-     *
-     * @interface
-     */
-    url: function() {
-        // needs to be implemented by concrete data consumer object
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      18.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * M.ModelAttribute encapsulates all meta information about a model record's property:
- * * is it required?
- * * what data type is it of? (important for mapping to relational database schemas)
- * * what validators shall be applied
- * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
- * Each ModelAttribute is saved with the record properties name as key.
- * That means:
- *
- * model.record[propA] is the value of the property.
- * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
- *
- * @extends M.Object
- */
-M.ModelAttribute = M.Object.extend(
-/** @scope M.ModelAttribute.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ModelAttribute',
-
-    /**
-     * The data type for the model record property.
-     * Extremely important e.g. to map model to relational database table.
-     *
-     * @type String
-     */
-    dataType: null,
-
-    /**
-     * Indicates whether this property is required to be set before persisting.
-     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
-     * 
-     * @type Boolean
-     */
-    isRequired: NO,
-
-    /**
-     * Indicates whether an update has been performed on this property with the set method or not.
-     * @type Boolean
-     */
-    isUpdated: NO,
-
-    /**
-     * Array containing all validators for this model record property.
-     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
-     * @type Object
-     */
-    validators: null,
-
-    /**
-     * Record properties that define references have their referenced entity saved here.
-     * @type Object
-     */
-    refEntity: null,
-
-    /**
-     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
-     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
-     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
-     */
-    validate: function(obj) {
-        var isValid = YES;
-        for (var i in this.validators) {
-            if(!this.validators[i].validate(obj)) {
-               isValid = NO; 
-            }
-        }
-        return isValid;
-    }
-});
-
-//
-// CLASS METHODS
-//
-
-/**
- * Returns a model attribute.
- *
- * @param dataType The data type of the attribute: e.g. String 
- * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
- * @returns {Object} {@link M.ModelAttribute} object
- */
-M.ModelAttribute.attr = function(dataType, opts) {
-    //console.log('attr in model_attribute');
-    if (!opts) {
-        opts = {};
-    }
-    if (!opts.dataType) {
-        opts.dataType = dataType || 'String';
-    }
-
-    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
-    if (!opts.validators && opts.isRequired) {
-        opts.validators = [];
-    }
-
-    /* if model attribute is required, presence validator is automatically inserted */
-    if (opts.isRequired) {
-        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
-        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
-            opts.validators.push(M.PresenceValidator);
-        }
-    }
-    return this.extend(opts);
-};
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6328,6 +6328,130 @@ M.PhoneValidator = M.Validator.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/model.js');
+
+/**
+ * @class
+ *
+ * The root object for RecordManager.
+ *
+ * A RecordManager is used by a controllers and is an interface that makes it easy for him to
+ * handle his model records.
+ *
+ * @extends M.Object
+ */
+M.RecordManager = M.Object.extend(
+/** @scope M.RecordManager.prototype */ { 
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.RecordManager',
+
+    /**
+     * Array containing all currently loaded records.
+     *
+     * @type Object
+     */
+    records: [],
+
+    /**
+     * Add the given model to the modelList.
+     *
+     * @param {Object} record
+     */
+    add: function(record) {
+        this.records.push(record);
+    },
+
+    /**
+     * Concats an array if records to the records array.
+     *
+     * @param {Object} record
+     */
+    addMany: function(arrOfRecords) {
+
+        if(_.isArray(arrOfRecords)){
+            this.records = this.records.concat(arrOfRecords);
+
+        } else if(arrOfRecords.type === 'M.Model') {
+            this.add(arrOfRecords);
+        }
+
+    },
+
+    /**
+     * Resets record list 
+     */
+    removeAll: function() {
+        this.records.length = 0;
+    },
+
+    /**
+     * Deletes a model record from the record array
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    remove: function(m_id) {
+
+        if(!m_id) {
+            M.Logger.log('No id given.', M.WARN);
+            return;
+        }
+
+        var rec = this.getRecordById(m_id);
+
+        if(rec) {
+            this.records = _.select(this.records, function(r){
+                return r.m_id !== rec.m_id;
+            });
+        }
+
+        delete rec;
+    },
+
+    /**
+    * Returns a record from the record array identified by the interal model id.
+    * @param {Number} m_id The internal model id of the model record.
+    * @deprecated
+    */
+    getRecordForId: function(m_id) {
+        return this.getRecordById(m_id);
+    },
+
+    /**
+     * Returns a record from the record array identified by the interal model id.
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    getRecordById: function(m_id) {
+        var record = _.detect(this.records, function(r){
+            return r.m_id === m_id;
+        });
+        return record;
+    },
+
+    /**
+     * Debug method to print out all content from the records array to the console.
+     */
+    dumpRecords: function() {
+        _.each(this.records, function(rec){
+            //console.log(rec.m_id);
+            console.log(rec);
+        });
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      26.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -7126,130 +7250,6 @@ M.View = M.Object.extend(
 	
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/model.js');
-
-/**
- * @class
- *
- * The root object for RecordManager.
- *
- * A RecordManager is used by a controllers and is an interface that makes it easy for him to
- * handle his model records.
- *
- * @extends M.Object
- */
-M.RecordManager = M.Object.extend(
-/** @scope M.RecordManager.prototype */ { 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.RecordManager',
-
-    /**
-     * Array containing all currently loaded records.
-     *
-     * @type Object
-     */
-    records: [],
-
-    /**
-     * Add the given model to the modelList.
-     *
-     * @param {Object} record
-     */
-    add: function(record) {
-        this.records.push(record);
-    },
-
-    /**
-     * Concats an array if records to the records array.
-     *
-     * @param {Object} record
-     */
-    addMany: function(arrOfRecords) {
-
-        if(_.isArray(arrOfRecords)){
-            this.records = this.records.concat(arrOfRecords);
-
-        } else if(arrOfRecords.type === 'M.Model') {
-            this.add(arrOfRecords);
-        }
-
-    },
-
-    /**
-     * Resets record list 
-     */
-    removeAll: function() {
-        this.records.length = 0;
-    },
-
-    /**
-     * Deletes a model record from the record array
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    remove: function(m_id) {
-
-        if(!m_id) {
-            M.Logger.log('No id given.', M.WARN);
-            return;
-        }
-
-        var rec = this.getRecordById(m_id);
-
-        if(rec) {
-            this.records = _.select(this.records, function(r){
-                return r.m_id !== rec.m_id;
-            });
-        }
-
-        delete rec;
-    },
-
-    /**
-    * Returns a record from the record array identified by the interal model id.
-    * @param {Number} m_id The internal model id of the model record.
-    * @deprecated
-    */
-    getRecordForId: function(m_id) {
-        return this.getRecordById(m_id);
-    },
-
-    /**
-     * Returns a record from the record array identified by the interal model id.
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    getRecordById: function(m_id) {
-        var record = _.detect(this.records, function(r){
-            return r.m_id === m_id;
-        });
-        return record;
-    },
-
-    /**
-     * Debug method to print out all content from the records array to the console.
-     */
-    dumpRecords: function() {
-        _.each(this.records, function(rec){
-            //console.log(rec.m_id);
-            console.log(rec);
-        });
-    }
-    
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
