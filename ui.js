@@ -5935,6 +5935,174 @@ M.WebView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
+ * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
+ * M.TabBarView can be used the top navigation level for an application since it is always
+ * visible an indicates the currently selected tab.
+ *
+ */
+M.TabBarView = M.View.extend(
+/** @scope M.TabBarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarView',
+    
+     /**
+     * Defines the position of the TabBar. Possible values are:
+     *
+     * - M.BOTTOM => is a footer tab bar
+     * - M.TOP => is a header tab bar
+     * - null / not set ==> a tab bar outside header / footer
+     *
+     * @type String
+     */
+    anchorLocation: null,
+
+    /**
+     * This property defines the tab bar's name. This is used internally to identify
+     * the tab bar inside the DOM.
+     *
+     * @type String
+     */
+    name: 'tab_bar',
+
+    /**
+     * This property holds a reference to the currently active tab.
+     *
+     * @type M.TabBarItemView
+     */
+    activeTab: null,
+
+    /**
+     * This property is used internally to count the number of usages of a tab bar.
+     */
+    usageCounter: 0,
+
+    /**
+     * This property determines whether to toggle the tab bar on tap on the content area
+     * or not. By default this is set to NO.
+     *
+     * @type Boolean
+     */
+    toggleOnTap: NO,
+
+    /**
+     * Renders a tab bar as an unordered list.
+     *
+     * @private
+     * @returns {String} The tab bar view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        this.usageCounter += 1;
+
+        if(this.anchorLocation) {
+            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed" data-tap-toggle="' + this.toggleOnTap + '" data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"><div data-role="navbar"><ul>';
+        } else {
+            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
+        }
+
+        this.renderChildViews();
+
+        this.html += '</ul></div>';
+
+        if(this.anchorLocation) {
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.TabBarItemView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* pre-process the child views to define which tab is selected */
+            var hasActiveTab = NO;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView' && view.isActive) {
+                    if(!hasActiveTab) {
+                        hasActiveTab = YES;
+                        this.activeTab = view;
+                    } else {
+                        view.isActive = NO;
+                    }
+                }
+            }
+
+            var numTabBarViews = 0;
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarItemView') {
+                    numTabBarViews = numTabBarViews + 1;
+
+                    /* set first tab to active tab if nothing else specified */
+                    if(numTabBarViews === 1 && !hasActiveTab) {
+                        view.isActive = YES;
+                        this.activeTab = view;
+                    }
+
+                    view.parentView = this;
+                    view._name = childViews[i];
+                    this.html += view.render();
+                } else {
+                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
+                }
+            }
+        } else {
+            M.Logger.log('No TabBarItemViews specified.', M.WARN);
+            return;
+        }
+    },
+
+    /**
+     * This method visually activates a tab bar item based on a given page.
+     *
+     * @param {M.TabBarItemView} tab The tab to set active.
+     */
+    setActiveTab: function(tab) {
+        /* deactivate current active tav */
+        this.activeTab.isActive = NO;
+        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
+        $('[id^=' + activeTabMainID + '_]').each(function() {
+            $(this).removeClass('ui-btn-active');
+        });
+
+        /* activate new tab */
+        tab.isActive = YES;
+        this.activeTab = tab;
+        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
+        $('[id^=' + tabMainID + '_]').each(function() {
+            $(this).addClass('ui-btn-active');
+        });
+
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6325,174 +6493,6 @@ M.MapMarkerView = M.View.extend(
                 }
             }
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
- * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
- * M.TabBarView can be used the top navigation level for an application since it is always
- * visible an indicates the currently selected tab.
- *
- */
-M.TabBarView = M.View.extend(
-/** @scope M.TabBarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarView',
-    
-     /**
-     * Defines the position of the TabBar. Possible values are:
-     *
-     * - M.BOTTOM => is a footer tab bar
-     * - M.TOP => is a header tab bar
-     * - null / not set ==> a tab bar outside header / footer
-     *
-     * @type String
-     */
-    anchorLocation: null,
-
-    /**
-     * This property defines the tab bar's name. This is used internally to identify
-     * the tab bar inside the DOM.
-     *
-     * @type String
-     */
-    name: 'tab_bar',
-
-    /**
-     * This property holds a reference to the currently active tab.
-     *
-     * @type M.TabBarItemView
-     */
-    activeTab: null,
-
-    /**
-     * This property is used internally to count the number of usages of a tab bar.
-     */
-    usageCounter: 0,
-
-    /**
-     * This property determines whether to toggle the tab bar on tap on the content area
-     * or not. By default this is set to NO.
-     *
-     * @type Boolean
-     */
-    toggleOnTap: NO,
-
-    /**
-     * Renders a tab bar as an unordered list.
-     *
-     * @private
-     * @returns {String} The tab bar view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        this.usageCounter += 1;
-
-        if(this.anchorLocation) {
-            this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed" data-tap-toggle="' + this.toggleOnTap + '" data-transition="' + (M.Application.getConfig('useTransitions') ? M.TRANSITION.SLIDE : M.TRANSITION.NONE) + '"><div data-role="navbar"><ul>';
-        } else {
-            this.html += '<div data-role="navbar" id="' + this.id + '" data-id="' + this.name + '"><ul>';
-        }
-
-        this.renderChildViews();
-
-        this.html += '</ul></div>';
-
-        if(this.anchorLocation) {
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.TabBarItemView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* pre-process the child views to define which tab is selected */
-            var hasActiveTab = NO;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView' && view.isActive) {
-                    if(!hasActiveTab) {
-                        hasActiveTab = YES;
-                        this.activeTab = view;
-                    } else {
-                        view.isActive = NO;
-                    }
-                }
-            }
-
-            var numTabBarViews = 0;
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.TabBarItemView') {
-                    numTabBarViews = numTabBarViews + 1;
-
-                    /* set first tab to active tab if nothing else specified */
-                    if(numTabBarViews === 1 && !hasActiveTab) {
-                        view.isActive = YES;
-                        this.activeTab = view;
-                    }
-
-                    view.parentView = this;
-                    view._name = childViews[i];
-                    this.html += view.render();
-                } else {
-                    M.Logger.log('Invalid child views specified for TabBarView. Only TabBarItemViews accepted.', M.WARN);
-                }
-            }
-        } else {
-            M.Logger.log('No TabBarItemViews specified.', M.WARN);
-            return;
-        }
-    },
-
-    /**
-     * This method visually activates a tab bar item based on a given page.
-     *
-     * @param {M.TabBarItemView} tab The tab to set active.
-     */
-    setActiveTab: function(tab) {
-        /* deactivate current active tav */
-        this.activeTab.isActive = NO;
-        var activeTabMainID = this.activeTab.id.substring(0, this.activeTab.id.lastIndexOf('_'));
-        $('[id^=' + activeTabMainID + '_]').each(function() {
-            $(this).removeClass('ui-btn-active');
-        });
-
-        /* activate new tab */
-        tab.isActive = YES;
-        this.activeTab = tab;
-        var tabMainID = tab.id.substring(0, tab.id.lastIndexOf('_'));
-        $('[id^=' + tabMainID + '_]').each(function() {
-            $(this).addClass('ui-btn-active');
-        });
-
     }
 
 });
@@ -7917,6 +7917,174 @@ M.ToolbarView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for a two column layout of a grid view.
+ *
+ * @type String
+ */
+M.TWO_COLUMNS = {
+    cssClass: 'ui-grid-a',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b'
+    }
+};
+
+/**
+ * A constant value for a three column layout of a grid view.
+ *
+ * @type String
+ */
+M.THREE_COLUMNS = {
+    cssClass: 'ui-grid-b',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c'
+    }
+};
+
+/**
+ * A constant value for a four column layout of a grid view.
+ *
+ * @type String
+ */
+M.FOUR_COLUMNS = {
+    cssClass: 'ui-grid-c',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c',
+        3: 'ui-block-d'
+    }
+};
+
+/**
+ * @class
+ *
+ * M.GridView defines a prototype of a grid view, that allows you to display several
+ * views horizontally aligned. Therefore you can either use a predefined layout or you
+ * can provide a custom layout.
+ * 
+ * @extends M.View
+ */
+M.GridView = M.View.extend(
+/** @scope M.GridView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.GridView',
+
+    /**
+     * The layout for the grid view. There are two predefined layouts available:
+     * 
+     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
+     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
+     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
+     *
+     * To specify your own layout, you will have to implement some css classes and
+     * then define your layout like:
+     *
+     *     cssClass: 'cssClassForWholeGrid',
+     *     columns: {
+     *         0: 'cssClassForColumn1',
+     *         1: 'cssClassForColumn2',
+     *         2: 'cssClassForColumn3',
+     *         3: 'cssClassForColumn4',
+     *         //........
+     *     }
+     *
+     * @type Object
+     */
+    layout: null,
+    
+    /**
+     * This property can be used to assign a css class to the view to get a custom styling.
+     *
+     * @type String
+     */
+    cssClass: '',
+
+    /**
+     * Renders a grid view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The grid view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children and includes some special grid view logic
+     * concerning the rendering of these child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            if(this.layout) {
+                var arr = this.childViews.split(' ');
+                for(var i in this.layout.columns) {
+                    if(this[arr[i]]) {
+                        this.html += '<div class="' + this.layout.columns[i] + '">';
+
+                        this[arr[i]]._name = arr[i];
+                        this.html += this[arr[i]].render();
+
+                        this.html += '</div>';
+                    }
+                }
+            } else {
+                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
+            }
+        }
+    },
+
+    /**
+     * This method themes the grid view, respectively its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the grid view.
+     *
+     * @private
+     * @returns {String} The grid view's styling as html representation.
+     */
+    style: function() {
+        if(this.layout) {
+            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
+            return html;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -8233,664 +8401,6 @@ M.MovableLabelView = M.LabelView.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically used for triggering an action, e.g. switching to another page, firing a
- * request or opening a dialog.
- *
- * @extends M.View
- */
-M.ButtonView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonView',
-
-    /**
-     * Determines whether this button is active or not.
-     *
-     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * Determines whether to display the button ony with an icon but no text or not.
-     *
-     * @type Boolean
-     */
-    isIconOnly: NO,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this button. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this button. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property can be used to specify a tag, that is independent from the button's
-     * value. This allows you to identify a button, without having to worry about changes
-     * to its value.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This property can be used to specifically set the data-theme property of a button view
-     * as it is used by jquery mobile.
-     *
-     * @type String
-     */
-    dataTheme: '',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'vclick'],
-
-    /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
-                    break;
-            }
-        } else {
-            this.html += 'href="#"';
-        }
-
-        this.html += '>' + this.value + '</a>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                tap: {
-                    target: this,
-                    action: 'dispatchEvent'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates the value of the button with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id + ' .ui-btn-text').text(this.value);
-    },
-
-    /**
-     * Sets the button's value and calls renderUpdate() to make the value update visible.
-     *
-     * @param {String} value The button's new value.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the button.
-     *
-     * @private
-     */
-    theme: function() {
-        /* theme only if not already done */
-        if(!$('#' + this.id).hasClass('ui-btn')) {
-            $('#' + this.id).buttonMarkup();
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' data-inline="true"';
-        }
-        if(this.icon) {
-            html += ' data-icon="' + this.icon + '"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.dataTheme) {
-            html += ' data-theme="' + this.dataTheme + '"';
-        }
-        if(this.isIconOnly) {
-            html += ' data-iconpos="notext"';
-        }
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    dispatchEvent: function(id, event, nextEvent) {
-        if(this.isEnabled && nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to disable the button. This leads to a visual 'disabled' look and
-     * disabled the buttons tap/click events.
-     */
-    disable: function() {
-        if(this.isEnabled) {
-            var html = $('#' + this.id).html();
-            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
-            $('#' + this.id).html(html);
-            this.isEnabled = NO;
-        }
-    },
-
-    /**
-     * This method can be used to enable a disabled button and make it usable again.
-     */
-    enable: function() {
-        if(!this.isEnabled) {
-            var html = $('#' + this.id + ' div').html();
-            $('#' + this.id).html(html);
-            this.isEnabled = YES;
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/button.js');
-
-/**
- * @class
- *
- * This is the prototype for any list item view. It can only be used as child view of a list
- * view (M.ListView).
- *
- * @extends M.View
- */
-M.ListItemView = M.View.extend(
-/** @scope M.ListItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ListItemView',
-
-    /**
-     * States whether the list view item is currently in edit mode or not. This is mainly used by
-     * the built-in toggleRemove() functionality of list views.
-     *
-     * @type Boolean
-     */
-    inEditMode: NO,
-
-    /**
-     * This property determines whether a list item has one single action that is triggered
-     * once there is a click anywhere inside the list item or if there are specific actions
-     * defined for single ui elements within one list item.
-     *
-     * @type Boolean
-     */
-    hasSingleAction: YES,
-
-    /**
-     * This property contains the list item's delete button that is automatically shown if the
-     * list view's built-in toggleRemove() functionality is used.
-     *
-     * @type M.ButtonView
-     */
-    deleteButton: M.ButtonView.design({
-        icon: 'delete',
-        value: ''
-    }),
-
-    /**
-     * This property determines whether the list item is a divider or not.
-     *
-     * @type Boolean
-     */
-    isDivider: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This property can be used to specify whether a list item can be selected or not. Note, that this
-     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property can be used to specify a button that appears on a swipe left or swipe right
-     * gesture (as known from the iphone). Simply specify a tap event for that button and provide a
-     * custom method to handle the event. This can e.g. be used as a delete button.
-     *
-     * By default the button will look like a delete button (in red) and display 'delete'. To change this,
-     * simply pass a value to set the label and make use of the cssClass property. To get a standard button
-     * as you now it from the other parts of the framework, set the cssClass property's value to:
-     *
-     *   - 'a'  ->  black
-     *   - 'b'  ->  blue
-     *   - 'c'  ->  light grey
-     *   - 'd'  ->  white
-     *   - 'e'  ->  yellow
-     *
-     * Check the jQM docs for further information and visual samples of these themes:
-     * http://jquerymobile.com/test/docs/buttons/buttons-themes.html
-     *
-     * A valid and usefull configuration of such a swipe button could e.g. look like the following:
-     *
-     *   swipeButton: M.ButtonView.design({
-     *     events: {
-     *       tap: {
-     *         target: MyApp.MyController,
-     *         action: 'removeItem'
-     *       }
-     *     },
-     *     cssClass: 'e'
-     *   })
-     *
-     * The event handler (removeItem() in the sample above) will be called with two parameters:
-     *
-     *   - domID  ->  The DOM id of the list item view, e.g. 'm_123'
-     *   - id  ->  The id/recordId of the list item based on the bound data
-     *
-     * @type M.ButtonView
-     */
-    swipeButton: null,
-
-    /**
-     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
-     *
-     * @private
-     * @returns {String} The list item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '"' + this.style();
-
-        if(this.isDivider) {
-            this.html += ' data-role="list-divider"';
-        }
-
-        this.html += '>';
-
-        if(this.childViews) {
-            if(this.inEditMode) {
-                this.html += '<a href="#">';
-                this.renderChildViews();
-                this.html += '</a>';
-
-                this.html += this.deleteButton.render();
-            } else {
-                if(this.isSelectable) {
-                    this.html += '<a href="#">';
-                    this.renderChildViews();
-                    this.html += '</a>';
-                } else {
-                    this.renderChildViews();
-                }
-            }
-        } else if(this.value) {
-            this.html += this.value;
-        }
-
-        this.html += '</li>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children. This method defines a special rendering behaviour for a list item
-     * view's child views.
-     *
-     * @override
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                var childView = this[childViews[i]];
-                if(childView) {
-                    childView._name = childViews[i];
-                    childView.parentView = this;
-
-                    if(childView.type === 'M.ButtonView') {
-                        this.html += '<div>' + childView.render() + '</div>';
-                    } else {
-                        this.html += childView.render();
-                    }
-                } else {
-                    this.childViews = this.childViews.replace(childViews[i], ' ');
-                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
-                }
-            }
-            return this.html;
-        }
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this.parentView,
-                action: 'setActiveListItem'
-            }
-        };
-        if(this.swipeButton) {
-            $.extend(this.internalEvents, {
-                swipeleft: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                },
-                swiperight: {
-                    target: this.parentView,
-                    action: 'showSwipeButton'
-                }
-            })
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the list item.
-     *
-     * @private
-     * @returns {String} The list item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is used as the event handler of the tap event of a swipe button. All it does
-     * is to collect the required information for the external handler (domID, modelID) and call
-     * this external handler (if there is one specified).
-     *
-     * @private
-     */
-    swipeButtonClicked: function(id, event, nextEvent) {
-        id = this.id;
-        var modelId = M.ViewManager.getViewById(id).modelId;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for a two column layout of a grid view.
- *
- * @type String
- */
-M.TWO_COLUMNS = {
-    cssClass: 'ui-grid-a',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b'
-    }
-};
-
-/**
- * A constant value for a three column layout of a grid view.
- *
- * @type String
- */
-M.THREE_COLUMNS = {
-    cssClass: 'ui-grid-b',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c'
-    }
-};
-
-/**
- * A constant value for a four column layout of a grid view.
- *
- * @type String
- */
-M.FOUR_COLUMNS = {
-    cssClass: 'ui-grid-c',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c',
-        3: 'ui-block-d'
-    }
-};
-
-/**
- * @class
- *
- * M.GridView defines a prototype of a grid view, that allows you to display several
- * views horizontally aligned. Therefore you can either use a predefined layout or you
- * can provide a custom layout.
- * 
- * @extends M.View
- */
-M.GridView = M.View.extend(
-/** @scope M.GridView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.GridView',
-
-    /**
-     * The layout for the grid view. There are two predefined layouts available:
-     * 
-     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
-     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
-     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
-     *
-     * To specify your own layout, you will have to implement some css classes and
-     * then define your layout like:
-     *
-     *     cssClass: 'cssClassForWholeGrid',
-     *     columns: {
-     *         0: 'cssClassForColumn1',
-     *         1: 'cssClassForColumn2',
-     *         2: 'cssClassForColumn3',
-     *         3: 'cssClassForColumn4',
-     *         //........
-     *     }
-     *
-     * @type Object
-     */
-    layout: null,
-    
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: '',
-
-    /**
-     * Renders a grid view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The grid view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children and includes some special grid view logic
-     * concerning the rendering of these child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            if(this.layout) {
-                var arr = this.childViews.split(' ');
-                for(var i in this.layout.columns) {
-                    if(this[arr[i]]) {
-                        this.html += '<div class="' + this.layout.columns[i] + '">';
-
-                        this[arr[i]]._name = arr[i];
-                        this.html += this[arr[i]].render();
-
-                        this.html += '</div>';
-                    }
-                }
-            } else {
-                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * This method themes the grid view, respectively its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the grid view.
-     *
-     * @private
-     * @returns {String} The grid view's styling as html representation.
-     */
-    style: function() {
-        if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
-            return html;
-        }
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -9552,6 +9062,1050 @@ M.DashboardView = M.View.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically used for triggering an action, e.g. switching to another page, firing a
+ * request or opening a dialog.
+ *
+ * @extends M.View
+ */
+M.ButtonView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonView',
+
+    /**
+     * Determines whether this button is active or not.
+     *
+     * Note: This property is only used if the button is part of a button group (M.ButtonGroupView).
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * Determines whether to display the button ony with an icon but no text or not.
+     *
+     * @type Boolean
+     */
+    isIconOnly: NO,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this button. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this button. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property can be used to specify a tag, that is independent from the button's
+     * value. This allows you to identify a button, without having to worry about changes
+     * to its value.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This property can be used to specifically set the data-theme property of a button view
+     * as it is used by jquery mobile.
+     *
+     * @type String
+     */
+    dataTheme: '',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'vclick'],
+
+    /**
+     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<a data-role="button" id="' + this.id + '"' + this.style() + ' ';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += 'rel="external" href="mailto:' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += 'rel="external" target="_blank" href="' + this.hyperlinkTarget + '"';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += 'rel="external" href="tel:' + this.hyperlinkTarget + '"';
+                    break;
+            }
+        } else {
+            this.html += 'href="#"';
+        }
+
+        this.html += '>' + this.value + '</a>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                tap: {
+                    target: this,
+                    action: 'dispatchEvent'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates the value of the button with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id + ' .ui-btn-text').text(this.value);
+    },
+
+    /**
+     * Sets the button's value and calls renderUpdate() to make the value update visible.
+     *
+     * @param {String} value The button's new value.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the button.
+     *
+     * @private
+     */
+    theme: function() {
+        /* theme only if not already done */
+        if(!$('#' + this.id).hasClass('ui-btn')) {
+            $('#' + this.id).buttonMarkup();
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' data-inline="true"';
+        }
+        if(this.icon) {
+            html += ' data-icon="' + this.icon + '"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.dataTheme) {
+            html += ' data-theme="' + this.dataTheme + '"';
+        }
+        if(this.isIconOnly) {
+            html += ' data-iconpos="notext"';
+        }
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    dispatchEvent: function(id, event, nextEvent) {
+        if(this.isEnabled && nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to disable the button. This leads to a visual 'disabled' look and
+     * disabled the buttons tap/click events.
+     */
+    disable: function() {
+        if(this.isEnabled) {
+            var html = $('#' + this.id).html();
+            html = '<div data-theme="c" class="ui-shadow ui-disabled" aria-disabled="true">' + html + '</div>';
+            $('#' + this.id).html(html);
+            this.isEnabled = NO;
+        }
+    },
+
+    /**
+     * This method can be used to enable a disabled button and make it usable again.
+     */
+    enable: function() {
+        if(!this.isEnabled) {
+            var html = $('#' + this.id + ' div').html();
+            $('#' + this.id).html(html);
+            this.isEnabled = YES;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/button.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any list item view. It can only be used as child view of a list
+ * view (M.ListView).
+ *
+ * @extends M.View
+ */
+M.ListItemView = M.View.extend(
+/** @scope M.ListItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ListItemView',
+
+    /**
+     * States whether the list view item is currently in edit mode or not. This is mainly used by
+     * the built-in toggleRemove() functionality of list views.
+     *
+     * @type Boolean
+     */
+    inEditMode: NO,
+
+    /**
+     * This property determines whether a list item has one single action that is triggered
+     * once there is a click anywhere inside the list item or if there are specific actions
+     * defined for single ui elements within one list item.
+     *
+     * @type Boolean
+     */
+    hasSingleAction: YES,
+
+    /**
+     * This property contains the list item's delete button that is automatically shown if the
+     * list view's built-in toggleRemove() functionality is used.
+     *
+     * @type M.ButtonView
+     */
+    deleteButton: M.ButtonView.design({
+        icon: 'delete',
+        value: ''
+    }),
+
+    /**
+     * This property determines whether the list item is a divider or not.
+     *
+     * @type Boolean
+     */
+    isDivider: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This property can be used to specify whether a list item can be selected or not. Note, that this
+     * only affects styling stuff. If set to NO, you still can apply e.g. tap events.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property can be used to specify a button that appears on a swipe left or swipe right
+     * gesture (as known from the iphone). Simply specify a tap event for that button and provide a
+     * custom method to handle the event. This can e.g. be used as a delete button.
+     *
+     * By default the button will look like a delete button (in red) and display 'delete'. To change this,
+     * simply pass a value to set the label and make use of the cssClass property. To get a standard button
+     * as you now it from the other parts of the framework, set the cssClass property's value to:
+     *
+     *   - 'a'  ->  black
+     *   - 'b'  ->  blue
+     *   - 'c'  ->  light grey
+     *   - 'd'  ->  white
+     *   - 'e'  ->  yellow
+     *
+     * Check the jQM docs for further information and visual samples of these themes:
+     * http://jquerymobile.com/test/docs/buttons/buttons-themes.html
+     *
+     * A valid and usefull configuration of such a swipe button could e.g. look like the following:
+     *
+     *   swipeButton: M.ButtonView.design({
+     *     events: {
+     *       tap: {
+     *         target: MyApp.MyController,
+     *         action: 'removeItem'
+     *       }
+     *     },
+     *     cssClass: 'e'
+     *   })
+     *
+     * The event handler (removeItem() in the sample above) will be called with two parameters:
+     *
+     *   - domID  ->  The DOM id of the list item view, e.g. 'm_123'
+     *   - id  ->  The id/recordId of the list item based on the bound data
+     *
+     * @type M.ButtonView
+     */
+    swipeButton: null,
+
+    /**
+     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
+     *
+     * @private
+     * @returns {String} The list item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '"' + this.style();
+
+        if(this.isDivider) {
+            this.html += ' data-role="list-divider"';
+        }
+
+        this.html += '>';
+
+        if(this.childViews) {
+            if(this.inEditMode) {
+                this.html += '<a href="#">';
+                this.renderChildViews();
+                this.html += '</a>';
+
+                this.html += this.deleteButton.render();
+            } else {
+                if(this.isSelectable) {
+                    this.html += '<a href="#">';
+                    this.renderChildViews();
+                    this.html += '</a>';
+                } else {
+                    this.renderChildViews();
+                }
+            }
+        } else if(this.value) {
+            this.html += this.value;
+        }
+
+        this.html += '</li>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children. This method defines a special rendering behaviour for a list item
+     * view's child views.
+     *
+     * @override
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                var childView = this[childViews[i]];
+                if(childView) {
+                    childView._name = childViews[i];
+                    childView.parentView = this;
+
+                    if(childView.type === 'M.ButtonView') {
+                        this.html += '<div>' + childView.render() + '</div>';
+                    } else {
+                        this.html += childView.render();
+                    }
+                } else {
+                    this.childViews = this.childViews.replace(childViews[i], ' ');
+                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
+                }
+            }
+            return this.html;
+        }
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this.parentView,
+                action: 'setActiveListItem'
+            }
+        };
+        if(this.swipeButton) {
+            $.extend(this.internalEvents, {
+                swipeleft: {
+                    target: this.parentView,
+                    action: 'showSwipeButton'
+                },
+                swiperight: {
+                    target: this.parentView,
+                    action: 'showSwipeButton'
+                }
+            })
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the list item.
+     *
+     * @private
+     * @returns {String} The list item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is used as the event handler of the tap event of a swipe button. All it does
+     * is to collect the required information for the external handler (domID, modelID) and call
+     * this external handler (if there is one specified).
+     *
+     * @private
+     */
+    swipeButtonClicked: function(id, event, nextEvent) {
+        id = this.id;
+        var modelId = M.ViewManager.getViewById(id).modelId;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for input type: text
+ *
+ * @type String
+ */
+M.INPUT_TEXT = 'text';
+
+/**
+ * A constant value for input type: password
+ *
+ * @type String
+ */
+M.INPUT_PASSWORD = 'password';
+
+/**
+ * A constant value for input type: number
+ *
+ * @type String
+ */
+M.INPUT_NUMBER = 'number';
+
+/**
+ * A constant value for input type: tel
+ *
+ * @type String
+ */
+M.INPUT_TELEPHONE = 'tel';
+
+/**
+ * A constant value for input type: url
+ *
+ * @type String
+ */
+M.INPUT_URL = 'url';
+
+/**
+ * A constant value for input type: email
+ *
+ * @type String
+ */
+M.INPUT_EMAIL = 'email';
+
+/**
+ * A constant value for input type: time
+ *
+ * @type String
+ */
+M.INPUT_TIME = 'time';
+
+/**
+ * A constant value for input type: date
+ *
+ * @type String
+ */
+M.INPUT_DATE = 'date';
+
+/**
+ * A constant value for input type: month
+ *
+ * @type String
+ */
+M.INPUT_MONTH = 'month';
+
+/**
+ * A constant value for input type: week
+ *
+ * @type String
+ */
+M.INPUT_WEEK = 'week';
+
+/**
+ * A constant value for input type: datetime
+ *
+ * @type String
+ */
+M.INPUT_DATETIME = 'datetime';
+
+/**
+ * A constant value for input type: datetime-local
+ *
+ * @type String
+ */
+M.INPUT_DATETIME_LOCAL = 'datetime-local';
+
+/**
+ * @class
+ *
+ * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
+ * a single line text field and a multiple line text field. If it is styled as a multiple
+ * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
+ * depending on the number of lines of text a user enters.
+ *
+ * @extends M.View
+ */
+M.TextFieldView = M.View.extend(
+/** @scope M.TextFieldView.prototype */ {
+
+   /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TextFieldView',
+
+   /**
+    * The name of the text field. During the rendering, this property gets assigned to the name
+    * property of the text field's html representation. This can be used to manually access the
+    * text field's DOM representation later on.
+    *
+    * @type String
+    */
+    name: null,
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
+     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * The initial text shown inside the text field describing the input or making a suggestion for input
+     * e.g. "Please enter your Name."
+     *
+     * @type String
+     */
+    initialText: '',
+
+    /**
+     * Determines whether to display the textfield grouped with the label specified with the label property.
+     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
+     * the box'. If set to NO, custom styling could be necessary.
+     *
+     * If there is no label specified, this property is ignored by default.
+     *
+     * @type Boolean
+     */
+    isGrouped: NO,
+
+    /**
+     * Defines whether the text field has multiple lines respectively is a text area.
+     *
+     * @type Boolean
+     */
+    hasMultipleLines: NO,
+
+    /**
+     * This property specifies the input type of this input field. Possible values are:
+     *
+     *   - M.INPUT_TEXT --> text input (default)
+     *   - M.INPUT_PASSWORD --> password
+     *   - M.INPUT_NUMBER --> number
+     *   - M.INPUT_TELEPHONE --> tel
+     *   - M.INPUT_URL --> url
+     *   - M.INPUT_EMAIL --> email
+     *
+     * Note, that these types are not yet supported by all browsers!
+     *
+     * @type String
+     */
+    inputType: M.INPUT_TEXT,
+
+    /**
+     * This property is used internally to determine all the possible input types for a
+     * date textfield.
+     *
+     * @private
+     * @type Array
+     */
+    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
+
+    /**
+     * This property can be used to specify the allowed number if chars for this text field
+     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
+     * be set.
+     *
+     * @type Number
+     */
+    numberOfChars: null,
+
+    /**
+     * This property can be used to specify whether to use the native implementation
+     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
+     * will render its own date/time picker controls to the corresponding input
+     * type. If set to no, the native implementation will be disabled.
+     *
+     * @type Boolean
+     */
+    useNativeImplementationIfAvailable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this textfield.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a TextFieldView
+     * 
+     * @private
+     * @returns {String} The text field view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
+            if(this.hasAsteriskOnLabel) {
+                if(this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
+        var placeholder = '';
+        if(this.initialText) {
+            placeholder = ' placeholder="' + this.initialText + '" ';
+
+        }
+
+        if(this.hasMultipleLines) {
+            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
+            
+        } else {
+            var type = this.inputType;
+            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+                type = 'text';
+            }
+            
+            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
+        }
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for text field views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            focus: {
+                target: this,
+                action: 'gotFocus'
+            },
+            blur: {
+                target: this,
+                action: 'lostFocus'
+            },
+            keyup: {
+                target: this,
+                action: 'setValueFromDOM'
+            }
+        };
+        /* add TAP handler only if needed */
+        var type = this.inputType;
+        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
+            this.internalEvents['tap'] = {
+                target:this,
+                action:'handleTap'
+            };
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * The contentDidChange method is automatically called by the observable when the
+     * observable's state did change. It then updates the view's value property based
+     * on the specified content binding.
+     *
+     * This is a special implementation for M.TextFieldView.
+     */
+    contentDidChange: function(){
+        /* if the text field has the focus, we do not apply the content binding */
+        if(this.hasFocus) {
+            return;
+        }
+
+        /* let M.View do the real job */
+        this.bindToCaller(this, M.View.contentDidChange)();
+
+        this.renderUpdate();
+        this.delegateValueUpdate();
+    },
+
+    /**
+     * Updates a TextFieldView with DOM access by jQuery.
+     *
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     * @private
+     */
+    renderUpdate: function(preventValueComputing) {
+        if(!preventValueComputing) {
+            this.computeValue();
+        }
+        $('#' + this.id).val(this.value);
+        this.styleUpdate();
+    },
+
+    /**
+     * This method is called whenever the view is taped/clicked. Typically a text
+     * field view would not use a tap event. But since a tap is called before the
+     * focus event, we use this to do some input type depending stuff, e.g. show
+     * a date picker.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    handleTap: function(id, event, nextEvent) {
+        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
+            M.DatePickerView.show({
+                source: this,
+                useSourceDateAsInitialDate: YES,
+                showDatePicker: (this.inputType !== M.INPUT_TIME),
+                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
+                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
+                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
+            });
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view gets the focus.
+     * If there is a initial text specified and the value of this text field
+     * still equals this initial text, the value is emptied.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    gotFocus: function(id, event, nextEvent) {
+        this.hasFocus = YES;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method is called whenever the view lost the focus.
+     * If there is a initial text specified and the value of this text field
+     * is empty, the value is set to the initial text.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    lostFocus: function(id, event, nextEvent) {
+        this.setValueFromDOM();
+
+        this.hasFocus = NO;
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Method to append css styles inline to the rendered text field.
+     *
+     * @private
+     * @returns {String} The text field's styling as html representation.
+     */
+    style: function() {
+        var html = ' style="';
+        if(this.isInline) {
+            html += 'display:inline;';
+        }
+        html += '"';
+
+        if(!this.isEnabled) {
+            html += ' disabled="disabled"';
+        }
+        
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+
+        return html;
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the text field.
+     *
+     * @private
+     */
+    theme: function() {
+        /* trigger keyup event to make the text field autogrow */
+        var jDom = $('#'  + this.id);
+        if(this.value) {
+            jDom.trigger('keyup').textinput();
+            if(!this.isEnabled){
+	            jDom.textinput('disable');
+	        }
+        }
+
+        /* add container-css class */
+        jDom.parent().addClass(this.cssClass + '_container');
+    },
+
+    /**
+     * Method to append css styles inline to the rendered view on the fly.
+     *
+     * @private
+     */
+    styleUpdate: function() {
+        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
+        if(this.value) {
+            $('#' + this.id).removeAttr('disabled');
+            $('#'  + this.id).trigger('keyup');
+        }
+
+        if(this.isInline) {
+            $('#' + this.id).attr('display', 'inline');
+        } else {
+            $('#' + this.id).removeAttr('display');
+        }
+
+        if(!this.isEnabled) {
+            $('#' + this.id).attr('disabled', 'disabled');
+        } else {
+            $('#' + this.id).removeAttr('disabled');
+        }
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = this.secure($('#' + this.id).val());
+        this.delegateValueUpdate();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method sets the text field's value, initiates its re-rendering
+     * and call the delegateValueUpdate().
+     *
+     * @param {String} value The value to be applied to the text field view.
+     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
+     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
+     */
+    setValue: function(value, delegateUpdate, preventValueComputing) {
+        this.value = value;
+
+        this.renderUpdate(preventValueComputing);
+
+        if(delegateUpdate) {
+            this.delegateValueUpdate();
+        }
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method clears the text field's value, both in the DOM and within the JS object.
+     */
+    clearValue: function() {
+        this.setValue('');
+
+        /* call lostFocus() to get the initial text displayed */
+        this.lostFocus();
+    },
+
+    /**
+     * This method returns the text field view's value.
+     *
+     * @returns {String} The text field view's value.
+     */
+    getValue: function() {
+        return this.value;
+    },
+	/**
+     *
+     * Set a new label for this text field
+     * @param txt the new label value
+     */
+    setLabel: function(txt){
+        if(this.label){
+            $('label[for="' + this.id + '"]').html(txt);
+        }
+    }
+
+});
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -10558,560 +11112,6 @@ M.ListView = M.View.extend(
                 M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
             }
         });
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for input type: text
- *
- * @type String
- */
-M.INPUT_TEXT = 'text';
-
-/**
- * A constant value for input type: password
- *
- * @type String
- */
-M.INPUT_PASSWORD = 'password';
-
-/**
- * A constant value for input type: number
- *
- * @type String
- */
-M.INPUT_NUMBER = 'number';
-
-/**
- * A constant value for input type: tel
- *
- * @type String
- */
-M.INPUT_TELEPHONE = 'tel';
-
-/**
- * A constant value for input type: url
- *
- * @type String
- */
-M.INPUT_URL = 'url';
-
-/**
- * A constant value for input type: email
- *
- * @type String
- */
-M.INPUT_EMAIL = 'email';
-
-/**
- * A constant value for input type: time
- *
- * @type String
- */
-M.INPUT_TIME = 'time';
-
-/**
- * A constant value for input type: date
- *
- * @type String
- */
-M.INPUT_DATE = 'date';
-
-/**
- * A constant value for input type: month
- *
- * @type String
- */
-M.INPUT_MONTH = 'month';
-
-/**
- * A constant value for input type: week
- *
- * @type String
- */
-M.INPUT_WEEK = 'week';
-
-/**
- * A constant value for input type: datetime
- *
- * @type String
- */
-M.INPUT_DATETIME = 'datetime';
-
-/**
- * A constant value for input type: datetime-local
- *
- * @type String
- */
-M.INPUT_DATETIME_LOCAL = 'datetime-local';
-
-/**
- * @class
- *
- * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
- * a single line text field and a multiple line text field. If it is styled as a multiple
- * line text field, is has a built-in autogrow mechanism so the textfield is getting larger
- * depending on the number of lines of text a user enters.
- *
- * @extends M.View
- */
-M.TextFieldView = M.View.extend(
-/** @scope M.TextFieldView.prototype */ {
-
-   /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TextFieldView',
-
-   /**
-    * The name of the text field. During the rendering, this property gets assigned to the name
-    * property of the text field's html representation. This can be used to manually access the
-    * text field's DOM representation later on.
-    *
-    * @type String
-    */
-    name: null,
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the textfield as a 'title'
-     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * The initial text shown inside the text field describing the input or making a suggestion for input
-     * e.g. "Please enter your Name."
-     *
-     * @type String
-     */
-    initialText: '',
-
-    /**
-     * Determines whether to display the textfield grouped with the label specified with the label property.
-     * If set to YES, the textfield and its label are wrapped in a container and styled as a unit 'out of
-     * the box'. If set to NO, custom styling could be necessary.
-     *
-     * If there is no label specified, this property is ignored by default.
-     *
-     * @type Boolean
-     */
-    isGrouped: NO,
-
-    /**
-     * Defines whether the text field has multiple lines respectively is a text area.
-     *
-     * @type Boolean
-     */
-    hasMultipleLines: NO,
-
-    /**
-     * This property specifies the input type of this input field. Possible values are:
-     *
-     *   - M.INPUT_TEXT --> text input (default)
-     *   - M.INPUT_PASSWORD --> password
-     *   - M.INPUT_NUMBER --> number
-     *   - M.INPUT_TELEPHONE --> tel
-     *   - M.INPUT_URL --> url
-     *   - M.INPUT_EMAIL --> email
-     *
-     * Note, that these types are not yet supported by all browsers!
-     *
-     * @type String
-     */
-    inputType: M.INPUT_TEXT,
-
-    /**
-     * This property is used internally to determine all the possible input types for a
-     * date textfield.
-     *
-     * @private
-     * @type Array
-     */
-    dateInputTypes: [M.INPUT_DATETIME, M.INPUT_DATE, M.INPUT_MONTH, M.INPUT_WEEK, M.INPUT_TIME, M.INPUT_DATETIME_LOCAL],
-
-    /**
-     * This property can be used to specify the allowed number if chars for this text field
-     * view. If nothing is specified, the corresponding 'maxlength' HTML property will not
-     * be set.
-     *
-     * @type Number
-     */
-    numberOfChars: null,
-
-    /**
-     * This property can be used to specify whether to use the native implementation
-     * of one of the HTML5 input types if it is available. If set to YES, e.g. iOS5
-     * will render its own date/time picker controls to the corresponding input
-     * type. If set to no, the native implementation will be disabled.
-     *
-     * @type Boolean
-     */
-    useNativeImplementationIfAvailable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['focus', 'blur', 'enter', 'keyup', 'tap'],
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a TextFieldView
-     * 
-     * @private
-     * @returns {String} The text field view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-            if(this.hasAsteriskOnLabel) {
-                if(this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-		// If the device supports placeholders use the HTML5 placeholde attribute else use javascript workarround
-        var placeholder = '';
-        if(this.initialText) {
-            placeholder = ' placeholder="' + this.initialText + '" ';
-
-        }
-
-        if(this.hasMultipleLines) {
-            this.html += '<textarea cols="40" rows="8" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + placeholder + '>' + (this.value ? this.value : '') + '</textarea>';
-            
-        } else {
-            var type = this.inputType;
-            if(_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-                type = 'text';
-            }
-            
-            this.html += '<input ' + (this.numberOfChars ? 'maxlength="' + this.numberOfChars + '"' : '') + placeholder + 'type="' + type + '" name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + ' value="' + (this.value ? this.value : '') + '" />';
-        }
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            focus: {
-                target: this,
-                action: 'gotFocus'
-            },
-            blur: {
-                target: this,
-                action: 'lostFocus'
-            },
-            keyup: {
-                target: this,
-                action: 'setValueFromDOM'
-            }
-        };
-        /* add TAP handler only if needed */
-        var type = this.inputType;
-        if (_.include(this.dateInputTypes, this.inputType) && !this.useNativeImplementationIfAvailable) {
-            this.internalEvents['tap'] = {
-                target:this,
-                action:'handleTap'
-            };
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * The contentDidChange method is automatically called by the observable when the
-     * observable's state did change. It then updates the view's value property based
-     * on the specified content binding.
-     *
-     * This is a special implementation for M.TextFieldView.
-     */
-    contentDidChange: function(){
-        /* if the text field has the focus, we do not apply the content binding */
-        if(this.hasFocus) {
-            return;
-        }
-
-        /* let M.View do the real job */
-        this.bindToCaller(this, M.View.contentDidChange)();
-
-        this.renderUpdate();
-        this.delegateValueUpdate();
-    },
-
-    /**
-     * Updates a TextFieldView with DOM access by jQuery.
-     *
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     * @private
-     */
-    renderUpdate: function(preventValueComputing) {
-        if(!preventValueComputing) {
-            this.computeValue();
-        }
-        $('#' + this.id).val(this.value);
-        this.styleUpdate();
-    },
-
-    /**
-     * This method is called whenever the view is taped/clicked. Typically a text
-     * field view would not use a tap event. But since a tap is called before the
-     * focus event, we use this to do some input type depending stuff, e.g. show
-     * a date picker.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    handleTap: function(id, event, nextEvent) {
-        if(_.include(this.dateInputTypes, this.inputType) && (!M.Environment.supportsInputType(this.inputType) || !this.useNativeImplementationIfAvailable)) {
-            M.DatePickerView.show({
-                source: this,
-                useSourceDateAsInitialDate: YES,
-                showDatePicker: (this.inputType !== M.INPUT_TIME),
-                showTimePicker: (this.inputType === M.INPUT_TIME || this.inputType === M.INPUT_DATETIME || this.inputType === M.INPUT_DATETIME_LOCAL),
-                dateOrder: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateOrderMonthOnly : M.DatePickerView.dateOrder),
-                dateFormat: (this.inputType === M.INPUT_MONTH ? M.DatePickerView.dateFormatMonthOnly : M.DatePickerView.dateFormat)
-            });
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view gets the focus.
-     * If there is a initial text specified and the value of this text field
-     * still equals this initial text, the value is emptied.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    gotFocus: function(id, event, nextEvent) {
-        this.hasFocus = YES;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method is called whenever the view lost the focus.
-     * If there is a initial text specified and the value of this text field
-     * is empty, the value is set to the initial text.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    lostFocus: function(id, event, nextEvent) {
-        this.setValueFromDOM();
-
-        this.hasFocus = NO;
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Method to append css styles inline to the rendered text field.
-     *
-     * @private
-     * @returns {String} The text field's styling as html representation.
-     */
-    style: function() {
-        var html = ' style="';
-        if(this.isInline) {
-            html += 'display:inline;';
-        }
-        html += '"';
-
-        if(!this.isEnabled) {
-            html += ' disabled="disabled"';
-        }
-        
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-
-        return html;
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the text field.
-     *
-     * @private
-     */
-    theme: function() {
-        /* trigger keyup event to make the text field autogrow */
-        var jDom = $('#'  + this.id);
-        if(this.value) {
-            jDom.trigger('keyup').textinput();
-            if(!this.isEnabled){
-	            jDom.textinput('disable');
-	        }
-        }
-
-        /* add container-css class */
-        jDom.parent().addClass(this.cssClass + '_container');
-    },
-
-    /**
-     * Method to append css styles inline to the rendered view on the fly.
-     *
-     * @private
-     */
-    styleUpdate: function() {
-        /* trigger keyup event to make the text field autogrow (enable fist, if necessary) */
-        if(this.value) {
-            $('#' + this.id).removeAttr('disabled');
-            $('#'  + this.id).trigger('keyup');
-        }
-
-        if(this.isInline) {
-            $('#' + this.id).attr('display', 'inline');
-        } else {
-            $('#' + this.id).removeAttr('display');
-        }
-
-        if(!this.isEnabled) {
-            $('#' + this.id).attr('disabled', 'disabled');
-        } else {
-            $('#' + this.id).removeAttr('disabled');
-        }
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = this.secure($('#' + this.id).val());
-        this.delegateValueUpdate();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method sets the text field's value, initiates its re-rendering
-     * and call the delegateValueUpdate().
-     *
-     * @param {String} value The value to be applied to the text field view.
-     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
-     * @param {Boolean} preventValueComputing Determines whether to execute computeValue() or not.
-     */
-    setValue: function(value, delegateUpdate, preventValueComputing) {
-        this.value = value;
-
-        this.renderUpdate(preventValueComputing);
-
-        if(delegateUpdate) {
-            this.delegateValueUpdate();
-        }
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method clears the text field's value, both in the DOM and within the JS object.
-     */
-    clearValue: function() {
-        this.setValue('');
-
-        /* call lostFocus() to get the initial text displayed */
-        this.lostFocus();
-    },
-
-    /**
-     * This method returns the text field view's value.
-     *
-     * @returns {String} The text field view's value.
-     */
-    getValue: function() {
-        return this.value;
-    },
-	/**
-     *
-     * Set a new label for this text field
-     * @param txt the new label value
-     */
-    setLabel: function(txt){
-        if(this.label){
-            $('label[for="' + this.id + '"]').html(txt);
-        }
     }
 
 });
