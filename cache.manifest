@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.7.3.4894 beta, Timestamp:1396967893037
+#Application:DigiWebApp, Version:1.7.3.4895 beta, Timestamp:1396968496655
 
 
 # Explicitly cached entries
@@ -9,17 +9,17 @@ es_es.js
 de_de.js
 nl_nl.js
 fr_fr.js
+theme/tmp.css
 underscore-min.js
+bootstrap.js
 d8-0.4.0.min.js
 d8-0.1.3.min.js
-bootstrap.js
-theme/tmp.css
 jquery.xml2json_1.3.js
 jstz.js
 digi_selection_list.js
 digi_selection_list_item.js
-digi_list.js
 digi_list_item.js
+digi_list.js
 jquery-1.9.1.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
@@ -51,9 +51,8 @@ theme/style.css
 theme/images/48x48_plain_home.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/icon_recordAudio.png
-theme/images/icon_takePicture.png
-theme/images/icon_dataTransfer.png
 theme/images/1536x2048_90_DIGI-WebApp.png
+theme/images/icon_takePicture.png
 theme/images/icon_bookTime.png
 theme/images/48x48_plain_pda_write.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
@@ -61,16 +60,17 @@ theme/images/48x48_plain_gears.png
 theme/images/640x960_90_DIGI-WebApp.png
 theme/images/Icon.png
 theme/images/640x960_90_SCHOLPP.png
-theme/images/icon-winphone.png
 theme/images/tile-icon-winphone.png
-theme/images/480x800_90_DIGI-WebApp_mitLogo.png
+theme/images/icon-winphone.png
 theme/images/icon_info.png
+theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/ic_launcher_xhdpi.png
 theme/images/icon_ios_120.png
 theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/Icon_2x.png
 theme/images/720x1280_90_DIGI-WebApp.png
+theme/images/icon_dataTransfer.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/Icon-72.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
@@ -110,16 +110,16 @@ theme/images/icon_ios_144.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/Auftrag.png
 theme/images/icon_media.png
-theme/images/48x48_plain_clock_pause.png
 theme/images/icon_record.png
+theme/images/48x48_plain_clock_pause.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/icon_ios_76.png
 theme/images/icon_ios_114.png
 theme/images/icon_closingTime.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_SCHOLPP.png
-theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/2048x2048_90_DIGI-WebApp.png
+theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_index.png
 theme/images/48x48_plain_text_code.png
 theme/images/icon_playbackAudio.png
@@ -130,11 +130,11 @@ theme/images/icon_searchPicture.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/ic_launcher_hdpi.png
 theme/images/icon_settings.png
-theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
+theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/48x48_plain_shelf.png
-theme/images/48x48_plain_wrench.png
 theme/images/5000x5000_90_DIGI-WebApp.png
+theme/images/48x48_plain_wrench.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
 DigiWebApp_App.js
