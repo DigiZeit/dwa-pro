@@ -667,6 +667,158 @@ M.ImagePreloader = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for mathematical flooring.
+ *
+ * @type String
+ */
+M.FLOOR = 'floor';
+
+/**
+ * A constant value for mathematical ceiling.
+ *
+ * @type String
+ */
+M.CEIL = 'ceil';
+
+/**
+ * A constant value for mathematical rounding.
+ *
+ * @type String
+ */
+M.ROUND = 'round';
+
+/**
+ * @class
+ *
+ * This prototype defines methods for simpler handling of mathematical operations.
+ *
+ * @extends M.Object
+ */
+M.Math = M.Object.extend(
+/** @scope M.Math.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Math',
+
+    /**
+     * This method returns the value of the base to the power of the exponent. So e.g.
+     * pow(2, 3) would return '2 to the power of 3' --> 8.
+     *
+     * @param {Number} base The base.
+     * @param {Number} exponent The exponent.
+     * @returns {Number} The result of the operation.
+     */
+    pow: function(base, exponent) {
+        return Math.pow(base, exponent);
+    },
+
+    /**
+     * The method returns a random number within the range given by the min property
+     * and the max property, including the min and max value.
+     *
+     * A test with 100.000 iterations for random(1, 3) created the following distribution:
+     * - 1: 33.2%
+     * - 2: 33.2%
+     * - 3: 33.6%
+     *
+     * @param {Number} min The minimal value.
+     * @param {Number} max The maximal value.
+     * @returns {Number} The result of the operation.
+     */
+    random: function(min, max) {
+        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
+    },
+
+    /**
+     * The method returns rounded version of the given input number. There are three
+     * types of rounding available:
+     *
+     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
+     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
+     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
+     *
+     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
+     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
+     * is 0.
+     *
+     * @param {Number} input The input value.
+     * @param {String} type The type of rounding.
+     * @param {Number} type The number of decimals (only available for M.ROUND).
+     * @returns {Number} The result of the operation.
+     */
+    round: function(input, type, decimals) {
+        if(decimals) {
+            input = input * (Math.pow(10, decimals));
+        }
+        var output = 0;
+        switch (type) {
+            case M.FLOOR:
+                output = Math.floor(input);
+                break;
+            case M.CEIL:
+                output = Math.ceil(input);
+                break;
+            case M.ROUND:
+                default:
+                output = Math.round(input);
+                break;
+        }
+        if(decimals) {
+            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
+            if(outputStr.length > 1) {
+                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
+            } else {
+                output = parseFloat(outputStr);
+            }
+        }
+
+        return output;
+    },
+
+    /**
+     * This method finds the closest number within an array of numbers that to a certain
+     * given number.
+     *
+     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
+     *
+     * @param {Array} numbers The array of numbers to search in.
+     * @param {Number} number The reference number.
+     * @returns {Number} The nearest number.
+     */
+    nearestNumber: function(numbers, number) {
+        var minDiff = null;
+        var nearestNumber = null;
+
+        _.each(numbers, function(n) {
+            var diff = Math.abs(n - number);
+            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
+                minDiff = diff;
+                nearestNumber = n;
+            }
+        });
+
+        return nearestNumber;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -849,158 +1001,6 @@ M.Location = M.Object.extend(
         } else {
             M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
         }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for mathematical flooring.
- *
- * @type String
- */
-M.FLOOR = 'floor';
-
-/**
- * A constant value for mathematical ceiling.
- *
- * @type String
- */
-M.CEIL = 'ceil';
-
-/**
- * A constant value for mathematical rounding.
- *
- * @type String
- */
-M.ROUND = 'round';
-
-/**
- * @class
- *
- * This prototype defines methods for simpler handling of mathematical operations.
- *
- * @extends M.Object
- */
-M.Math = M.Object.extend(
-/** @scope M.Math.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Math',
-
-    /**
-     * This method returns the value of the base to the power of the exponent. So e.g.
-     * pow(2, 3) would return '2 to the power of 3' --> 8.
-     *
-     * @param {Number} base The base.
-     * @param {Number} exponent The exponent.
-     * @returns {Number} The result of the operation.
-     */
-    pow: function(base, exponent) {
-        return Math.pow(base, exponent);
-    },
-
-    /**
-     * The method returns a random number within the range given by the min property
-     * and the max property, including the min and max value.
-     *
-     * A test with 100.000 iterations for random(1, 3) created the following distribution:
-     * - 1: 33.2%
-     * - 2: 33.2%
-     * - 3: 33.6%
-     *
-     * @param {Number} min The minimal value.
-     * @param {Number} max The maximal value.
-     * @returns {Number} The result of the operation.
-     */
-    random: function(min, max) {
-        return Math.ceil(Math.random() * (max - min + 1) + min - 1);
-    },
-
-    /**
-     * The method returns rounded version of the given input number. There are three
-     * types of rounding available:
-     *
-     * - M.FLOOR: Returns the next lower integer, so 2.1 and 2.9 both would return 2.
-     * - M.CEIL: Returns the next higher integer, so 2.1 and 2.9 both would return 3.
-     * - M.ROUND: Returns the nearest integer, so 2.1 would return 2 and 2.9 would return 3.
-     *
-     * With the optional third parameter 'decimals', you can specify the number of decimal digits to be
-     * returned. For example round(1.2345, M.FLOOR, 3) would return 1.234. The default for this parameter
-     * is 0.
-     *
-     * @param {Number} input The input value.
-     * @param {String} type The type of rounding.
-     * @param {Number} type The number of decimals (only available for M.ROUND).
-     * @returns {Number} The result of the operation.
-     */
-    round: function(input, type, decimals) {
-        if(decimals) {
-            input = input * (Math.pow(10, decimals));
-        }
-        var output = 0;
-        switch (type) {
-            case M.FLOOR:
-                output = Math.floor(input);
-                break;
-            case M.CEIL:
-                output = Math.ceil(input);
-                break;
-            case M.ROUND:
-                default:
-                output = Math.round(input);
-                break;
-        }
-        if(decimals) {
-            var outputStr = String(output / (Math.pow(10, decimals))).split('.');
-            if(outputStr.length > 1) {
-                output = parseFloat(outputStr[0] + '.' + outputStr[1].substring(0, decimals));
-            } else {
-                output = parseFloat(outputStr);
-            }
-        }
-
-        return output;
-    },
-
-    /**
-     * This method finds the closest number within an array of numbers that to a certain
-     * given number.
-     *
-     * So e.g. "nearestNumber([10, 20, 30], 12)" will return "10".
-     *
-     * @param {Array} numbers The array of numbers to search in.
-     * @param {Number} number The reference number.
-     * @returns {Number} The nearest number.
-     */
-    nearestNumber: function(numbers, number) {
-        var minDiff = null;
-        var nearestNumber = null;
-
-        _.each(numbers, function(n) {
-            var diff = Math.abs(n - number);
-            if(diff < minDiff || (!minDiff && minDiff !== 0)) {
-                minDiff = diff;
-                nearestNumber = n;
-            }
-        });
-
-        return nearestNumber;
     }
 
 });
@@ -1436,182 +1436,6 @@ M.Environment = M.Object.extend(
             return YES;
         }
         return NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
     }
 
 });
@@ -2176,6 +2000,182 @@ M.Date = M.Object.extend(
      */
     toJSON: function() {
         return String(this.date);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
     }
 
 });
@@ -3887,80 +3887,6 @@ M.DataProviderHybrid = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      19.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4030,6 +3956,80 @@ M.Validator = M.Object.extend(
     }
 
 
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
 
 });
 // ==========================================================================
@@ -4156,6 +4156,245 @@ M.ModelAttribute.attr = function(dataType, opts) {
     }
     return this.extend(opts);
 };
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.07.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * A data consumer can be called a read-only data provider. It's only job is it to retrieve some data form
+ * remote services, e.g. a webservice, and to push them into the store.
+ *
+ * Note: So far we only support data in JSON format!
+ *
+ * @extends M.Object
+ */
+M.DataConsumer = M.Object.extend(
+/** @scope M.DataConsumer.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataConsumer',
+
+    /**
+     * This property can be used to specify the path to the desired data within
+     * the response. Simply name the path by concatenating the path parts with
+     * a '.', e.g.: 'path.to.my.desired.response'.
+     *
+     * @type String
+     */
+    responsePath: null,
+
+    /**
+     * This property specifies the used http method for the request. By default
+     * GET is used.
+     *
+     * @type String
+     */
+    httpMethod: 'GET',
+
+    /**
+     * This property can be used to specify whether or not to append any fetched
+     * data sets to the existing records. If set to NO, the model's records are
+     * removed whenever the find() method is called.
+     *
+     * @type Boolean
+     */
+    appendRecords: YES,
+
+    /**
+     * The urlParams property will be pushed to the url() method of your data
+     * consumer. This should look like:
+     *
+     *   url: function(query, rpp) {
+     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
+     *   }
+     *
+     * @type String
+     */
+    urlParams: null,
+
+    /**
+     * Use this method within your model to configure the data consumer. Set
+     * resp. override all the default object's properties, e.g.:
+     *
+     *   {
+     *     urlParams: {
+     *       query: 'html5',
+     *       rpp: 10
+     *     },
+     *     appendRecords: YES,
+     *     callbacks: {
+     *       success: {
+     *         target: MyApp.MyController,
+     *         action: 'itWorked'
+     *       },
+     *       error: {
+     *         action: function(e) {
+     *           console.log(e);
+     *         }
+     *       }
+     *     },
+     *     map: function(obj) {
+     *       return {
+     *         userName: obj.from_user,
+     *         userImage: obj.profile_image_url,
+     *         createdAt: obj.created_at,
+     *         tweet: obj.text
+     *       };
+     *     }
+     *   }
+     *
+     * @param {Object} obj The configuration parameters for the data consumer.
+     */
+    configure: function(obj) {
+        return this.extend(obj);
+    },
+
+    /**
+     * This method is automatically called by the model, if you call the model's
+     * find(). To execute the data consuming processs imply pass along an object
+     * specifying the call's parameters as follows:
+     *
+     * {
+     *   urlParams: {
+     *     query: 'html5',
+     *     rpp: 10
+     *   }
+     * }
+     *
+     * These parameters will automatically be added to the url, using the
+     * url() method of your data consumer.
+     *
+     * Depending on the success/failure of the call, the specified success
+     * resp. error callback will be called.
+     *
+     * @param {Object} obj The options for the call.
+     */
+    find: function(obj) {
+        this.include(obj);
+
+        var that = this;
+        M.Request.init({
+            url: this.bindToCaller(this, this.url, _.toArray(this.urlParams))(),
+            isJSON: YES,
+            callbacks: {
+                success: {
+                    target: this,
+                    action: function(data, message, request){
+                        /* if no data was returned, skip this */
+                        if(data) {
+                            /* apply response path */
+                            if(this.responsePath) {
+                                var responsePath = this.responsePath.split('.');
+                                _.each(responsePath, function(subPath) {
+                                    data = data[subPath];
+                                });
+                            }
+
+                            /* if no data was found inside responsePath, skip */
+                            if(data && !_.isArray(data) || _.isArray(data) && data.length > 0) {
+                                /* make sure we've got an array */
+                                if(!_.isArray(data)) {
+                                    data = [data];
+                                }
+
+                                /* apply map function and create a record for all data sets */
+                                var records = [];
+                                _.each(data, function(d) {
+                                    var record = obj.model.createRecord(that.map(d));
+                                    records.push(record);
+                                });
+
+                                /* call callback */
+                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [records]);
+                                }
+                            } else {
+                                /* log message, that there were no data sets found in given response path */
+                                M.Logger.log('There were no data sets found in response path \'' + this.responsePath + '\'.', M.INFO);
+
+                                /* call callback */
+                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
+                                }
+                            }
+                        } else {
+                            /* log message, this there were no data sets returned */
+                            M.Logger.log('There was no data returned for url \'' + this.bindToCaller(this, this.url, _.toArray(this.urlParams))() + '\'.', M.INFO);
+
+                            /* call callback */
+                            if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+                                M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
+                            }
+                        }
+                    }
+                },
+                error: {
+                    target: this,
+                    action: function(request, message){
+                        /* call callback */
+                        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
+                            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, message);
+                        }
+                    }
+                }
+            }
+        }).send();
+    },
+
+    /**
+     * Override this method within the data consumer's configuration, to map
+     * the response object to your model's properties as follows:
+     *
+     *   map: function(obj) {
+     *       return {
+     *           userName: obj.from_user,
+     *           userImage: obj.profile_image_url,
+     *           createdAt: obj.created_at,
+     *           tweet: obj.text
+     *       };
+     *   }
+     *
+     * @param {Object} obj The response object.
+     * @interface
+     */
+    map: function(obj) {
+        // needs to be implemented by concrete data consumer object
+    },
+
+    /**
+     * Override this method within the data consumer's configuration, to tell
+     * the component which url to connect to and with which parameters as
+     * follows:
+     *
+     *   url: function(query, rpp) {
+     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
+     *   }
+     *
+     * The parameters passed to this method are defined by the configuration
+     * of your data consumer. See the urlParams property for further information
+     * about that.
+     *
+     * @interface
+     */
+    url: function() {
+        // needs to be implemented by concrete data consumer object
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -4421,245 +4660,6 @@ M.Error = M.Object.extend(
     code: '',
     msg: '',
     errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.07.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * A data consumer can be called a read-only data provider. It's only job is it to retrieve some data form
- * remote services, e.g. a webservice, and to push them into the store.
- *
- * Note: So far we only support data in JSON format!
- *
- * @extends M.Object
- */
-M.DataConsumer = M.Object.extend(
-/** @scope M.DataConsumer.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataConsumer',
-
-    /**
-     * This property can be used to specify the path to the desired data within
-     * the response. Simply name the path by concatenating the path parts with
-     * a '.', e.g.: 'path.to.my.desired.response'.
-     *
-     * @type String
-     */
-    responsePath: null,
-
-    /**
-     * This property specifies the used http method for the request. By default
-     * GET is used.
-     *
-     * @type String
-     */
-    httpMethod: 'GET',
-
-    /**
-     * This property can be used to specify whether or not to append any fetched
-     * data sets to the existing records. If set to NO, the model's records are
-     * removed whenever the find() method is called.
-     *
-     * @type Boolean
-     */
-    appendRecords: YES,
-
-    /**
-     * The urlParams property will be pushed to the url() method of your data
-     * consumer. This should look like:
-     *
-     *   url: function(query, rpp) {
-     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
-     *   }
-     *
-     * @type String
-     */
-    urlParams: null,
-
-    /**
-     * Use this method within your model to configure the data consumer. Set
-     * resp. override all the default object's properties, e.g.:
-     *
-     *   {
-     *     urlParams: {
-     *       query: 'html5',
-     *       rpp: 10
-     *     },
-     *     appendRecords: YES,
-     *     callbacks: {
-     *       success: {
-     *         target: MyApp.MyController,
-     *         action: 'itWorked'
-     *       },
-     *       error: {
-     *         action: function(e) {
-     *           console.log(e);
-     *         }
-     *       }
-     *     },
-     *     map: function(obj) {
-     *       return {
-     *         userName: obj.from_user,
-     *         userImage: obj.profile_image_url,
-     *         createdAt: obj.created_at,
-     *         tweet: obj.text
-     *       };
-     *     }
-     *   }
-     *
-     * @param {Object} obj The configuration parameters for the data consumer.
-     */
-    configure: function(obj) {
-        return this.extend(obj);
-    },
-
-    /**
-     * This method is automatically called by the model, if you call the model's
-     * find(). To execute the data consuming processs imply pass along an object
-     * specifying the call's parameters as follows:
-     *
-     * {
-     *   urlParams: {
-     *     query: 'html5',
-     *     rpp: 10
-     *   }
-     * }
-     *
-     * These parameters will automatically be added to the url, using the
-     * url() method of your data consumer.
-     *
-     * Depending on the success/failure of the call, the specified success
-     * resp. error callback will be called.
-     *
-     * @param {Object} obj The options for the call.
-     */
-    find: function(obj) {
-        this.include(obj);
-
-        var that = this;
-        M.Request.init({
-            url: this.bindToCaller(this, this.url, _.toArray(this.urlParams))(),
-            isJSON: YES,
-            callbacks: {
-                success: {
-                    target: this,
-                    action: function(data, message, request){
-                        /* if no data was returned, skip this */
-                        if(data) {
-                            /* apply response path */
-                            if(this.responsePath) {
-                                var responsePath = this.responsePath.split('.');
-                                _.each(responsePath, function(subPath) {
-                                    data = data[subPath];
-                                });
-                            }
-
-                            /* if no data was found inside responsePath, skip */
-                            if(data && !_.isArray(data) || _.isArray(data) && data.length > 0) {
-                                /* make sure we've got an array */
-                                if(!_.isArray(data)) {
-                                    data = [data];
-                                }
-
-                                /* apply map function and create a record for all data sets */
-                                var records = [];
-                                _.each(data, function(d) {
-                                    var record = obj.model.createRecord(that.map(d));
-                                    records.push(record);
-                                });
-
-                                /* call callback */
-                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [records]);
-                                }
-                            } else {
-                                /* log message, that there were no data sets found in given response path */
-                                M.Logger.log('There were no data sets found in response path \'' + this.responsePath + '\'.', M.INFO);
-
-                                /* call callback */
-                                if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                    M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
-                                }
-                            }
-                        } else {
-                            /* log message, this there were no data sets returned */
-                            M.Logger.log('There was no data returned for url \'' + this.bindToCaller(this, this.url, _.toArray(this.urlParams))() + '\'.', M.INFO);
-
-                            /* call callback */
-                            if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-                                M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [[]]);
-                            }
-                        }
-                    }
-                },
-                error: {
-                    target: this,
-                    action: function(request, message){
-                        /* call callback */
-                        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
-                            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, message);
-                        }
-                    }
-                }
-            }
-        }).send();
-    },
-
-    /**
-     * Override this method within the data consumer's configuration, to map
-     * the response object to your model's properties as follows:
-     *
-     *   map: function(obj) {
-     *       return {
-     *           userName: obj.from_user,
-     *           userImage: obj.profile_image_url,
-     *           createdAt: obj.created_at,
-     *           tweet: obj.text
-     *       };
-     *   }
-     *
-     * @param {Object} obj The response object.
-     * @interface
-     */
-    map: function(obj) {
-        // needs to be implemented by concrete data consumer object
-    },
-
-    /**
-     * Override this method within the data consumer's configuration, to tell
-     * the component which url to connect to and with which parameters as
-     * follows:
-     *
-     *   url: function(query, rpp) {
-     *     return 'http://www.myserver.com/request?query=' + query + '&rpp=' + rpp
-     *   }
-     *
-     * The parameters passed to this method are defined by the configuration
-     * of your data consumer. See the urlParams property for further information
-     * about that.
-     *
-     * @interface
-     */
-    url: function() {
-        // needs to be implemented by concrete data consumer object
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5269,540 +5269,6 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      20.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
- *
- * @extends M.DataProvider
- */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      15.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to LocalStorage (in-browser key value store).
- * LocalStorage is an in-browser key-value store to persist data.
- * This data provider persists model records as JSON strings with their name and id as key.
- * When fetching these strings from storage, their automatically converted in their corresponding model records.
- *
- * Operates synchronous.
- *
- * @extends M.DataProvider
- */
-M.DataProviderLocalStorage = M.DataProvider.extend(
-    /** @scope M.DataProviderLocalStorage.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type:'M.DataProviderLocalStorage',
-
-    /**
-     * Saves a model record to the local storage
-     * The key is the model record's name combined with id, value is stringified object
-     * e.g.
-     * Note_123 => '{ text: 'buy some food' }'
-     *
-     * @param {Object} that (is a model).
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
-     */
-    save:function (obj) {
-        try {
-            //console.log(obj);
-            /* add m_id to saved object */
-            /*var a = JSON.stringify(obj.model.record).split('{', 2);
-             a[2] = a[1];
-             a[1] = '"m_id":' + obj.model.m_id + ',';
-             a[0] = '{';
-             var value = a.join('');*/
-            var value = JSON.stringify(obj.model.record);
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
-            return YES;
-        } catch (e) {
-            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
-            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
-            return NO;
-        }
-
-    },
-
-    /**
-     * deletes a model from the local storage
-     * key defines which one to delete
-     * e.g. key: 'Note_123'
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
-     */
-    del:function (obj) {
-        try {
-            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
-                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
-                obj.model.recordManager.remove(obj.model.m_id);
-                return YES;
-            }
-            return NO;
-        } catch (e) {
-            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
-            return NO;
-        }
-    },
-
-    /**
-     * Finds all models of type defined by modelName that match a key or a simple query.
-     * A simple query example: 'price < 2.21'
-     * Right now, no AND or OR joins possible, just one query constraint.
-     *
-     * If no query is passed, all models are returned by calling findAll()
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
-     * @throws Exception when query tries to compare two different data types
-     */
-    find:function (obj) {
-        if (obj.key) {
-            var record = this.findByKey(obj);
-            if (!record) {
-                return NO;
-            }
-            /*construct new model record with the saved id*/
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
-            var m_id = reg && reg[1] ? reg[1] : null;
-            if (!m_id) {
-                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
-                return NO;
-            }
-            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-            return m;
-        }
-
-        if (obj.query) {
-            var q = obj.query;
-            var missing = [];
-            if (!q.identifier) {
-                missing.push('identifier');
-            }
-            if (!q.operator) {
-                missing.push('operator');
-            }
-            if (q.value === undefined || q.value === null) {
-                missing.push('value');
-            }
-
-            if (missing.length > 0) {
-                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
-                return [];
-            }
-
-            var ident = q.identifier;
-            var op = q.operator;
-            var val = q.value;
-
-            var res = this.findAll(obj);
-
-            // check if query is correct in respect of data types
-            if(res && res.length > 0) {
-                var o = res[0];
-                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
-					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
-						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
-                }
-            }
-
-            switch (op) {
-                case '=':
-
-                    res = _.select(res, function (o) {
-                        return o.record[ident] === val;
-                    });
-                    break;
-
-                case '~=': // => includes (works only on strings)
-
-                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
-                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
-                    }
-                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
-                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
-
-                    for(var i in metaChars) {
-                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
-                    }
-
-                    // replace whitespaces with regex equivalent
-                    val = val.replace(/\s/g, '\\s');
-
-                    var regex = new RegExp(val);
-
-                    res = _.select(res, function(o) {
-                        return regex.test(o.record[ident]);
-                    });
-
-                    break;
-
-                case '!=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] !== val;
-                    });
-                    break;
-                case '<':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] < val;
-                    });
-                    break;
-                case '>':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] > val;
-                    });
-                    break;
-                case '<=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] <= val;
-                    });
-                    break;
-                case '>=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] >= val;
-                    });
-                    break;
-                default:
-                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
-                    res = [];
-                    break;
-
-            }
-
-            return res;
-
-        } else { /* if no query is passed, all models for modelName shall be returned */
-            return this.findAll(obj);
-        }
-    },
-
-    /**
-     * Finds a record identified by the key.
-     *
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
-     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
-     * parameter passed.
-     */
-    findByKey:function (obj) {
-        if (obj.key) {
-
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
-            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
-            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
-
-            if (localStorage.getItem(obj.key)) { // if key is available
-                return this.buildRecord(obj.key, obj)
-            } else {
-                return NO;
-            }
-        }
-        M.Logger.log("Please provide a key.", M.WARN);
-        return NO;
-    },
-
-    /**
-     * Returns all models defined by modelName.
-     *
-     * Models are saved with key: Modelname_ID, e.g. Note_123
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
-     */
-    findAll:function (obj) {
-        var result = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i);
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
-
-                /*construct new model record with the saved m_id*/
-                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
-                var m_id = reg && reg[1] ? reg[1] : null;
-                if (!m_id) {
-                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
-                    continue; // if m_id does not exist, continue with next record element
-                }
-                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-
-                result.push(m);
-            }
-        }
-        return result;
-    },
-
-    /**
-     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
-     * Means: check whether resulting object's properties have the data type define by their model attribute object.
-     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
-     * 'Date' set for this property.
-     *
-     * @param {String} key The key to fetch the element from LocalStorage
-     * @param {Object} obj The param object, includes model
-     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
-     */
-    buildRecord:function (key, obj) {
-        var record = JSON.parse(localStorage.getItem(key));
-        for (var i in record) {
-            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
-                switch (obj.model.__meta[i].dataType) {
-                    case 'Date':
-                        record[i] = M.Date.create(record[i]);
-                        break;
-                }
-            }
-        }
-        return record;
-    },
-
-    /**
-     * Returns all keys for model defined by modelName.
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
-     */
-    allKeys:function (obj) {
-        var keys = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i)
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
-     * @type Object
-     */
-    config: null,
-
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
-            });
-        }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
-        }
-        callback(result);
-    },
-
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
-    },
-
-    /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
-     */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
-
-}); 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6323,6 +5789,540 @@ M.PhoneValidator = M.Validator.extend(
         return NO;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      15.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to LocalStorage (in-browser key value store).
+ * LocalStorage is an in-browser key-value store to persist data.
+ * This data provider persists model records as JSON strings with their name and id as key.
+ * When fetching these strings from storage, their automatically converted in their corresponding model records.
+ *
+ * Operates synchronous.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderLocalStorage = M.DataProvider.extend(
+    /** @scope M.DataProviderLocalStorage.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type:'M.DataProviderLocalStorage',
+
+    /**
+     * Saves a model record to the local storage
+     * The key is the model record's name combined with id, value is stringified object
+     * e.g.
+     * Note_123 => '{ text: 'buy some food' }'
+     *
+     * @param {Object} that (is a model).
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    save:function (obj) {
+        try {
+            //console.log(obj);
+            /* add m_id to saved object */
+            /*var a = JSON.stringify(obj.model.record).split('{', 2);
+             a[2] = a[1];
+             a[1] = '"m_id":' + obj.model.m_id + ',';
+             a[0] = '{';
+             var value = a.join('');*/
+            var value = JSON.stringify(obj.model.record);
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
+            return YES;
+        } catch (e) {
+            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
+            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
+            return NO;
+        }
+
+    },
+
+    /**
+     * deletes a model from the local storage
+     * key defines which one to delete
+     * e.g. key: 'Note_123'
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    del:function (obj) {
+        try {
+            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
+                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
+                obj.model.recordManager.remove(obj.model.m_id);
+                return YES;
+            }
+            return NO;
+        } catch (e) {
+            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
+            return NO;
+        }
+    },
+
+    /**
+     * Finds all models of type defined by modelName that match a key or a simple query.
+     * A simple query example: 'price < 2.21'
+     * Right now, no AND or OR joins possible, just one query constraint.
+     *
+     * If no query is passed, all models are returned by calling findAll()
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
+     * @throws Exception when query tries to compare two different data types
+     */
+    find:function (obj) {
+        if (obj.key) {
+            var record = this.findByKey(obj);
+            if (!record) {
+                return NO;
+            }
+            /*construct new model record with the saved id*/
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
+            var m_id = reg && reg[1] ? reg[1] : null;
+            if (!m_id) {
+                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
+                return NO;
+            }
+            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+            return m;
+        }
+
+        if (obj.query) {
+            var q = obj.query;
+            var missing = [];
+            if (!q.identifier) {
+                missing.push('identifier');
+            }
+            if (!q.operator) {
+                missing.push('operator');
+            }
+            if (q.value === undefined || q.value === null) {
+                missing.push('value');
+            }
+
+            if (missing.length > 0) {
+                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
+                return [];
+            }
+
+            var ident = q.identifier;
+            var op = q.operator;
+            var val = q.value;
+
+            var res = this.findAll(obj);
+
+            // check if query is correct in respect of data types
+            if(res && res.length > 0) {
+                var o = res[0];
+                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
+					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
+						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
+                }
+            }
+
+            switch (op) {
+                case '=':
+
+                    res = _.select(res, function (o) {
+                        return o.record[ident] === val;
+                    });
+                    break;
+
+                case '~=': // => includes (works only on strings)
+
+                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
+                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
+                    }
+                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
+                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
+
+                    for(var i in metaChars) {
+                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
+                    }
+
+                    // replace whitespaces with regex equivalent
+                    val = val.replace(/\s/g, '\\s');
+
+                    var regex = new RegExp(val);
+
+                    res = _.select(res, function(o) {
+                        return regex.test(o.record[ident]);
+                    });
+
+                    break;
+
+                case '!=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] !== val;
+                    });
+                    break;
+                case '<':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] < val;
+                    });
+                    break;
+                case '>':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] > val;
+                    });
+                    break;
+                case '<=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] <= val;
+                    });
+                    break;
+                case '>=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] >= val;
+                    });
+                    break;
+                default:
+                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
+                    res = [];
+                    break;
+
+            }
+
+            return res;
+
+        } else { /* if no query is passed, all models for modelName shall be returned */
+            return this.findAll(obj);
+        }
+    },
+
+    /**
+     * Finds a record identified by the key.
+     *
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
+     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
+     * parameter passed.
+     */
+    findByKey:function (obj) {
+        if (obj.key) {
+
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
+            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
+            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
+
+            if (localStorage.getItem(obj.key)) { // if key is available
+                return this.buildRecord(obj.key, obj)
+            } else {
+                return NO;
+            }
+        }
+        M.Logger.log("Please provide a key.", M.WARN);
+        return NO;
+    },
+
+    /**
+     * Returns all models defined by modelName.
+     *
+     * Models are saved with key: Modelname_ID, e.g. Note_123
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
+     */
+    findAll:function (obj) {
+        var result = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
+
+                /*construct new model record with the saved m_id*/
+                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
+                var m_id = reg && reg[1] ? reg[1] : null;
+                if (!m_id) {
+                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
+                    continue; // if m_id does not exist, continue with next record element
+                }
+                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+
+                result.push(m);
+            }
+        }
+        return result;
+    },
+
+    /**
+     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
+     * Means: check whether resulting object's properties have the data type define by their model attribute object.
+     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
+     * 'Date' set for this property.
+     *
+     * @param {String} key The key to fetch the element from LocalStorage
+     * @param {Object} obj The param object, includes model
+     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
+     */
+    buildRecord:function (key, obj) {
+        var record = JSON.parse(localStorage.getItem(key));
+        for (var i in record) {
+            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
+                switch (obj.model.__meta[i].dataType) {
+                    case 'Date':
+                        record[i] = M.Date.create(record[i]);
+                        break;
+                }
+            }
+        }
+        return record;
+    },
+
+    /**
+     * Returns all keys for model defined by modelName.
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
+     */
+    allKeys:function (obj) {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i)
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      20.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
