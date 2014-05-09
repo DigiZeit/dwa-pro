@@ -3156,6 +3156,378 @@ M.DatePickerView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitToolbarView = M.View.extend(
+/** @scope M.SplitToolbarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitToolbarView',
+
+    showSelectedItemInMainHeader: YES,
+
+    showMenuButtonInPortraitMode: YES,
+
+    popover: null,
+
+    splitview: null,
+
+    /**
+     * Triggers render() on all children.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+
+        if(this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+
+            var currentToolbar = 0;
+            for(var i in childViews) { // toolbar1, toolbar 2
+                
+                var toolbar = this[childViews[i]]; //zugriff wie 
+                
+                if(toolbar && toolbar.type === 'M.ToolbarView') {
+
+                    toolbar.parentView = this;
+                    if(currentToolbar === 0) {
+
+
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
+
+
+
+                    } else if(currentToolbar === 1) {
+                        //toolbar2
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
+
+                        /* check if this is a simple toolbar so we can add the menu button */
+                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
+                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
+                            toolbar.childViews = 'menuButton label';
+
+
+
+                            var buttonLabel = this[childViews[0]].value;
+                            toolbar.menuButton = M.ButtonView.design({
+                                value: buttonLabel,
+                                icon: 'arrow-d',
+                                anchorLocation: M.LEFT,
+                                internalEvents: {
+                                    tap: {
+                                        target: this,
+                                        action: function() {
+                                           if(!this.popover) {
+                                                var content;
+                                                if(this.splitview.contentBinding) {
+                                                    content = this.splitview.value;
+                                                } else if(this.splitview.childViews) {
+                                                    var childViews = this.splitview.getChildViewsAsArray();
+                                                    content = [];
+                                                    for(var i = 0; i < childViews.length; i++) {
+                                                        content.push(this.splitview[childViews[i]]);
+                                                    }
+                                                }
+                                                var items = [];
+                                                for(var i in content) {
+                                                    items.push(content[i]);
+                                                }
+                                                this.popover = M.PopoverView.design({
+                                                    items: items,
+                                                    splitview: this.splitview
+                                                });
+                                                this.popover.show();
+                                            } else {
+                                                this.popover.renderUpdate();
+                                                this.popover.toggle();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            toolbar.label = M.LabelView.design({
+                                value: toolbar.value,
+                                anchorLocation: M.CENTER
+                            });
+
+                            toolbar.value = '';
+                        }
+                    } else {
+                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
+                        return;
+                    }
+                    this.html += toolbar.render();
+                    currentToolbar++;
+                } else {
+                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
+                }
+            }
+            return this.html;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard itm view contains an icon and a label and can be used as the only
+ * kind of childviews for a dashboard view.
+ *
+ * @extends M.View
+ */
+M.DashboardItemView = M.View.extend(
+/** @scope M.DashboardItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardItemView',
+
+    /**
+     * The path/url to the dashboard item's icon.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * The label for the dashboard item. If no label is specified, the value will be
+     * displayed instead.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
+
+    /**
+     * Renders a dashboard item.
+     *
+     * @private
+     * @returns {String} The dashboard item view's html representation.
+     */
+    render: function() {
+        //this.computeValue();
+
+        /* reset html property */
+        this.html = '';
+
+        if(!this.icon) {
+            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
+            return this.html;
+        }
+
+        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
+
+        /* add image */
+        var image = M.ImageView.design({
+            value: this.icon
+        });
+        this.html += image.render();
+
+        /* add label */
+        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            taphold: {
+                target: this.parentView,
+                action: 'editDashboard'
+            },
+            tap: {
+                target: this.parentView,
+                action: 'dispatchTapEvent'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard item.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
@@ -4718,259 +5090,6 @@ M.SelectionListView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
-
-    /**
-     * Triggers render() on all children.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard itm view contains an icon and a label and can be used as the only
- * kind of childviews for a dashboard view.
- *
- * @extends M.View
- */
-M.DashboardItemView = M.View.extend(
-/** @scope M.DashboardItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardItemView',
-
-    /**
-     * The path/url to the dashboard item's icon.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * The label for the dashboard item. If no label is specified, the value will be
-     * displayed instead.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
-
-    /**
-     * Renders a dashboard item.
-     *
-     * @private
-     * @returns {String} The dashboard item view's html representation.
-     */
-    render: function() {
-        //this.computeValue();
-
-        /* reset html property */
-        this.html = '';
-
-        if(!this.icon) {
-            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
-            return this.html;
-        }
-
-        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
-
-        /* add image */
-        var image = M.ImageView.design({
-            value: this.icon
-        });
-        this.html += image.render();
-
-        /* add label */
-        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            taphold: {
-                target: this.parentView,
-                action: 'editDashboard'
-            },
-            tap: {
-                target: this.parentView,
-                action: 'dispatchTapEvent'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard item.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.11.2010
@@ -5414,125 +5533,6 @@ M.ContainerView = M.View.extend(
         return html;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -9018,542 +9018,6 @@ M.GridView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard view displays images and a corresponding text in a grid-like view
- * and serves as the homescreen of an application. By tapping on of the icons, a
- * user can access certain features of an app. By default, there are three icons
- * in a row and three rows per page possible. But you can easily adjust this to
- * your custom needs.
- *
- * @extends M.View
- */
-M.DashboardView = M.View.extend(
-/** @scope M.DashboardView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardView',
-
-    /**
-     * This property can be used to customize the number of items a dashboard
-     * shows per line. By default this is set to three.
-     *
-     * @type Number
-     */
-    itemsPerLine: 3,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This property is used internally for storing the items of a dashboard, when using
-     * the content binding feature.
-     *
-     * @private
-     */
-    items: [],
-
-    /**
-     * This property can be used to specify whether or not the dashboard can be re-arranged
-     * by a user.
-     *
-     * @type Boolean
-     */
-    isEditable: NO,
-
-    /**
-     * This property is used internally to indicate whether the dashboard is currently in
-     * edit mode or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInEditMode: NO,
-
-    /**
-     * This property defines the dashboard's name. This is used internally to identify
-     * the dashboard inside the DOM.
-     *
-     * Note: If you are using more than one dashboard inside your application, make sure
-     * you provide different names.
-     *
-     * @type String
-     */
-    name: 'dashboard',
-
-    /**
-     * This property is used internally to track the position of touch events.
-     *
-     * @private
-     */
-    touchPositions: null,
-
-    /**
-     * This property is used internally to know of what type the latest touch events was.
-     *
-     * @private
-     */
-    latestTouchEventType: null,
-
-    /**
-     * Renders a dashboard.
-     *
-     * @private
-     * @returns {String} The dashboard view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
-        this.renderChildViews();
-        this.html += '</div>';
-
-        /* clear floating */
-        this.html += '<div class="tmp-dashboard-line-clear"></div>';
-
-        /* init the touchPositions property */
-        this.touchPositions = {};
-
-        return this.html;
-    },
-
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* lets gather the html together */
-            for(var i in childViews) {
-                /* set the dashboard item's _name and parentView property */
-                this[childViews[i]].parentView = this;
-                this[childViews[i]]._name = childViews[i];
-
-                this.html += this.renderDashboardItemView(this[childViews[i]], i);
-            }
-        }
-    },
-
-    renderUpdate: function() {
-        if(this.contentBinding) {
-            this.removeAllItems();
-
-            /* do we have something in locale storage? */
-            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
-            values = values ? JSON.parse(values) : null;
-
-            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
-            this.items = [];
-            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
-            var html = '';
-
-            /* lets gather the html together */
-            for(var i in items) {
-                html += this.renderDashboardItemView(items[i], i);
-            }
-
-            /* add the items to the DOM */
-            this.addItems(html);
-
-            /* now the items are in DOM, finally register events */
-            for(var i in this.items) {
-                this.items[i].registerEvents();
-            }
-        }
-    },
-
-    /**
-     * This method adds a given html string, contain the dasboard's items, to the DOM.
-     *
-     * @param {String} item The html representation of the dashboard items to be added.
-     */
-    addItems: function(items) {
-        $('#' + this.id).append(items);
-    },
-
-    /**
-     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        $('#' + this.id).empty();
-    },
-
-    renderDashboardItemView: function(item, itemIndex) {
-        if(item && item.value && item.icon) {
-            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
-                value: item.value ? item.value : '',
-                icon: item.icon ? item.icon : '',
-                label: item.label ? item.label : (item.value ? item.value : ''),
-                parentView: this,
-                events: item.events
-            });
-            var html = '';
-
-            /* add item to array for later use */
-            this.items.push(obj);
-
-            /* is new line starting? */
-            if(itemIndex % this.itemsPerLine === 0) {
-                html += '<div class="tmp-dashboard-line">';
-            }
-
-            /* assign the desired width */
-            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
-
-            /* finally render the dashboard item and add it to the dashboard's html */
-            html += obj.render();
-
-            /* is a line finished? */
-            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
-                html += '</div><div class="tmp-dashboard-line-clear"></div>';
-            }
-
-            /* return the html */
-            return html;
-        } else {
-            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally for dispatching the tap event for a dashboard view. If the
-     * dashboard view is in edit mode, we do not dispatch the event to the application.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     *
-     * @private
-     */
-    dispatchTapEvent: function(id, event, nextEvent) {
-        /* now first call special handler for this item */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-
-        /* now call global tap-event handler (if set) */
-        if(this.events && this.events.tap) {
-            M.EventDispatcher.callHandler(this.events.tap, event, YES);
-        }
-
-        /* now store timestamp for last tap event to kill a possible false taphold event */
-        this.latestTapEventTimestamp = +new Date();
-    },
-
-    /**
-     * This method is automatically called when a taphold event is triggered for one
-     * of the dashboard's
-     */
-    editDashboard: function(id, event, nextEvent) {
-        this.touchPositions.touchstart = {};
-        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
-            return;
-        }
-
-        if(this.isInEditMode && event) {
-            this.stopEditMode();
-        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
-            M.EventDispatcher.unregisterEvents(this.id);
-            this.isInEditMode = YES;
-            _.each(this.items, function(item) {
-                item.addCssClass('rotate' + M.Math.random(1, 2));
-                M.EventDispatcher.unregisterEvents(item.id);
-                if($.support.touch) {
-                    M.EventDispatcher.registerEvent(
-                        'touchstart',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchStart'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchend',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchEnd'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchmove',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchMove'
-                        },
-                        item.recommendedEvents
-                    );
-                } else {
-                    M.EventDispatcher.registerEvent(
-                        'mousedown',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseDown'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'mouseup',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseUp'
-                        },
-                        item.recommendedEvents
-                    );
-                }
-            });
-        }
-    },
-
-    stopEditMode: function() {
-        this.isInEditMode = NO;
-        _.each(this.items, function(item) {
-            item.removeCssClass('rotate1');
-            item.removeCssClass('rotate2');
-            M.EventDispatcher.unregisterEvents(item.id);
-            item.registerEvents();
-        });
-    },
-
-    setValue: function(items) {
-        this.value = items;
-        var values = [];
-        _.each(items, function(item) {
-            values.push(item.value);
-        });
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
-        }
-    },
-
-    sortItemsByValues: function(items, values) {
-        var itemsSorted = [];
-        _.each(values, function(value) {
-            _.each(items, function(item) {
-                if(item.value === value) {
-                    itemsSorted.push(item);
-                }
-            });
-        });
-        return itemsSorted;
-    },
-
-    editTouchStart: function(id, event) {
-        this.latestTouchEventType = 'touchstart';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        this.touchPositions.touchstart = {
-            x: latest.clientX,
-            y: latest.clientY,
-            date: +new Date()
-        };
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'touchstart') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editTouchMove: function(id, event) {
-        this.latestTouchEventType = 'touchmove';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-
-        if(latest) {
-            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
-            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
-            $('#' + id).css('position', 'absolute');
-            $('#' + id).css('left', left + 'px');
-            $('#' + id).css('top', top + 'px');
-
-            /* if end event is within certain radius of start event and it took a certain time, and editing */
-            /*if(this.touchPositions.touchstart) {
-                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                        this.stopEditMode();
-                        this.editTouchEnd(id, event);
-                    }
-                }
-            }*/
-        }
-    },
-
-    editTouchEnd: function(id, event) {
-        this.latestTouchEventType = 'touchend';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    editMouseDown: function(id, event) {
-        this.latestTouchEventType = 'mousedown';
-
-        this.touchPositions.touchstart = {
-            x: event.clientX,
-            y: event.clientY,
-            date: +new Date()
-        };
-
-        /* enable mouse move for selected item */
-        M.EventDispatcher.registerEvent(
-            'mousemove',
-            id,
-            {
-                target: this,
-                action: 'editMouseMove'
-            },
-            M.ViewManager.getViewById(id).recommendedEvents
-        );
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'mousedown') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editMouseMove: function(id, event) {
-        this.latestTouchEventType = 'mousemove';
-
-        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
-        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
-        $('#' + id).css('position', 'absolute');
-        $('#' + id).css('left', left + 'px');
-        $('#' + id).css('top', top + 'px');
-
-        /* if end event is within certain radius of start event and it took a certain time, and editing */
-        /*if(this.touchPositions.touchstart) {
-            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                    this.stopEditMode();
-                    this.editTouchEnd(id, event);
-                }
-            }
-        }*/
-    },
-
-    editMouseUp: function(id, event) {
-        this.latestTouchEventType = 'mouseup';
-
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-
-                /* disable mouse move for all item */
-                M.EventDispatcher.unregisterEvent('mousemove', item.id);
-
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard view.
-     *
-     * @private
-     * @returns {String} The dashboard's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -11112,6 +10576,543 @@ M.TextFieldView = M.View.extend(
         if(this.label){
             $('label[for="' + this.id + '"]').html(txt);
         }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard view displays images and a corresponding text in a grid-like view
+ * and serves as the homescreen of an application. By tapping on of the icons, a
+ * user can access certain features of an app. By default, there are three icons
+ * in a row and three rows per page possible. But you can easily adjust this to
+ * your custom needs.
+ *
+ * @extends M.View
+ */
+M.DashboardView = M.View.extend(
+/** @scope M.DashboardView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardView',
+
+    /**
+     * This property can be used to customize the number of items a dashboard
+     * shows per line. By default this is set to three.
+     *
+     * @type Number
+     */
+    itemsPerLine: 3,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This property is used internally for storing the items of a dashboard, when using
+     * the content binding feature.
+     *
+     * @private
+     */
+    items: [],
+
+    /**
+     * This property can be used to specify whether or not the dashboard can be re-arranged
+     * by a user.
+     *
+     * @type Boolean
+     */
+    isEditable: NO,
+
+    /**
+     * This property is used internally to indicate whether the dashboard is currently in
+     * edit mode or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInEditMode: NO,
+
+    /**
+     * This property defines the dashboard's name. This is used internally to identify
+     * the dashboard inside the DOM.
+     *
+     * Note: If you are using more than one dashboard inside your application, make sure
+     * you provide different names.
+     *
+     * @type String
+     */
+    name: 'dashboard',
+
+    /**
+     * This property is used internally to track the position of touch events.
+     *
+     * @private
+     */
+    touchPositions: null,
+
+    /**
+     * This property is used internally to know of what type the latest touch events was.
+     *
+     * @private
+     */
+    latestTouchEventType: null,
+
+    /**
+     * Renders a dashboard.
+     *
+     * @private
+     * @returns {String} The dashboard view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+        this.renderChildViews();
+        this.html += '</div>';
+
+        /* clear floating */
+        this.html += '<div class="tmp-dashboard-line-clear"></div>';
+
+        /* init the touchPositions property */
+        this.touchPositions = {};
+
+        return this.html;
+    },
+
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* lets gather the html together */
+            for(var i in childViews) {
+                /* set the dashboard item's _name and parentView property */
+                this[childViews[i]].parentView = this;
+                this[childViews[i]]._name = childViews[i];
+
+                this.html += this.renderDashboardItemView(this[childViews[i]], i);
+            }
+        }
+    },
+
+    renderUpdate: function() {
+        if(this.contentBinding) {
+            this.removeAllItems();
+
+            /* do we have something in locale storage? */
+            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
+            values = values ? JSON.parse(values) : null;
+
+            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
+            this.items = [];
+            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
+            var html = '';
+
+            /* lets gather the html together */
+            for(var i in items) {
+                html += this.renderDashboardItemView(items[i], i);
+            }
+
+            /* add the items to the DOM */
+            this.addItems(html);
+
+            /* now the items are in DOM, finally register events */
+            for(var i in this.items) {
+                this.items[i].registerEvents();
+            }
+        }
+    },
+
+    /**
+     * This method adds a given html string, contain the dasboard's items, to the DOM.
+     *
+     * @param {String} item The html representation of the dashboard items to be added.
+     */
+    addItems: function(items) {
+        $('#' + this.id).append(items);
+    },
+
+    /**
+     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).empty();
+    },
+
+    renderDashboardItemView: function(item, itemIndex) {
+        if(item && item.value && item.icon) {
+            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
+                value: item.value ? item.value : '',
+                icon: item.icon ? item.icon : '',
+                label: item.label ? item.label : (item.value ? item.value : ''),
+                parentView: this,
+                events: item.events
+            });
+            var html = '';
+
+            /* add item to array for later use */
+            this.items.push(obj);
+
+            /* is new line starting? */
+            if(itemIndex % this.itemsPerLine === 0) {
+                html += '<div class="tmp-dashboard-line">';
+            }
+
+            /* assign the desired width */
+            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
+
+            /* finally render the dashboard item and add it to the dashboard's html */
+            html += obj.render();
+
+            /* is a line finished? */
+            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
+                html += '</div><div class="tmp-dashboard-line-clear"></div>';
+            }
+
+            /* return the html */
+            return html;
+        } else {
+            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally for dispatching the tap event for a dashboard view. If the
+     * dashboard view is in edit mode, we do not dispatch the event to the application.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     *
+     * @private
+     */
+    dispatchTapEvent: function(id, event, nextEvent) {
+        /* now first call special handler for this item */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+
+        /* now call global tap-event handler (if set) */
+        if(this.events && this.events.tap) {
+            M.EventDispatcher.callHandler(this.events.tap, event, YES);
+        }
+
+        /* now store timestamp for last tap event to kill a possible false taphold event */
+        this.latestTapEventTimestamp = +new Date();
+    },
+
+    /**
+     * This method is automatically called when a taphold event is triggered for one
+     * of the dashboard's
+     */
+    editDashboard: function(id, event, nextEvent) {
+        this.touchPositions.touchstart = {};
+        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
+            return;
+        }
+
+        if(this.isInEditMode && event) {
+            this.stopEditMode();
+        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
+            M.EventDispatcher.unregisterEvents(this.id);
+            this.isInEditMode = YES;
+            _.each(this.items, function(item) {
+                item.addCssClass('rotate' + M.Math.random(1, 2));
+                M.EventDispatcher.unregisterEvents(item.id);
+                if($.support.touch) {
+                    M.EventDispatcher.registerEvent(
+                        'touchstart',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchStart'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchend',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchEnd'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchmove',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchMove'
+                        },
+                        item.recommendedEvents
+                    );
+                } else {
+                    M.EventDispatcher.registerEvent(
+                        'mousedown',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseDown'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'mouseup',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseUp'
+                        },
+                        item.recommendedEvents
+                    );
+                }
+            });
+        }
+    },
+
+    stopEditMode: function() {
+        this.isInEditMode = NO;
+        _.each(this.items, function(item) {
+            item.removeCssClass('rotate1');
+            item.removeCssClass('rotate2');
+            M.EventDispatcher.unregisterEvents(item.id);
+            item.registerEvents();
+        });
+    },
+
+    setValue: function(items) {
+        this.value = items;
+        var values = [];
+        _.each(items, function(item) {
+            values.push(item.value);
+        });
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
+        }
+    },
+
+    sortItemsByValues: function(items, values) {
+        var itemsSorted = [];
+        _.each(values, function(value) {
+            _.each(items, function(item) {
+                if(item.value === value) {
+                    itemsSorted.push(item);
+                }
+            });
+        });
+        return itemsSorted;
+    },
+
+    editTouchStart: function(id, event) {
+        this.latestTouchEventType = 'touchstart';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        this.touchPositions.touchstart = {
+            x: latest.clientX,
+            y: latest.clientY,
+            date: +new Date()
+        };
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'touchstart') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editTouchMove: function(id, event) {
+        this.latestTouchEventType = 'touchmove';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+
+        if(latest) {
+            var left = latest.pageX - parseInt($('#' + id).css('width')) / 2;
+            var top = latest.pageY - parseInt($('#' + id).css('height')) / 2;
+            $('#' + id).css('position', 'absolute');
+            $('#' + id).css('left', left + 'px');
+            $('#' + id).css('top', top + 'px');
+
+            /* if end event is within certain radius of start event and it took a certain time, and editing */
+            /*if(this.touchPositions.touchstart) {
+                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                        this.stopEditMode();
+                        this.editTouchEnd(id, event);
+                    }
+                }
+            }*/
+        }
+    },
+
+    editTouchEnd: function(id, event) {
+        this.latestTouchEventType = 'touchend';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    editMouseDown: function(id, event) {
+        this.latestTouchEventType = 'mousedown';
+
+        this.touchPositions.touchstart = {
+            x: event.clientX,
+            y: event.clientY,
+            date: +new Date()
+        };
+
+        /* enable mouse move for selected item */
+        M.EventDispatcher.registerEvent(
+            'mousemove',
+            id,
+            {
+                target: this,
+                action: 'editMouseMove'
+            },
+            M.ViewManager.getViewById(id).recommendedEvents
+        );
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'mousedown') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editMouseMove: function(id, event) {
+        this.latestTouchEventType = 'mousemove';
+
+        var left = event.pageX - parseInt($('#' + id).css('width')) / 2;
+        var top = event.pageY - parseInt($('#' + id).css('height')) / 2;
+        $('#' + id).css('position', 'absolute');
+        $('#' + id).css('left', left + 'px');
+        $('#' + id).css('top', top + 'px');
+
+        /* if end event is within certain radius of start event and it took a certain time, and editing */
+        /*if(this.touchPositions.touchstart) {
+            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                    this.stopEditMode();
+                    this.editTouchEnd(id, event);
+                }
+            }
+        }*/
+    },
+
+    editMouseUp: function(id, event) {
+        this.latestTouchEventType = 'mouseup';
+
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+
+                /* disable mouse move for all item */
+                M.EventDispatcher.unregisterEvent('mousemove', item.id);
+
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard view.
+     *
+     * @private
+     * @returns {String} The dashboard's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="tmp-dashboard ' + this.cssClass + '"';
+        }
+        return html;
     }
 
 });
