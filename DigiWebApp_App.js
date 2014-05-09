@@ -490,233 +490,6 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: HandOrder
-// ==========================================================================
-
-DigiWebApp.HandOrder = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'HandOrder'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isLocalOnly: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        var bookings = DigiWebApp.Booking.find();
-        var openBooking = _.detect(bookings, function(b) {
-            return b.get('isCurrent') === true;
-        });
-
-        _.each(this.find(), function(el) {
-            if(openBooking) {
-                if(!(el.get('id') == openBooking.get('handOrderId') || el.get('name') == openBooking.get('handOrderName'))) {
-                    el.del();
-                }
-            } else {
-                el.del();
-            }
-        });
-    }
-    
-    , findSorted: function() {
-        var that = this;
-
-        // Die handorderKeys stimmen nicht, daher normales find benutzen
-        //TODO: handorderKeys richtig setzen, bzw. im Code suchen wo die (falsch) gesetzt werden
-    	return that.find();
-    	
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e2) {
-        	console.error("ERROR in findSorted: " + e2);
-        }
-
-        var records = [];
-
-        if (keys) {
-            _.each(keys, function(k) {
-            	var myKey = M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k;
-               	//console.log(myKey);
-            	var r = that.find({key:myKey});
-            	//console.log(r);
-                records.push(r);
-            });
-        }
-        return records;
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso
-//
-// Project: DigiWebApp
-// Model: Zeitbuchungen
-// ==========================================================================
-
-DigiWebApp.Zeitbuchungen = M.Model.create({
-    
-      __name__: 'Zeitbuchungen'
-
-//    	  	  auftragsBezeichnung: "6657Heim"
-    	  , auftragsBezeichnung: M.Model.attr('String', {})
-//    		  auftragsId: "950"
-    	  , auftragsId: M.Model.attr('String', {})
-//    		  bis: "10:37:08"
-    	  , bis: M.Model.attr('String', {})
-//    		  datum: "14.06.2012"
-    	  , datum: M.Model.attr('String', {})
-//    		  dauer: "00:00"
-    	  , dauer: M.Model.attr('String', {})
-//    		  farbeAmpel: ""
-    	  , farbeAmpel: M.Model.attr('String', {})
-//    		  gpsBreite: "0.0"
-    	  , gpsBreite: M.Model.attr('String', {})
-//    		  gpsBreitePosition: "0.0"
-    	  , gpsBreitePosition: M.Model.attr('String', {})
-//    		  gpsLaenge: "0.0"
-    	  , gpsLaenge: M.Model.attr('String', {})
-//    		  gpsLaengePosition: "0.0"
-    	  , gpsLaengePosition: M.Model.attr('String', {})
-//			  handauftragsBezeichnung: "",
-    	  , handauftragsBezeichnung: M.Model.attr('String', {})
-//			  handauftragsId: "",
-    	  , handauftragsId: M.Model.attr('String', {})
-//    		  mitarbeiterId: "12"
-    	  , mitarbeiterId: M.Model.attr('String', {})
-//    		  name: "Alber"
-    	  , name: M.Model.attr('String', {})
-//    		  nameVorname: "Alber, Michael"
-    	  , nameVorname: M.Model.attr('String', {})
-//    		  positionsBezeichnung: "6657Heim"
-    	  , positionsBezeichnung: M.Model.attr('String', {})
-//    		  positionsId: "1874"
-    	  , positionsId: M.Model.attr('String', {})
-//    		  taetigkeit: "HolzLackraum"
-    	  , taetigkeit: M.Model.attr('String', {})
-//    		  taetigkeitsId: "21"
-    	  , taetigkeitsId: M.Model.attr('String', {})
-//    		  taetigkeitsart: "0"
-    	  , taetigkeitsart: M.Model.attr('String', {})
-//    		  von: "10:36:45"
-    	  , von: M.Model.attr('String', {})
-//    		  vorname: "Michael"
-    	  , vorname: M.Model.attr('String', {})
-
-    	  , remark: M.Model.attr('String', {})
-
-}, M.DataConsumer.configure({
-
-      appendRecords: NO
-
-    , responsePath: 'zeitbuchungen'
-
-    , url: function(datum, mitarbeiterID) {
-		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdaten?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
-        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
-        	console.log('Zeitbuchungen: using ' + myURL);
-        }
-		return myURL;
-    }
-
-    /* map needs to return record obj which can be handled by createRecord */
-    , map: function(obj) {
-    	if (obj === null) {
-    		return {
-        	    auftragsBezeichnung: null
-	      	  , auftragsId: null
-	      	  , bis: null
-	      	  , datum: null
-	      	  , dauer: null
-	      	  , farbeAmpel: null
-	      	  , gpsBreite: null
-	      	  , gpsBreitePosition: null
-	      	  , gpsLaenge: null
-	      	  , gpsLaengePosition: null
-		      , handauftragsBezeichnung: null
-		      , handauftragsId: null
-	      	  , mitarbeiterId: null
-	      	  , name: null
-	      	  , nameVorname: null
-	      	  , positionsBezeichnung: null
-	      	  , positionsId: null
-	      	  , taetigkeit: null
-	      	  , taetigkeitsId: null
-	      	  , taetigkeitsart: null
-	      	  , von: null
-	      	  , vorname: null
-	      	  , remark: null
-    		};
-    	} 
-    	//console.log(obj);
-        return {
-//    	  	  auftragsBezeichnung: "6657Heim"
-    	    auftragsBezeichnung: obj.auftragsBezeichnung
-//    		  auftragsId: "950"
-    	  , auftragsId: obj.auftragsId
-//    		  bis: "10:37:08"
-    	  , bis: obj.bis
-//    		  datum: "14.06.2012"
-    	  , datum: obj.datum
-//    		  dauer: "00:00"
-    	  , dauer: obj.dauer
-//    		  farbeAmpel: ""
-    	  , farbeAmpel: obj.farbeAmpel
-//    		  gpsBreite: "0.0"
-    	  , gpsBreite: obj.gpsBreite
-//    		  gpsBreitePosition: "0.0"
-    	  , gpsBreitePosition: obj.gpsBreitePosition
-//    		  gpsLaenge: "0.0"
-    	  , gpsLaenge: obj.gpsLaenge
-//    		  gpsLaengePosition: "0.0"
-    	  , gpsLaengePosition: obj.gpsLaengePosition
-//            handauftragsBezeichnung: "",
-  	      , handauftragsBezeichnung: obj.handauftragsBezeichnung
-//			  handauftragsId: "",
-  	      , handauftragsId: obj.handauftragsId
-//    		  mitarbeiterId: "12"
-    	  , mitarbeiterId: obj.mitarbeiterId
-//    		  name: "Alber"
-    	  , name: obj.name
-//    		  nameVorname: "Alber, Michael"
-    	  , nameVorname: obj.nameVorname
-//    		  positionsBezeichnung: "6657Heim"
-    	  , positionsBezeichnung: obj.positionsBezeichnung
-//    		  positionsId: "1874"
-    	  , positionsId: obj.positionsId
-//    		  taetigkeit: "HolzLackraum"
-    	  , taetigkeit: obj.taetigkeit
-//    		  taetigkeitsId: "21"
-    	  , taetigkeitsId: obj.taetigkeitsId
-//    		  taetigkeitsart: "0"
-    	  , taetigkeitsart: obj.taetigkeitsart
-//    		  von: "10:36:45"
-    	  , von: obj.von
-//    		  vorname: "Michael"
-    	  , vorname: obj.vorname
-
-    	  , remark: obj.bemerkung
-
-        };
-    }
-
-}));
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Model: Booking
 // ==========================================================================
 
@@ -1389,6 +1162,233 @@ DigiWebApp.Booking = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: HandOrder
+// ==========================================================================
+
+DigiWebApp.HandOrder = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'HandOrder'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isLocalOnly: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        var bookings = DigiWebApp.Booking.find();
+        var openBooking = _.detect(bookings, function(b) {
+            return b.get('isCurrent') === true;
+        });
+
+        _.each(this.find(), function(el) {
+            if(openBooking) {
+                if(!(el.get('id') == openBooking.get('handOrderId') || el.get('name') == openBooking.get('handOrderName'))) {
+                    el.del();
+                }
+            } else {
+                el.del();
+            }
+        });
+    }
+    
+    , findSorted: function() {
+        var that = this;
+
+        // Die handorderKeys stimmen nicht, daher normales find benutzen
+        //TODO: handorderKeys richtig setzen, bzw. im Code suchen wo die (falsch) gesetzt werden
+    	return that.find();
+    	
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e2) {
+        	console.error("ERROR in findSorted: " + e2);
+        }
+
+        var records = [];
+
+        if (keys) {
+            _.each(keys, function(k) {
+            	var myKey = M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + that.name + '_' + k;
+               	//console.log(myKey);
+            	var r = that.find({key:myKey});
+            	//console.log(r);
+                records.push(r);
+            });
+        }
+        return records;
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso
+//
+// Project: DigiWebApp
+// Model: Zeitbuchungen
+// ==========================================================================
+
+DigiWebApp.Zeitbuchungen = M.Model.create({
+    
+      __name__: 'Zeitbuchungen'
+
+//    	  	  auftragsBezeichnung: "6657Heim"
+    	  , auftragsBezeichnung: M.Model.attr('String', {})
+//    		  auftragsId: "950"
+    	  , auftragsId: M.Model.attr('String', {})
+//    		  bis: "10:37:08"
+    	  , bis: M.Model.attr('String', {})
+//    		  datum: "14.06.2012"
+    	  , datum: M.Model.attr('String', {})
+//    		  dauer: "00:00"
+    	  , dauer: M.Model.attr('String', {})
+//    		  farbeAmpel: ""
+    	  , farbeAmpel: M.Model.attr('String', {})
+//    		  gpsBreite: "0.0"
+    	  , gpsBreite: M.Model.attr('String', {})
+//    		  gpsBreitePosition: "0.0"
+    	  , gpsBreitePosition: M.Model.attr('String', {})
+//    		  gpsLaenge: "0.0"
+    	  , gpsLaenge: M.Model.attr('String', {})
+//    		  gpsLaengePosition: "0.0"
+    	  , gpsLaengePosition: M.Model.attr('String', {})
+//			  handauftragsBezeichnung: "",
+    	  , handauftragsBezeichnung: M.Model.attr('String', {})
+//			  handauftragsId: "",
+    	  , handauftragsId: M.Model.attr('String', {})
+//    		  mitarbeiterId: "12"
+    	  , mitarbeiterId: M.Model.attr('String', {})
+//    		  name: "Alber"
+    	  , name: M.Model.attr('String', {})
+//    		  nameVorname: "Alber, Michael"
+    	  , nameVorname: M.Model.attr('String', {})
+//    		  positionsBezeichnung: "6657Heim"
+    	  , positionsBezeichnung: M.Model.attr('String', {})
+//    		  positionsId: "1874"
+    	  , positionsId: M.Model.attr('String', {})
+//    		  taetigkeit: "HolzLackraum"
+    	  , taetigkeit: M.Model.attr('String', {})
+//    		  taetigkeitsId: "21"
+    	  , taetigkeitsId: M.Model.attr('String', {})
+//    		  taetigkeitsart: "0"
+    	  , taetigkeitsart: M.Model.attr('String', {})
+//    		  von: "10:36:45"
+    	  , von: M.Model.attr('String', {})
+//    		  vorname: "Michael"
+    	  , vorname: M.Model.attr('String', {})
+
+    	  , remark: M.Model.attr('String', {})
+
+}, M.DataConsumer.configure({
+
+      appendRecords: NO
+
+    , responsePath: 'zeitbuchungen'
+
+    , url: function(datum, mitarbeiterID) {
+		var myURL = 'http://' + DigiWebApp.RequestController.DatabaseServer + '/WebAppServices/zeitdaten?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId') + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&mitarbeiterId=' + mitarbeiterID + '&datum=' + datum + '&requestTimestamp=' + M.Date.now().date.valueOf();
+        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
+        	console.log('Zeitbuchungen: using ' + myURL);
+        }
+		return myURL;
+    }
+
+    /* map needs to return record obj which can be handled by createRecord */
+    , map: function(obj) {
+    	if (obj === null) {
+    		return {
+        	    auftragsBezeichnung: null
+	      	  , auftragsId: null
+	      	  , bis: null
+	      	  , datum: null
+	      	  , dauer: null
+	      	  , farbeAmpel: null
+	      	  , gpsBreite: null
+	      	  , gpsBreitePosition: null
+	      	  , gpsLaenge: null
+	      	  , gpsLaengePosition: null
+		      , handauftragsBezeichnung: null
+		      , handauftragsId: null
+	      	  , mitarbeiterId: null
+	      	  , name: null
+	      	  , nameVorname: null
+	      	  , positionsBezeichnung: null
+	      	  , positionsId: null
+	      	  , taetigkeit: null
+	      	  , taetigkeitsId: null
+	      	  , taetigkeitsart: null
+	      	  , von: null
+	      	  , vorname: null
+	      	  , remark: null
+    		};
+    	} 
+    	//console.log(obj);
+        return {
+//    	  	  auftragsBezeichnung: "6657Heim"
+    	    auftragsBezeichnung: obj.auftragsBezeichnung
+//    		  auftragsId: "950"
+    	  , auftragsId: obj.auftragsId
+//    		  bis: "10:37:08"
+    	  , bis: obj.bis
+//    		  datum: "14.06.2012"
+    	  , datum: obj.datum
+//    		  dauer: "00:00"
+    	  , dauer: obj.dauer
+//    		  farbeAmpel: ""
+    	  , farbeAmpel: obj.farbeAmpel
+//    		  gpsBreite: "0.0"
+    	  , gpsBreite: obj.gpsBreite
+//    		  gpsBreitePosition: "0.0"
+    	  , gpsBreitePosition: obj.gpsBreitePosition
+//    		  gpsLaenge: "0.0"
+    	  , gpsLaenge: obj.gpsLaenge
+//    		  gpsLaengePosition: "0.0"
+    	  , gpsLaengePosition: obj.gpsLaengePosition
+//            handauftragsBezeichnung: "",
+  	      , handauftragsBezeichnung: obj.handauftragsBezeichnung
+//			  handauftragsId: "",
+  	      , handauftragsId: obj.handauftragsId
+//    		  mitarbeiterId: "12"
+    	  , mitarbeiterId: obj.mitarbeiterId
+//    		  name: "Alber"
+    	  , name: obj.name
+//    		  nameVorname: "Alber, Michael"
+    	  , nameVorname: obj.nameVorname
+//    		  positionsBezeichnung: "6657Heim"
+    	  , positionsBezeichnung: obj.positionsBezeichnung
+//    		  positionsId: "1874"
+    	  , positionsId: obj.positionsId
+//    		  taetigkeit: "HolzLackraum"
+    	  , taetigkeit: obj.taetigkeit
+//    		  taetigkeitsId: "21"
+    	  , taetigkeitsId: obj.taetigkeitsId
+//    		  taetigkeitsart: "0"
+    	  , taetigkeitsart: obj.taetigkeitsart
+//    		  von: "10:36:45"
+    	  , von: obj.von
+//    		  vorname: "Michael"
+    	  , vorname: obj.vorname
+
+    	  , remark: obj.bemerkung
+
+        };
+    }
+
+}));
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: WorkPlan
 // ==========================================================================
 
@@ -1962,6 +1962,220 @@ DigiWebApp.UebernachtungAuswahlOption = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: SentBooking
+// ==========================================================================
+
+DigiWebApp.SentBooking = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'SentBooking'
+
+    , fileName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fileType: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , timezoneOffset: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timezone: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timeStampStart: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timeStampEnd: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
+
+    })
+
+    , startTimeString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , endeTimeString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , startDateString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , endeDateString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude_bis: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeVon: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsBreiteVon: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsLaengeBis: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsBreiteBis: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , handOrderName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isCurrent: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , spesenAuswahl: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , uebernachtungAuswahl: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gefahreneKilometer: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , employees: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+    
+    , remark: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , istKolonnenbuchung: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , genauigkeitVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , genauigkeitBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ServiceApp_Status: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , closeBooking: function() {
+        this.set('timeStampEnd', +new Date());
+    }
+
+    , setRemark: function(v) {
+        this.set('remark', v);
+    }
+
+    , setAsCurrent: function() {
+        this.set('isCurrent', YES);
+    }
+
+    , removeAsCurrent: function() {
+        this.set('isCurrent', NO);
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Settings
 // ==========================================================================
 
@@ -2326,220 +2540,6 @@ DigiWebApp.Order = M.Model.create({
             });
         }
         return records;
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: SentBooking
-// ==========================================================================
-
-DigiWebApp.SentBooking = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'SentBooking'
-
-    , fileName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fileType: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , orderName: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , timezoneOffset: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timezone: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timeStampStart: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timeStampEnd: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
-
-    })
-
-    , startTimeString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , endeTimeString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , startDateString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , endeDateString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude_bis: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude_bis: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , gpsLaengeVon: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsBreiteVon: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsLaengeBis: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsBreiteBis: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , handOrderName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isCurrent: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , spesenAuswahl: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , uebernachtungAuswahl: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , gefahreneKilometer: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , employees: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , mitarbeiterId: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-    
-    , remark: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , istFeierabend: M.Model.attr('Boolean', {
-    	isRequired: NO
-    })
-    
-    , istKolonnenbuchung: M.Model.attr('Boolean', {
-    	isRequired: NO
-    })
-    
-    , genauigkeitVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , gps_zeitstempelVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ermittlungsverfahrenVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , genauigkeitBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , gps_zeitstempelBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ermittlungsverfahrenBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ServiceApp_Status: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , closeBooking: function() {
-        this.set('timeStampEnd', +new Date());
-    }
-
-    , setRemark: function(v) {
-        this.set('remark', v);
-    }
-
-    , setAsCurrent: function() {
-        this.set('isCurrent', YES);
-    }
-
-    , removeAsCurrent: function() {
-        this.set('isCurrent', NO);
-    }
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
     }
 
 }, M.DataProviderLocalStorage);
@@ -13685,7 +13685,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5016
+    , softwareVersion: 5017
 
 
     /**
@@ -27161,229 +27161,6 @@ DigiWebApp.DashboardTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: TerminlisteTemplateView
-// ==========================================================================
-
-DigiWebApp.TerminlisteTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'betreff beschreibung auftragsBezeichnung positionsBezeichnung positionBegin positionEnd spacer1 von bis'
-
-    , events: {
-        tap: {
-			action: function(id, m_id, a, b) {
-						var doShow = NO;
-					    var view = M.ViewManager.getViewById(id);
-					    var positionId = view.positionId;
-					    var position = null;
-						_.each(DigiWebApp.Position.find(), function(item) {
-							if (item.get("id") === positionId) {
-								position = item;
-							}
-						});
-						
-						if (position !== null) {
-							var auftrag = _.find(DigiWebApp.Order.find(), function(el) { 
-								return parseInt(position.get("orderId")) === parseInt(el.get("id"));
-							});
-							if (DigiWebApp.SettingsController.featureAvailable("406")) {
-								// Auftragsinfo
-								if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
-									DigiWebApp.OrderInfoController.init();
-								}
-								DigiWebApp.NavigationController.toOrderInfoPageTransition();
-								M.ViewManager.getView('orderInfoPage', 'order').setSelection(position.get("orderId"));
-								DigiWebApp.OrderInfoController.activeOrder = [auftrag];
-								DigiWebApp.OrderInfoController.setPositions();
-								M.ViewManager.getView('orderInfoPage', 'position').setSelection(position.get("id"));
-								DigiWebApp.OrderInfoController.activePosition = [position];
-								DigiWebApp.OrderInfoController.setItem();
-							} else {
-								// vorausgewählte Buchungsliste
-								if (typeof(M.ViewManager.getView('bookingPage', 'order').getSelection()) === "undefined") {
-									DigiWebApp.BookingController.init();
-								}
-								DigiWebApp.NavigationController.toBookTimePageTransition();
-								M.ViewManager.getView('bookingPage', 'order').setSelection(position.get("orderId"));
-								DigiWebApp.SelectionController.setPositions();
-								M.ViewManager.getView('bookingPage', 'position').setSelection(position.get("id"));
-								DigiWebApp.SelectionController.setActivities(YES);
-							}
-						}
-			}
-		}
-	}
-
-
-	, betreff: M.LabelView.design({
-	    cssClass: 'bold unselectable'
-	  , computedValue: {
-	        valuePattern: '<%= betreff %>'
-	      , operation: function(v) {
-				var text = v;
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('betreff') + ': ' + text;
-				} else {
-					return '';
-				}
-	      }
-	  }
-	})
-	
-	, beschreibung: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , computedValue: {
-	        valuePattern: '<%= beschreibung %>'
-	      , operation: function(v) {
-				var text = v;
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('beschreibung') + ': ' + text + "<br/><br/>";
-				} else {
-					return '';
-				}
-	      }
-	  }
-	})
-
-	//	  auftragsBezeichnung: "6657Heim"
-	, auftragsBezeichnung: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var pos = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseInt(el.get("id")) === parseInt(v);
-				});
-				if (pos) {
-					var obj = _.find(DigiWebApp.Order.find(), function(el) {
-						return parseInt(el.get("id")) === parseInt(pos.get("orderId"));
-					});
-					if (obj) {
-						text = obj.get("name");
-					}
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('order') + ': ' + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	//	  positionsBezeichnung: "6657Heim"
-	, positionsBezeichnung: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseInt(el.get("id")) === parseInt(v);
-				});
-				if (obj) {
-					text = obj.get("name");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('position') + ': ' + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-      
-	, positionBegin: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseInt(el.get("id")) === parseInt(v);
-				});
-				if (obj) {
-					text = obj.get("positionBegin");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('positionZeitraum') + ": " + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	, positionEnd: M.LabelView.design({
-        cssClass: 'normalInline unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseInt(el.get("id")) === parseInt(v);
-				});
-				if (obj) {
-					text = obj.get("positionEnd");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return ' - ' + text;
-				} else {
-					return ' - ' + M.I18N.l('open');
-				}
-          }
-      }
-	})
-
-	, spacer1: M.LabelView.design({
-	    value: ' '
-	})
-
-	, von: M.LabelView.design({
-        cssClass: 'bold unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= von %>'
-          , operation: function(v) {
-				if (v && v.indexOf("00:00:00") === -1) {
-					var uhrzeit = v.split(" ")[1];
-					return uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	, bis: M.LabelView.design({
-        cssClass: 'boldInline unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= bis %>'
-          , operation: function(v) {
-				if (v && v.indexOf("23:59:59") === -1) {
-					var uhrzeit = v.split(" ")[1];
-					return " - " + uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: ZeitbuchungDetailsPage
 // ==========================================================================
 
@@ -27916,6 +27693,229 @@ DigiWebApp.ZeitbuchungDetailsPage = M.PageView.design({
     })
 
 });
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: TerminlisteTemplateView
+// ==========================================================================
+
+DigiWebApp.TerminlisteTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'betreff beschreibung auftragsBezeichnung positionsBezeichnung positionBegin positionEnd spacer1 von bis'
+
+    , events: {
+        tap: {
+			action: function(id, m_id, a, b) {
+						var doShow = NO;
+					    var view = M.ViewManager.getViewById(id);
+					    var positionId = view.positionId;
+					    var position = null;
+						_.each(DigiWebApp.Position.find(), function(item) {
+							if (item.get("id") === positionId) {
+								position = item;
+							}
+						});
+						
+						if (position !== null) {
+							var auftrag = _.find(DigiWebApp.Order.find(), function(el) { 
+								return parseInt(position.get("orderId")) === parseInt(el.get("id"));
+							});
+							if (DigiWebApp.SettingsController.featureAvailable("406")) {
+								// Auftragsinfo
+								if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
+									DigiWebApp.OrderInfoController.init();
+								}
+								DigiWebApp.NavigationController.toOrderInfoPageTransition();
+								M.ViewManager.getView('orderInfoPage', 'order').setSelection(position.get("orderId"));
+								DigiWebApp.OrderInfoController.activeOrder = [auftrag];
+								DigiWebApp.OrderInfoController.setPositions();
+								M.ViewManager.getView('orderInfoPage', 'position').setSelection(position.get("id"));
+								DigiWebApp.OrderInfoController.activePosition = [position];
+								DigiWebApp.OrderInfoController.setItem();
+							} else {
+								// vorausgewählte Buchungsliste
+								if (typeof(M.ViewManager.getView('bookingPage', 'order').getSelection()) === "undefined") {
+									DigiWebApp.BookingController.init();
+								}
+								DigiWebApp.NavigationController.toBookTimePageTransition();
+								M.ViewManager.getView('bookingPage', 'order').setSelection(position.get("orderId"));
+								DigiWebApp.SelectionController.setPositions();
+								M.ViewManager.getView('bookingPage', 'position').setSelection(position.get("id"));
+								DigiWebApp.SelectionController.setActivities(YES);
+							}
+						}
+			}
+		}
+	}
+
+
+	, betreff: M.LabelView.design({
+	    cssClass: 'bold unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= betreff %>'
+	      , operation: function(v) {
+				var text = v;
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('betreff') + ': ' + text;
+				} else {
+					return '';
+				}
+	      }
+	  }
+	})
+	
+	, beschreibung: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= beschreibung %>'
+	      , operation: function(v) {
+				var text = v;
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('beschreibung') + ': ' + text + "<br/><br/>";
+				} else {
+					return '';
+				}
+	      }
+	  }
+	})
+
+	//	  auftragsBezeichnung: "6657Heim"
+	, auftragsBezeichnung: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var pos = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseInt(el.get("id")) === parseInt(v);
+				});
+				if (pos) {
+					var obj = _.find(DigiWebApp.Order.find(), function(el) {
+						return parseInt(el.get("id")) === parseInt(pos.get("orderId"));
+					});
+					if (obj) {
+						text = obj.get("name");
+					}
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('order') + ': ' + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	//	  positionsBezeichnung: "6657Heim"
+	, positionsBezeichnung: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseInt(el.get("id")) === parseInt(v);
+				});
+				if (obj) {
+					text = obj.get("name");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('position') + ': ' + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+      
+	, positionBegin: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseInt(el.get("id")) === parseInt(v);
+				});
+				if (obj) {
+					text = obj.get("positionBegin");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('positionZeitraum') + ": " + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	, positionEnd: M.LabelView.design({
+        cssClass: 'normalInline unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseInt(el.get("id")) === parseInt(v);
+				});
+				if (obj) {
+					text = obj.get("positionEnd");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return ' - ' + text;
+				} else {
+					return ' - ' + M.I18N.l('open');
+				}
+          }
+      }
+	})
+
+	, spacer1: M.LabelView.design({
+	    value: ' '
+	})
+
+	, von: M.LabelView.design({
+        cssClass: 'bold unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= von %>'
+          , operation: function(v) {
+				if (v && v.indexOf("00:00:00") === -1) {
+					var uhrzeit = v.split(" ")[1];
+					return uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	, bis: M.LabelView.design({
+        cssClass: 'boldInline unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= bis %>'
+          , operation: function(v) {
+				if (v && v.indexOf("23:59:59") === -1) {
+					var uhrzeit = v.split(" ")[1];
+					return " - " + uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+});
+
 
 
 // ==========================================================================
@@ -29513,7 +29513,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5016'
+              value: 'Build: 5017'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
