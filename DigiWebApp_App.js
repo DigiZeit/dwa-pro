@@ -14001,7 +14001,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5057
+    , softwareVersion: 5058
 
 
     /**
@@ -17502,19 +17502,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
         this.endSession();
 
         var empfangeBautagebuch = function() {
+        	var that = DigiWebApp.ApplicationController;
             if (DigiWebApp.SettingsController.featureAvailable('412')) {
-    	    	DigiWebApp.BautagebuchDatenuebertragungController.empfangen(
-    	    		  function(msg){
-    	    			  var that = DigiWebApp.ApplicationController;
-    	    			  that.afterTransfer();
-    	    		}
-    	    		, function(err){
-    	    			  var that = DigiWebApp.ApplicationController;
-    	    			  that.afterTransfer();
-    	    		}
-    	    	);
+    	    	DigiWebApp.BautagebuchDatenuebertragungController.empfangen(that.afterTransfer, that.afterTransfer);
         	} else {
-        		this.afterTransfer();
+        		that.afterTransfer();
         	}
         }
 
@@ -29894,7 +29886,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5057'
+              value: 'Build: 5058'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
