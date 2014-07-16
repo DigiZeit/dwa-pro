@@ -1941,6 +1941,94 @@ M.Location = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -2090,94 +2178,6 @@ M.Math = M.Object.extend(
         return nearestNumber;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6114,77 +6114,6 @@ M.NumberValidator = M.Validator.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a string if it matches a phone number pattern.
- *
- * @extends M.Validator
- */
-M.PhoneValidator = M.Validator.extend(
-/** @scope M.PhoneValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PhoneValidator',
-
-    /**
-     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
-     * @type {RegExp} The regular expression detecting a phone adress.
-     */
-    pattern: /^[0-9-\/()+\.\s]+$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string. 
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
-            code: M.ERR_VALIDATION_PHONE,
-            errObj: {
-                msg: obj.value + ' is not a phone number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6255,6 +6184,77 @@ M.PresenceValidator = M.Validator.extend(
         return YES;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a string if it matches a phone number pattern.
+ *
+ * @extends M.Validator
+ */
+M.PhoneValidator = M.Validator.extend(
+/** @scope M.PhoneValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PhoneValidator',
+
+    /**
+     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
+     * @type {RegExp} The regular expression detecting a phone adress.
+     */
+    pattern: /^[0-9-\/()+\.\s]+$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string. 
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
+            code: M.ERR_VALIDATION_PHONE,
+            errObj: {
+                msg: obj.value + ' is not a phone number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
