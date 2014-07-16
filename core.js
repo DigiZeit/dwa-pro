@@ -3620,80 +3620,6 @@ M.Cypher = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      26.07.2011
@@ -3928,6 +3854,80 @@ M.DataConsumer = M.Object.extend(
      */
     url: function() {
         // needs to be implemented by concrete data consumer object
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
     }
 
 });
@@ -5269,6 +5269,43 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      20.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      15.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5584,43 +5621,6 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      20.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
- *
- * @extends M.DataProvider
- */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      02.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5906,75 +5906,6 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
  * Validates if it represents a minus number. Works with numbers and strings containing just a number.
  *
  * @extends M.Validator
@@ -6041,6 +5972,75 @@ M.NotMinusValidator = M.Validator.extend(
            return YES;
        }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6185,6 +6185,74 @@ M.PhoneValidator = M.Validator.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value represents a valid URL.
+ *
+ * @extends M.Validator
+ */
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.UrlValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid web URL
+     */
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+
+    /**
+     * Validation method. Executes url regex pattern to string.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+        
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
+            code: M.ERR_VALIDATION_URL,
+            errObj: {
+                msg: obj.value + ' is not a valid url.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6255,74 +6323,6 @@ M.PresenceValidator = M.Validator.extend(
         return YES;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value represents a valid URL.
- *
- * @extends M.Validator
- */
-M.UrlValidator = M.Validator.extend(
-/** @scope M.UrlValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.UrlValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid web URL
-     */
-    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
-
-    /**
-     * Validation method. Executes url regex pattern to string.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-        
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
-            code: M.ERR_VALIDATION_URL,
-            errObj: {
-                msg: obj.value + ' is not a valid url.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
