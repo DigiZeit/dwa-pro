@@ -980,6 +980,131 @@ M.ButtonGroupView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
 // Date:      10.04.12
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -1572,131 +1697,6 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -4004,110 +4004,157 @@ M.FormView = M.View.extend(
 // ==========================================================================
 
 /**
+ * A constant value for a two column layout of a grid view.
+ *
+ * @type String
+ */
+M.TWO_COLUMNS = {
+    cssClass: 'ui-grid-a',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b'
+    }
+};
+
+/**
+ * A constant value for a three column layout of a grid view.
+ *
+ * @type String
+ */
+M.THREE_COLUMNS = {
+    cssClass: 'ui-grid-b',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c'
+    }
+};
+
+/**
+ * A constant value for a four column layout of a grid view.
+ *
+ * @type String
+ */
+M.FOUR_COLUMNS = {
+    cssClass: 'ui-grid-c',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c',
+        3: 'ui-block-d'
+    }
+};
+
+/**
  * @class
  *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
+ * M.GridView defines a prototype of a grid view, that allows you to display several
+ * views horizontally aligned. Therefore you can either use a predefined layout or you
+ * can provide a custom layout.
+ * 
  * @extends M.View
  */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
+M.GridView = M.View.extend(
+/** @scope M.GridView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.ImageView',
+    type: 'M.GridView',
 
     /**
-     * This property specifies the recommended events for this type of view.
+     * The layout for the grid view. There are two predefined layouts available:
+     * 
+     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
+     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
+     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
      *
-     * @type Array
+     * To specify your own layout, you will have to implement some css classes and
+     * then define your layout like:
+     *
+     *     cssClass: 'cssClassForWholeGrid',
+     *     columns: {
+     *         0: 'cssClassForColumn1',
+     *         1: 'cssClassForColumn2',
+     *         2: 'cssClassForColumn3',
+     *         3: 'cssClassForColumn4',
+     *         //........
+     *     }
+     *
+     * @type Object
      */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
+    layout: null,
+    
+    /**
+     * This property can be used to assign a css class to the view to get a custom styling.
+     *
+     * @type String
+     */
+    cssClass: '',
 
     /**
-     * Renders an image view based on the specified layout.
+     * Renders a grid view based on the specified layout.
      *
      * @private
-     * @returns {String} The image view's html representation.
+     * @returns {String} The grid view's html representation.
      */
     render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
         return this.html;
     },
 
     /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
+     * Triggers render() on all children and includes some special grid view logic
+     * concerning the rendering of these child views.
      *
      * @private
      */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
+    renderChildViews: function() {
+        if(this.childViews) {
+            if(this.layout) {
+                var arr = this.childViews.split(' ');
+                for(var i in this.layout.columns) {
+                    if(this[arr[i]]) {
+                        this.html += '<div class="' + this.layout.columns[i] + '">';
+
+                        this[arr[i]]._name = arr[i];
+                        this.html += this[arr[i]].render();
+
+                        this.html += '</div>';
+                    }
+                }
+            } else {
+                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
+            }
+        }
     },
 
     /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
+     * This method themes the grid view, respectively its child views.
      *
      * @private
      */
     theme: function() {
+        this.themeChildViews();
     },
-    
+
     /**
-     * Applies some style-attributes to the image view.
+     * Applies some style-attributes to the grid view.
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The grid view's styling as html representation.
      */
     style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        if(this.layout) {
+            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
+            return html;
         }
     }
 
@@ -4277,6 +4324,127 @@ M.LabelView = M.View.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    }
+
+});
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5268,174 +5436,6 @@ M.MapMarkerView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for a two column layout of a grid view.
- *
- * @type String
- */
-M.TWO_COLUMNS = {
-    cssClass: 'ui-grid-a',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b'
-    }
-};
-
-/**
- * A constant value for a three column layout of a grid view.
- *
- * @type String
- */
-M.THREE_COLUMNS = {
-    cssClass: 'ui-grid-b',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c'
-    }
-};
-
-/**
- * A constant value for a four column layout of a grid view.
- *
- * @type String
- */
-M.FOUR_COLUMNS = {
-    cssClass: 'ui-grid-c',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c',
-        3: 'ui-block-d'
-    }
-};
-
-/**
- * @class
- *
- * M.GridView defines a prototype of a grid view, that allows you to display several
- * views horizontally aligned. Therefore you can either use a predefined layout or you
- * can provide a custom layout.
- * 
- * @extends M.View
- */
-M.GridView = M.View.extend(
-/** @scope M.GridView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.GridView',
-
-    /**
-     * The layout for the grid view. There are two predefined layouts available:
-     * 
-     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
-     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
-     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
-     *
-     * To specify your own layout, you will have to implement some css classes and
-     * then define your layout like:
-     *
-     *     cssClass: 'cssClassForWholeGrid',
-     *     columns: {
-     *         0: 'cssClassForColumn1',
-     *         1: 'cssClassForColumn2',
-     *         2: 'cssClassForColumn3',
-     *         3: 'cssClassForColumn4',
-     *         //........
-     *     }
-     *
-     * @type Object
-     */
-    layout: null,
-    
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: '',
-
-    /**
-     * Renders a grid view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The grid view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children and includes some special grid view logic
-     * concerning the rendering of these child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            if(this.layout) {
-                var arr = this.childViews.split(' ');
-                for(var i in this.layout.columns) {
-                    if(this[arr[i]]) {
-                        this.html += '<div class="' + this.layout.columns[i] + '">';
-
-                        this[arr[i]]._name = arr[i];
-                        this.html += this[arr[i]].render();
-
-                        this.html += '</div>';
-                    }
-                }
-            } else {
-                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * This method themes the grid view, respectively its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the grid view.
-     *
-     * @private
-     * @returns {String} The grid view's styling as html representation.
-     */
-    style: function() {
-        if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
-            return html;
-        }
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6499,6 +6499,1016 @@ M.ScrollView = M.View.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.SearchBarView defines a prototype of a search bar that can be used inside of a list
+ * view or independently as a plain input field with a search styling.
+ *
+ * @extends M.View
+ */
+M.SearchBarView = M.View.extend(
+/** @scope M.SearchBarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SearchBarView',
+
+    /**
+     * Determines whether the search bar is part of a list view.
+     *
+     * @type Boolean
+     */
+    isListViewSearchBar: NO,
+
+    /**
+     * If the search bar belongs to a list view, this property contains this
+     * list view.
+     *
+     * @type M.ListView
+     */
+    listView: null,
+
+    /**
+     * The initial text shown inside the search bar field describing the input or making a suggestion for
+     * input e.g. "Please enter your Name."
+     *
+     * @type String
+     */
+    initialText: '',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['focus', 'blur', 'enter', 'keyup'],
+
+    /**
+     * Renders a search bar.
+     *
+     * @private
+     * @returns {String} The search bar view's html representation.
+     */
+    render: function() {
+        this.html = '<input id="' + this.id + '" type="search" value="' + (this.value ? this.value : this.initialText) + '" class="' + this.cssClass + '" />';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for text field views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            focus: {
+                target: this,
+                action: 'gotFocus'
+            },
+            blur: {
+                target: this,
+                action: 'lostFocus'
+            },
+            keyup: {
+                target: this,
+                action: 'setValueFromDOM'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SearchBarView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        $('#' + this.id).val(this.value);
+        this.styleUpdate();
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {Object} evt The event triggered this method.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = this.secure($('#' + this.id).val());
+        this.delegateValueUpdate();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button.
+     *
+     * @private
+     * @returns {String} The search bar's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isListViewSearchBar) {
+            html += ' class="ui-listview-filter"';
+        }
+        return html;
+    },
+
+    /**
+     * Method to append css styles inline to the rendered view on the fly.
+     *
+     * @private
+     */
+    styleUpdate: function() {
+        if(this.isInline) {
+            $('#' + this.id).attr('display', 'inline');
+        } else {
+            $('#' + this.id).removeAttr('display');
+        }
+
+        if(!this.isEnabled) {
+            $('#' + this.id).attr('disabled', 'disabled');
+        } else {
+            $('#' + this.id).removeAttr('disabled');
+        }
+    },
+
+    /**
+     * This method is called whenever the view gets the focus.
+     * If there is a initial text specified and the value of this search bar field
+     * still equals this initial text, the value is emptied.
+     */
+    gotFocus: function() {
+        if(this.initialText && (!this.value || this.initialText === this.value)) {
+            this.setValue('');
+            if(this.cssClassOnInit) {
+                this.removeCssClass(this.cssClassOnInit);
+            }
+        }
+        this.hasFocus = YES;
+    },
+
+    /**
+     * This method is called whenever the view lost the focus.
+     * If there is a initial text specified and the value of this search bar field
+     * is empty, the value is set to the initial text.
+     */
+    lostFocus: function() {
+        if(this.initialText && !this.value) {
+            this.setValue(this.initialText, NO);
+            this.value = '';
+            if(this.cssClassOnInit) {
+                this.addCssClass(this.cssClassOnInit);
+            }
+        }
+        this.hasFocus = NO;
+    },
+
+    /**
+     * This method sets the text field's value, initiates its re-rendering
+     * and call the delegateValueUpdate().
+     *
+     * @param {String} value The value to be applied to the text field view.
+     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
+     */
+    setValue: function(value, delegateUpdate) {
+        this.value = value;
+        this.renderUpdate();
+
+        if(delegateUpdate) {
+            this.delegateValueUpdate();
+        }
+    },
+
+    /**
+     * This method disables the search bar by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method enables the search bar by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method clears the search bar's value, both in the DOM and within the JS object.
+     */
+    clearValue: function() {
+        this.setValue('');
+
+        /* call lostFocus() to get the initial text displayed */
+        this.lostFocus();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the search bar field.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.initialText && !this.value && this.cssClassOnInit) {
+            this.addCssClass(this.cssClassOnInit);
+        }
+
+        /* register tap event for delete button */
+        var that = this;
+        $('#' + this.id).siblings('a.ui-input-clear').bind('tap', function() {
+            that.setValue('', YES);
+        });
+    },
+
+    /**
+     * This method returns the search bar view's value.
+     *
+     * @returns {String} The search bar view's value.
+     */
+    getValue: function() {
+        return this.value;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/search_bar.js');
+
+/**
+ * @class
+ *
+ * M.ListView is the prototype of any list view. It is used to display static or dynamic
+ * content as vertically aligned list items (M.ListItemView). A list view provides some
+ * easy to use helper method, e.g. an out-of-the-box delete view for items.
+ *
+ * @extends M.View
+ */
+M.ListView = M.View.extend(
+/** @scope M.ListView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ListView',
+
+    /**
+     * Determines whether to remove all item if the list is updated or not.
+     *
+     * @type Boolean
+     */
+    removeItemsOnUpdate: YES,
+
+    /**
+     * Determines whether to display the list as a divided list or not.
+     *
+     * @type Boolean
+     */
+    isDividedList: NO,
+
+    /**
+     * If the list view is a divided list, this property can be used to customize the style
+     * of the list's dividers.
+     *
+     * @type String
+     */
+    cssClassForDivider: null,
+
+    /**
+     * Determines whether to display the the number of child items for each list item view.
+     *
+     * @type Boolean
+     */
+    isCountedList: NO,
+
+    /**
+     * If the list view is a counted list, this property can be used to customize the style
+     * of the list item's counter.
+     *
+     * @type String
+     */
+    cssClassForCounter: null,
+
+    /**
+     * This property can be used to customize the style of the list view's split view. For example
+     * the toggleRemove() of a list view uses the built-in split view functionality.
+     *
+     * @type String
+     */
+    cssClassForSplitView: null,
+
+    /**
+     * The list view's items, respectively its child views.
+     *
+     * @type Array
+     */
+    items: null,
+
+    /**
+     * States whether the list view is currently in edit mode or not. This is mainly used by the
+     * built-in toggleRemove() functionality. 
+     *
+     * @type Boolean
+     */
+    inEditMode: NO,
+
+    /**
+     * This property contains all available options for the edit mode. For example the target and action
+     * of the automatically rendered delete button can be specified using this property.
+     *
+     * @type Object
+     */
+    editOptions: null,
+
+    /**
+     * Defines if the ListView is rendered with prefixed numbering for each item.
+     *
+     * @type Boolean
+     */
+    isNumberedList: NO,
+
+    /**
+     * This property contains the list view's template view, the blueprint for every child view.
+     *
+     * @type M.ListItemView
+     */
+    listItemTemplateView: null,
+
+    /**
+     * Determines whether to display the list view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: NO,
+
+    /**
+     * Determines whether to add margin at the top of the list or not. This is useful whenever
+     * the list is not the first element within a page's content area to make sure the list does
+     * not overlap preceding elements.
+     *
+     * @type Boolean
+     */
+    doNotOverlapAtTop: NO,
+
+
+    /**
+     * Determines whether to add margin at the bottom of the list or not. This is useful whenever
+     * the list is not the last element within a page's content area to make sure the list does
+     * not overlap following elements.
+     *
+     * @type Boolean
+     */
+    doNotOverlapAtBottom: NO,
+
+    /**
+     * The list view's search bar.
+     *
+     * @type Object
+      */
+    searchBar: M.SearchBarView,
+
+    /**
+     * Determines whether or not to display a search bar at the top of the list view. 
+     *
+     * @type Boolean
+     */
+    hasSearchBar: NO,
+
+    /**
+     * If the hasSearchBar property is set to YES, this property determines whether to use the built-in
+     * simple search filters or not. If set to YES, the list is simply filtered on the fly according
+     * to the entered search string. Only list items matching the entered search string will be visible.
+     *
+     * If a custom search behaviour is needed, this property must be set to NO.
+     *
+     * @type Boolean
+     */
+    usesDefaultSearchBehaviour: YES,
+
+    /**
+     * If the hasSearchBar property is set to YES and the usesDefaultSearchBehaviour is set to YES, this
+     * property can be used to specify the inital text for the search bar. This text will be shown as long
+     * as nothing else is entered into the search bar text field.
+     *
+     * @type String
+     */
+    searchBarInitialText: 'Search...',
+
+    /**
+     * An object containing target and action to be triggered if the search string changes.
+     *
+     * @type Object
+     */
+    onSearchStringDidChange: null,
+
+    /**
+     * An optional String defining the id property that is passed in view as record id
+     *
+     * @type String
+     */
+    idName: null,
+
+    /**
+     * Contains a reference to the currently selected list item.
+     *
+     * @type Object
+     */
+    selectedItem: null,
+
+    /**
+     * Contains a reference to the currently visible swipe delete button (if one exists).
+     *
+     * @type M.ButtonView
+     * @private
+     */
+    swipeButton: null,
+
+    /**
+     * This property can be used to determine whether or not to use a list items index as its refer id.
+     *
+     * @type Boolean
+     * @private
+     */
+    useIndexAsId: NO,
+
+    /**
+     * This method renders the empty list view either as an ordered or as an unordered list. It also applies
+     * some styling, if the corresponding properties where set.
+     *
+     * @private
+     * @returns {String} The list view's styling as html representation.
+     */
+    render: function() {
+        /* add the list view to its surrounding page */
+        if(!M.ViewManager.currentlyRenderedPage.listList) {
+            M.ViewManager.currentlyRenderedPage.listList = [];
+        }
+        M.ViewManager.currentlyRenderedPage.listList.push(this);
+
+        if(this.hasSearchBar && !this.usesDefaultSearchBehaviour) {
+            this.searchBar.isListViewSearchBar = YES;
+            this.searchBar.listView = this;
+            this.searchBar = M.SearchBarView.design(this.searchBar);
+            this.html = this.searchBar.render();
+        } else {
+            this.html = '';
+        }
+
+        var listTagName = this.isNumberedList ? 'ol' : 'ul';
+        this.html += '<' + listTagName + ' id="' + this.id + '" data-role="listview"' + this.style() + '></' + listTagName + '>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list views and their
+     * internal events.
+     */
+    registerEvents: function() {
+        /*this.internalEvents = {
+            focus: {
+                target: this,
+                action: 'gotFocus'
+            },
+            blur: {
+                target: this,
+                action: 'lostFocus'
+            },
+            keyup: {
+                target: this,
+                action: 'setValueFromDOM'
+            }
+        }*/
+        this.bindToCaller(this, M.View.registerEvents)();
+        if(this.hasSearchBar && !this.usesDefaultSearchBehaviour) {
+            this.searchBar.registerEvents();
+        }
+    },
+
+    /**
+     * This method adds a new list item to the list view by simply appending its html representation
+     * to the list view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} item The html representation of a list item to be added.
+     */
+    addItem: function(item) {
+        $('#' + this.id).append(item);
+    },
+
+    /**
+     * This method removes all of the list view's items by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).find('> li').each(function() {
+            M.ViewManager.getViewById($(this).attr('id')).destroy();
+        });
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * Updates the the list view by re-rendering all of its child views, respectively its item views. There
+     * is no rendering done inside this method itself. It is more like the manager of the rendering process
+     * and delegates the responsibility to renderListItemDivider() and renderListItemView() based on the
+     * given list view configuration.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+
+        /* Remove all list items if the removeItemsOnUpdate property is set to YES */
+        if(this.removeItemsOnUpdate) {
+            this.removeAllItems();
+        }
+
+        /* Save this in variable that for later use within an other scope (e.g. _each()) */
+        var that = this;
+
+        /* Get the list view's content as an object from the assigned content binding */
+        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.value) {
+            var content = this.value;
+        } else {
+            M.Logger.log('The specified content binding for the list view (' + this.id + ') is invalid!', M.WARN);
+            return;
+        }
+
+        /* Get the list view's template view for each list item */
+        var templateView = this.listItemTemplateView;
+
+        /* if there is no template, log error and stop */
+        if(!templateView) {
+            M.Logger.log('The template view could not be loaded! Maybe you forgot to use m_require to set up the correct load order?', M.ERR);
+            return;
+        }
+
+        /* check if there is an events propety specified for the template or if we should use the list's events */
+        templateView.events = templateView.events ? templateView.events : this.events;
+
+        /* If there is an items property, re-assign this to content, otherwise iterate through content itself */
+        if(this.items) {
+            content = content[this.items];
+        }
+
+        if(this.isDividedList) {
+            /* @deprecated implementation for old-fashioned data structure */
+            if(!_.isArray(content)) {
+                _.each(content, function(items, divider) {
+                    that.renderListItemDivider(divider);
+                    that.renderListItemView(items, templateView);
+                });
+            /* new implementation with more intelligent data structures */
+            } else {
+                _.each(content, function(item) {
+                    that.renderListItemDivider(item.label);
+                    that.renderListItemView(item.items, templateView);
+                });
+            }
+        } else {
+            this.renderListItemView(content, templateView);
+        }
+
+        /* Finally let the whole list look nice */
+        this.themeUpdate();
+    },
+
+    /**
+     * Renders a list item divider based on a string given by its only parameter.
+     *
+     * @param {String} name The name of the list divider to be rendered.
+     * @private
+     */
+    renderListItemDivider: function(name) {
+        var obj = M.ListItemView.design({});
+        obj.value = name;
+        obj.isDivider = YES;
+        this.addItem(obj.render());
+        obj.theme();
+    },
+
+    /**
+     * This method renders list items based on the passed parameters.
+     *
+     * @param {Array} content The list items to be rendered.
+     * @param {M.ListItemView} templateView The template for for each list item.
+     * @private
+     */
+    renderListItemView: function(content, templateView) {
+        /* Save this in variable that for later use within an other scope (e.g. _each()) */
+        var that = this;
+
+        _.each(content, function(item, index) {
+
+            /* Create a new object for the current template view */
+            var obj = templateView.design({});
+
+            /* Determine the "modelId" value of the list item */
+            if(that.useIndexAsId && typeof(index) === 'number') {
+                obj.modelId = index;
+            } else if(item.type === 'M.Model') {
+                if(that.idName) {
+                    obj.modelId = item.get(that.idName);
+                } else {
+                    obj.modelId = item.m_id;
+                }
+            } else if(that.idName) {
+                obj.modelId = item[that.idName] || undefined;
+            } else if(item.id) {
+                obj.modelId = item.id;
+            } else if(typeof(index) === 'number') {
+                obj.modelId = index;
+            }
+
+            obj = that.cloneObject(obj, item);
+            //set the current list item value to the view value. This enables for example to get the value/contentBinding of a list item in a template view.
+            obj.value = item;
+            /* If edit mode is on, render a delete button */
+            if(that.inEditMode) {
+                obj.inEditMode = that.inEditMode;
+                obj.deleteButton = obj.deleteButton.design({
+                    modelId: obj.modelId,
+                    events: {
+                        tap: {
+                            target: that.editOptions.target,
+                            action: that.editOptions.action
+                        }
+                    },
+                    internalEvents: {
+                        tap: {
+                            target: that,
+                            action: 'removeListItem'
+                        }
+                    }
+                });
+            }
+
+            /* set the list view as 'parent' for the current list item view */
+            obj.parentView = that;
+
+            /* Add the current list view item to the list view ... */
+            that.addItem(obj.render());
+
+            /* register events */
+            obj.registerEvents();
+            if(obj.deleteButton) {
+                obj.deleteButton.registerEvents();
+            }
+
+            /* ... once it is in the DOM, make it look nice */
+            var childViewsArray = obj.getChildViewsAsArray();
+            for(var i in obj.getChildViewsAsArray()) {
+                obj[childViewsArray[i]].theme();
+            }
+        });
+    },
+
+    /**
+     * This method clones an object of the template including its sub views (recursively).
+     *
+     * @param {Object} obj The object to be cloned.
+     * @param {Object} item The current item (record/data).
+     * @private
+     */
+    cloneObject: function(obj, item) {
+        /* Get the child views as an array of strings */
+        var childViewsArray = obj.childViews ? obj.getChildViewsAsArray() : [];
+
+        /* If the item is a model, read the values from the 'record' property instead */
+        var record = item.type === 'M.Model' ? item.record : item;
+
+        /* Iterate through all views defined in the template view */
+        for(var i in childViewsArray) {
+            /* Create a new object for the current view */
+            obj[childViewsArray[i]] = obj[childViewsArray[i]].design({});
+
+            /* create childViews of the current object */
+            obj[childViewsArray[i]] = this.cloneObject(obj[childViewsArray[i]], item);
+
+            /* This regex looks for a variable inside the template view (<%= ... %>) ... */
+            var pattern = obj[childViewsArray[i]].computedValue ? obj[childViewsArray[i]].computedValue.valuePattern : obj[childViewsArray[i]].valuePattern;
+            var regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
+
+            /* ... if a match was found, the variable is replaced by the corresponding value inside the record */
+            if(regexResult) {
+                switch (obj[childViewsArray[i]].type) {
+                    case 'M.LabelView':
+                    case 'M.ButtonView':
+                    case 'M.ImageView':
+                    case 'M.TextFieldView':
+                        while(regexResult !== null) {
+                            if(typeof(record[regexResult[1]]) === 'object') {
+                                pattern = record[regexResult[1]];
+                                regexResult = null;
+                            } else {
+                                pattern = pattern.replace(regexResult[0], record[regexResult[1]]);
+                                regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
+                            }
+                        }
+                        obj[childViewsArray[i]].value = pattern;
+                        break;
+                }
+            }
+        }
+        obj.item = item;
+
+        _.each(Object.keys(item), function(key){
+            if(!obj.hasOwnProperty(key)){
+                obj[key] = item[key];
+            }
+        });
+        
+        return obj;
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the list view.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).listview();
+        if(this.searchBar) {
+            /* JQM-hack: remove multiple search bars */
+            if($('#' + this.id) && $('#' + this.id).parent()) {
+                var searchBarsFound = 0;
+                $('#' + this.id).parent().find('form.ui-listview-filter').each(function() {
+                    searchBarsFound += 1;
+                    if(searchBarsFound == 1) {
+                        return;
+                    }
+                    $(this).remove();
+                });
+            }
+            this.searchBar.theme();
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to re-style the list view.
+     *
+     * @private
+     */
+    themeUpdate: function() {
+        $('#' + this.id).listview('refresh');
+    },
+
+    /**
+     * This method activates the edit mode and forces the list view to re-render itself
+     * and to display a remove button for every list view item.
+     *
+     * @param {Object} options The options for the remove button.
+     */
+    toggleRemove: function(options) {
+        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property]) {
+            this.inEditMode = !this.inEditMode;
+            this.editOptions = options;
+            this.renderUpdate();
+        }
+    },
+
+    /**
+     * This method activates a list item by applying the default 'isActive' css style to its
+     * DOM representation.
+     *
+     * @param {String} listItemId The id of the list item to be set active.
+     */
+    setActiveListItem: function(listItemId, event, nextEvent) {
+        /* if there is a swipe button visible, do nothing but hide that button */
+        if(this.swipeButton) {
+            this.hideSwipeButton();
+            return;
+        }
+
+        if(this.selectedItem) {
+            this.selectedItem.removeCssClass('ui-btn-active');
+        }
+        this.selectedItem = M.ViewManager.getViewById(listItemId);
+
+        /* is the selection list items are selectable, activate the right one */
+        if(!this.listItemTemplateView || (this.listItemTemplateView && this.listItemTemplateView.isSelectable)) {
+            this.selectedItem.addCssClass('ui-btn-active');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [listItemId, this.selectedItem.modelId]);
+        }
+    },
+
+    /**
+     * This method resets the list by applying the default css style to its currently activated
+     * list item.
+     */
+    resetActiveListItem: function() {
+        if(this.selectedItem) {
+            this.selectedItem.removeCssClass('ui-btn-active');
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the list view.
+     *
+     * @private
+     * @returns {String} The list's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass || this.doNotOverlapAtTop || this.doNotOverlapAtBottom) {
+            html += ' class="'
+                + (this.cssClass ? this.cssClass : '')
+                + (!this.isInset && this.doNotOverlapAtTop ? ' listview-do-not-overlap-at-top' : '')
+                + (!this.isInset && this.doNotOverlapAtBottom ? ' listview-do-not-overlap-at-bottom' : '')
+                + '"';
+        }
+        if(this.isDividedList && this.cssClassForDivider) {
+            html += ' data-dividertheme="' + this.cssClassForDivider + '"';
+        }
+        if(this.isInset) {
+            html += ' data-inset="true"';
+        }
+        if(this.isCountedList && this.cssClassForCounter) {
+            html += ' data-counttheme="' + this.cssClassForCounter + '"';
+        }
+        if(this.cssClassForSplitView) {
+            html += ' data-splittheme="' + this.cssClassForSplitView + '"';
+        }
+        if(this.hasSearchBar && this.usesDefaultSearchBehaviour) {
+            html += ' data-filter="true" data-filter-placeholder="' + this.searchBarInitialText + '"';
+        }
+        return html;
+    },
+
+    removeListItem: function(id, event, nextEvent) {
+        var modelId = M.ViewManager.getViewById(id).modelId;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
+        }
+    },
+
+    showSwipeButton: function(id, event, nextEvent) {
+        var listItem = M.ViewManager.getViewById(id);
+
+        /* reset the selection for better visual effect */
+        this.resetActiveListItem();
+
+        if(!listItem.swipeButton) {
+            M.Logger.log('You need to specify a valid button with the \'swipeButton\' property of your list template!', M.WARN);
+        } else {
+            var previouslistItem = this.swipeButton ? this.swipeButton.parentView : null;
+
+            if(previouslistItem) {
+                this.hideSwipeButton();
+            }
+
+            if(!previouslistItem) {
+                this.swipeButton = M.ButtonView.design(
+                    listItem.swipeButton
+                );
+                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
+                this.swipeButton.parentView = M.ViewManager.getViewById(id);
+                this.swipeButton.cssClass = this.swipeButton.cssClass ? this.swipeButton.cssClass + ' tmp-swipe-button' : 'a tmp-actionsheet-destructive-button tmp-swipe-button';
+                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
+                this.swipeButton.internalEvents = {
+                    tap: {
+                        target: listItem,
+                        action: 'swipeButtonClicked'
+                    }
+                };
+
+                $('#' + id).append(this.swipeButton.render());
+                this.swipeButton.theme();
+                this.swipeButton.registerEvents();
+                $('#' + this.swipeButton.id).css('height', 0.7 * $('#' + id).outerHeight());
+                $('#' + this.swipeButton.id).css('top', Math.floor(0.15 * $('#' + id).outerHeight()));
+                $('#' + id + '>div.ui-btn-inner').css('margin-right', parseInt($('#' + this.swipeButton.id).css('width')) + parseInt($('#' + this.swipeButton.id).css('right')));
+
+                /* register tap/click for the page so we can hide the button again */
+                var that = this;
+                $('#' + M.ViewManager.getCurrentPage().id).bind('click tap', function() {
+                    that.hideSwipeButton();
+                });
+            }
+        }
+    },
+
+    hideSwipeButton: function() {
+        $('#' + this.swipeButton.id).hide();
+        $('#' + this.swipeButton.id).parent('li').find('div.ui-btn-inner').css('margin-right', 0);
+        this.swipeButton = null;
+
+        /* un-register tap/click for the page */
+        $('#' + M.ViewManager.getCurrentPage().id).unbind('click tap');
+    },
+
+    /**
+     * This method can be used to determine a list item view based on its id.
+     *
+     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
+     * of the item within the list is taken as reference id.
+     *
+     * @param {String, Number} modelId The id to determine the list item.
+     */
+    getListItemViewById: function(modelId) {
+        var item = _.detect(this.childViewObjects, function(item) {
+            return item.modelId === modelId;
+        });
+
+        return item;
+    },
+
+    /**
+     * This method can be used to silently update values within a single list item. Instead
+     * of removing the whole item, only the desired sub views are updated.
+     *
+     * To determine which list item to update, pass the internal id of the item as the first
+     * parameter.
+     *
+     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
+     * of the item within the list is taken as reference id.
+     *
+     * As second parameter pass an array containing objects that specify which sub view to
+     * update (key) and which value to set (value), e.g.:
+     *
+     *     [
+     *         {
+     *             key: 'label1',
+     *             value: 'new value',
+     *         }
+     *     ]
+     *
+     * @param {String, Number} modelId The id to determine the list item.
+     * @param {Array} updates An array containing all updates.
+     */
+    updateListItemView: function(modelId, updates) {
+        var item = this.getListItemViewById(modelId);
+
+        if(!item) {
+            M.Logger.log('No list item found with given id \'' + modelId + '\'.', M.WARN);
+            return;
+        }
+
+        if(!(updates && typeof(updates) === 'object')) {
+            M.Logger.log('No updates specified when calling \'updateListItemView\'.', M.WARN);
+            return;
+        }
+
+        _.each(updates, function(update) {
+            var view = M.ViewManager.getView(item, update['key']);
+
+            if(view) {
+                view.setValue(update['value']);
+            } else {
+                M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
+            }
+        });
+    }
+
+});
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7652,1016 +8662,6 @@ M.SliderView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.SearchBarView defines a prototype of a search bar that can be used inside of a list
- * view or independently as a plain input field with a search styling.
- *
- * @extends M.View
- */
-M.SearchBarView = M.View.extend(
-/** @scope M.SearchBarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SearchBarView',
-
-    /**
-     * Determines whether the search bar is part of a list view.
-     *
-     * @type Boolean
-     */
-    isListViewSearchBar: NO,
-
-    /**
-     * If the search bar belongs to a list view, this property contains this
-     * list view.
-     *
-     * @type M.ListView
-     */
-    listView: null,
-
-    /**
-     * The initial text shown inside the search bar field describing the input or making a suggestion for
-     * input e.g. "Please enter your Name."
-     *
-     * @type String
-     */
-    initialText: '',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['focus', 'blur', 'enter', 'keyup'],
-
-    /**
-     * Renders a search bar.
-     *
-     * @private
-     * @returns {String} The search bar view's html representation.
-     */
-    render: function() {
-        this.html = '<input id="' + this.id + '" type="search" value="' + (this.value ? this.value : this.initialText) + '" class="' + this.cssClass + '" />';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            focus: {
-                target: this,
-                action: 'gotFocus'
-            },
-            blur: {
-                target: this,
-                action: 'lostFocus'
-            },
-            keyup: {
-                target: this,
-                action: 'setValueFromDOM'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SearchBarView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        $('#' + this.id).val(this.value);
-        this.styleUpdate();
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {Object} evt The event triggered this method.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = this.secure($('#' + this.id).val());
-        this.delegateValueUpdate();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button.
-     *
-     * @private
-     * @returns {String} The search bar's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isListViewSearchBar) {
-            html += ' class="ui-listview-filter"';
-        }
-        return html;
-    },
-
-    /**
-     * Method to append css styles inline to the rendered view on the fly.
-     *
-     * @private
-     */
-    styleUpdate: function() {
-        if(this.isInline) {
-            $('#' + this.id).attr('display', 'inline');
-        } else {
-            $('#' + this.id).removeAttr('display');
-        }
-
-        if(!this.isEnabled) {
-            $('#' + this.id).attr('disabled', 'disabled');
-        } else {
-            $('#' + this.id).removeAttr('disabled');
-        }
-    },
-
-    /**
-     * This method is called whenever the view gets the focus.
-     * If there is a initial text specified and the value of this search bar field
-     * still equals this initial text, the value is emptied.
-     */
-    gotFocus: function() {
-        if(this.initialText && (!this.value || this.initialText === this.value)) {
-            this.setValue('');
-            if(this.cssClassOnInit) {
-                this.removeCssClass(this.cssClassOnInit);
-            }
-        }
-        this.hasFocus = YES;
-    },
-
-    /**
-     * This method is called whenever the view lost the focus.
-     * If there is a initial text specified and the value of this search bar field
-     * is empty, the value is set to the initial text.
-     */
-    lostFocus: function() {
-        if(this.initialText && !this.value) {
-            this.setValue(this.initialText, NO);
-            this.value = '';
-            if(this.cssClassOnInit) {
-                this.addCssClass(this.cssClassOnInit);
-            }
-        }
-        this.hasFocus = NO;
-    },
-
-    /**
-     * This method sets the text field's value, initiates its re-rendering
-     * and call the delegateValueUpdate().
-     *
-     * @param {String} value The value to be applied to the text field view.
-     * @param {Boolean} delegateUpdate Determines whether to delegate this value update to any observer or not.
-     */
-    setValue: function(value, delegateUpdate) {
-        this.value = value;
-        this.renderUpdate();
-
-        if(delegateUpdate) {
-            this.delegateValueUpdate();
-        }
-    },
-
-    /**
-     * This method disables the search bar by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method enables the search bar by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method clears the search bar's value, both in the DOM and within the JS object.
-     */
-    clearValue: function() {
-        this.setValue('');
-
-        /* call lostFocus() to get the initial text displayed */
-        this.lostFocus();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the search bar field.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.initialText && !this.value && this.cssClassOnInit) {
-            this.addCssClass(this.cssClassOnInit);
-        }
-
-        /* register tap event for delete button */
-        var that = this;
-        $('#' + this.id).siblings('a.ui-input-clear').bind('tap', function() {
-            that.setValue('', YES);
-        });
-    },
-
-    /**
-     * This method returns the search bar view's value.
-     *
-     * @returns {String} The search bar view's value.
-     */
-    getValue: function() {
-        return this.value;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/search_bar.js');
-
-/**
- * @class
- *
- * M.ListView is the prototype of any list view. It is used to display static or dynamic
- * content as vertically aligned list items (M.ListItemView). A list view provides some
- * easy to use helper method, e.g. an out-of-the-box delete view for items.
- *
- * @extends M.View
- */
-M.ListView = M.View.extend(
-/** @scope M.ListView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ListView',
-
-    /**
-     * Determines whether to remove all item if the list is updated or not.
-     *
-     * @type Boolean
-     */
-    removeItemsOnUpdate: YES,
-
-    /**
-     * Determines whether to display the list as a divided list or not.
-     *
-     * @type Boolean
-     */
-    isDividedList: NO,
-
-    /**
-     * If the list view is a divided list, this property can be used to customize the style
-     * of the list's dividers.
-     *
-     * @type String
-     */
-    cssClassForDivider: null,
-
-    /**
-     * Determines whether to display the the number of child items for each list item view.
-     *
-     * @type Boolean
-     */
-    isCountedList: NO,
-
-    /**
-     * If the list view is a counted list, this property can be used to customize the style
-     * of the list item's counter.
-     *
-     * @type String
-     */
-    cssClassForCounter: null,
-
-    /**
-     * This property can be used to customize the style of the list view's split view. For example
-     * the toggleRemove() of a list view uses the built-in split view functionality.
-     *
-     * @type String
-     */
-    cssClassForSplitView: null,
-
-    /**
-     * The list view's items, respectively its child views.
-     *
-     * @type Array
-     */
-    items: null,
-
-    /**
-     * States whether the list view is currently in edit mode or not. This is mainly used by the
-     * built-in toggleRemove() functionality. 
-     *
-     * @type Boolean
-     */
-    inEditMode: NO,
-
-    /**
-     * This property contains all available options for the edit mode. For example the target and action
-     * of the automatically rendered delete button can be specified using this property.
-     *
-     * @type Object
-     */
-    editOptions: null,
-
-    /**
-     * Defines if the ListView is rendered with prefixed numbering for each item.
-     *
-     * @type Boolean
-     */
-    isNumberedList: NO,
-
-    /**
-     * This property contains the list view's template view, the blueprint for every child view.
-     *
-     * @type M.ListItemView
-     */
-    listItemTemplateView: null,
-
-    /**
-     * Determines whether to display the list view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: NO,
-
-    /**
-     * Determines whether to add margin at the top of the list or not. This is useful whenever
-     * the list is not the first element within a page's content area to make sure the list does
-     * not overlap preceding elements.
-     *
-     * @type Boolean
-     */
-    doNotOverlapAtTop: NO,
-
-
-    /**
-     * Determines whether to add margin at the bottom of the list or not. This is useful whenever
-     * the list is not the last element within a page's content area to make sure the list does
-     * not overlap following elements.
-     *
-     * @type Boolean
-     */
-    doNotOverlapAtBottom: NO,
-
-    /**
-     * The list view's search bar.
-     *
-     * @type Object
-      */
-    searchBar: M.SearchBarView,
-
-    /**
-     * Determines whether or not to display a search bar at the top of the list view. 
-     *
-     * @type Boolean
-     */
-    hasSearchBar: NO,
-
-    /**
-     * If the hasSearchBar property is set to YES, this property determines whether to use the built-in
-     * simple search filters or not. If set to YES, the list is simply filtered on the fly according
-     * to the entered search string. Only list items matching the entered search string will be visible.
-     *
-     * If a custom search behaviour is needed, this property must be set to NO.
-     *
-     * @type Boolean
-     */
-    usesDefaultSearchBehaviour: YES,
-
-    /**
-     * If the hasSearchBar property is set to YES and the usesDefaultSearchBehaviour is set to YES, this
-     * property can be used to specify the inital text for the search bar. This text will be shown as long
-     * as nothing else is entered into the search bar text field.
-     *
-     * @type String
-     */
-    searchBarInitialText: 'Search...',
-
-    /**
-     * An object containing target and action to be triggered if the search string changes.
-     *
-     * @type Object
-     */
-    onSearchStringDidChange: null,
-
-    /**
-     * An optional String defining the id property that is passed in view as record id
-     *
-     * @type String
-     */
-    idName: null,
-
-    /**
-     * Contains a reference to the currently selected list item.
-     *
-     * @type Object
-     */
-    selectedItem: null,
-
-    /**
-     * Contains a reference to the currently visible swipe delete button (if one exists).
-     *
-     * @type M.ButtonView
-     * @private
-     */
-    swipeButton: null,
-
-    /**
-     * This property can be used to determine whether or not to use a list items index as its refer id.
-     *
-     * @type Boolean
-     * @private
-     */
-    useIndexAsId: NO,
-
-    /**
-     * This method renders the empty list view either as an ordered or as an unordered list. It also applies
-     * some styling, if the corresponding properties where set.
-     *
-     * @private
-     * @returns {String} The list view's styling as html representation.
-     */
-    render: function() {
-        /* add the list view to its surrounding page */
-        if(!M.ViewManager.currentlyRenderedPage.listList) {
-            M.ViewManager.currentlyRenderedPage.listList = [];
-        }
-        M.ViewManager.currentlyRenderedPage.listList.push(this);
-
-        if(this.hasSearchBar && !this.usesDefaultSearchBehaviour) {
-            this.searchBar.isListViewSearchBar = YES;
-            this.searchBar.listView = this;
-            this.searchBar = M.SearchBarView.design(this.searchBar);
-            this.html = this.searchBar.render();
-        } else {
-            this.html = '';
-        }
-
-        var listTagName = this.isNumberedList ? 'ol' : 'ul';
-        this.html += '<' + listTagName + ' id="' + this.id + '" data-role="listview"' + this.style() + '></' + listTagName + '>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list views and their
-     * internal events.
-     */
-    registerEvents: function() {
-        /*this.internalEvents = {
-            focus: {
-                target: this,
-                action: 'gotFocus'
-            },
-            blur: {
-                target: this,
-                action: 'lostFocus'
-            },
-            keyup: {
-                target: this,
-                action: 'setValueFromDOM'
-            }
-        }*/
-        this.bindToCaller(this, M.View.registerEvents)();
-        if(this.hasSearchBar && !this.usesDefaultSearchBehaviour) {
-            this.searchBar.registerEvents();
-        }
-    },
-
-    /**
-     * This method adds a new list item to the list view by simply appending its html representation
-     * to the list view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} item The html representation of a list item to be added.
-     */
-    addItem: function(item) {
-        $('#' + this.id).append(item);
-    },
-
-    /**
-     * This method removes all of the list view's items by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        $('#' + this.id).find('> li').each(function() {
-            M.ViewManager.getViewById($(this).attr('id')).destroy();
-        });
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * Updates the the list view by re-rendering all of its child views, respectively its item views. There
-     * is no rendering done inside this method itself. It is more like the manager of the rendering process
-     * and delegates the responsibility to renderListItemDivider() and renderListItemView() based on the
-     * given list view configuration.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-
-        /* Remove all list items if the removeItemsOnUpdate property is set to YES */
-        if(this.removeItemsOnUpdate) {
-            this.removeAllItems();
-        }
-
-        /* Save this in variable that for later use within an other scope (e.g. _each()) */
-        var that = this;
-
-        /* Get the list view's content as an object from the assigned content binding */
-        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.value) {
-            var content = this.value;
-        } else {
-            M.Logger.log('The specified content binding for the list view (' + this.id + ') is invalid!', M.WARN);
-            return;
-        }
-
-        /* Get the list view's template view for each list item */
-        var templateView = this.listItemTemplateView;
-
-        /* if there is no template, log error and stop */
-        if(!templateView) {
-            M.Logger.log('The template view could not be loaded! Maybe you forgot to use m_require to set up the correct load order?', M.ERR);
-            return;
-        }
-
-        /* check if there is an events propety specified for the template or if we should use the list's events */
-        templateView.events = templateView.events ? templateView.events : this.events;
-
-        /* If there is an items property, re-assign this to content, otherwise iterate through content itself */
-        if(this.items) {
-            content = content[this.items];
-        }
-
-        if(this.isDividedList) {
-            /* @deprecated implementation for old-fashioned data structure */
-            if(!_.isArray(content)) {
-                _.each(content, function(items, divider) {
-                    that.renderListItemDivider(divider);
-                    that.renderListItemView(items, templateView);
-                });
-            /* new implementation with more intelligent data structures */
-            } else {
-                _.each(content, function(item) {
-                    that.renderListItemDivider(item.label);
-                    that.renderListItemView(item.items, templateView);
-                });
-            }
-        } else {
-            this.renderListItemView(content, templateView);
-        }
-
-        /* Finally let the whole list look nice */
-        this.themeUpdate();
-    },
-
-    /**
-     * Renders a list item divider based on a string given by its only parameter.
-     *
-     * @param {String} name The name of the list divider to be rendered.
-     * @private
-     */
-    renderListItemDivider: function(name) {
-        var obj = M.ListItemView.design({});
-        obj.value = name;
-        obj.isDivider = YES;
-        this.addItem(obj.render());
-        obj.theme();
-    },
-
-    /**
-     * This method renders list items based on the passed parameters.
-     *
-     * @param {Array} content The list items to be rendered.
-     * @param {M.ListItemView} templateView The template for for each list item.
-     * @private
-     */
-    renderListItemView: function(content, templateView) {
-        /* Save this in variable that for later use within an other scope (e.g. _each()) */
-        var that = this;
-
-        _.each(content, function(item, index) {
-
-            /* Create a new object for the current template view */
-            var obj = templateView.design({});
-
-            /* Determine the "modelId" value of the list item */
-            if(that.useIndexAsId && typeof(index) === 'number') {
-                obj.modelId = index;
-            } else if(item.type === 'M.Model') {
-                if(that.idName) {
-                    obj.modelId = item.get(that.idName);
-                } else {
-                    obj.modelId = item.m_id;
-                }
-            } else if(that.idName) {
-                obj.modelId = item[that.idName] || undefined;
-            } else if(item.id) {
-                obj.modelId = item.id;
-            } else if(typeof(index) === 'number') {
-                obj.modelId = index;
-            }
-
-            obj = that.cloneObject(obj, item);
-            //set the current list item value to the view value. This enables for example to get the value/contentBinding of a list item in a template view.
-            obj.value = item;
-            /* If edit mode is on, render a delete button */
-            if(that.inEditMode) {
-                obj.inEditMode = that.inEditMode;
-                obj.deleteButton = obj.deleteButton.design({
-                    modelId: obj.modelId,
-                    events: {
-                        tap: {
-                            target: that.editOptions.target,
-                            action: that.editOptions.action
-                        }
-                    },
-                    internalEvents: {
-                        tap: {
-                            target: that,
-                            action: 'removeListItem'
-                        }
-                    }
-                });
-            }
-
-            /* set the list view as 'parent' for the current list item view */
-            obj.parentView = that;
-
-            /* Add the current list view item to the list view ... */
-            that.addItem(obj.render());
-
-            /* register events */
-            obj.registerEvents();
-            if(obj.deleteButton) {
-                obj.deleteButton.registerEvents();
-            }
-
-            /* ... once it is in the DOM, make it look nice */
-            var childViewsArray = obj.getChildViewsAsArray();
-            for(var i in obj.getChildViewsAsArray()) {
-                obj[childViewsArray[i]].theme();
-            }
-        });
-    },
-
-    /**
-     * This method clones an object of the template including its sub views (recursively).
-     *
-     * @param {Object} obj The object to be cloned.
-     * @param {Object} item The current item (record/data).
-     * @private
-     */
-    cloneObject: function(obj, item) {
-        /* Get the child views as an array of strings */
-        var childViewsArray = obj.childViews ? obj.getChildViewsAsArray() : [];
-
-        /* If the item is a model, read the values from the 'record' property instead */
-        var record = item.type === 'M.Model' ? item.record : item;
-
-        /* Iterate through all views defined in the template view */
-        for(var i in childViewsArray) {
-            /* Create a new object for the current view */
-            obj[childViewsArray[i]] = obj[childViewsArray[i]].design({});
-
-            /* create childViews of the current object */
-            obj[childViewsArray[i]] = this.cloneObject(obj[childViewsArray[i]], item);
-
-            /* This regex looks for a variable inside the template view (<%= ... %>) ... */
-            var pattern = obj[childViewsArray[i]].computedValue ? obj[childViewsArray[i]].computedValue.valuePattern : obj[childViewsArray[i]].valuePattern;
-            var regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
-
-            /* ... if a match was found, the variable is replaced by the corresponding value inside the record */
-            if(regexResult) {
-                switch (obj[childViewsArray[i]].type) {
-                    case 'M.LabelView':
-                    case 'M.ButtonView':
-                    case 'M.ImageView':
-                    case 'M.TextFieldView':
-                        while(regexResult !== null) {
-                            if(typeof(record[regexResult[1]]) === 'object') {
-                                pattern = record[regexResult[1]];
-                                regexResult = null;
-                            } else {
-                                pattern = pattern.replace(regexResult[0], record[regexResult[1]]);
-                                regexResult = /<%=\s+([.|_|-|$|§|@|a-zA-Z0-9\s]+)\s+%>/.exec(pattern);
-                            }
-                        }
-                        obj[childViewsArray[i]].value = pattern;
-                        break;
-                }
-            }
-        }
-        obj.item = item;
-
-        _.each(Object.keys(item), function(key){
-            if(!obj.hasOwnProperty(key)){
-                obj[key] = item[key];
-            }
-        });
-        
-        return obj;
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the list view.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).listview();
-        if(this.searchBar) {
-            /* JQM-hack: remove multiple search bars */
-            if($('#' + this.id) && $('#' + this.id).parent()) {
-                var searchBarsFound = 0;
-                $('#' + this.id).parent().find('form.ui-listview-filter').each(function() {
-                    searchBarsFound += 1;
-                    if(searchBarsFound == 1) {
-                        return;
-                    }
-                    $(this).remove();
-                });
-            }
-            this.searchBar.theme();
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to re-style the list view.
-     *
-     * @private
-     */
-    themeUpdate: function() {
-        $('#' + this.id).listview('refresh');
-    },
-
-    /**
-     * This method activates the edit mode and forces the list view to re-render itself
-     * and to display a remove button for every list view item.
-     *
-     * @param {Object} options The options for the remove button.
-     */
-    toggleRemove: function(options) {
-        if(this.contentBinding && typeof(this.contentBinding.target) === 'object' && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property]) {
-            this.inEditMode = !this.inEditMode;
-            this.editOptions = options;
-            this.renderUpdate();
-        }
-    },
-
-    /**
-     * This method activates a list item by applying the default 'isActive' css style to its
-     * DOM representation.
-     *
-     * @param {String} listItemId The id of the list item to be set active.
-     */
-    setActiveListItem: function(listItemId, event, nextEvent) {
-        /* if there is a swipe button visible, do nothing but hide that button */
-        if(this.swipeButton) {
-            this.hideSwipeButton();
-            return;
-        }
-
-        if(this.selectedItem) {
-            this.selectedItem.removeCssClass('ui-btn-active');
-        }
-        this.selectedItem = M.ViewManager.getViewById(listItemId);
-
-        /* is the selection list items are selectable, activate the right one */
-        if(!this.listItemTemplateView || (this.listItemTemplateView && this.listItemTemplateView.isSelectable)) {
-            this.selectedItem.addCssClass('ui-btn-active');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [listItemId, this.selectedItem.modelId]);
-        }
-    },
-
-    /**
-     * This method resets the list by applying the default css style to its currently activated
-     * list item.
-     */
-    resetActiveListItem: function() {
-        if(this.selectedItem) {
-            this.selectedItem.removeCssClass('ui-btn-active');
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the list view.
-     *
-     * @private
-     * @returns {String} The list's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass || this.doNotOverlapAtTop || this.doNotOverlapAtBottom) {
-            html += ' class="'
-                + (this.cssClass ? this.cssClass : '')
-                + (!this.isInset && this.doNotOverlapAtTop ? ' listview-do-not-overlap-at-top' : '')
-                + (!this.isInset && this.doNotOverlapAtBottom ? ' listview-do-not-overlap-at-bottom' : '')
-                + '"';
-        }
-        if(this.isDividedList && this.cssClassForDivider) {
-            html += ' data-dividertheme="' + this.cssClassForDivider + '"';
-        }
-        if(this.isInset) {
-            html += ' data-inset="true"';
-        }
-        if(this.isCountedList && this.cssClassForCounter) {
-            html += ' data-counttheme="' + this.cssClassForCounter + '"';
-        }
-        if(this.cssClassForSplitView) {
-            html += ' data-splittheme="' + this.cssClassForSplitView + '"';
-        }
-        if(this.hasSearchBar && this.usesDefaultSearchBehaviour) {
-            html += ' data-filter="true" data-filter-placeholder="' + this.searchBarInitialText + '"';
-        }
-        return html;
-    },
-
-    removeListItem: function(id, event, nextEvent) {
-        var modelId = M.ViewManager.getViewById(id).modelId;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [id, modelId]);
-        }
-    },
-
-    showSwipeButton: function(id, event, nextEvent) {
-        var listItem = M.ViewManager.getViewById(id);
-
-        /* reset the selection for better visual effect */
-        this.resetActiveListItem();
-
-        if(!listItem.swipeButton) {
-            M.Logger.log('You need to specify a valid button with the \'swipeButton\' property of your list template!', M.WARN);
-        } else {
-            var previouslistItem = this.swipeButton ? this.swipeButton.parentView : null;
-
-            if(previouslistItem) {
-                this.hideSwipeButton();
-            }
-
-            if(!previouslistItem) {
-                this.swipeButton = M.ButtonView.design(
-                    listItem.swipeButton
-                );
-                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
-                this.swipeButton.parentView = M.ViewManager.getViewById(id);
-                this.swipeButton.cssClass = this.swipeButton.cssClass ? this.swipeButton.cssClass + ' tmp-swipe-button' : 'a tmp-actionsheet-destructive-button tmp-swipe-button';
-                this.swipeButton.value = this.swipeButton.value ? this.swipeButton.value : 'delete';
-                this.swipeButton.internalEvents = {
-                    tap: {
-                        target: listItem,
-                        action: 'swipeButtonClicked'
-                    }
-                };
-
-                $('#' + id).append(this.swipeButton.render());
-                this.swipeButton.theme();
-                this.swipeButton.registerEvents();
-                $('#' + this.swipeButton.id).css('height', 0.7 * $('#' + id).outerHeight());
-                $('#' + this.swipeButton.id).css('top', Math.floor(0.15 * $('#' + id).outerHeight()));
-                $('#' + id + '>div.ui-btn-inner').css('margin-right', parseInt($('#' + this.swipeButton.id).css('width')) + parseInt($('#' + this.swipeButton.id).css('right')));
-
-                /* register tap/click for the page so we can hide the button again */
-                var that = this;
-                $('#' + M.ViewManager.getCurrentPage().id).bind('click tap', function() {
-                    that.hideSwipeButton();
-                });
-            }
-        }
-    },
-
-    hideSwipeButton: function() {
-        $('#' + this.swipeButton.id).hide();
-        $('#' + this.swipeButton.id).parent('li').find('div.ui-btn-inner').css('margin-right', 0);
-        this.swipeButton = null;
-
-        /* un-register tap/click for the page */
-        $('#' + M.ViewManager.getCurrentPage().id).unbind('click tap');
-    },
-
-    /**
-     * This method can be used to determine a list item view based on its id.
-     *
-     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
-     * of the item within the list is taken as reference id.
-     *
-     * @param {String, Number} modelId The id to determine the list item.
-     */
-    getListItemViewById: function(modelId) {
-        var item = _.detect(this.childViewObjects, function(item) {
-            return item.modelId === modelId;
-        });
-
-        return item;
-    },
-
-    /**
-     * This method can be used to silently update values within a single list item. Instead
-     * of removing the whole item, only the desired sub views are updated.
-     *
-     * To determine which list item to update, pass the internal id of the item as the first
-     * parameter.
-     *
-     * Note: This is not the DOM id! If no special id was set with the list item's data, the index
-     * of the item within the list is taken as reference id.
-     *
-     * As second parameter pass an array containing objects that specify which sub view to
-     * update (key) and which value to set (value), e.g.:
-     *
-     *     [
-     *         {
-     *             key: 'label1',
-     *             value: 'new value',
-     *         }
-     *     ]
-     *
-     * @param {String, Number} modelId The id to determine the list item.
-     * @param {Array} updates An array containing all updates.
-     */
-    updateListItemView: function(modelId, updates) {
-        var item = this.getListItemViewById(modelId);
-
-        if(!item) {
-            M.Logger.log('No list item found with given id \'' + modelId + '\'.', M.WARN);
-            return;
-        }
-
-        if(!(updates && typeof(updates) === 'object')) {
-            M.Logger.log('No updates specified when calling \'updateListItemView\'.', M.WARN);
-            return;
-        }
-
-        _.each(updates, function(update) {
-            var view = M.ViewManager.getView(item, update['key']);
-
-            if(view) {
-                view.setValue(update['value']);
-            } else {
-                M.Logger.log('There is no view \'' + update['key'] + '\' available within the list item.', M.WARN);
-            }
-        });
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
