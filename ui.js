@@ -4165,126 +4165,71 @@ M.GridView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      02.11.2010
+// Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
  * @class
  *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
  *
  * @extends M.View
  */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
+    type: 'M.ImageView',
 
     /**
      * This property specifies the recommended events for this type of view.
      *
      * @type Array
      */
-    recommendedEvents: ['tap'],
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
 
     /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
+     * Renders an image view based on the specified layout.
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The image view's html representation.
      */
     render: function() {
         this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
         return this.html;
     },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
 
     /**
      * Updates the value of the label with DOM access by jQuery.
@@ -4293,37 +4238,49 @@ M.LabelView = M.View.extend(
      */
     renderUpdate: function() {
         this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+        $('#' + this.id).attr('src', this.value);
     },
 
     /**
-     * Applies some style-attributes to the label.
+     * Triggers the rendering engine, jQuery mobile, to style the image.
      *
      * @private
-     * @returns {String} The label's styling as html representation.
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
      */
     style: function() {
         var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
         if(this.cssClass) {
             html += ' class="' + this.cssClass + '"';
         }
         return html;
     },
 
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
+    sourceIsInvalid: function(id, event, nextEvent) {
+        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
     }
 
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -4443,127 +4400,6 @@ M.LoaderView = M.View.extend(
     }
     
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
- * @extends M.View
- */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImageView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
-
-    /**
-     * Renders an image view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The image view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6229,6 +6065,170 @@ M.PanelView = M.View.extend(
      */
     close: function() {
         $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
     }
 
 });
@@ -9312,126 +9312,6 @@ M.SplitToolbarView = M.View.extend(
 /**
  * @class
  *
- * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
- * used as a child view of a tab bar view.
- *
- * @extends M.View
- */
-M.TabBarItemView = M.View.extend(
-/** @scope M.TabBarItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarItemView',
-
-    /**
-     * Determines whether this TabBarItem is active or not.
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a tab bar item as a li-element inside of a parent tab bar view.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.id.lastIndexOf('_') == 1) {
-            this.id = this.id + '_' + this.parentView.usageCounter;
-        } else {
-            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
-        }
-        M.ViewManager.register(this);
-
-        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'switchPage'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method is automatically called if a tab bar item is clicked. It delegates the
-     * page switching job to M.Controller's switchToTab().
-     */
-    switchPage: function() {
-    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
-    	if(this.page) {
-        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
-            M.Controller.switchToTab(this);
-        } else {
-            this.parentView.setActiveTab(this);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the tab bar item.
-     *
-     * @private
-     * @returns {String} The tab bar item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.isActive) {
-            html += html != '' ? '' : ' class="';
-            html += 'ui-btn-active';
-            html += '"';
-        }
-        if(this.icon) {
-            html += ' data-icon="';
-            html += this.icon;
-            html += '" data-iconpos="top"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
  * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
  * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
  * M.TabBarView can be used the top navigation level for an application since it is always
@@ -9585,6 +9465,126 @@ M.TabBarView = M.View.extend(
 
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
+ * used as a child view of a tab bar view.
+ *
+ * @extends M.View
+ */
+M.TabBarItemView = M.View.extend(
+/** @scope M.TabBarItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarItemView',
+
+    /**
+     * Determines whether this TabBarItem is active or not.
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a tab bar item as a li-element inside of a parent tab bar view.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.id.lastIndexOf('_') == 1) {
+            this.id = this.id + '_' + this.parentView.usageCounter;
+        } else {
+            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
+        }
+        M.ViewManager.register(this);
+
+        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'switchPage'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method is automatically called if a tab bar item is clicked. It delegates the
+     * page switching job to M.Controller's switchToTab().
+     */
+    switchPage: function() {
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
+    	if(this.page) {
+        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
+            M.Controller.switchToTab(this);
+        } else {
+            this.parentView.setActiveTab(this);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the tab bar item.
+     *
+     * @private
+     * @returns {String} The tab bar item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.isActive) {
+            html += html != '' ? '' : ' class="';
+            html += 'ui-btn-active';
+            html += '"';
+        }
+        if(this.icon) {
+            html += ' data-icon="';
+            html += this.icon;
+            html += '" data-iconpos="top"';
+        }
+        return html;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
