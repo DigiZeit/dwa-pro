@@ -11681,7 +11681,7 @@ DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
 
 		var unterschriftString = "";
     	// Feature 405 (Unterschrift)
-		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined") && DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI) {
 			//unterschriftImageString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureImage();
     		unterschriftString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureString();
 			//var unterschriftRawValue = $('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.signatureform.signaturecanvas.id).val();
@@ -15501,6 +15501,203 @@ DigiWebApp.DemoMediaPageController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: EmployeeController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.EmployeeController = M.Controller.extend({
+
+    /**
+     * Employee Selection Keys for storage.
+     *
+     * the tmp key is for still having the selection after closing day for sending the data even though another selection is possible then
+     */
+      empSelectionKey: M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeSelection'
+    , empSelectionKeyTmp: M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeSelectionTmp'
+
+    /**
+     * Value determing the state of the employee selection
+     *
+     * 0: no kolonne
+     * 1: kolonne, but employees not selected yet
+     * 2: employees selected
+     * 
+     */
+    , employeeState: 0
+
+    /**
+     * Array containing objects with the particular id and name as properties representing the employees.
+     *
+     * employeeSelection on EmployeePage has contentBinding on it to fill the list.
+     */
+    , employees: null
+
+
+    /**
+     * Passes to setEmployeesForList.
+     *
+     * Is called when the page show event for EmployeePage is triggered.
+     */
+    , init: function() {
+        this.setEmployeesForList();
+    }
+
+    /**
+     * Prepares the selection list on the EmployeePage with the id and values of the employees returned by the server.
+     *
+     * Triggers content binding for employeeSelection by using set on employees.
+     */
+    , setEmployeesForList: function() {
+        if (this.getEmployeeState() == 1) {
+            var employees = DigiWebApp.Employee.findSorted();
+            if (employees.length > 0) {
+                employees = _.map(employees, function(em) {
+                    if (em) return { label: em.get('name'), value: em.get('id') };
+                });
+                this.set('employees', employees);
+            }
+        }
+    }
+
+    /**
+     * Saves the employee selection ny setting the isSelected property of the selected employee records to YES.
+     *
+     * Triggered by the tap event on the button on EmployeePage.
+     */
+    , saveEmployeeSelection: function() {
+        // first clear old selection in records in local storage
+        var employees = DigiWebApp.Employee.find();
+        _.each(employees, function(em) {
+            em.set('isSelected', NO);
+            em.save();
+        });
+
+        var selection = M.ViewManager.getView('employeePage', 'employeeSelection').getSelection();
+        if (selection.length > 0) {
+            _.each(selection, function(sel) { // sel is employee id
+                var employee = _.select(DigiWebApp.Employee.find(), function(e) {
+                    if (e) return e.get('id') == sel;
+                });
+                employee = _.isArray(employee) ? employee[0] : employee;
+                if (employee) {
+                    employee.set('isSelected', YES);
+                    employee.save();
+                }
+            });
+            //DialogView.alert with action
+            //M.DialogView.alert({
+            this.callbackEmployeesSave();
+//            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//                  title: M.I18N.l('employeeSelectionSuccess')
+//                , message: M.I18N.l('employeeSelectionSuccessMsg')
+//                , callbacks: {
+//                    confirm: {
+//                          target: this
+//                        , action: 'callbackEmployeesSave'
+//                        //, action: this.callbackEmployeesSave
+//                    }
+//                }
+//            });
+
+        } else { // no employee selected
+            //M.DialogView.alert({
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                  title: M.I18N.l('employeeSelection')
+                , message: M.I18N.l('employeeSelectionMsg')
+            });
+        }
+    }
+
+    /**
+     * Saves the selection of the employees in localStorage and moves back to the booking screen.
+     *
+     * Called via callback of the employee selection success alert (to avoid rendering bugs with the alert)
+     */
+    , callbackEmployeesSave: function() {
+    
+        var that = DigiWebApp.EmployeeController;
+        
+        DigiWebApp.BookingController.set('isBackFromEmployeePage', YES);
+        DigiWebApp.NavigationController.backToBookTimePagePOP();
+
+        // save Selection in local storage to have it accessible after application restart
+        localStorage.setItem(DigiWebApp.EmployeeController.empSelectionKey, that.getSelectedEmployeesAsString());
+        that.setEmployeeState(2);
+        DigiWebApp.BookingController.book();
+    }
+
+    /**
+     * Returns an array of all employee records that are selected.
+     */
+    , getSelectedEmployees: function() {
+    	//alert("in getSelectedEmployees");
+        var employees = DigiWebApp.Employee.find();
+        if (employees.length > 0) {
+            var selectedEmployees = _.select(employees, function(e) {
+                if (e) return e.get('isSelected') === true;
+            });
+            return selectedEmployees;
+        }
+        return [];
+    }
+
+    /**
+     * Returns the selected employee ids as a string:
+     *
+     * Format: "<id1>,<id2>,...,<idN>"
+     */
+    , getSelectedEmployeesAsString: function() {
+        if (this.getEmployeeState === 0) {
+            return '0';
+        }
+
+        if (this.getEmployeeState === 1) {
+            return '';
+        }
+
+        var empIds = [];
+        var employees = this.getSelectedEmployees();
+        _.each(employees, function(emp) {
+            empIds.push(emp.get('id'));
+        });
+
+        return empIds.join(',');
+    }
+
+    /**
+     * Sets the employee state in controller and localStorage.
+     * 
+     * @param state
+     */
+    , setEmployeeState: function(state) {
+        if (state == 0) {
+            this.saveUniversalEmployeeToLocalStorage();
+        }
+        this.set('employeeState', state);
+        localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeState', this.employeeState);
+    }
+
+    /**
+     * Saves the universal employee (ID=0) in localStorage
+     */
+    , saveUniversalEmployeeToLocalStorage: function() {
+        localStorage.setItem(this.empSelectionKey, '0');
+    }
+
+    /**
+     * Returns the employee state from localStorage. Also sets the controller property employeeState.
+     */
+    , getEmployeeState: function() {
+        this.set('employeeState', localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeState'));
+        return this.employeeState;
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: EditPicturePageController
 // ==========================================================================
 // manuell var-checked
@@ -16171,203 +16368,6 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 //		context.drawImage(image,0,0,canvas.width * DigiWebApp.EditPicturePageController.myImageScaleFactor,canvas.height * DigiWebApp.EditPicturePageController.myImageScaleFactor,0,0,canvas.width,canvas.height);
 //		DigiWebApp.EditPicturePageController.myImageTopLeft = [0, 0];
 //  }
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: EmployeeController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.EmployeeController = M.Controller.extend({
-
-    /**
-     * Employee Selection Keys for storage.
-     *
-     * the tmp key is for still having the selection after closing day for sending the data even though another selection is possible then
-     */
-      empSelectionKey: M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeSelection'
-    , empSelectionKeyTmp: M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeSelectionTmp'
-
-    /**
-     * Value determing the state of the employee selection
-     *
-     * 0: no kolonne
-     * 1: kolonne, but employees not selected yet
-     * 2: employees selected
-     * 
-     */
-    , employeeState: 0
-
-    /**
-     * Array containing objects with the particular id and name as properties representing the employees.
-     *
-     * employeeSelection on EmployeePage has contentBinding on it to fill the list.
-     */
-    , employees: null
-
-
-    /**
-     * Passes to setEmployeesForList.
-     *
-     * Is called when the page show event for EmployeePage is triggered.
-     */
-    , init: function() {
-        this.setEmployeesForList();
-    }
-
-    /**
-     * Prepares the selection list on the EmployeePage with the id and values of the employees returned by the server.
-     *
-     * Triggers content binding for employeeSelection by using set on employees.
-     */
-    , setEmployeesForList: function() {
-        if (this.getEmployeeState() == 1) {
-            var employees = DigiWebApp.Employee.findSorted();
-            if (employees.length > 0) {
-                employees = _.map(employees, function(em) {
-                    if (em) return { label: em.get('name'), value: em.get('id') };
-                });
-                this.set('employees', employees);
-            }
-        }
-    }
-
-    /**
-     * Saves the employee selection ny setting the isSelected property of the selected employee records to YES.
-     *
-     * Triggered by the tap event on the button on EmployeePage.
-     */
-    , saveEmployeeSelection: function() {
-        // first clear old selection in records in local storage
-        var employees = DigiWebApp.Employee.find();
-        _.each(employees, function(em) {
-            em.set('isSelected', NO);
-            em.save();
-        });
-
-        var selection = M.ViewManager.getView('employeePage', 'employeeSelection').getSelection();
-        if (selection.length > 0) {
-            _.each(selection, function(sel) { // sel is employee id
-                var employee = _.select(DigiWebApp.Employee.find(), function(e) {
-                    if (e) return e.get('id') == sel;
-                });
-                employee = _.isArray(employee) ? employee[0] : employee;
-                if (employee) {
-                    employee.set('isSelected', YES);
-                    employee.save();
-                }
-            });
-            //DialogView.alert with action
-            //M.DialogView.alert({
-            this.callbackEmployeesSave();
-//            DigiWebApp.ApplicationController.nativeAlertDialogView({
-//                  title: M.I18N.l('employeeSelectionSuccess')
-//                , message: M.I18N.l('employeeSelectionSuccessMsg')
-//                , callbacks: {
-//                    confirm: {
-//                          target: this
-//                        , action: 'callbackEmployeesSave'
-//                        //, action: this.callbackEmployeesSave
-//                    }
-//                }
-//            });
-
-        } else { // no employee selected
-            //M.DialogView.alert({
-            DigiWebApp.ApplicationController.nativeAlertDialogView({
-                  title: M.I18N.l('employeeSelection')
-                , message: M.I18N.l('employeeSelectionMsg')
-            });
-        }
-    }
-
-    /**
-     * Saves the selection of the employees in localStorage and moves back to the booking screen.
-     *
-     * Called via callback of the employee selection success alert (to avoid rendering bugs with the alert)
-     */
-    , callbackEmployeesSave: function() {
-    
-        var that = DigiWebApp.EmployeeController;
-        
-        DigiWebApp.BookingController.set('isBackFromEmployeePage', YES);
-        DigiWebApp.NavigationController.backToBookTimePagePOP();
-
-        // save Selection in local storage to have it accessible after application restart
-        localStorage.setItem(DigiWebApp.EmployeeController.empSelectionKey, that.getSelectedEmployeesAsString());
-        that.setEmployeeState(2);
-        DigiWebApp.BookingController.book();
-    }
-
-    /**
-     * Returns an array of all employee records that are selected.
-     */
-    , getSelectedEmployees: function() {
-    	//alert("in getSelectedEmployees");
-        var employees = DigiWebApp.Employee.find();
-        if (employees.length > 0) {
-            var selectedEmployees = _.select(employees, function(e) {
-                if (e) return e.get('isSelected') === true;
-            });
-            return selectedEmployees;
-        }
-        return [];
-    }
-
-    /**
-     * Returns the selected employee ids as a string:
-     *
-     * Format: "<id1>,<id2>,...,<idN>"
-     */
-    , getSelectedEmployeesAsString: function() {
-        if (this.getEmployeeState === 0) {
-            return '0';
-        }
-
-        if (this.getEmployeeState === 1) {
-            return '';
-        }
-
-        var empIds = [];
-        var employees = this.getSelectedEmployees();
-        _.each(employees, function(emp) {
-            empIds.push(emp.get('id'));
-        });
-
-        return empIds.join(',');
-    }
-
-    /**
-     * Sets the employee state in controller and localStorage.
-     * 
-     * @param state
-     */
-    , setEmployeeState: function(state) {
-        if (state == 0) {
-            this.saveUniversalEmployeeToLocalStorage();
-        }
-        this.set('employeeState', state);
-        localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeState', this.employeeState);
-    }
-
-    /**
-     * Saves the universal employee (ID=0) in localStorage
-     */
-    , saveUniversalEmployeeToLocalStorage: function() {
-        localStorage.setItem(this.empSelectionKey, '0');
-    }
-
-    /**
-     * Returns the employee state from localStorage. Also sets the controller property employeeState.
-     */
-    , getEmployeeState: function() {
-        this.set('employeeState', localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'employeeState'));
-        return this.employeeState;
-    }
 
 });
 
@@ -19168,7 +19168,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5348
+    , softwareVersion: 5349
 
 
     /**
@@ -25731,322 +25731,6 @@ DigiWebApp.BautagebuchBautageberichtTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchEinstellungenPage
-// ==========================================================================
-
-DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
-
-      events: {
-		  pagebeforeshow: {
-            action: function() {
-				DigiWebApp.BautagebuchEinstellungenController.load();
-				//DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
-				DigiWebApp.BautagebuchEinstellungenController.set('settings', DigiWebApp.BautagebuchEinstellungenController.settings);
-		  		DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();		  		
-			}
-        }
-        , pagebeforehide: {
-            action: function() {
-				DigiWebApp.BautagebuchEinstellungenController.save();
-        	}
-        }
-    }
-
-	, controller: DigiWebApp.BautagebuchEinstellungenController
-	, navigationController: DigiWebApp.NavigationController
-
-    , cssClass: 'settingsPage'
-
-    , childViews: 'header content'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchBautagebericht')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-
-	        childViews: 'startUhrzeitContainer inStundenBuchenCheckbox falscheZeitenIgnorierenCheckbox positionVorselektierenCheckbox in15MinutenSchrittenCheckbox'
-
-            , startUhrzeitContainer: M.ContainerView.design({
-	      	      label: M.I18N.l('BautagebuchTaeglicheStartUhrzeit')
-	  			, childViews: 'plusGrid startUhrzeitGrid minusGrid' 
-	  			, plusGrid: M.GridView.design({
-	  					  childViews: 'stundePlusButton trennText minutePlusButton'
-	  					, layout: {
-	  				          cssClass: 'timecontainer'
-	  				        , columns: {
-	  				              0: 'column1'
-	  				            , 1: 'column2'
-	  				            , 2: 'column3'
-	  				        }
-	  				    }
-	  					, stundePlusButton: M.ButtonView.design({
-	  		    	          value: "+"
-	  		    	        , cssClass: 'plusMinusButton'
-	  		    	        , events: {
-	  		    	            tap: {
-	  	    		    			action: function() {
-	  									var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
-	  									var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
-	  									myStunde = (myStunde + 1) % 24;
-	  									var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-	  									DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
-	  									DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
-	  								}
-	  		    	            }
-	  		    	          }
-	  		    	    })
-	  		    	    , trennText: M.LabelView.design({
-	  		    	    	value: "&nbsp;"
-	  		    	    })
-	  					, minutePlusButton: M.ButtonView.design({
-	  		    	          value: "+"
-	  		    	        , cssClass: 'plusMinusButton'
-	  		    	        , events: {
-	  		    	            tap: {
-	  	    		    			action: function() {
-	  									var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
-	  									var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
-	  									var minuteSteps = 1;
-	  									if (DigiWebApp.BautagebuchEinstellungenController.settings.in15MinutenSchritten) {
-	  										minuteSteps = 15;
-	  									}
-	  									if ((myMinute + minuteSteps) > 59) {
-	  										myStunde = (myStunde + 1) % 24;										
-	  									}
-	  									myMinute = (myMinute + minuteSteps) % 60;
-	  									var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-	  									DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
-	  									DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
-	  		  						}
-	  		    	            }
-	  		    	          }
-	  		    	    })
-	  			})
-	  			, startUhrzeitGrid: M.GridView.design({
-	  				  childViews: 'stundeFeld trennText minuteFeld'
-	  				, layout: {
-	  			          cssClass: 'timecontainer'
-	  			        , columns: {
-	  			              0: 'column1'
-	  			            , 1: 'column2'
-	  			            , 2: 'column3'
-	  			        }
-	  			    }
-	  				, stundeFeld: M.TextFieldView.design({
-	  					cssClass: 'startUhrzeit'
-	  		    	  , inputType: M.INPUT_TEXT
-	  		        })
-	  		        , trennText: M.LabelView.design({
-	  		    	    	value: ":"
-	  		    	})
-	  				, minuteFeld: M.TextFieldView.design({
-	  					cssClass: 'startUhrzeit'
-	  		    	  , inputType: M.INPUT_TEXT
-	  		        })
-	  			})
-	  			, minusGrid: M.GridView.design({
-	  				  childViews: 'stundeMinusButton trennText minuteMinusButton'
-	  				, layout: {
-	  			          cssClass: 'timecontainer'
-	  			        , columns: {
-	  			              0: 'column1'
-	  			            , 1: 'column2'
-	  			            , 2: 'column3'
-	  			        }
-	  			    }
-	  				, stundeMinusButton: M.ButtonView.design({
-	  	    	          value: "-"
-	  	    	        , cssClass: 'plusMinusButton'
-	  	    	        , events: {
-	  	    	            tap: {
-	    		    				action: function() {
-	  								var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
-	  								var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
-	  								myStunde = myStunde - 1;
-	  								if (myStunde < 0) {
-	  									myStunde = 23;
-	  								}
-	  								var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-	  								DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
-	  								DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
-	  	  						}
-	  	    	            }
-	  	    	          }
-	  	    	    })
-	  	    	    , trennText: M.LabelView.design({
-	  	    	    	value: "&nbsp;"
-	  	    	    })
-	  	    	    , minuteMinusButton: M.ButtonView.design({
-	  	    	          value: "-"
-	  	    	        , cssClass: 'plusMinusButton'
-	  	    	        , events: {
-	  	    	            tap: {
-	    		    				action: function() {
-	  								var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
-	  								var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
-	  								var minuteSteps = 1;
-	  								if (DigiWebApp.BautagebuchEinstellungenController.settings.in15MinutenSchritten) {
-	  									minuteSteps = 15;
-	  								}
-	  								if ((myMinute - minuteSteps) < 0) {
-	  									myStunde = myStunde - 1;
-	  									if (myStunde < 0) {
-	  										myStunde = 23;
-	  									}
-	  									myMinute = 60;
-	  								}
-	  								myMinute = (myMinute - minuteSteps) % 60;
-	  								if (myMinute < 0) {
-	  									myMinute = 60 - minuteSteps;
-	  								}
-	  								var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-	  								DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
-	  								DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
-	  	  						}
-	  	    	            }
-	  	    	          }
-	  	    	    })
-	  			})
-	  		})
-
-//	  		, startUhrzeit: M.GridView.design({
-//	            childViews: 'startUhrzeitLabel startUhrzeitInput'
-//	          , layout: M.TWO_COLUMNS
-//	          , startUhrzeitLabel: M.LabelView.design({
-//	              value: M.I18N.l('BautagebuchTaeglicheStartUhrzeit')
-//	          })
-//	          , startUhrzeitInput: M.TextFieldView.design({
-//	        	    inputType: M.INPUT_TIME
-//	        	  , contentBindingReverse: {
-//	                    target: DigiWebApp.BautagebuchEinstellungenController
-//	                  , property: 'settings.startUhrzeit'
-//	              }
-//	              , contentBinding: {
-//	                    target: DigiWebApp.BautagebuchEinstellungenController
-//	                  , property: 'settings.startUhrzeit'
-//	              }
-//	          	  , events: {
-//	          		  tap: {
-//		          		  	action: function(id, event) {
-//	          		  		}
-//	          	  	  }
-//	          	  }
-//	          })
-//	      })
-	        	          
-	      , inStundenBuchenCheckbox: M.SelectionListView.design({
-		          selectionMode: M.MULTIPLE_SELECTION
-	            , contentBinding: {
-	                  target: DigiWebApp.BautagebuchEinstellungenController
-	                , property: 'settings.inStundenBuchenItem'
-	            }
-			    , events: {
-		    		change: {
-			    		  target: DigiWebApp.BautagebuchEinstellungenController
-		    			, action: function(itemValues, items) {
-			    			this.settings.inStundenBuchen = (itemValues.length === 1);
-			    			this.settings.inStundenBuchenItem.isSelected = (itemValues.length === 1);
-						}
-		    		}
-				}
-	      })
-    
-	      , falscheZeitenIgnorierenCheckbox: M.SelectionListView.design({
-		          selectionMode: M.MULTIPLE_SELECTION
-	            , contentBinding: {
-	                  target: DigiWebApp.BautagebuchEinstellungenController
-	                , property: 'settings.falscheZeitenIgnorierenItem'
-	            }
-			    , events: {
-		    		change: {
-			    		  target: DigiWebApp.BautagebuchEinstellungenController
-		    			, action: function(itemValues, items) {
-			    			this.settings.falscheZeitenIgnorieren = (itemValues.length === 1);
-			    			this.settings.falscheZeitenIgnorierenItem.isSelected = (itemValues.length === 1);
-						}
-		    		}
-				}
-	      })
-
-	      , positionVorselektierenCheckbox: M.SelectionListView.design({
-		          selectionMode: M.MULTIPLE_SELECTION
-	            , contentBinding: {
-	                  target: DigiWebApp.BautagebuchEinstellungenController
-	                , property: 'settings.positionVorselektierenItem'
-	            }
-			    , events: {
-		    		change: {
-			    		  target: DigiWebApp.BautagebuchEinstellungenController
-		    			, action: function(itemValues, items) {
-			    			this.settings.positionVorselektieren = (itemValues.length === 1);
-			    			this.settings.positionVorselektierenItem.isSelected = (itemValues.length === 1);
-						}
-		    		}
-				}
-	      })
-
-	      , in15MinutenSchrittenCheckbox: M.SelectionListView.design({
-		          selectionMode: M.MULTIPLE_SELECTION
-	            , contentBinding: {
-	                  target: DigiWebApp.BautagebuchEinstellungenController
-	                , property: 'settings.in15MinutenSchrittenItem'
-	            }
-			    , events: {
-		    		change: {
-			    		  target: DigiWebApp.BautagebuchEinstellungenController
-		    			, action: function(itemValues, items) {
-			    			this.settings.in15MinutenSchritten = (itemValues.length === 1);
-			    			this.settings.in15MinutenSchrittenItem.isSelected = (itemValues.length === 1);
-						}
-		    		}
-				}
-	      })
-	
-
-      //	      , sliderContainer: M.ContainerView.design({
-//	    	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
-//			        , slider: M.SliderView.design({
-//			        	  label: M.I18N.l('daysToHoldBookingsOnDeviceLabel')
-//			        	, min: 1
-//			        	, max: 40
-//			        	, highlightLeftPart: YES
-//			        	, cssClass: 'daysToHoldBookingsOnDeviceSlider'
-//			            , contentBinding: {
-//			                  target: DigiWebApp.SettingsController
-//			                , property: 'settings.daysToHoldBookingsOnDevice'
-//			            }
-//			        })
-//	      })
-	    
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: BautagebuchMaterialienDetailsPage
 // ==========================================================================
 
@@ -26655,6 +26339,322 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 		      }
 	    })
 
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchEinstellungenPage
+// ==========================================================================
+
+DigiWebApp.BautagebuchEinstellungenPage = M.PageView.design({
+
+      events: {
+		  pagebeforeshow: {
+            action: function() {
+				DigiWebApp.BautagebuchEinstellungenController.load();
+				//DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeit.startUhrzeitInput.setValue(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit);
+				DigiWebApp.BautagebuchEinstellungenController.set('settings', DigiWebApp.BautagebuchEinstellungenController.settings);
+		  		DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();		  		
+			}
+        }
+        , pagebeforehide: {
+            action: function() {
+				DigiWebApp.BautagebuchEinstellungenController.save();
+        	}
+        }
+    }
+
+	, controller: DigiWebApp.BautagebuchEinstellungenController
+	, navigationController: DigiWebApp.NavigationController
+
+    , cssClass: 'settingsPage'
+
+    , childViews: 'header content'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautageberichteListePageTransition();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchBautagebericht')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+
+	        childViews: 'startUhrzeitContainer inStundenBuchenCheckbox falscheZeitenIgnorierenCheckbox positionVorselektierenCheckbox in15MinutenSchrittenCheckbox'
+
+            , startUhrzeitContainer: M.ContainerView.design({
+	      	      label: M.I18N.l('BautagebuchTaeglicheStartUhrzeit')
+	  			, childViews: 'plusGrid startUhrzeitGrid minusGrid' 
+	  			, plusGrid: M.GridView.design({
+	  					  childViews: 'stundePlusButton trennText minutePlusButton'
+	  					, layout: {
+	  				          cssClass: 'timecontainer'
+	  				        , columns: {
+	  				              0: 'column1'
+	  				            , 1: 'column2'
+	  				            , 2: 'column3'
+	  				        }
+	  				    }
+	  					, stundePlusButton: M.ButtonView.design({
+	  		    	          value: "+"
+	  		    	        , cssClass: 'plusMinusButton'
+	  		    	        , events: {
+	  		    	            tap: {
+	  	    		    			action: function() {
+	  									var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
+	  									var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
+	  									myStunde = (myStunde + 1) % 24;
+	  									var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
+	  									DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
+	  									DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
+	  								}
+	  		    	            }
+	  		    	          }
+	  		    	    })
+	  		    	    , trennText: M.LabelView.design({
+	  		    	    	value: "&nbsp;"
+	  		    	    })
+	  					, minutePlusButton: M.ButtonView.design({
+	  		    	          value: "+"
+	  		    	        , cssClass: 'plusMinusButton'
+	  		    	        , events: {
+	  		    	            tap: {
+	  	    		    			action: function() {
+	  									var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
+	  									var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
+	  									var minuteSteps = 1;
+	  									if (DigiWebApp.BautagebuchEinstellungenController.settings.in15MinutenSchritten) {
+	  										minuteSteps = 15;
+	  									}
+	  									if ((myMinute + minuteSteps) > 59) {
+	  										myStunde = (myStunde + 1) % 24;										
+	  									}
+	  									myMinute = (myMinute + minuteSteps) % 60;
+	  									var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
+	  									DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
+	  									DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
+	  		  						}
+	  		    	            }
+	  		    	          }
+	  		    	    })
+	  			})
+	  			, startUhrzeitGrid: M.GridView.design({
+	  				  childViews: 'stundeFeld trennText minuteFeld'
+	  				, layout: {
+	  			          cssClass: 'timecontainer'
+	  			        , columns: {
+	  			              0: 'column1'
+	  			            , 1: 'column2'
+	  			            , 2: 'column3'
+	  			        }
+	  			    }
+	  				, stundeFeld: M.TextFieldView.design({
+	  					cssClass: 'startUhrzeit'
+	  		    	  , inputType: M.INPUT_TEXT
+	  		        })
+	  		        , trennText: M.LabelView.design({
+	  		    	    	value: ":"
+	  		    	})
+	  				, minuteFeld: M.TextFieldView.design({
+	  					cssClass: 'startUhrzeit'
+	  		    	  , inputType: M.INPUT_TEXT
+	  		        })
+	  			})
+	  			, minusGrid: M.GridView.design({
+	  				  childViews: 'stundeMinusButton trennText minuteMinusButton'
+	  				, layout: {
+	  			          cssClass: 'timecontainer'
+	  			        , columns: {
+	  			              0: 'column1'
+	  			            , 1: 'column2'
+	  			            , 2: 'column3'
+	  			        }
+	  			    }
+	  				, stundeMinusButton: M.ButtonView.design({
+	  	    	          value: "-"
+	  	    	        , cssClass: 'plusMinusButton'
+	  	    	        , events: {
+	  	    	            tap: {
+	    		    				action: function() {
+	  								var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
+	  								var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
+	  								myStunde = myStunde - 1;
+	  								if (myStunde < 0) {
+	  									myStunde = 23;
+	  								}
+	  								var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
+	  								DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
+	  								DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
+	  	  						}
+	  	    	            }
+	  	    	          }
+	  	    	    })
+	  	    	    , trennText: M.LabelView.design({
+	  	    	    	value: "&nbsp;"
+	  	    	    })
+	  	    	    , minuteMinusButton: M.ButtonView.design({
+	  	    	          value: "-"
+	  	    	        , cssClass: 'plusMinusButton'
+	  	    	        , events: {
+	  	    	            tap: {
+	    		    				action: function() {
+	  								var myStunde = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value);
+	  								var myMinute = parseInt($('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value);
+	  								var minuteSteps = 1;
+	  								if (DigiWebApp.BautagebuchEinstellungenController.settings.in15MinutenSchritten) {
+	  									minuteSteps = 15;
+	  								}
+	  								if ((myMinute - minuteSteps) < 0) {
+	  									myStunde = myStunde - 1;
+	  									if (myStunde < 0) {
+	  										myStunde = 23;
+	  									}
+	  									myMinute = 60;
+	  								}
+	  								myMinute = (myMinute - minuteSteps) % 60;
+	  								if (myMinute < 0) {
+	  									myMinute = 60 - minuteSteps;
+	  								}
+	  								var startUhrzeitStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
+	  								DigiWebApp.BautagebuchEinstellungenController.set('settings.startUhrzeit', startUhrzeitStr);
+	  								DigiWebApp.BautagebuchEinstellungenController.setStartUhrzeit();
+	  	  						}
+	  	    	            }
+	  	    	          }
+	  	    	    })
+	  			})
+	  		})
+
+//	  		, startUhrzeit: M.GridView.design({
+//	            childViews: 'startUhrzeitLabel startUhrzeitInput'
+//	          , layout: M.TWO_COLUMNS
+//	          , startUhrzeitLabel: M.LabelView.design({
+//	              value: M.I18N.l('BautagebuchTaeglicheStartUhrzeit')
+//	          })
+//	          , startUhrzeitInput: M.TextFieldView.design({
+//	        	    inputType: M.INPUT_TIME
+//	        	  , contentBindingReverse: {
+//	                    target: DigiWebApp.BautagebuchEinstellungenController
+//	                  , property: 'settings.startUhrzeit'
+//	              }
+//	              , contentBinding: {
+//	                    target: DigiWebApp.BautagebuchEinstellungenController
+//	                  , property: 'settings.startUhrzeit'
+//	              }
+//	          	  , events: {
+//	          		  tap: {
+//		          		  	action: function(id, event) {
+//	          		  		}
+//	          	  	  }
+//	          	  }
+//	          })
+//	      })
+	        	          
+	      , inStundenBuchenCheckbox: M.SelectionListView.design({
+		          selectionMode: M.MULTIPLE_SELECTION
+	            , contentBinding: {
+	                  target: DigiWebApp.BautagebuchEinstellungenController
+	                , property: 'settings.inStundenBuchenItem'
+	            }
+			    , events: {
+		    		change: {
+			    		  target: DigiWebApp.BautagebuchEinstellungenController
+		    			, action: function(itemValues, items) {
+			    			this.settings.inStundenBuchen = (itemValues.length === 1);
+			    			this.settings.inStundenBuchenItem.isSelected = (itemValues.length === 1);
+						}
+		    		}
+				}
+	      })
+    
+	      , falscheZeitenIgnorierenCheckbox: M.SelectionListView.design({
+		          selectionMode: M.MULTIPLE_SELECTION
+	            , contentBinding: {
+	                  target: DigiWebApp.BautagebuchEinstellungenController
+	                , property: 'settings.falscheZeitenIgnorierenItem'
+	            }
+			    , events: {
+		    		change: {
+			    		  target: DigiWebApp.BautagebuchEinstellungenController
+		    			, action: function(itemValues, items) {
+			    			this.settings.falscheZeitenIgnorieren = (itemValues.length === 1);
+			    			this.settings.falscheZeitenIgnorierenItem.isSelected = (itemValues.length === 1);
+						}
+		    		}
+				}
+	      })
+
+	      , positionVorselektierenCheckbox: M.SelectionListView.design({
+		          selectionMode: M.MULTIPLE_SELECTION
+	            , contentBinding: {
+	                  target: DigiWebApp.BautagebuchEinstellungenController
+	                , property: 'settings.positionVorselektierenItem'
+	            }
+			    , events: {
+		    		change: {
+			    		  target: DigiWebApp.BautagebuchEinstellungenController
+		    			, action: function(itemValues, items) {
+			    			this.settings.positionVorselektieren = (itemValues.length === 1);
+			    			this.settings.positionVorselektierenItem.isSelected = (itemValues.length === 1);
+						}
+		    		}
+				}
+	      })
+
+	      , in15MinutenSchrittenCheckbox: M.SelectionListView.design({
+		          selectionMode: M.MULTIPLE_SELECTION
+	            , contentBinding: {
+	                  target: DigiWebApp.BautagebuchEinstellungenController
+	                , property: 'settings.in15MinutenSchrittenItem'
+	            }
+			    , events: {
+		    		change: {
+			    		  target: DigiWebApp.BautagebuchEinstellungenController
+		    			, action: function(itemValues, items) {
+			    			this.settings.in15MinutenSchritten = (itemValues.length === 1);
+			    			this.settings.in15MinutenSchrittenItem.isSelected = (itemValues.length === 1);
+						}
+		    		}
+				}
+	      })
+	
+
+      //	      , sliderContainer: M.ContainerView.design({
+//	    	  		  childViews: 'daysToHoldBookingsOnDeviceSlider'
+//			        , slider: M.SliderView.design({
+//			        	  label: M.I18N.l('daysToHoldBookingsOnDeviceLabel')
+//			        	, min: 1
+//			        	, max: 40
+//			        	, highlightLeftPart: YES
+//			        	, cssClass: 'daysToHoldBookingsOnDeviceSlider'
+//			            , contentBinding: {
+//			                  target: DigiWebApp.SettingsController
+//			                , property: 'settings.daysToHoldBookingsOnDevice'
+//			            }
+//			        })
+//	      })
+	    
     })
 
 });
@@ -34799,7 +34799,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5348'
+              value: 'Build: 5349'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -36122,7 +36122,7 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
     	
     	var unterschriftString = "";
     	// Feature 405 (Unterschrift)
-		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined") && DigiWebApp.EditTimeDataPage.signaturePadAPI) {
 			//unterschriftImageString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureImage();
     		unterschriftString = DigiWebApp.EditTimeDataPage.signaturePadAPI.getSignatureString();
 			//var unterschriftRawValue = $('#' + DigiWebApp.EditTimeDataPage.content.signature.signatureform.signaturecanvas.id).val();
