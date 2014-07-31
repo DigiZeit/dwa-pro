@@ -14408,7 +14408,7 @@ DigiWebApp.BookingController = M.Controller.extend({
                           }
                           
                           // Datenübertragung für Materialerfassung-only und Feierabend
-                          if (DigiWebApp.SettingsController.featureAvailable("402") && DigiWebApp.BookingController.currentBooking) {
+                          if (DigiWebApp.SettingsController.featureAvailable("402") && !DigiWebApp.BookingController.currentBooking) {
 	                      	  	
                         	  sendBautageberichtFunc = function() {
 	                      	  			DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchZusammenfassungController.item);
@@ -19743,7 +19743,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5409
+    , softwareVersion: 5410
 
 
     /**
@@ -33782,78 +33782,6 @@ DigiWebApp.SettingsPasswordPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: SplashViewPage
-// ==========================================================================
-
-DigiWebApp.SplashViewPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		  pagebeforeshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
-						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
-					} else {
-						DigiWebApp.ApplicationController.regSecEv(YES);	
-					}
-				}
-			}
-        }
-		, pageshow: {
-            /*  target: DigiWebApp.ApplicationController,
-            , action: 'regSecEv'*/
-            action: function() {
-				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
-						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
-				}
-			}
-        }
-
-    }
-
-    , childViews: 'content'
-
-    , cssClass: 'splashViewPage'
-
-    , logo: M.ImageView.design({
-          value:'theme/images/logo.png'
-        , cssClass: 'logoSplashPage'
-    })
-
-    , content: M.ScrollView.design({
-
-          cssClass: 'infoBox'
-
-        , childViews: 'title info'
-
-        , title: M.LabelView.design({
-            //  value: 'DIGI-WebApp'
-              value: ''
-            , cssClass: 'appTitle'
-        })
-
-        , info: M.LabelView.design({
-              value: ''
-            , cssClass: 'infoMsg'
-            , contentBinding: {
-                  target: DigiWebApp.ApplicationController
-                , property: 'infoMsg'
-            }
-        })
-
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: SpesenPage
 // ==========================================================================
 
@@ -34035,6 +33963,78 @@ DigiWebApp.SpesenPage = M.PageView.design({
             
         })
     })
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: SplashViewPage
+// ==========================================================================
+
+DigiWebApp.SplashViewPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		  pagebeforeshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+					if (navigator.platform === "BlackBerry" && restartOnBlackBerry) {
+						DigiWebApp.ApplicationController.blackBerryRestart_var = setTimeout("DigiWebApp.ApplicationController.blackBerryRestart()", 3000);
+					} else {
+						DigiWebApp.ApplicationController.regSecEv(YES);	
+					}
+				}
+			}
+        }
+		, pageshow: {
+            /*  target: DigiWebApp.ApplicationController,
+            , action: 'regSecEv'*/
+            action: function() {
+				if (!(window.newAppVersionAvailable || DigiWebApp.ApplicationController.useSplashJustForFade)) {
+						DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('waitingForDevice'));
+				}
+			}
+        }
+
+    }
+
+    , childViews: 'content'
+
+    , cssClass: 'splashViewPage'
+
+    , logo: M.ImageView.design({
+          value:'theme/images/logo.png'
+        , cssClass: 'logoSplashPage'
+    })
+
+    , content: M.ScrollView.design({
+
+          cssClass: 'infoBox'
+
+        , childViews: 'title info'
+
+        , title: M.LabelView.design({
+            //  value: 'DIGI-WebApp'
+              value: ''
+            , cssClass: 'appTitle'
+        })
+
+        , info: M.LabelView.design({
+              value: ''
+            , cssClass: 'infoMsg'
+            , contentBinding: {
+                  target: DigiWebApp.ApplicationController
+                , property: 'infoMsg'
+            }
+        })
+
+    })
+
 });
 
 
@@ -35322,7 +35322,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5409'
+              value: 'Build: 5410'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -37108,49 +37108,6 @@ DigiWebApp.RemarkPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: TimeDataSentDaysTemplateView
-// ==========================================================================
-
-DigiWebApp.TimeDataSentDaysTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'tagLabel'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-
-				_.each(DigiWebApp.SentTimeDataDays.find(), function(day) {
-					if (day.m_id === m_id) {
-						DigiWebApp.BookingController.dayToDisplay = day;
-					}
-				});
-				DigiWebApp.NavigationController.toTimeDataArchivePageTransition();
-
-			}
-        }
-    }
-
-    , tagLabel: M.LabelView.design({
-          cssClass: 'tagLabel unselectable'
-        , computedValue: {
-              valuePattern: '<%= tagLabel %>'
-            , operation: function(v) {
-                	return M.I18N.l('archivedTimeDataOf') + ' ' +v;
-            }
-        }
-    })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: TimeDataSentTemplateView
 // ==========================================================================
 
@@ -37572,6 +37529,49 @@ DigiWebApp.TimeDataArchivePage = M.PageView.design({
     })
 
 });
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: TimeDataSentDaysTemplateView
+// ==========================================================================
+
+DigiWebApp.TimeDataSentDaysTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'tagLabel'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+
+				_.each(DigiWebApp.SentTimeDataDays.find(), function(day) {
+					if (day.m_id === m_id) {
+						DigiWebApp.BookingController.dayToDisplay = day;
+					}
+				});
+				DigiWebApp.NavigationController.toTimeDataArchivePageTransition();
+
+			}
+        }
+    }
+
+    , tagLabel: M.LabelView.design({
+          cssClass: 'tagLabel unselectable'
+        , computedValue: {
+              valuePattern: '<%= tagLabel %>'
+            , operation: function(v) {
+                	return M.I18N.l('archivedTimeDataOf') + ' ' +v;
+            }
+        }
+    })
+
+});
+
 
 
 // ==========================================================================
