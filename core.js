@@ -1451,130 +1451,6 @@ M.Environment = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2012
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines methods for preloading images.
- *
- * @extends M.Object
- */
-M.ImagePreloader = M.Object.extend(
-/** @scope M.ImagePreloader.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImagePreloader',
-
-    images: null,
-
-    refId: '',
-
-    bodyDOM: null,
-
-    loadCounter: 0,
-
-    init: function(obj) {
-        obj.refId = obj.refId || M.UniqueId.uuid();
-        obj.bodyDOM = $('body');
-
-        return this.extend(obj);
-    },
-
-    preload: function() {
-        var that = this;
-        if(this.images && this.images.length > 0) {
-            _.each(this.images, function(i) {
-                window.setTimeout(function() {
-                    that.preloadSingleImage(i);
-                }, 1);
-            });
-        }
-    },
-
-    preloadSingleImage: function(image) {
-        var imageView = M.ImageView.design({
-            value: image,
-            cssClass: 'tmp-image-preloading',
-            events: {
-                load: {
-                    target: this,
-                    action: 'loadSingle'
-                },
-                error: {
-                    target: this,
-                    action: 'error'
-                }
-            }
-        });
-
-        this.bodyDOM.append(imageView.render());
-        imageView.registerEvents();
-    },
-
-    loadSingle: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call load event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
-            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    error: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call error event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
-            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    finish: function() {
-        /* doublecheck */
-        if(this.loadCounter !== this.images.length) {
-            return;
-        }
-
-        /* call finish event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
-            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1745,6 +1621,130 @@ M.I18N = M.Object.extend(
         } else {
             M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
             return false;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2012
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines methods for preloading images.
+ *
+ * @extends M.Object
+ */
+M.ImagePreloader = M.Object.extend(
+/** @scope M.ImagePreloader.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImagePreloader',
+
+    images: null,
+
+    refId: '',
+
+    bodyDOM: null,
+
+    loadCounter: 0,
+
+    init: function(obj) {
+        obj.refId = obj.refId || M.UniqueId.uuid();
+        obj.bodyDOM = $('body');
+
+        return this.extend(obj);
+    },
+
+    preload: function() {
+        var that = this;
+        if(this.images && this.images.length > 0) {
+            _.each(this.images, function(i) {
+                window.setTimeout(function() {
+                    that.preloadSingleImage(i);
+                }, 1);
+            });
+        }
+    },
+
+    preloadSingleImage: function(image) {
+        var imageView = M.ImageView.design({
+            value: image,
+            cssClass: 'tmp-image-preloading',
+            events: {
+                load: {
+                    target: this,
+                    action: 'loadSingle'
+                },
+                error: {
+                    target: this,
+                    action: 'error'
+                }
+            }
+        });
+
+        this.bodyDOM.append(imageView.render());
+        imageView.registerEvents();
+    },
+
+    loadSingle: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call load event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
+            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    error: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call error event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
+            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    finish: function() {
+        /* doublecheck */
+        if(this.loadCounter !== this.images.length) {
+            return;
+        }
+
+        /* call finish event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
+            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
         }
     }
 
@@ -3936,6 +3936,130 @@ M.DataProvider = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      18.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * M.ModelAttribute encapsulates all meta information about a model record's property:
+ * * is it required?
+ * * what data type is it of? (important for mapping to relational database schemas)
+ * * what validators shall be applied
+ * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
+ * Each ModelAttribute is saved with the record properties name as key.
+ * That means:
+ *
+ * model.record[propA] is the value of the property.
+ * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
+ *
+ * @extends M.Object
+ */
+M.ModelAttribute = M.Object.extend(
+/** @scope M.ModelAttribute.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ModelAttribute',
+
+    /**
+     * The data type for the model record property.
+     * Extremely important e.g. to map model to relational database table.
+     *
+     * @type String
+     */
+    dataType: null,
+
+    /**
+     * Indicates whether this property is required to be set before persisting.
+     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
+     * 
+     * @type Boolean
+     */
+    isRequired: NO,
+
+    /**
+     * Indicates whether an update has been performed on this property with the set method or not.
+     * @type Boolean
+     */
+    isUpdated: NO,
+
+    /**
+     * Array containing all validators for this model record property.
+     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
+     * @type Object
+     */
+    validators: null,
+
+    /**
+     * Record properties that define references have their referenced entity saved here.
+     * @type Object
+     */
+    refEntity: null,
+
+    /**
+     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
+     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
+     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
+     */
+    validate: function(obj) {
+        var isValid = YES;
+        for (var i in this.validators) {
+            if(!this.validators[i].validate(obj)) {
+               isValid = NO; 
+            }
+        }
+        return isValid;
+    }
+});
+
+//
+// CLASS METHODS
+//
+
+/**
+ * Returns a model attribute.
+ *
+ * @param dataType The data type of the attribute: e.g. String 
+ * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
+ * @returns {Object} {@link M.ModelAttribute} object
+ */
+M.ModelAttribute.attr = function(dataType, opts) {
+    //console.log('attr in model_attribute');
+    if (!opts) {
+        opts = {};
+    }
+    if (!opts.dataType) {
+        opts.dataType = dataType || 'String';
+    }
+
+    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
+    if (!opts.validators && opts.isRequired) {
+        opts.validators = [];
+    }
+
+    /* if model attribute is required, presence validator is automatically inserted */
+    if (opts.isRequired) {
+        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
+        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
+            opts.validators.push(M.PresenceValidator);
+        }
+    }
+    return this.extend(opts);
+};
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4201,130 +4325,6 @@ M.DataProviderHybrid = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      18.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * M.ModelAttribute encapsulates all meta information about a model record's property:
- * * is it required?
- * * what data type is it of? (important for mapping to relational database schemas)
- * * what validators shall be applied
- * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
- * Each ModelAttribute is saved with the record properties name as key.
- * That means:
- *
- * model.record[propA] is the value of the property.
- * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
- *
- * @extends M.Object
- */
-M.ModelAttribute = M.Object.extend(
-/** @scope M.ModelAttribute.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ModelAttribute',
-
-    /**
-     * The data type for the model record property.
-     * Extremely important e.g. to map model to relational database table.
-     *
-     * @type String
-     */
-    dataType: null,
-
-    /**
-     * Indicates whether this property is required to be set before persisting.
-     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
-     * 
-     * @type Boolean
-     */
-    isRequired: NO,
-
-    /**
-     * Indicates whether an update has been performed on this property with the set method or not.
-     * @type Boolean
-     */
-    isUpdated: NO,
-
-    /**
-     * Array containing all validators for this model record property.
-     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
-     * @type Object
-     */
-    validators: null,
-
-    /**
-     * Record properties that define references have their referenced entity saved here.
-     * @type Object
-     */
-    refEntity: null,
-
-    /**
-     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
-     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
-     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
-     */
-    validate: function(obj) {
-        var isValid = YES;
-        for (var i in this.validators) {
-            if(!this.validators[i].validate(obj)) {
-               isValid = NO; 
-            }
-        }
-        return isValid;
-    }
-});
-
-//
-// CLASS METHODS
-//
-
-/**
- * Returns a model attribute.
- *
- * @param dataType The data type of the attribute: e.g. String 
- * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
- * @returns {Object} {@link M.ModelAttribute} object
- */
-M.ModelAttribute.attr = function(dataType, opts) {
-    //console.log('attr in model_attribute');
-    if (!opts) {
-        opts = {};
-    }
-    if (!opts.dataType) {
-        opts.dataType = dataType || 'String';
-    }
-
-    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
-    if (!opts.validators && opts.isRequired) {
-        opts.validators = [];
-    }
-
-    /* if model attribute is required, presence validator is automatically inserted */
-    if (opts.isRequired) {
-        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
-        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
-            opts.validators.push(M.PresenceValidator);
-        }
-    }
-    return this.extend(opts);
-};
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      19.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4394,272 +4394,6 @@ M.Validator = M.Object.extend(
 
 
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      11.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The root object for Error objects
- *
- * M.Error encapsulates errors in The-M-Project.
- * Should be passed to error callbacks.
- *
- * 0-99:    general errors
- *
- * 100-199: Model and Validation errors
- *
- * 200-299:   WebSQL errors
- *
- * 300-400:   CouchDB errors
- *
- *
- * Constant                             Code    Situation
- * --------                             ----    ---------
- * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
- * M.ERR_CONNECTION                     1       A connection to an external service could not be established
- *
- * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
- * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
- * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
- * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
- * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
- *
- * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
- *
- * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
- * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
- * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
- * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
- * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
- * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
- * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
- * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
- * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
- * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
- *
- * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
- * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
- * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
- * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
- *
- *
- *
- *
- * @extends M.Object
-*/
-
-
-/**
- * A constant value for an undefined error.
- *
- * @type Number
- */
-M.ERR_UNDEFINED = 0;
-
-/**
- * A constant value for an error occuring when a connection to an external service could not be established.
- *
- * @type Number
- */
-M.ERR_CONNECTION = 1;
-
-/**
- * A model record failed validation due to a property is not set but required to be.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PRESENCE = 100;
-
-/**
- * A model record failed validation due to a property does not represent a valid URL but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_URL = 101;
-
-/**
- * A model record failed validation due to a property does not represent a phone number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PHONE = 102;
-
-/**
- * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NUMBER = 103;
-
-/**
- * A model record failed validation due to a property contains a minus value but it is required to do not.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NOTMINUS = 104;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_EMAIL = 105;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_DATE = 106;
-
-/**
- * A Data Provider was not set for a model.
- *
- * @type Number
- */
-M.ERR_MODEL_PROVIDER_NOT_SET = 120;
-
-
-/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 0
- *
- * @type Number
- */
-M.ERR_WEBSQL_UNKNOWN = 200;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed for database reasons not covered by any other error code."
- * Error code in WebSQL specification: 1
- *
- * @type Number
- */
-M.ERR_WEBSQL_DATABASE = 201;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 2
- *
- * @type Number
- */
-M.ERR_WEBSQL_VERSION = 202;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
- * Error code in WebSQL specification: 3
- *
- * @type Number
- */
-M.ERR_WEBSQL_TOO_LARGE = 203;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
- * Error code in WebSQL specification: 4
- *
- * @type Number
- */
-M.ERR_WEBSQL_QUOTA = 204;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
- * Error code in WebSQL specification: 5
- *
- * @type Number
- */
-M.ERR_WEBSQL_SYNTAX = 205;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
- * Error code in WebSQL specification: 6
- *
- * @type Number
- */
-M.ERR_WEBSQL_CONSTRAINT = 206;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "A lock for the transaction could not be obtained in a reasonable time."
- * Error code in WebSQL specification: 7
- *
- * @type Number
- */
-M.ERR_WEBSQL_TIMEOUT = 207;
-
-/* following errors are WebSQL Data Provider errors. */
-
-/**
- * A constant value for an error occuring when dbHandler does not exist in
- * data provider. Reason: Initialization did not take place or failed.
- *
- * @type Number
- */
-M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
-
-/**
- * A constant value for an error occuring with bulkSave operation in dataprovider.
- * No Record array was passed to the method via the param obj.
- *
- * @type Number
- */
-M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
-
-
-/**
- * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
- *
- * @type Number
- */
-M.ERR_COUCHDB_CONFLICT = 300;
-
-/**
- * A constant value for an error occuring if the provided database could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBNOTFOUND = 301;
-
-/**
- * A constant value for an error occuring if a database that shall be created already exists
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBEXISTS = 302;
-
-/**
- * A constant value for an error occuring if a document could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DOCNOTFOUND = 303;
-
-M.Error = M.Object.extend(
-/** @scope M.Error.prototype */ {
-    code: '',
-    msg: '',
-    errObj: null
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5175,6 +4909,272 @@ M.Model = M.Object.extend(
         callback();
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      11.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The root object for Error objects
+ *
+ * M.Error encapsulates errors in The-M-Project.
+ * Should be passed to error callbacks.
+ *
+ * 0-99:    general errors
+ *
+ * 100-199: Model and Validation errors
+ *
+ * 200-299:   WebSQL errors
+ *
+ * 300-400:   CouchDB errors
+ *
+ *
+ * Constant                             Code    Situation
+ * --------                             ----    ---------
+ * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
+ * M.ERR_CONNECTION                     1       A connection to an external service could not be established
+ *
+ * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
+ * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
+ * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
+ * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
+ *
+ * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
+ *
+ * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
+ * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
+ * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
+ * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
+ * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
+ * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
+ * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
+ * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
+ * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
+ * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
+ *
+ * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
+ * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
+ * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
+ * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
+ *
+ *
+ *
+ *
+ * @extends M.Object
+*/
+
+
+/**
+ * A constant value for an undefined error.
+ *
+ * @type Number
+ */
+M.ERR_UNDEFINED = 0;
+
+/**
+ * A constant value for an error occuring when a connection to an external service could not be established.
+ *
+ * @type Number
+ */
+M.ERR_CONNECTION = 1;
+
+/**
+ * A model record failed validation due to a property is not set but required to be.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PRESENCE = 100;
+
+/**
+ * A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_URL = 101;
+
+/**
+ * A model record failed validation due to a property does not represent a phone number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PHONE = 102;
+
+/**
+ * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NUMBER = 103;
+
+/**
+ * A model record failed validation due to a property contains a minus value but it is required to do not.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NOTMINUS = 104;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_EMAIL = 105;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_DATE = 106;
+
+/**
+ * A Data Provider was not set for a model.
+ *
+ * @type Number
+ */
+M.ERR_MODEL_PROVIDER_NOT_SET = 120;
+
+
+/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 0
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_UNKNOWN = 200;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed for database reasons not covered by any other error code."
+ * Error code in WebSQL specification: 1
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_DATABASE = 201;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 2
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_VERSION = 202;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
+ * Error code in WebSQL specification: 3
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TOO_LARGE = 203;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
+ * Error code in WebSQL specification: 4
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_QUOTA = 204;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
+ * Error code in WebSQL specification: 5
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_SYNTAX = 205;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
+ * Error code in WebSQL specification: 6
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_CONSTRAINT = 206;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "A lock for the transaction could not be obtained in a reasonable time."
+ * Error code in WebSQL specification: 7
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TIMEOUT = 207;
+
+/* following errors are WebSQL Data Provider errors. */
+
+/**
+ * A constant value for an error occuring when dbHandler does not exist in
+ * data provider. Reason: Initialization did not take place or failed.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
+
+/**
+ * A constant value for an error occuring with bulkSave operation in dataprovider.
+ * No Record array was passed to the method via the param obj.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
+
+
+/**
+ * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_CONFLICT = 300;
+
+/**
+ * A constant value for an error occuring if the provided database could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBNOTFOUND = 301;
+
+/**
+ * A constant value for an error occuring if a database that shall be created already exists
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBEXISTS = 302;
+
+/**
+ * A constant value for an error occuring if a document could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DOCNOTFOUND = 303;
+
+M.Error = M.Object.extend(
+/** @scope M.Error.prototype */ {
+    code: '',
+    msg: '',
+    errObj: null
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
