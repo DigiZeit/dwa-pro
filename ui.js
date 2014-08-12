@@ -4450,6 +4450,125 @@ M.LabelView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      26.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5054,6 +5173,274 @@ M.MapView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      27.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the map's marker animation type: none
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_NONE = 'NONE';
+
+/**
+ * A constant value for the map's marker animation type: drop
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_DROP = 'DROP';
+
+/**
+ * A constant value for the map's marker animation type: bounce
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
+
+/**
+ * @class
+ *
+ * M.MapMarkerView is the prototype of a map marker view. It defines a set
+ * of methods for adding, removing and managing the markers of a M.MapView.
+ *
+ * The M.MapMarkerView is based on google maps markers.
+ *
+ * @extends M.View
+ */
+M.MapMarkerView = M.View.extend(
+/** @scope M.MapMarkerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapMarkerView',
+
+    /**
+     * This property is used to save a reference to the actual google map marker.
+     * It is set automatically when the map marker is firstly initialized.
+     *
+     * @type Object
+     */
+    marker: null,
+
+    /**
+     * This property can be used to store additional information about a marker.
+     * Since this property is an object, you can store pretty much anything in
+     * this property.
+     *
+     * This can be useful especially if you are using the click event for map
+     * markers. So you can store any information with a marker and retrieve
+     * this information on the click event.
+     *
+     * @type Object
+     */
+    data: null,
+
+    /**
+     * This property contains a reference to the marker's map view.
+     *
+     * @type M.MapView
+     */
+    map: null,
+
+    /**
+     * This property specifies the title of a map marker view. It can be used in
+     * an annotation.
+     *
+     * @type String
+     */
+    title: null,
+
+    /**
+     * This property specifies the message of a map marker view respectively for
+     * its annotation.
+     *
+     * @type String
+     */
+    message: null,
+
+    /**
+     * This property can be used to specify whether or not to show the annotation,
+     * if title and / or message are defined, automatically on click event.
+     *
+     * @type Boolean
+     */
+    showAnnotationOnClick: NO,
+
+    /**
+     * This property contains a reference to a google maps info window that is
+     * connected to this map marker. By calling either the showAnnotation() or
+     * the hideAnnotation() method, this info window can be toggled.
+     *
+     * Additionally the info window will be automatically set to visible if the
+     * showAnnotationOnClick property is set to YES.
+     *
+     * @type Object
+     */
+    annotation: null,
+
+    /**
+     * This property specifies whether the marker is draggable or not. If set
+     * to NO, a user won't be able to move the marker. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: NO,
+
+    /**
+     * This property specifies the location for this map marker view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the position
+     * property of a google maps marker. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type M.Location
+     */
+    location: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property can be used to specify the animation type for this map marker
+     * view. If this property is set, the markerAnimationType property of the parent
+     * map view is ignored. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: null,
+
+    /**
+     * This property can be used to specify a custom marker icon. Simply pass a valid
+     * path to an image and it will be shown instead of google's default marker.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * This property can be used to specify the display size of the icon used for the
+     * marker. This is important if you want to support e.g. the iphone's retina display.
+     *
+     * Pass along an object containing the desired width and height, e.g.:
+     *
+     *     {
+     *         width: 20,
+     *         height: 20
+     *     }
+     *
+     * @type Object
+     */
+    iconSize: null,
+
+    /**
+     * This property can be used to display a map marker icon centered about its location.
+     * By default a map marker is positioned with its bottom center at the location.
+     *
+     * @type Boolean
+     */
+    isIconCentered: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This method initializes an M.MapMarkerView. It connects a map marker directly with
+     * the parent map view and returns the created M.MapMarkerView object.
+     *
+     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
+     * initialized and can no be displayed by using the map view's addMarker() method or via
+     * content binding.
+     *
+     * @param {Object} options The options for the map marker view.
+     */
+    init: function(options) {
+        var marker = this.extend(options);
+
+        if(marker.annotation || marker.message) {
+            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
+            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
+            
+            marker.annotation = new google.maps.InfoWindow({
+                content: content,
+                maxWidth: 100
+            });
+        }
+
+        return marker;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'showAnnotation'
+            }
+        }
+
+        var that = this;
+        google.maps.event.addListener(this.marker, 'click', function() {
+            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        });
+    },
+
+    /**
+     * This method can be used to remove a map marker from a map view.
+     */
+    remove: function() {
+        this.map.removeMarker(this);
+    },
+
+    /**
+     * This method can be used to show a map markers annotation.
+     */
+    showAnnotation: function(id, event, nextEvent) {
+        if(this.annotation) {
+            this.annotation.open(this.map.map, this.marker);
+        }
+
+        /* delegate event to external handler, if specified */
+        if(this.events || this.map.events) {
+            var events = this.events ? this.events : this.map.events;
+            for(var e in events) {
+                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+                }
+            }
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5369,617 +5756,6 @@ M.MovableLabelView = M.LabelView.extend(
         this.renderUpdate();
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the map's marker animation type: none
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_NONE = 'NONE';
-
-/**
- * A constant value for the map's marker animation type: drop
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_DROP = 'DROP';
-
-/**
- * A constant value for the map's marker animation type: bounce
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
-
-/**
- * @class
- *
- * M.MapMarkerView is the prototype of a map marker view. It defines a set
- * of methods for adding, removing and managing the markers of a M.MapView.
- *
- * The M.MapMarkerView is based on google maps markers.
- *
- * @extends M.View
- */
-M.MapMarkerView = M.View.extend(
-/** @scope M.MapMarkerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapMarkerView',
-
-    /**
-     * This property is used to save a reference to the actual google map marker.
-     * It is set automatically when the map marker is firstly initialized.
-     *
-     * @type Object
-     */
-    marker: null,
-
-    /**
-     * This property can be used to store additional information about a marker.
-     * Since this property is an object, you can store pretty much anything in
-     * this property.
-     *
-     * This can be useful especially if you are using the click event for map
-     * markers. So you can store any information with a marker and retrieve
-     * this information on the click event.
-     *
-     * @type Object
-     */
-    data: null,
-
-    /**
-     * This property contains a reference to the marker's map view.
-     *
-     * @type M.MapView
-     */
-    map: null,
-
-    /**
-     * This property specifies the title of a map marker view. It can be used in
-     * an annotation.
-     *
-     * @type String
-     */
-    title: null,
-
-    /**
-     * This property specifies the message of a map marker view respectively for
-     * its annotation.
-     *
-     * @type String
-     */
-    message: null,
-
-    /**
-     * This property can be used to specify whether or not to show the annotation,
-     * if title and / or message are defined, automatically on click event.
-     *
-     * @type Boolean
-     */
-    showAnnotationOnClick: NO,
-
-    /**
-     * This property contains a reference to a google maps info window that is
-     * connected to this map marker. By calling either the showAnnotation() or
-     * the hideAnnotation() method, this info window can be toggled.
-     *
-     * Additionally the info window will be automatically set to visible if the
-     * showAnnotationOnClick property is set to YES.
-     *
-     * @type Object
-     */
-    annotation: null,
-
-    /**
-     * This property specifies whether the marker is draggable or not. If set
-     * to NO, a user won't be able to move the marker. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: NO,
-
-    /**
-     * This property specifies the location for this map marker view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the position
-     * property of a google maps marker. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type M.Location
-     */
-    location: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property can be used to specify the animation type for this map marker
-     * view. If this property is set, the markerAnimationType property of the parent
-     * map view is ignored. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: null,
-
-    /**
-     * This property can be used to specify a custom marker icon. Simply pass a valid
-     * path to an image and it will be shown instead of google's default marker.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This method initializes an M.MapMarkerView. It connects a map marker directly with
-     * the parent map view and returns the created M.MapMarkerView object.
-     *
-     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
-     * initialized and can no be displayed by using the map view's addMarker() method or via
-     * content binding.
-     *
-     * @param {Object} options The options for the map marker view.
-     */
-    init: function(options) {
-        var marker = this.extend(options);
-
-        if(marker.annotation || marker.message) {
-            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
-            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
-            
-            marker.annotation = new google.maps.InfoWindow({
-                content: content,
-                maxWidth: 100
-            });
-        }
-
-        return marker;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'showAnnotation'
-            }
-        }
-
-        var that = this;
-        google.maps.event.addListener(this.marker, 'click', function() {
-            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
-        });
-    },
-
-    /**
-     * This method can be used to remove a map marker from a map view.
-     */
-    remove: function() {
-        this.map.removeMarker(this);
-    },
-
-    /**
-     * This method can be used to show a map markers annotation.
-     */
-    showAnnotation: function(id, event, nextEvent) {
-        if(this.annotation) {
-            this.annotation.open(this.map.map, this.marker);
-        }
-
-        /* delegate event to external handler, if specified */
-        if(this.events || this.map.events) {
-            var events = this.events ? this.events : this.map.events;
-            for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
-                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
-                }
-            }
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
- * M.Application. A page is the container view for all other views.
- *
- * @extends M.View
- */
-M.PageView = M.View.extend(
-/** @scope M.PageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PageView',
-
-    /**
-     * States whether a page is loaded the first time or not. It is automatically set to NO
-     * once the page was first loaded.
-     *
-     * @type Boolean
-     */
-    isFirstLoad: YES,
-
-    /**
-     * Indicates whether the page has a tab bar or not.
-     *
-     * @type Boolean
-     */
-    hasTabBarView: NO,
-
-    /**
-     * The page's tab bar.
-     *
-     * @type M.TabBarView
-     */
-    tabBarView: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions. If
-     * there are external handlers specified for the same event, the internal handler is called first.
-     *
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * An associative array containing all list views used in this page. The key for a list view is
-     * its id. We do this to have direct access to a list view, so we can reset its selected item
-     * once the page was hidden.
-     *
-     * @type Object
-     */
-    listList: null,
-
-    /**
-     * This property contains the page's current orientation. This property is only used internally!
-     *
-     * @private
-     * @type Number
-     */
-    orientation: null,
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The page view's html representation.
-     */
-    render: function() {
-        /* store the currently rendered page as a reference for use in child views */
-        M.ViewManager.currentlyRenderedPage = this;
-        
-        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        this.writeToDOM();
-        this.theme();
-        this.registerEvents();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for page views and its
-     * internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            pagebeforeshow: {
-                target: this,
-                action: 'pageWillLoad'
-            },
-            pageshow: {
-                target: this,
-                action: 'pageDidLoad'
-            },
-            pagebeforehide: {
-                target: this,
-                action: 'pageWillHide'
-            },
-            pagehide: {
-                target: this,
-                action: 'pageDidHide'
-            },
-            orientationdidchange: {
-                target: this,
-                action: 'orientationDidChange'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method writes the view's html string into the DOM. M.Page is the only view that does
-     * that. All other views just deliver their html representation to a page view.
-     */
-    writeToDOM: function() {
-    	if (restartOnBlackBerry) {
-    		if (document.readyState === "loading") {
-    			document.write(this.html);
-    		} else if (typeof($(this.html)[0]) !== undefined) {
-    			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
-    				$('body').append(this.html);
-    			}
-    		}
-		} else {
-			document.write(this.html);
-		}
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillLoad: function(id, event, nextEvent) {
-        /* initialize the tabbar */
-        if(M.Application.isFirstLoad) {
-            M.Application.isFirstLoad = NO;
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage && currentPage.hasTabBarView) {
-                var tabBarView = currentPage.tabBarView;
-
-                if(tabBarView.childViews) {
-                    var childViews = tabBarView.getChildViewsAsArray();
-                    for(var i in childViews) {
-                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
-                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* initialize the loader for later use (if not already done) */
-        if(M.LoaderView) {
-            M.LoaderView.initialize();
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-            var that = this;
-            window.setTimeout(function() {
-                $(that).controlgroup();
-            }, 1);
-        });
-
-        /* reset the page's title */
-        document.title = M.Application.name;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was loaded. If a onLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidLoad: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-//            $(this).controlgroup();
-//        });
-
-        this.isFirstLoad = NO;
-    },
-
-    /**
-     * This method is called right before the page is hidden. If a beforeHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillHide: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was hidden. If a onHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidHide: function(id, event, nextEvent) {
-        /* if there is a list on the page, reset it: deactivate possible active list items */
-        if(this.listList) {
-            _.each(this.listList, function(list) {
-                list.resetActiveListItem();
-            });
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the device's orientation did change. If a action for
-     * orientationdidchange is defined for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    orientationDidChange: function(id, event, nextEvent) {
-        /* get the orientation */
-        var orientation = M.Environment.getOrientation();
-        
-        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
-        if(orientation === this.orientation) {
-            return;
-        }
-
-        /* auto-reposition opened dialogs */
-        $('.tmp-dialog').each(function() {
-            var id = $(this).attr('id');
-            var dialog = M.ViewManager.getViewById(id);
-            var dialogDOM = $(this);
-            window.setTimeout(function() {
-                dialog.positionDialog(dialogDOM);
-                dialog.positionBackground($('.tmp-dialog-background'));
-            }, 500);
-        });
-
-        /* auto-reposition carousels */
-        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
-            var carousel = M.ViewManager.getViewById($(this).attr('id'));
-            carousel.orientationDidChange();
-        });
-
-        /* set the current orientation */
-        this.orientation = orientation;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the page.
-     *
-     * @private
-     * @returns {String} The page's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            if(!html) {
-                html += ' class="';
-            }
-            html += this.cssClass;
-        }
-        if(html) {
-            html += '"';
-        }
-        return html;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6384,8 +6160,8 @@ M.ScrollView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
+// Creator:   Sebastian
+// Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -6394,108 +6170,332 @@ M.ScrollView = M.View.extend(
 /**
  * @class
  *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
+ * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
+ * M.Application. A page is the container view for all other views.
  *
  * @extends M.View
  */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
+M.PageView = M.View.extend(
+/** @scope M.PageView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.LoaderView',
+    type: 'M.PageView',
 
     /**
-     * This property states whether the loader has already been initialized or not.
+     * States whether a page is loaded the first time or not. It is automatically set to NO
+     * once the page was first loaded.
      *
      * @type Boolean
      */
-    isInitialized: NO,
+    isFirstLoad: YES,
 
     /**
-     * This property counts the loader calls to show
+     * Indicates whether the page has a tab bar or not.
      *
+     * @type Boolean
+     */
+    hasTabBarView: NO,
+
+    /**
+     * The page's tab bar.
+     *
+     * @type M.TabBarView
+     */
+    tabBarView: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions. If
+     * there are external handlers specified for the same event, the internal handler is called first.
+     *
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * An associative array containing all list views used in this page. The key for a list view is
+     * its id. We do this to have direct access to a list view, so we can reset its selected item
+     * once the page was hidden.
+     *
+     * @type Object
+     */
+    listList: null,
+
+    /**
+     * This property contains the page's current orientation. This property is only used internally!
+     *
+     * @private
      * @type Number
      */
-    refCount: 0,
+    orientation: null,
 
     /**
-     * This property can be used to specify the default title of a loader.
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
      *
-     * @type String
+     * @private
+     * @returns {String} The page view's html representation.
      */
-    defaultTitle: 'loading',
-            
+    render: function() {
+        /* store the currently rendered page as a reference for use in child views */
+        M.ViewManager.currentlyRenderedPage = this;
+        
+        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
+        this.registerEvents();
+    },
+
     /**
-     * This method initializes the loader by loading it once.
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
      *
-     * @private 
+     * It extend M.View's registerEvents method with some special stuff for page views and its
+     * internal events.
      */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
+    registerEvents: function() {
+        this.internalEvents = {
+            pagebeforeshow: {
+                target: this,
+                action: 'pageWillLoad'
+            },
+            pageshow: {
+                target: this,
+                action: 'pageDidLoad'
+            },
+            pagebeforehide: {
+                target: this,
+                action: 'pageWillHide'
+            },
+            pagehide: {
+                target: this,
+                action: 'pageDidHide'
+            },
+            orientationdidchange: {
+                target: this,
+                action: 'orientationDidChange'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method writes the view's html string into the DOM. M.Page is the only view that does
+     * that. All other views just deliver their html representation to a page view.
+     */
+    writeToDOM: function() {
+    	if (restartOnBlackBerry) {
+    		if (document.readyState === "loading") {
+    			document.write(this.html);
+    		} else if (typeof($(this.html)[0]) !== undefined) {
+    			// append only if the page-id isn't already in the body 
+    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
+    				$('body').append(this.html);
+    			}
+    		}
+		} else {
+			document.write(this.html);
+		}
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillLoad: function(id, event, nextEvent) {
+        /* initialize the tabbar */
+        if(M.Application.isFirstLoad) {
+            M.Application.isFirstLoad = NO;
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage && currentPage.hasTabBarView) {
+                var tabBarView = currentPage.tabBarView;
+
+                if(tabBarView.childViews) {
+                    var childViews = tabBarView.getChildViewsAsArray();
+                    for(var i in childViews) {
+                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
+                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* initialize the loader for later use (if not already done) */
+        if(M.LoaderView) {
+            M.LoaderView.initialize();
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+            var that = this;
+            window.setTimeout(function() {
+                $(that).controlgroup();
+            }, 1);
+        });
+
+        /* reset the page's title */
+        document.title = M.Application.name;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
         }
     },
 
     /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
+     * This method is called right after the page was loaded. If a onLoad-action is defined
+     * for the page, it is now called.
      *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
      */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
+    pageDidLoad: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
 
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
+        /* call controlgroup plugin on any such element on the page */
+//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+//            $(this).controlgroup();
+//        });
 
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        this.isFirstLoad = NO;
+    },
+
+    /**
+     * This method is called right before the page is hidden. If a beforeHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillHide: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
         }
     },
 
     /**
-     * This method changes the current title.
+     * This method is called right after the page was hidden. If a onHide-action is defined
+     * for the page, it is now called.
      *
-     * @param {String} title The title for this loader.
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
      */
+    pageDidHide: function(id, event, nextEvent) {
+        /* if there is a list on the page, reset it: deactivate possible active list items */
+        if(this.listList) {
+            _.each(this.listList, function(list) {
+                list.resetActiveListItem();
+            });
+        }
 
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
     },
 
     /**
-     * This method hides the loader.
+     * This method is called right after the device's orientation did change. If a action for
+     * orientationdidchange is defined for the page, it is now called.
      *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
      */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
+    orientationDidChange: function(id, event, nextEvent) {
+        /* get the orientation */
+        var orientation = M.Environment.getOrientation();
+        
+        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
+        if(orientation === this.orientation) {
+            return;
         }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
+
+        /* auto-reposition opened dialogs */
+        $('.tmp-dialog').each(function() {
+            var id = $(this).attr('id');
+            var dialog = M.ViewManager.getViewById(id);
+            var dialogDOM = $(this);
+            window.setTimeout(function() {
+                dialog.positionDialog(dialogDOM);
+                dialog.positionBackground($('.tmp-dialog-background'));
+            }, 500);
+        });
+
+        /* auto-reposition carousels */
+        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
+            var carousel = M.ViewManager.getViewById($(this).attr('id'));
+            carousel.orientationDidChange();
+        });
+
+        /* set the current orientation */
+        this.orientation = orientation;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
         }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the page.
+     *
+     * @private
+     * @returns {String} The page's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            if(!html) {
+                html += ' class="';
+            }
+            html += this.cssClass;
+        }
+        if(html) {
+            html += '"';
+        }
+        return html;
     }
     
 });
