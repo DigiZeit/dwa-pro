@@ -3622,6 +3622,120 @@ m_require('ui/dialog.js');
 /**
  * @class
  *
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
+ *
+ * @extends M.DialogView
+ */
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.AlertDialogView',
+
+    /**
+     * The default title of an alert dialog.
+     *
+     * @type String
+     */
+    title: 'Alert',
+
+    /**
+     * The default message of an alert dialog.
+     *
+     * @type String
+     */
+    message: '',
+
+    /**
+     * Determines whether the alert dialog gets a default ok button.
+     *
+     * @type Boolean
+     */
+    hasConfirmButton: YES,
+
+    /**
+     * Determines the value of the button, means the text label on it.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an alert dialog as a pop up
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
+     */
+    render: function() {
+        this.html = '<div class="tmp-dialog-background"></div>';
+        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+        this.html += '<div class="tmp-dialog-content">';
+        this.html += this.message;
+        this.html +='</div>';
+        var button;
+        if(this.hasConfirmButton) {
+            this.html += '<div class="tmp-dialog-footer">';
+            var that = this;
+            button = M.ButtonView.design({
+                value: this.confirmButtonValue,
+                dataTheme: 'b tmp-dialog-smallerbtn',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            });
+            this.html += button.render();
+            this.html += '</div>';
+        }
+        this.html += '</div>';
+
+        $('body').append(this.html);
+        if(button.type) {
+            button.registerEvents();
+            button.theme();
+        }
+    },
+
+    handleCallback: function() {
+        this.hide();
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
+            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
  * This is the prototype for any confirm dialog view. It is derived from M.DialogView
  * and mainly used for implementing a confirm dialog view specific render method.
  *
@@ -3744,120 +3858,6 @@ M.ConfirmDialogView = M.DialogView.extend(
         this.hide();
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.cancel)){
             this.bindToCaller(this.callbacks.cancel.target, this.callbacks.cancel.action)();
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any alert dialog view. It is derived from M.DialogView
- * and mainly used for implementing a alert dialog view specific render method.
- *
- * @extends M.DialogView
- */
-M.AlertDialogView = M.DialogView.extend(
-/** @scope M.AlertDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.AlertDialogView',
-
-    /**
-     * The default title of an alert dialog.
-     *
-     * @type String
-     */
-    title: 'Alert',
-
-    /**
-     * The default message of an alert dialog.
-     *
-     * @type String
-     */
-    message: '',
-
-    /**
-     * Determines whether the alert dialog gets a default ok button.
-     *
-     * @type Boolean
-     */
-    hasConfirmButton: YES,
-
-    /**
-     * Determines the value of the button, means the text label on it.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an alert dialog as a pop up
-     *
-     * @private
-     * @returns {String} The alert dialog view's html representation.
-     */
-    render: function() {
-        this.html = '<div class="tmp-dialog-background"></div>';
-        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-        this.html += '<div class="tmp-dialog-content">';
-        this.html += this.message;
-        this.html +='</div>';
-        var button;
-        if(this.hasConfirmButton) {
-            this.html += '<div class="tmp-dialog-footer">';
-            var that = this;
-            button = M.ButtonView.design({
-                value: this.confirmButtonValue,
-                dataTheme: 'b tmp-dialog-smallerbtn',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            });
-            this.html += button.render();
-            this.html += '</div>';
-        }
-        this.html += '</div>';
-
-        $('body').append(this.html);
-        if(button.type) {
-            button.registerEvents();
-            button.theme();
-        }
-    },
-
-    handleCallback: function() {
-        this.hide();
-        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
-            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
         }
     }
 
@@ -5781,6 +5781,138 @@ M.PageView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -6102,138 +6234,6 @@ M.MovableLabelView = M.LabelView.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -6436,69 +6436,6 @@ M.PopoverView = M.View.extend(
     }
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7509,6 +7446,69 @@ M.ListView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -9588,248 +9588,6 @@ M.TabBarItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
- *
- * @extends M.View
- */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TableView',
-
-    /**
-     * Determines whether to remove all content rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeContentRowsOnUpdate: YES,
-
-    /**
-     * Determines whether to remove the header rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeHeaderRowOnUpdate: NO,
-
-    /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the table.
-     *
-     * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
-     */
-    theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
-    },
-
-    /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
-        }
-
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
-        }
-    },
-
-    /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
-     */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
-        }
-    },
-
-    /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
-     */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -10384,6 +10142,248 @@ M.TextFieldView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -10779,6 +10779,135 @@ M.ToggleSwitchView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * Comment ...
+ *
+ * @extends M.View
+ */
+M.WebView = M.View.extend(
+/** @scope M.WebView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.WebView',
+
+    /**
+     * This property can be used to specify wheter a user should be able to srcoll
+     * within the web view or not.
+     *
+     * Note: If set to NO, the external web content must take care of fitting in the
+     * web view. Otherwise some part of the web page won't be visible.
+     *
+     * @type Boolean
+     */
+    isScrollable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['load'],
+
+    /**
+     * This method renders a web view as a simple iFrame element.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.checkURL();
+        this.html = '<div id="' + this.id + '"></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+    },
+
+    /**
+     * This method is called whenever the content bound by content binding changes.
+     * It forces the web view to re-render meaning to load the updated url stored
+     * in the value property.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        if(this.value) {
+            this.computeValue();
+            this.checkURL();
+        }
+
+        if(this.value && this.html && this.html.indexOf('<div') === 0) {
+            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
+            $('#' + this.id).replaceWith(this.html);
+            this.registerEvents();
+        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
+            $('#' + this.id).attr('src', this.value);
+        }
+    },
+
+    /**
+     * This method is used to check the given URL and to make sure there is an
+     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
+     *
+     * @private
+     */
+    checkURL: function() {
+        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
+            this.value = 'http://' + this.value;
+        }
+    },
+
+    /**
+     * This method simply applies an internal CSS class to the web view and,
+     * if available, the CSS class specified by the cssClass property of that
+     * view element.
+     *
+     * @private
+     * @returns {String} The web view's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-webview';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    },
+
+    /**
+     * This method can be used to force the web view to reload its original
+     * URL. This can either be the one specified by the value property or the
+     * one specified by the currently bound content.
+     */
+    reload: function() {
+        $('#' + this.id).attr('src', this.value);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -11030,133 +11159,4 @@ M.ToolbarView = M.View.extend(
         return html;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * Comment ...
- *
- * @extends M.View
- */
-M.WebView = M.View.extend(
-/** @scope M.WebView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.WebView',
-
-    /**
-     * This property can be used to specify wheter a user should be able to srcoll
-     * within the web view or not.
-     *
-     * Note: If set to NO, the external web content must take care of fitting in the
-     * web view. Otherwise some part of the web page won't be visible.
-     *
-     * @type Boolean
-     */
-    isScrollable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['load'],
-
-    /**
-     * This method renders a web view as a simple iFrame element.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.checkURL();
-        this.html = '<div id="' + this.id + '"></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-    },
-
-    /**
-     * This method is called whenever the content bound by content binding changes.
-     * It forces the web view to re-render meaning to load the updated url stored
-     * in the value property.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.value) {
-            this.computeValue();
-            this.checkURL();
-        }
-
-        if(this.value && this.html && this.html.indexOf('<div') === 0) {
-            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
-            $('#' + this.id).replaceWith(this.html);
-            this.registerEvents();
-        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
-            $('#' + this.id).attr('src', this.value);
-        }
-    },
-
-    /**
-     * This method is used to check the given URL and to make sure there is an
-     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
-     *
-     * @private
-     */
-    checkURL: function() {
-        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
-            this.value = 'http://' + this.value;
-        }
-    },
-
-    /**
-     * This method simply applies an internal CSS class to the web view and,
-     * if available, the CSS class specified by the cssClass property of that
-     * view element.
-     *
-     * @private
-     * @returns {String} The web view's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-webview';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    },
-
-    /**
-     * This method can be used to force the web view to reload its original
-     * URL. This can either be the one specified by the value property or the
-     * one specified by the currently bound content.
-     */
-    reload: function() {
-        $('#' + this.id).attr('src', this.value);
-    }
-
 });
