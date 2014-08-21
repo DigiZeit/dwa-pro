@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.1.5533 beta, Timestamp:1408605033547
+#Application:DigiWebApp, Version:1.8.1.5534, Timestamp:1408605496635
 
 
 # Explicitly cached entries
@@ -10,22 +10,21 @@ es_es.js
 fr_fr.js
 nl_nl.js
 jquery-1.9.1.js
-underscore-min.js
 theme/tmp.css
+bootstrap.js
 d8-0.1.3.min.js
 d8-0.4.0.min.js
-bootstrap.js
+underscore-min.js
+jquery.xml2json_1.3.js
 jquery_mobile.js
+jstz.js
+digi_list.js
+digi_selection_list.js
+digi_list_item.js
+digi_selection_list_item.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-jquery.xml2json_1.3.js
-jstz.js
-digi_list.js
-digi_list_item.js
-digi_selection_list.js
-digi_selection_list_item.js
-Math.uuid.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_DIGI-WebApp.png
@@ -44,7 +43,6 @@ theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
-theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
@@ -55,15 +53,16 @@ theme/images/48x48_plain_about.png
 theme/images/48x48_plain_book_blue_find.png
 theme/images/48x48_plain_businessmen.png
 theme/images/48x48_plain_camera2.png
+theme/images/320x480_90_DIGI-WebApp.png
 theme/images/48x48_plain_car_compact_grey.png
 theme/images/48x48_plain_clipboard.png
 theme/images/48x48_plain_clock_pause.png
 theme/images/48x48_plain_cloud_dark.png
 theme/images/48x48_plain_cup.png
-theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_gears.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/48x48_plain_handauftrag.png
+theme/images/48x48_plain_folder_view.png
 theme/images/48x48_plain_home.png
 theme/images/48x48_plain_note_delete.png
 theme/images/48x48_plain_note_view.png
@@ -75,23 +74,24 @@ theme/images/48x48_plain_wrench.png
 theme/images/5000x5000_90_DIGI-WebApp.png
 theme/images/5000x5000_90_SCHOLPP.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
+theme/images/640x960_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
 theme/images/640x960_90_SCHOLPP.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/720x960_90_DIGI-WebApp_mitLogo.png
-theme/images/640x960_90_DIGI-WebApp.png
 theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/800x1280_90_SCHOLPP.png
+theme/images/Auftrag.png
 theme/images/Icon.png
 theme/images/NeuesLogo2013.png
 theme/images/ajax-loader.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
 theme/images/arrow_white.png
-theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_hdpi.png
+theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
 theme/images/icon-winphone.png
@@ -109,12 +109,11 @@ theme/images/icon_stop.png
 theme/images/splash.png
 theme/images/tabSprite.png
 theme/images/tile-icon-winphone.png
-theme/images/Auftrag.png
-ui.js
+Math.uuid.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-CHANGELOG.md
 Gruntfile.coffee
+CHANGELOG.md
 LICENSE.txt
 README.md
 jquery.signaturepad.js
@@ -140,10 +139,11 @@ theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
 theme/images/icons-18-black.png
+theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
-theme/images/icons-18-white.png
 core.js
+ui.js
 DigiWebApp_App.js
 
 
