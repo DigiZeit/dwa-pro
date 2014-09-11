@@ -20321,7 +20321,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5588
+    , softwareVersion: 5589
 
 
     /**
@@ -30765,6 +30765,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 
         , activityButton: M.ButtonView.design({
 			    value: M.I18N.l('activity')
+              , label: M.I18N.l('activity')
 		      , events: {
 		          tap: {
 		                target: DigiWebApp.ActivityListController,
@@ -36250,7 +36251,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5588'
+              value: 'Build: 5589'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
