@@ -1,29 +1,29 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.2.5621 beta, Timestamp:1413532777353
+#Application:DigiWebApp, Version:1.8.2.5622 beta, Timestamp:1413538143760
 
 
 # Explicitly cached entries
 CACHE:
 underscore-min.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
 jquery-1.9.1.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
+theme/tmp.css
 bootstrap.js
+jquery_mobile.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-theme/tmp.css
+jquery.xml2json_1.3.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
-jquery_mobile.js
-jquery.xml2json_1.3.js
 Math.uuid.js
 jstz.js
 pen.cur
@@ -47,9 +47,9 @@ theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
-theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.png
+theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_about.png
 theme/images/48x48_plain_book_blue_find.png
@@ -99,8 +99,8 @@ theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
 theme/images/icon_ios_120.png
-theme/images/icon_ios_144.png
 theme/images/icon_ios_152.png
+theme/images/icon_ios_144.png
 theme/images/icon_ios_57.png
 theme/images/icon_ios_72.png
 theme/images/icon_ios_76.png
@@ -140,8 +140,8 @@ core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
-theme/images/icons-18-black.png
 theme/images/icons-18-white.png
+theme/images/icons-18-black.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
 DigiWebApp_App.js
