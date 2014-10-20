@@ -9429,7 +9429,7 @@ DigiWebApp.BautagebuchBautagesberichtDetailsController = M.Controller.extend({
 			var myZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{
 				  identifier: 'bautagesberichtId'
 				, operator: '='
-				, value: that.tem.get("id")
+				, value: that.item.get("id")
 			}});
 			var earliestTimestamp = null;
 			_.each(myZeitbuchungen, function(z) {
@@ -20513,7 +20513,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5665
+    , softwareVersion: 5666
 
 
     /**
@@ -36655,7 +36655,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5665'
+              value: 'Build: 5666'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
