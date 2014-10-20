@@ -16631,88 +16631,6 @@ DigiWebApp.DemoAudioController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: MediaPageController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.DemoMediaPageController = M.Controller.extend({
-
-      events: {
-		pagebeforeshow: {
-    		  target: this
-    		, action: 'init'
-		}
-	}
-
-    , items: null
-
-    , latestId: null
-
-    , init: function(isFirstLoad) {
-        if (DigiWebApp.DemoMediaPage.needsUpdate) {
-            var items = [];
-                        
-//            // Start::TakePicture (400)
-//            if (DigiWebApp.SettingsController.featureAvailable('400')) {
-//            	if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
-//                items.push({
-//                    label: M.I18N.l('takePicture'),
-//                    icon: 'icon_takePicture.png',
-//                    id: 'camera'
-//                });
-//            }
-//            // End::TakePicture
-
-            // Start::RecordAudio (401)
-            if (DigiWebApp.SettingsController.featureAvailable('401')) {
-            	if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
-                items.push({
-                    label: M.I18N.l('recordAudio'),
-                    icon: 'icon_recordAudio.png',
-                    id: 'audio'
-                });
-            }
-            // End::RecordAudio
-
-            this.set('items', items);
-            DigiWebApp.DemoMediaPage.needsUpdate = false;
-        }
-
-        var list = M.ViewManager.getView('mediaPage', 'list');
-        if (list) {
-            $('#' + list.id).find('li').each(function() {
-                $(this).removeClass('selected');
-            });
-        }
-    }
-
-    , itemSelected: function(id, m_id) {
-        if (this.latestId) {
-            $('#' + this.latestId).removeClass('selected');
-        }
-        $('#' + id).addClass('selected');
-
-        this.latestId = id;
-
-        if (m_id && typeof(this[m_id]) === 'function') {
-            this[m_id]();
-        }
-    }
-
-    , camera: function() {
-        DigiWebApp.NavigationController.toDemoCameraPageTransition();
-    }
-
-    , audio: function() {
-        DigiWebApp.NavigationController.toDemoAudioPageTransition();
-    }
-    
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: EditPicturePageController
 // ==========================================================================
 // manuell var-checked
@@ -17384,6 +17302,88 @@ DigiWebApp.EditPicturePageController = M.Controller.extend({
 //		DigiWebApp.EditPicturePageController.myImageTopLeft = [0, 0];
 //  }
 
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: MediaPageController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.DemoMediaPageController = M.Controller.extend({
+
+      events: {
+		pagebeforeshow: {
+    		  target: this
+    		, action: 'init'
+		}
+	}
+
+    , items: null
+
+    , latestId: null
+
+    , init: function(isFirstLoad) {
+        if (DigiWebApp.DemoMediaPage.needsUpdate) {
+            var items = [];
+                        
+//            // Start::TakePicture (400)
+//            if (DigiWebApp.SettingsController.featureAvailable('400')) {
+//            	if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
+//                items.push({
+//                    label: M.I18N.l('takePicture'),
+//                    icon: 'icon_takePicture.png',
+//                    id: 'camera'
+//                });
+//            }
+//            // End::TakePicture
+
+            // Start::RecordAudio (401)
+            if (DigiWebApp.SettingsController.featureAvailable('401')) {
+            	if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
+                items.push({
+                    label: M.I18N.l('recordAudio'),
+                    icon: 'icon_recordAudio.png',
+                    id: 'audio'
+                });
+            }
+            // End::RecordAudio
+
+            this.set('items', items);
+            DigiWebApp.DemoMediaPage.needsUpdate = false;
+        }
+
+        var list = M.ViewManager.getView('mediaPage', 'list');
+        if (list) {
+            $('#' + list.id).find('li').each(function() {
+                $(this).removeClass('selected');
+            });
+        }
+    }
+
+    , itemSelected: function(id, m_id) {
+        if (this.latestId) {
+            $('#' + this.latestId).removeClass('selected');
+        }
+        $('#' + id).addClass('selected');
+
+        this.latestId = id;
+
+        if (m_id && typeof(this[m_id]) === 'function') {
+            this[m_id]();
+        }
+    }
+
+    , camera: function() {
+        DigiWebApp.NavigationController.toDemoCameraPageTransition();
+    }
+
+    , audio: function() {
+        DigiWebApp.NavigationController.toDemoAudioPageTransition();
+    }
+    
 });
 
 // ==========================================================================
@@ -19851,6 +19851,143 @@ DigiWebApp.NavigationController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: OrderDetailsController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.OrderDetailsController = M.Controller.extend({
+
+	  positionForDetails: null
+	  
+	, loadedPosition: null
+	
+	, init: function(isFirstLoad) {
+		var that = DigiWebApp.OrderDetailsController;
+		if (that.items === null) {
+			DigiWebApp.RequestController.getDatabaseServer(that.initWithServer, isFirstLoad);
+		} else {
+			that.initWithServer(isFirstLoad);
+		}
+	}
+
+    , initWithServer: function(isFirstLoad) {
+    	var that = DigiWebApp.OrderDetailsController;
+		if (that.positionForDetails === null) {
+			//console.log("Anwesenheitsliste: showing Loader");		
+			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('positionLaden'));
+
+			//console.log("Anwesenheitsliste: find --> request");		
+			DigiWebApp.OnlinePosition.find({
+	              urlParams: {}
+	            , callbacks: {
+	                  success: {
+	                    action: function(records) {
+	            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                        if ((records && records.length === 0) || (parseIntRadixTen(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsId")) === 0)) {
+	                    		//console.log("Anwesenheitsliste: error length==0");		
+	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	            		              title: M.I18N.l('error')
+	            		            , message: M.I18N.l('positionKonnteNichtGeladenWerden')
+	            		            , callbacks: {
+	            		                confirm: {
+	            		                      target: that
+	            		                    , action: function () {
+	            		        				DigiWebApp.NavigationController.backToZeitbuchungDetailsPageTransition();
+	            		                    }
+	            		                }
+	            		            }
+	            		        });
+	                        } else {
+	                    		//console.log("Anwesenheitsliste: success");		
+	                        	that.set('loadedPosition', records);
+	                        	that.setItem();
+	                        }
+	                    }
+	                }
+	                , error: {
+	                    action: function(request, error) {
+	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                		//console.log("Anwesenheitsliste: error request failed");		
+	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	        		              title: M.I18N.l('error')
+	        		            , message: M.I18N.l('positionKonnteNichtGeladenWerden')
+	        		            , callbacks: {
+	        		                confirm: {
+	        		                      target: that
+	        		                    , action: function () {
+		        							DigiWebApp.NavigationController.backToZeitbuchungDetailsPageTransition();
+	        		                    }
+	        		                }
+	        		            }
+	        		        });
+	                    }
+	                }
+	            }
+	        });    	
+        }
+		
+    }
+    
+    , setItem: function() {
+    	var that = DigiWebApp.OrderDetailsController;
+        var item_empty = { 
+        		  orderName: ''
+        		, positionName: ''
+            	, positionStrasse: ''
+            	, positionHausnummer: ''
+            	, positionPLZ: ''
+            	, positionOrt: ''
+                , positionLand: ''
+            	, positionStrasseUndHausnummer: '' 
+            	, positionPLZundOrt: ''
+        		, positionCountryCode: ''
+        		, positionTelefon: ''
+        		, positionFax: ''
+        		, positionEmail: ''
+        		, positionAnsprechpartner: ''
+        		, positionKundenname: ''
+        		, positionLongitude: ''
+        		, positionLatitude: ''
+        		, positionBeschreibung: ''
+        	};
+        var item = item_empty;
+        	item.orderName = that.loadedPosition[0].get('auftragsBezeichnung');
+			item.positionName = that.loadedPosition[0].get('positionsBezeichnung');
+			item.positionStrasse = that.loadedPosition[0].get('strasse');
+			item.positionHausnummer = that.loadedPosition[0].get('hausnummer');
+			item.positionPLZ = that.loadedPosition[0].get('plz');
+			item.positionOrt = that.loadedPosition[0].get('ort');
+			item.positionLand = that.loadedPosition[0].get('land');
+			item.positionTelefon = that.loadedPosition[0].get('telefon');
+			item.positionFax = that.loadedPosition[0].get('fax');
+			item.positionEmail = that.loadedPosition[0].get('email');
+			item.positionAnsprechpartner = that.loadedPosition[0].get('ansprechpartner');
+			item.positionKundenname = that.loadedPosition[0].get('kundenname');
+			item.positionLongitude = that.loadedPosition[0].get('longitude');
+			item.positionLatitude = that.loadedPosition[0].get('latitude');
+			item.positionBeschreibung = that.loadedPosition[0].get('positionsBeschreibung');
+			item.positionCountryCode = that.loadedPosition[0].get('countrycode');
+			item.positionPLZundOrt = item.positionPLZ + " " + item.positionOrt;
+			item.positionStrasseUndHausnummer = item.positionStrasse + " " + item.positionHausnummer;
+
+		if (item.orderName === '' && item.positionName === '') {
+			that.set('positionForDetails', []);
+		} else {
+			that.set('positionForDetails', [item]);
+		}
+//		if (   DigiWebApp.OrderDetailsController.positionForDetails[0].positionLongitude === "0.0"
+//			&& DigiWebApp.OrderDetailsController.positionForDetails[0].positionLatitude  === "0.0"
+//		) {
+//			
+//		}
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: OrderInfoController
 // ==========================================================================
 // manuell var-checked
@@ -20267,143 +20404,6 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: OrderDetailsController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.OrderDetailsController = M.Controller.extend({
-
-	  positionForDetails: null
-	  
-	, loadedPosition: null
-	
-	, init: function(isFirstLoad) {
-		var that = DigiWebApp.OrderDetailsController;
-		if (that.items === null) {
-			DigiWebApp.RequestController.getDatabaseServer(that.initWithServer, isFirstLoad);
-		} else {
-			that.initWithServer(isFirstLoad);
-		}
-	}
-
-    , initWithServer: function(isFirstLoad) {
-    	var that = DigiWebApp.OrderDetailsController;
-		if (that.positionForDetails === null) {
-			//console.log("Anwesenheitsliste: showing Loader");		
-			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('positionLaden'));
-
-			//console.log("Anwesenheitsliste: find --> request");		
-			DigiWebApp.OnlinePosition.find({
-	              urlParams: {}
-	            , callbacks: {
-	                  success: {
-	                    action: function(records) {
-	            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                        if ((records && records.length === 0) || (parseIntRadixTen(DigiWebApp.ZeitbuchungenController.itemForDetails.get("positionsId")) === 0)) {
-	                    		//console.log("Anwesenheitsliste: error length==0");		
-	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	            		              title: M.I18N.l('error')
-	            		            , message: M.I18N.l('positionKonnteNichtGeladenWerden')
-	            		            , callbacks: {
-	            		                confirm: {
-	            		                      target: that
-	            		                    , action: function () {
-	            		        				DigiWebApp.NavigationController.backToZeitbuchungDetailsPageTransition();
-	            		                    }
-	            		                }
-	            		            }
-	            		        });
-	                        } else {
-	                    		//console.log("Anwesenheitsliste: success");		
-	                        	that.set('loadedPosition', records);
-	                        	that.setItem();
-	                        }
-	                    }
-	                }
-	                , error: {
-	                    action: function(request, error) {
-	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                		//console.log("Anwesenheitsliste: error request failed");		
-	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	        		              title: M.I18N.l('error')
-	        		            , message: M.I18N.l('positionKonnteNichtGeladenWerden')
-	        		            , callbacks: {
-	        		                confirm: {
-	        		                      target: that
-	        		                    , action: function () {
-		        							DigiWebApp.NavigationController.backToZeitbuchungDetailsPageTransition();
-	        		                    }
-	        		                }
-	        		            }
-	        		        });
-	                    }
-	                }
-	            }
-	        });    	
-        }
-		
-    }
-    
-    , setItem: function() {
-    	var that = DigiWebApp.OrderDetailsController;
-        var item_empty = { 
-        		  orderName: ''
-        		, positionName: ''
-            	, positionStrasse: ''
-            	, positionHausnummer: ''
-            	, positionPLZ: ''
-            	, positionOrt: ''
-                , positionLand: ''
-            	, positionStrasseUndHausnummer: '' 
-            	, positionPLZundOrt: ''
-        		, positionCountryCode: ''
-        		, positionTelefon: ''
-        		, positionFax: ''
-        		, positionEmail: ''
-        		, positionAnsprechpartner: ''
-        		, positionKundenname: ''
-        		, positionLongitude: ''
-        		, positionLatitude: ''
-        		, positionBeschreibung: ''
-        	};
-        var item = item_empty;
-        	item.orderName = that.loadedPosition[0].get('auftragsBezeichnung');
-			item.positionName = that.loadedPosition[0].get('positionsBezeichnung');
-			item.positionStrasse = that.loadedPosition[0].get('strasse');
-			item.positionHausnummer = that.loadedPosition[0].get('hausnummer');
-			item.positionPLZ = that.loadedPosition[0].get('plz');
-			item.positionOrt = that.loadedPosition[0].get('ort');
-			item.positionLand = that.loadedPosition[0].get('land');
-			item.positionTelefon = that.loadedPosition[0].get('telefon');
-			item.positionFax = that.loadedPosition[0].get('fax');
-			item.positionEmail = that.loadedPosition[0].get('email');
-			item.positionAnsprechpartner = that.loadedPosition[0].get('ansprechpartner');
-			item.positionKundenname = that.loadedPosition[0].get('kundenname');
-			item.positionLongitude = that.loadedPosition[0].get('longitude');
-			item.positionLatitude = that.loadedPosition[0].get('latitude');
-			item.positionBeschreibung = that.loadedPosition[0].get('positionsBeschreibung');
-			item.positionCountryCode = that.loadedPosition[0].get('countrycode');
-			item.positionPLZundOrt = item.positionPLZ + " " + item.positionOrt;
-			item.positionStrasseUndHausnummer = item.positionStrasse + " " + item.positionHausnummer;
-
-		if (item.orderName === '' && item.positionName === '') {
-			that.set('positionForDetails', []);
-		} else {
-			that.set('positionForDetails', [item]);
-		}
-//		if (   DigiWebApp.OrderDetailsController.positionForDetails[0].positionLongitude === "0.0"
-//			&& DigiWebApp.OrderDetailsController.positionForDetails[0].positionLatitude  === "0.0"
-//		) {
-//			
-//		}
-    }
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: RequestController
 // ==========================================================================
 // manuell var-checked
@@ -20426,7 +20426,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5640
+    , softwareVersion: 5641
 
 
     /**
@@ -31089,7 +31089,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 										if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 											return false;
 										}
-										if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+										if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 											return false;
 										}
 									} 
@@ -31120,7 +31120,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 										if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 											return false;
 										}
-										if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+										if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 											return false;
 										}
 									}
@@ -31150,7 +31150,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 										if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 											return false;
 										}
-										if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+										if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 											return false;
 										}
 									}
@@ -31181,7 +31181,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 										if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 											return false;
 										}
-										if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+										if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 											return false;
 										}
 									}
@@ -31256,7 +31256,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 										return false;
 									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+									if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 										return false;
 									}
 								}
@@ -31294,7 +31294,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 										return false;
 									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+									if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 										return false;
 									}
 								}
@@ -31327,7 +31327,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 										return false;
 									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+									if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 										return false;
 									}
 								}
@@ -31365,7 +31365,7 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
 										return false;
 									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
+									if (parseIntRadixTen(myStunde) == parseIntRadixTen(myStartUhrzeitStunde) && parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
 										return false;
 									}
 								}
@@ -31476,17 +31476,6 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									myStunde = 0;
 								}
 								var dauerStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-								if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
-									var myStartUhrzeit = DigiWebApp.BautagebuchBautagesberichtDetailsController.get("startUhrzeit");
-									var myStartUhrzeitStunde = myStartUhrzeit.split(":")[0];
-									var myStartUhrzeitMinute = myStartUhrzeit.split(":")[1];
-									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
-										return false;
-									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
-										return false;
-									}
-								}
 								DigiWebApp.BautagebuchZeitenDetailsController.set('dauer', dauerStr);
 								DigiWebApp.BautagebuchZeitenDetailsController.setDauer();
 	  						}
@@ -31514,17 +31503,6 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 									myMinute = 0;
 								}
 								var dauerStr = myStunde.padLeft(2,"0") + ":"+ myMinute.padLeft(2,"0");
-								if (DigiWebApp.SettingsController.getSetting('bautagebuchLimit_autoStartUhrzeit')) {
-									var myStartUhrzeit = DigiWebApp.BautagebuchBautagesberichtDetailsController.get("startUhrzeit");
-									var myStartUhrzeitStunde = myStartUhrzeit.split(":")[0];
-									var myStartUhrzeitMinute = myStartUhrzeit.split(":")[1];
-									if (parseIntRadixTen(myStunde) < parseIntRadixTen(myStartUhrzeitStunde)) {
-										return false;
-									}
-									if (parseIntRadixTen(myMinute) < parseIntRadixTen(myStartUhrzeitMinute)) {
-										return false;
-									}
-								}
 								DigiWebApp.BautagebuchZeitenDetailsController.set('dauer', dauerStr);
 								DigiWebApp.BautagebuchZeitenDetailsController.setDauer();
 	  						}
@@ -35440,6 +35418,229 @@ DigiWebApp.StudieChecklistePage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: TerminlisteTemplateView
+// ==========================================================================
+
+DigiWebApp.TerminlisteTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'betreff beschreibung auftragsBezeichnung positionsBezeichnung positionBegin positionEnd spacer1 von bis'
+
+    , events: {
+        tap: {
+			action: function(id, m_id, a, b) {
+						var doShow = NO;
+					    var view = M.ViewManager.getViewById(id);
+					    var positionId = view.positionId;
+					    var position = null;
+						_.each(DigiWebApp.Position.find(), function(item) {
+							if (item.get("id") === positionId) {
+								position = item;
+							}
+						});
+						
+						if (position !== null) {
+							var auftrag = _.find(DigiWebApp.Order.find(), function(el) { 
+								return parseIntRadixTen(position.get("orderId")) === parseIntRadixTen(el.get("id"));
+							});
+							if (DigiWebApp.SettingsController.featureAvailable("406")) {
+								// Auftragsinfo
+								if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
+									DigiWebApp.OrderInfoController.init();
+								}
+								DigiWebApp.NavigationController.toOrderInfoPageTransition();
+								M.ViewManager.getView('orderInfoPage', 'order').setSelection(position.get("orderId"));
+								DigiWebApp.OrderInfoController.activeOrder = [auftrag];
+								DigiWebApp.OrderInfoController.setPositions();
+								M.ViewManager.getView('orderInfoPage', 'position').setSelection(position.get("id"));
+								DigiWebApp.OrderInfoController.activePosition = [position];
+								DigiWebApp.OrderInfoController.setItem();
+							} else {
+								// vorausgewählte Buchungsliste
+								if (typeof(M.ViewManager.getView('bookingPage', 'order').getSelection()) === "undefined") {
+									DigiWebApp.BookingController.init();
+								}
+								DigiWebApp.NavigationController.toBookTimePageTransition();
+								M.ViewManager.getView('bookingPage', 'order').setSelection(position.get("orderId"));
+								DigiWebApp.SelectionController.setPositions();
+								M.ViewManager.getView('bookingPage', 'position').setSelection(position.get("id"));
+								DigiWebApp.SelectionController.setActivities(YES);
+							}
+						}
+			}
+		}
+	}
+
+
+	, betreff: M.LabelView.design({
+	    cssClass: 'bold unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= betreff %>'
+	      , operation: function(v) {
+				var text = v;
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('betreff') + ': ' + text;
+				} else {
+					return '';
+				}
+	      }
+	  }
+	})
+	
+	, beschreibung: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , computedValue: {
+	        valuePattern: '<%= beschreibung %>'
+	      , operation: function(v) {
+				var text = v;
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('beschreibung') + ': ' + text + "<br/><br/>";
+				} else {
+					return '';
+				}
+	      }
+	  }
+	})
+
+	//	  auftragsBezeichnung: "6657Heim"
+	, auftragsBezeichnung: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var pos = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
+				});
+				if (pos) {
+					var obj = _.find(DigiWebApp.Order.find(), function(el) {
+						return parseIntRadixTen(el.get("id")) === parseIntRadixTen(pos.get("orderId"));
+					});
+					if (obj) {
+						text = obj.get("name");
+					}
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('order') + ': ' + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	//	  positionsBezeichnung: "6657Heim"
+	, positionsBezeichnung: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
+				});
+				if (obj) {
+					text = obj.get("name");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('position') + ': ' + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+      
+	, positionBegin: M.LabelView.design({
+        cssClass: 'normal unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
+				});
+				if (obj) {
+					text = obj.get("positionBegin");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return M.I18N.l('positionZeitraum') + ": " + text;
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	, positionEnd: M.LabelView.design({
+        cssClass: 'normalInline unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= positionId %>'
+          , operation: function(v) {
+				var text = "";
+				var obj = _.find(DigiWebApp.Position.find(), function(el) {
+					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
+				});
+				if (obj) {
+					text = obj.get("positionEnd");
+				}
+				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
+					return ' - ' + text;
+				} else {
+					return ' - ' + M.I18N.l('open');
+				}
+          }
+      }
+	})
+
+	, spacer1: M.LabelView.design({
+	    value: ' '
+	})
+
+	, von: M.LabelView.design({
+        cssClass: 'bold unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= von %>'
+          , operation: function(v) {
+				if (v && v.indexOf("00:00:00") === -1) {
+					var uhrzeit = v.split(" ")[1];
+					return uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+	, bis: M.LabelView.design({
+        cssClass: 'boldInline unselectable'
+      , isInline: YES
+      , computedValue: {
+            valuePattern: '<%= bis %>'
+          , operation: function(v) {
+				if (v && v.indexOf("23:59:59") === -1) {
+					var uhrzeit = v.split(" ")[1];
+					return " - " + uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
+				} else {
+					return '';
+				}
+          }
+      }
+	})
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: TabBar
 // ==========================================================================
 
@@ -36586,7 +36787,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5640'
+              value: 'Build: 5641'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -37106,229 +37307,6 @@ DigiWebApp.SettingsPage = M.PageView.design({
     , tabBar: DigiWebApp.TabBar
 
 });
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: TerminlisteTemplateView
-// ==========================================================================
-
-DigiWebApp.TerminlisteTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'betreff beschreibung auftragsBezeichnung positionsBezeichnung positionBegin positionEnd spacer1 von bis'
-
-    , events: {
-        tap: {
-			action: function(id, m_id, a, b) {
-						var doShow = NO;
-					    var view = M.ViewManager.getViewById(id);
-					    var positionId = view.positionId;
-					    var position = null;
-						_.each(DigiWebApp.Position.find(), function(item) {
-							if (item.get("id") === positionId) {
-								position = item;
-							}
-						});
-						
-						if (position !== null) {
-							var auftrag = _.find(DigiWebApp.Order.find(), function(el) { 
-								return parseIntRadixTen(position.get("orderId")) === parseIntRadixTen(el.get("id"));
-							});
-							if (DigiWebApp.SettingsController.featureAvailable("406")) {
-								// Auftragsinfo
-								if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
-									DigiWebApp.OrderInfoController.init();
-								}
-								DigiWebApp.NavigationController.toOrderInfoPageTransition();
-								M.ViewManager.getView('orderInfoPage', 'order').setSelection(position.get("orderId"));
-								DigiWebApp.OrderInfoController.activeOrder = [auftrag];
-								DigiWebApp.OrderInfoController.setPositions();
-								M.ViewManager.getView('orderInfoPage', 'position').setSelection(position.get("id"));
-								DigiWebApp.OrderInfoController.activePosition = [position];
-								DigiWebApp.OrderInfoController.setItem();
-							} else {
-								// vorausgewählte Buchungsliste
-								if (typeof(M.ViewManager.getView('bookingPage', 'order').getSelection()) === "undefined") {
-									DigiWebApp.BookingController.init();
-								}
-								DigiWebApp.NavigationController.toBookTimePageTransition();
-								M.ViewManager.getView('bookingPage', 'order').setSelection(position.get("orderId"));
-								DigiWebApp.SelectionController.setPositions();
-								M.ViewManager.getView('bookingPage', 'position').setSelection(position.get("id"));
-								DigiWebApp.SelectionController.setActivities(YES);
-							}
-						}
-			}
-		}
-	}
-
-
-	, betreff: M.LabelView.design({
-	    cssClass: 'bold unselectable'
-	  , computedValue: {
-	        valuePattern: '<%= betreff %>'
-	      , operation: function(v) {
-				var text = v;
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('betreff') + ': ' + text;
-				} else {
-					return '';
-				}
-	      }
-	  }
-	})
-	
-	, beschreibung: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , computedValue: {
-	        valuePattern: '<%= beschreibung %>'
-	      , operation: function(v) {
-				var text = v;
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('beschreibung') + ': ' + text + "<br/><br/>";
-				} else {
-					return '';
-				}
-	      }
-	  }
-	})
-
-	//	  auftragsBezeichnung: "6657Heim"
-	, auftragsBezeichnung: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var pos = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
-				});
-				if (pos) {
-					var obj = _.find(DigiWebApp.Order.find(), function(el) {
-						return parseIntRadixTen(el.get("id")) === parseIntRadixTen(pos.get("orderId"));
-					});
-					if (obj) {
-						text = obj.get("name");
-					}
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('order') + ': ' + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	//	  positionsBezeichnung: "6657Heim"
-	, positionsBezeichnung: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
-				});
-				if (obj) {
-					text = obj.get("name");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('position') + ': ' + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-      
-	, positionBegin: M.LabelView.design({
-        cssClass: 'normal unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
-				});
-				if (obj) {
-					text = obj.get("positionBegin");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return M.I18N.l('positionZeitraum') + ": " + text;
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	, positionEnd: M.LabelView.design({
-        cssClass: 'normalInline unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= positionId %>'
-          , operation: function(v) {
-				var text = "";
-				var obj = _.find(DigiWebApp.Position.find(), function(el) {
-					return parseIntRadixTen(el.get("id")) === parseIntRadixTen(v);
-				});
-				if (obj) {
-					text = obj.get("positionEnd");
-				}
-				if (text !== "" && typeof(text) !== "undefined" && text !== "undefined" && text !== "null" && text !== null) {
-					return ' - ' + text;
-				} else {
-					return ' - ' + M.I18N.l('open');
-				}
-          }
-      }
-	})
-
-	, spacer1: M.LabelView.design({
-	    value: ' '
-	})
-
-	, von: M.LabelView.design({
-        cssClass: 'bold unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= von %>'
-          , operation: function(v) {
-				if (v && v.indexOf("00:00:00") === -1) {
-					var uhrzeit = v.split(" ")[1];
-					return uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-	, bis: M.LabelView.design({
-        cssClass: 'boldInline unselectable'
-      , isInline: YES
-      , computedValue: {
-            valuePattern: '<%= bis %>'
-          , operation: function(v) {
-				if (v && v.indexOf("23:59:59") === -1) {
-					var uhrzeit = v.split(" ")[1];
-					return " - " + uhrzeit.split(":")[0] + ":" + uhrzeit.split(":")[1]
-				} else {
-					return '';
-				}
-          }
-      }
-	})
-
-});
-
 
 
 // ==========================================================================
