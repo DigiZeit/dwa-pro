@@ -12324,6 +12324,10 @@ DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
 						if (thatVonTimestamp < zVonD8Timestamp && zBisD8Timestamp < thatBisTimestamp) {
 							ueberschneidungFound = YES;
 						}
+						// identische Zeitbuchung?
+						if (thatVonTimestamp = zVonD8Timestamp && zBisD8Timestamp = thatBisTimestamp) {
+							ueberschneidungFound = YES;
+						}
 					}
 				});
 			});
@@ -20487,7 +20491,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5651
+    , softwareVersion: 5652
 
 
     /**
@@ -36629,7 +36633,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5651'
+              value: 'Build: 5652'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
