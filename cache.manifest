@@ -1,51 +1,54 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.2.5739 beta, Timestamp:1415979072467
+#Application:DigiWebApp, Version:1.8.2.5740 beta, Timestamp:1415979832745
 
 
 # Explicitly cached entries
 CACHE:
+jquery-1.9.1.js
 de_de.js
 en_us.js
-fr_fr.js
 es_es.js
+fr_fr.js
 nl_nl.js
-jquery-1.9.1.js
 underscore-min.js
-theme/tmp.css
 d8-0.1.3.min.js
 d8-0.4.0.min.js
 bootstrap.js
+theme/tmp.css
 jquery_mobile.js
+jstz.js
 barcodescanner.js
 childbrowser.js
 cordova.js
 jquery.xml2json_1.3.js
-jstz.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
 Math.uuid.js
-theme/style.css
 pen.cur
+theme/style.css
 theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/1024x1024_90_SCHOLPP.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
-theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1080x1920_90_DIGI-WebApp.png
+theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/200x320_90_DIGI-WEBAPP-WHITE.png
+theme/images/200x320_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
+theme/images/320x470_90_DIGI-WebApp_mitLogo.png
+theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
-theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
+theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_about.png
@@ -107,20 +110,17 @@ theme/images/icon_stop.png
 theme/images/splash.png
 theme/images/tabSprite.png
 theme/images/tile-icon-winphone.png
-theme/images/200x320_90_DIGI-WEBAPP-WHITE_mitLogo.png
-theme/images/320x470_90_DIGI-WebApp_mitLogo.png
-theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
 ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 CHANGELOG.md
+Gruntfile.coffee
+LICENSE.txt
+README.md
 jquery.signaturepad.js
 jquery.signaturepad.min.js
 package.json
 pen.psd
-LICENSE.txt
-README.md
-Gruntfile.coffee
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
