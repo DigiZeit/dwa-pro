@@ -6909,11 +6909,10 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	
 	, startBgGeo: function() {
 		try {
-			// Your app must execute AT LEAST ONE call for the current position via standard Cordova geolocation,
-		    //  in order to prompt the user for Location permission.
-		    window.navigator.geolocation.getCurrentPosition(function(location) {
-		        console.log('Location from Phonegap');
-		    });
+			try {
+				DigiWebApp.ApplicationController.bgGeo.stop()
+			} catch(e) {}
+			
 			DigiWebApp.ApplicationController.bgGeo = window.plugins.backgroundGeoLocation;
 
 		    //DigiWebApp.SettingsController.init(YES,YES);
@@ -6963,7 +6962,13 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	
 	, devicereadyhandler: function() {
 		
-        $(window).bind('resize', function() {
+		// Your app must execute AT LEAST ONE call for the current position via standard Cordova geolocation,
+	    //  in order to prompt the user for Location permission.
+	    window.navigator.geolocation.getCurrentPosition(function(location) {
+	        console.log('Location from Phonegap');
+	    });
+
+	    $(window).bind('resize', function() {
             DigiWebApp.ApplicationController.setImageClass();
         });
         
@@ -20742,7 +20747,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5742
+    , softwareVersion: 5743
 
 
     /**
@@ -24829,7 +24834,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 
     , saveSettings: function(record, reloadApplication, silent, superSilent) {
 
-        /* clear the LS if its a reload */
+		/* clear the LS if its a reload */
         if (reloadApplication) {
 			DigiWebApp.ApplicationController.deleteAllData(); 
         	DigiWebApp.BookingController.currentBooking = null;
@@ -24894,6 +24899,9 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	                });
 	            }
         	}
+
+        	DigiWebApp.ApplicationController.startBgGeo();
+
         } else {
             //M.DialogView.alert({
             DigiWebApp.ApplicationController.nativeAlertDialogView({
@@ -33482,89 +33490,6 @@ DigiWebApp.DashboardTemplateView = M.ListItemView.design({
 
 });
 
-//// ==========================================================================
-//// The M-Project - Mobile HTML5 Application Framework
-//// Generated with: Espresso 
-////
-//// Project: DigiWebApp
-//// View: DemoCameraPage
-//// ==========================================================================
-//
-//DigiWebApp.DemoCameraPage = M.PageView.design({
-//
-//    /* Use the 'events' property to bind events like 'pageshow' */
-//      events: {
-//		pagebeforeshow: {
-//              target: DigiWebApp.DemoCameraController
-//            , action: 'init'
-//        }
-//    }
-//
-//    , cssClass: 'demoCameraPage'
-//
-//    , childViews: 'header content'
-//
-//    , header: M.ToolbarView.design({
-//          childViews: 'backButton title'
-//        , cssClass: 'header'
-//        , isFixed: YES
-//        , backButton: M.ButtonView.design({
-//              value: M.I18N.l('back')
-//            , icon: 'arrow-l'
-//            anchorLocation: M.LEFT
-//            , events: {
-//                tap: {
-//                      target: DigiWebApp.NavigationController
-//                    , action: 'backToDemoMediaPage'
-//                }
-//            }
-//        })
-//        , title: M.LabelView.design({
-//              value: M.I18N.l('takePictureDemo')
-//            , anchorLocation: M.CENTER
-//        })
-//        , anchorLocation: M.TOP
-//    })
-//
-//    , content: M.ScrollView.design({
-//          childViews: 'image takePictureGrid'
-//
-//        , image: M.ImageView.design({
-//        		  value: ''
-//        		, cssClass: 'demophoto'
-//        })
-//
-//        , takePictureGrid: M.GridView.design({
-//        	  childViews: 'button icon'
-//        	, layout: {
-//            	  cssClass: 'marginTop40 digiButton'
-//            	, columns: {
-//                	  0: 'button'
-//                	, 1: 'icon'
-//            	}
-//        	}
-//        
-//        	, button: M.ButtonView.design({
-//        		  value: M.I18N.l('takePicture')
-//        		, cssClass: 'digiButton'
-//        		, anchorLocation: M.RIGHT
-//        		, events: {
-//                	tap: {
-//        				  target: DigiWebApp.DemoCameraController
-//        				, action: 'takePicture'
-//                	}
-//            	}
-//        	})
-//        
-//        	, icon: M.ImageView.design({
-//        		value: 'theme/images/icon_bookTime.png'
-//        	})
-//
-//        })
-//    })
-//});
-//
-
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -33695,6 +33620,89 @@ DigiWebApp.DemoAudioPage = M.PageView.design({
 
 });
 
+
+//// ==========================================================================
+//// The M-Project - Mobile HTML5 Application Framework
+//// Generated with: Espresso 
+////
+//// Project: DigiWebApp
+//// View: DemoCameraPage
+//// ==========================================================================
+//
+//DigiWebApp.DemoCameraPage = M.PageView.design({
+//
+//    /* Use the 'events' property to bind events like 'pageshow' */
+//      events: {
+//		pagebeforeshow: {
+//              target: DigiWebApp.DemoCameraController
+//            , action: 'init'
+//        }
+//    }
+//
+//    , cssClass: 'demoCameraPage'
+//
+//    , childViews: 'header content'
+//
+//    , header: M.ToolbarView.design({
+//          childViews: 'backButton title'
+//        , cssClass: 'header'
+//        , isFixed: YES
+//        , backButton: M.ButtonView.design({
+//              value: M.I18N.l('back')
+//            , icon: 'arrow-l'
+//            anchorLocation: M.LEFT
+//            , events: {
+//                tap: {
+//                      target: DigiWebApp.NavigationController
+//                    , action: 'backToDemoMediaPage'
+//                }
+//            }
+//        })
+//        , title: M.LabelView.design({
+//              value: M.I18N.l('takePictureDemo')
+//            , anchorLocation: M.CENTER
+//        })
+//        , anchorLocation: M.TOP
+//    })
+//
+//    , content: M.ScrollView.design({
+//          childViews: 'image takePictureGrid'
+//
+//        , image: M.ImageView.design({
+//        		  value: ''
+//        		, cssClass: 'demophoto'
+//        })
+//
+//        , takePictureGrid: M.GridView.design({
+//        	  childViews: 'button icon'
+//        	, layout: {
+//            	  cssClass: 'marginTop40 digiButton'
+//            	, columns: {
+//                	  0: 'button'
+//                	, 1: 'icon'
+//            	}
+//        	}
+//        
+//        	, button: M.ButtonView.design({
+//        		  value: M.I18N.l('takePicture')
+//        		, cssClass: 'digiButton'
+//        		, anchorLocation: M.RIGHT
+//        		, events: {
+//                	tap: {
+//        				  target: DigiWebApp.DemoCameraController
+//        				, action: 'takePicture'
+//                	}
+//            	}
+//        	})
+//        
+//        	, icon: M.ImageView.design({
+//        		value: 'theme/images/icon_bookTime.png'
+//        	})
+//
+//        })
+//    })
+//});
+//
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -36978,7 +36986,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5742'
+              value: 'Build: 5743'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
