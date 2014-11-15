@@ -3263,493 +3263,6 @@ M.LabelView = M.View.extend(
 // ==========================================================================
 
 /**
- * A constant value for horizontal alignment.
- *
- * @type String
- */
-M.HORIZONTAL = 'horizontal';
-
-/**
- * A constant value for vertical alignment.
- *
- * @type String
- */
-M.VERTICAL = 'vertical';
-
-
-/**
- * @class
- *
- * A button group is a vertically or / and horizontally aligned group of buttons. There
- * are basically three different types of a button group:
- *
- * - horizontally aligned buttons
- *     1 - 2 - 3
- *
- * - vertically aligned buttons
- *     1
- *     |
- *     2
- *     |
- *     3
- *
- * - horizontally and vertically aligned buttons
- *     1 - 2
- *     |   |
- *     3 - 4
- * 
- * @extends M.View
- */
-M.ButtonGroupView = M.View.extend(
-/** @scope M.ButtonGroupView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonGroupView',
-
-    /**
-     * This property determines whether to render the button group horizontally
-     * or vertically. Default: horizontal.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /**
-     * Determines whether to display the button group view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * Determines whether to display the button group compact, i.e. without top/bottom
-     * margin. This property only is relevant in combination with multiple lines of
-     * buttons (c.p.: buttonsPerLine property).
-     *
-     * @type Boolean
-     */
-    isCompact: YES,
-
-    /**
-     * This property, if set, defines how many buttons are rendered per line. If there
-     * are more buttons defined that fitting into one line, the following buttons are
-     * rendered into a new line. Make sure, the number of your buttons is divisible by
-     * the number of buttons per line, since only full lines are displayed. So if you
-     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
-     * visible.
-     *
-     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
-     * be as follows:
-     *
-     *     1 -- 2
-     *     3 -- 4
-     *
-     * @type Number
-     */
-    buttonsPerLine: null,
-
-    /**
-     * This property is used to internally store the number of lines that are necessary
-     * to render all buttons according to the buttonsPerLine property.
-     *
-     * @private
-     * @type Number
-     */
-    numberOfLines: null,
-
-    /**
-     * This property refers to the currently rendered line, if there is more than one.
-     *
-     * @private
-     * @type Number
-     */
-    currentLine: null,
-
-    /**
-     * This property contains an array of html ids referring to the several lines of grouped
-     * buttons, if there is more than one at all.
-     *
-     * @private
-     * @type Array
-     */
-    lines: null,
-
-    /**
-     * This property contains a reference to the currently selected button.
-     *
-     * @private
-     * @type Object
-     */
-    activeButton: null,
-
-    /**
-     * This property determines whether the buttons of this button group are selectable or not. If
-     * set to YES, a click on one of the buttons will set this button as the currently active button
-     * and automatically change its styling to visualize its selection.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Renders a button group as a div container and calls the renderChildViews
-     * method to render the included buttons.
-     *
-     * @private
-     * @returns {String} The button group view's html representation.
-     */
-    render: function() {
-        /* check if multiple lines are necessary before rendering */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
-                var numberOfButtons = 0;
-                for(var i in childViews) {
-                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                        numberOfButtons = numberOfButtons + 1;
-                    }
-                }
-                if(this.buttonsPerLine < numberOfButtons) {
-                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
-                }
-            }
-        }
-        this.html = '';
-        /* if there are multiple lines, render multiple horizontally aligned button groups */
-        if(this.numberOfLines) {
-            /* set the direction to horizontally, no matter what it was set to before */
-            this.direction = M.HORIZONTAL;
-
-            /* this is a wrapper for the multiple button groups.
-               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
-            this.html += '<div id="' + this.id + '"';
-            this.html += this.style();
-            this.html += '>';
-
-            /* create a button group for every line */
-            this.lines = [];
-            for(var i = 0; i < this.numberOfLines; i++) {
-                this.currentLine = i + 1;
-                /* store current line in lines property for use in renderChildViews() */
-                this.lines.push(this.id + '_' + i);
-
-                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
-
-                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
-                if(!this.isInset || this.isCompact) {
-                    if(i == 0) {
-                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
-                    } else if(i > 0 && i < this.numberOfLines - 1) {
-                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
-                    } else if(i < this.numberOfLines) {
-                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
-                    }
-                }
-
-                this.html += '>';
-
-                /* render the buttons for the current line */
-                this.renderChildViews();
-
-                this.html += '</div>';
-            }
-            this.html += '</div>';
-        } else {
-            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
-
-            this.renderChildViews();
-
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonGroupView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var currentButtonIndex = 0;
-
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    currentButtonIndex = currentButtonIndex + 1;
-
-                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
-
-                        var button = this[childViews[i]];
-                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
-                        button.html = '';
-
-                        button.parentView = this;
-                        button.internalEvents = {
-                            tap: {
-                                target: this,
-                                action: 'buttonSelected'
-                            }
-                        }
-
-                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
-                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
-                           the right of the button group */
-                        if(this.direction === M.HORIZONTAL) {
-                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
-                        }
-
-                        /* set the button's _name property */
-                        this[childViews[i]]._name = childViews[i];
-
-                        /* finally render the button and add it to the button groups html */
-                        this.html += this[childViews[i]].render();
-                    }
-                } else {
-                    M.Logger.log('childview of button group is no button.', M.WARN);
-                }
-            }
-        }
-    },
-
-    /**
-     * This method themes the button group and activates one of the included buttons
-     * if its isActive property is set.
-     *
-     * @private
-     */
-    theme: function() {
-        /* if there are multiple lines of buttons, it's getting heavy */
-        if(this.numberOfLines) {
-            
-            /* iterate through all lines */
-            for(var line in this.lines) {
-                line = parseIntRadixTen(line);
-
-                /* style the current line */
-                $('#' + this.lines[line]).controlgroup();
-                var childViews = this.getChildViewsAsArray();
-                var currentButtonIndex = 0;
-                
-                /* if isCompact, iterate through all buttons */
-                if(this.isCompact) {
-                    for(var i in childViews) {
-                        i = parseIntRadixTen(i);
-                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                            currentButtonIndex = currentButtonIndex + 1;
-                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
-                            var button = this[childViews[i]];
-
-                            /* if the button belongs to the current line adjust its styling according to its position,
-                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
-                            if(line === currentLine) {
-
-                                /* first line */
-                                if(line === 0 && this.numberOfLines > 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tl');
-                                        }
-                                    /* last button */
-                                    } else if(currentButtonIndex === this.buttonsPerLine) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tr');
-                                        }
-                                    }
-                                /* last line */
-                                } else if(line === this.numberOfLines - 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        $('#' + button.id).addClass('ui-corner-bl');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        $('#' + button.id).addClass('ui-corner-br');
-                                    }
-                                /* all other lines */
-                                } else {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        /* if there is only on row, simply style that button group */
-        } else {
-            $('#' + this.id).controlgroup();
-        }
-
-        /* iterate through all buttons and activate on of them, according to the button's isActive property */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    var button = this[childViews[i]];
-                    if(button.isActive) {
-                        this.setActiveButton(button.id);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
-     * This method returns the currently selected button of this button group. If no
-     * button is selected, null is returned.
-     *
-     * @returns {M.ButtonView} The currently active button of this button group.
-     */
-    getActiveButton: function() {
-        return this.activeButton;  
-    },
-
-    /**
-     * This method activates one button within the button group.
-     *
-     * @param {M.ButtonView, String} button The button to be set active or its id.
-     */
-    setActiveButton: function(button) {
-        if(this.isSelectable) {
-            if(this.activeButton) {
-                this.activeButton.removeCssClass('ui-btn-active');
-                this.activeButton.isActive = NO;
-            }
-
-            var obj = this[button];
-            if(!obj){
-                obj = M.ViewManager.getViewById(button);
-            }
-            if(!obj) {
-                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
-                    obj = button;
-                }
-            }
-            if(obj) {
-                obj.addCssClass('ui-btn-active');
-                obj.isActive = YES;
-                this.activeButton = obj;
-            }
-        }
-    },
-
-    /**
-     * This method activates one button within the button group at the given index.
-     *
-     * @param {Number} index The index of the button to be set active.
-     */
-    setActiveButtonAtIndex: function(index) {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var button = this[childViews[index]];
-            if(button && button.type === 'M.ButtonView') {
-                this.setActiveButton(button);
-            }
-        }
-    },
-
-    /**
-     * This method is called everytime a button is activated / clicked.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    buttonSelected: function(id, event, nextEvent) {
-        /* if selected button is disabled, do nothing */
-        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
-            return;
-        }
-
-        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
-            if(this.isSelectable) {
-                if(this.activeButton) {
-                    this.activeButton.removeCssClass('ui-btn-active');
-                    this.activeButton.isActive = NO;
-                }
-
-                var button = M.ViewManager.getViewById(id);
-                if(!button) {
-                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
-                        button = id;
-                    }
-                }
-                if(button) {
-                    button.addCssClass('ui-btn-active');
-                    button.isActive = YES;
-                    this.activeButton = button;
-                }
-            }
-
-            /* trigger change event for the button group */
-            $('#' + this.id).trigger('change');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button group.
-     *
-     * @private
-     * @returns {String} The button group's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.numberOfLines && !this.isInset) {
-            html += ' class="ui-listview';
-        }
-        if(this.cssClass) {
-            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
  * @class
  *
  * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
@@ -3856,6 +3369,610 @@ M.LoaderView = M.View.extend(
         }
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for map type: roadmap
+ *
+ * @type String
+ */
+M.MAP_ROADMAP = 'ROADMAP';
+
+/**
+ * A constant value for map type: hybrid
+ *
+ * @type String
+ */
+M.MAP_HYBRID = 'HYBRID';
+
+/**
+ * A constant value for map type: satellite
+ *
+ * @type String
+ */
+M.MAP_SATELLITE = 'SATELLITE';
+
+/**
+ * A constant value for map type: terrain
+ *
+ * @type String
+ */
+M.MAP_TERRAIN = 'TERRAIN';
+
+/**
+ * A global reference to the first instances of M.MapView. We use this to have a accessible hook
+ * to the map we can pass to google as a callback object.
+ *
+ * @type Object
+ */
+M.INITIAL_MAP = null;
+
+/**
+ * @class
+ *
+ * M.MapView is the prototype of a map view. It defines a set of methods for
+ * displaying a map, setting markers and showing the current location. This
+ * map view is based on google maps, but other implementations are possible.
+ *
+ * @extends M.View
+ */
+M.MapView = M.View.extend(
+/** @scope M.MapView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapView',
+
+    /**
+     * This property is used to save a reference to the actual google map. It
+     * is set automatically when the map is firstly initialized.
+     *
+     * @type Object
+     */
+    map: null,
+
+    /**
+     * This property is used to store the map's M.MapMarkerViews. If a marker
+     * is set within the init() method or by calling the addMarker() method,
+     * it is automatically pushed into this array.
+     *
+     * @type Object
+     */
+    markers: null,
+
+    /**
+     * Determines whether to display the map view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * This property specifies the zoom level for this map view. It is directly
+     * mapped to the zoom property of a google map view. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Number
+     */
+    zoomLevel: 15,
+
+    /**
+     * This property specifies the map type for this map view. It is directly
+     * mapped to the 'mapTypeId' property of a google map view. Possible values
+     * for this property are:
+     *
+     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
+     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
+     *   - M.MAP_SATELLITE --> This map type displays satellite images.
+     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
+     *
+     * For further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type String
+     */
+    mapType: M.MAP_ROADMAP,
+
+    /**
+     * This property specifies whether or not to display the map type controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showMapTypeControl: NO,
+
+    /**
+     * This property specifies whether or not to display the navigation controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showNavigationControl: NO,
+
+    /**
+     * This property specifies whether or not to display the street view controls
+     * inside of this map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    showStreetViewControl: NO,
+
+    /**
+     * This property specifies whether the map is draggable or not. If set to NO,
+     * a user won't be able to move the map, respectively the visible sector. For
+     * further information see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: YES,
+
+    /**
+     * This property specifies the initial location for this map view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the center
+     * property of a google map view. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
+     *
+     * @type M.Location
+     */
+
+    initialLocation: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property determines whether or not to show a marker at the map view's
+     * initial location. This location can be specified by the initialLocation
+     * property of this map view.
+     *
+     * @type Boolean
+     */
+    setMarkerAtInitialLocation: NO,
+
+    /**
+     * This property can be used to specify the animation type for this map view's
+     * markers. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
+
+    /**
+     * This property spacifies whether or not this map has already been initialized.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property specifies whether or not to remove all existing markers on a
+     * map update. A map update can either be an automatic update due to content
+     * binding or a implicit call of the map view's updateMap() method.
+     *
+     * @type Boolean
+     */
+    removeMarkersOnUpdate: YES,
+
+    /**
+     * If set, contains the map view's callback in sub a object named 'error',
+     * which will be called if no connection is available and the map service
+     * (google maps api) can not be loaded.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This flag can be used to specify whether or not to load the google places
+     * library. By default this property is set to YES. If you do not need the
+     * library, you should set this to NO in order to save some bandwidth.
+     *
+     * @type Boolean
+     */
+    loadPlacesLibrary: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a map view, respectively a map view container.
+     *
+     * @private
+     * @returns {String} The map view's html representation.
+     */
+    render: function() {
+        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
+        this.html += !this.isInset ? ' class="ui-listview"' : '';
+        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is called if the bound content changed. This content must be
+     * an array of M.Location objects or M.MapMarkerView objects. This method
+     * will take care of a re-rendering of the map view and all of its bound
+     * markers.
+     *
+     * If M.Location objects are passed, the default settings for map markers
+     * of this map view are assigned.
+     *
+     * Note that you can not use individual click events for your markers if
+     * you pass M.Location objects.
+     */
+    renderUpdate: function() {
+        /* check if content binding is valid */
+        var content = null;
+        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
+            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
+            return;
+        }
+
+        /* get the marker / location objects from content binding */
+        var content = this.contentBinding.target[this.contentBinding.property];
+        var markers = [];
+
+        /* save a reference to the map */
+        var that = this;
+
+        /* if we got locations, transform to markers */
+        if(content && content[0] && content[0].type === 'M.Location') {
+            _.each(content, function(location) {
+                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
+                    markers.push(M.MapMarkerView.init({
+                        location: location,
+                        map: that
+                    }));
+                }
+            });
+        /* otherwise check and filter for map markers */
+        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
+            markers = _.select(content, function(marker) {
+                return (marker && marker.type === 'M.MapMarkerView')
+            })
+        }
+
+        /* remove current markers */
+        if(this.removeMarkersOnUpdate) {
+            this.removeAllMarkers();
+        }
+
+        /* add all new markers */
+        _.each(markers, function(marker) {
+            that.addMarker(marker);
+        })
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * We use this to disable event registration for M.MapView, since we only use the 'events' property
+     * for determining the handler for possible map markers of this map.
+     */
+    registerEvents: function() {
+
+    },
+
+    /**
+     * Applies some style-attributes to the map view.
+     *
+     * @private
+     * @returns {String} The maps view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method is used to initialize a map view, typically out of a controller.
+     * With its options parameter you can set or update almost every parameter of
+     * a map view. This allows you to define a map view within your view, but then
+     * update its parameters later when you want this view to display a map.
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * Once the google api is initialized, the success callback specified with the
+     * options parameter is called. If an error occurs (e.g. no network connection),
+     * the error callback is called instead. They can be specified like the
+     * following:
+     *
+     *   {
+     *     callbacks: {
+     *       success: {
+     *         target: this,
+     *         action: function() {
+     *           // success callback
+     *         }
+     *       },
+     *       error: {
+     *         target: this,
+     *         action: function() {
+     *           // error callback
+     *         }
+     *       }
+     *     }
+     *   }
+     *   
+     * @param {Object} options The options for the map view.
+     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
+     */
+    initMap: function(options, isUpdate) {
+        if(!this.isInitialized || isUpdate) {
+            if(!isUpdate) {
+                this.markers = [];
+            }
+
+            if(typeof(google) === 'undefined') {
+                /* store the passed params and this map globally for further use */
+                M.INITIAL_MAP = {
+                    map: this,
+                    options: options,
+                    isUpdate: isUpdate
+                };
+
+                /* check the connection status */
+                M.Environment.getConnectionStatus({
+                    target: this,
+                    action: 'didRetrieveConnectionStatus'
+                });
+            } else {
+                this.googleDidLoad(options, isUpdate, true);
+            }
+        } else {
+            M.Logger.log('The M.MapView has already been initialized', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally to retrieve the connection status. If there is a connection
+     * available, we will include the google maps api.
+     *
+     * @private
+     */
+    didRetrieveConnectionStatus: function(connectionStatus) {
+        if(connectionStatus === M.ONLINE) {
+            $.getScript(
+                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
+            );
+        } else {
+            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
+            if(callback && M.EventDispatcher.checkHandler(callback.error)){
+                this.bindToCaller(callback.error.target, callback.error.action)();
+            }
+        }
+    },
+
+    /**
+     * This method is used internally to initialite the map if the google api hasn't been loaded
+     * before. If so, we use this method as callback for google.
+     *
+     * @private
+     */
+    googleDidLoad: function(options, isUpdate, isInternalCall) {
+        if(!isInternalCall) {
+            options = M.INITIAL_MAP.options;
+            isUpdate = M.INITIAL_MAP.isUpdate;
+        }
+
+        for(var i in options) {
+             switch (i) {
+                 case 'zoomLevel':
+                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
+                    break;
+                 case 'mapType':
+                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
+                    break;
+                 case 'markerAnimationType':
+                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
+                    break;
+                 case 'showMapTypeControl':
+                 case 'showNavigationControl':
+                 case 'showStreetViewControl':
+                 case 'isDraggable':
+                 case 'setMarkerAtInitialLocation':
+                 case 'removeMarkersOnUpdate':
+                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
+                    break;
+                 case 'initialLocation':
+                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
+                    break;
+                 case 'callbacks':
+                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
+                    break;
+                 default:
+                    break;
+             }
+        };
+        if(isUpdate) {
+            if(this.removeMarkersOnUpdate) {
+                this.removeAllMarkers();
+            }
+            this.map.setOptions({
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        } else {
+            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
+                zoom: this.zoomLevel,
+                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
+                mapTypeId: google.maps.MapTypeId[this.mapType],
+                mapTypeControl: this.showMapTypeControl,
+                navigationControl: this.showNavigationControl,
+                streetViewControl: this.showStreetViewControl,
+                draggable: this.isDraggable
+            });
+        }
+
+        if(this.setMarkerAtInitialLocation) {
+            var that = this;
+            this.addMarker(M.MapMarkerView.init({
+                location: this.initialLocation,
+                map: that.map
+            }));
+        }
+
+        this.isInitialized = YES;
+
+        /* now call callback of "the outside world" */
+        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
+            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
+        }
+    },
+
+    /**
+     * This method is used to update a map view, typically out of a controller.
+     * With its options parameter you can update or update almost every parameter
+     * of a map view. This allows you to define a map view within your view, but
+     * then update its parameters later when you want this view to display a map
+     * and to update those options over and over again for this map. 
+     *
+     * The options parameter must be passed as a simple object, containing all of
+     * the M.MapView's properties you want to be updated. Such an options object
+     * could look like the following:
+     *
+     *   {
+     *     zoomLevel: 12,
+     *     mapType: M.MAP_HYBRID,
+     *     initialLocation: location
+     *   }
+     *
+     * While all properties of the options parameter can be given as Number, String
+     * or a constant value, the location must be a valid M.Location object.
+     *
+     * @param {Object} options The options for the map view.
+     */
+    updateMap: function(options) {
+        this.initMap(options, YES);
+    },
+
+    /**
+     * This method can be used to add a marker to the map view. Simply pass a
+     * valid M.MapMarkerView object and a map marker is created automatically,
+     * displayed on the map and added to this map view's markers property.
+     *
+     * @param {M.MapMarkerView} marker The marker to be added.
+     */
+    addMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
+            var that = this;
+            marker.marker = new google.maps.Marker({
+                map: that.map,
+                draggable: NO,
+                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
+                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
+                icon: marker.icon ? new google.maps.MarkerImage(
+                    marker.icon,
+                    null,
+                    null,
+                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
+                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
+                ) : marker.icon
+            });
+            marker.registerEvents();
+            this.markers.push(
+                marker
+            );
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method can be used to remove a certain marker from the map view. In
+     * order to do this, you need to pass the M.MapMarkerView object that you
+     * want to be removed from the map view.
+     *
+     * @param {M.MapMarkerView} marker The marker to be removed.
+     */
+    removeMarker: function(marker) {
+        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
+            var didRemoveMarker = NO;
+            this.markers = _.select(this.markers, function(m) {
+                if(marker === m){
+                    m.marker.setMap(null);
+                    didRemoveMarker = YES;
+                }
+                return !(marker === m);
+            });
+            if(!didRemoveMarker) {
+                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
+            }
+        } else {
+            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
+        }
+    },
+
+    /**
+     * This method removes all markers from this map view. It both cleans up the
+     * markers array and deletes the marker's visual representation from the map
+     * view.
+     */
+    removeAllMarkers: function() {
+        _.each(this.markers, function(marker) {
+            marker.marker.setMap(null);
+        });
+        this.markers = [];
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -9851,6 +9968,493 @@ M.WebView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for horizontal alignment.
+ *
+ * @type String
+ */
+M.HORIZONTAL = 'horizontal';
+
+/**
+ * A constant value for vertical alignment.
+ *
+ * @type String
+ */
+M.VERTICAL = 'vertical';
+
+
+/**
+ * @class
+ *
+ * A button group is a vertically or / and horizontally aligned group of buttons. There
+ * are basically three different types of a button group:
+ *
+ * - horizontally aligned buttons
+ *     1 - 2 - 3
+ *
+ * - vertically aligned buttons
+ *     1
+ *     |
+ *     2
+ *     |
+ *     3
+ *
+ * - horizontally and vertically aligned buttons
+ *     1 - 2
+ *     |   |
+ *     3 - 4
+ * 
+ * @extends M.View
+ */
+M.ButtonGroupView = M.View.extend(
+/** @scope M.ButtonGroupView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonGroupView',
+
+    /**
+     * This property determines whether to render the button group horizontally
+     * or vertically. Default: horizontal.
+     *
+     * Possible values are:
+     * - M.HORIZONTAL: horizontal
+     * - M.VERTICAL: vertical
+     *
+     * @type String
+     */
+    direction: M.HORIZONTAL,
+
+    /**
+     * Determines whether to display the button group view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * Determines whether to display the button group compact, i.e. without top/bottom
+     * margin. This property only is relevant in combination with multiple lines of
+     * buttons (c.p.: buttonsPerLine property).
+     *
+     * @type Boolean
+     */
+    isCompact: YES,
+
+    /**
+     * This property, if set, defines how many buttons are rendered per line. If there
+     * are more buttons defined that fitting into one line, the following buttons are
+     * rendered into a new line. Make sure, the number of your buttons is divisible by
+     * the number of buttons per line, since only full lines are displayed. So if you
+     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
+     * visible.
+     *
+     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
+     * be as follows:
+     *
+     *     1 -- 2
+     *     3 -- 4
+     *
+     * @type Number
+     */
+    buttonsPerLine: null,
+
+    /**
+     * This property is used to internally store the number of lines that are necessary
+     * to render all buttons according to the buttonsPerLine property.
+     *
+     * @private
+     * @type Number
+     */
+    numberOfLines: null,
+
+    /**
+     * This property refers to the currently rendered line, if there is more than one.
+     *
+     * @private
+     * @type Number
+     */
+    currentLine: null,
+
+    /**
+     * This property contains an array of html ids referring to the several lines of grouped
+     * buttons, if there is more than one at all.
+     *
+     * @private
+     * @type Array
+     */
+    lines: null,
+
+    /**
+     * This property contains a reference to the currently selected button.
+     *
+     * @private
+     * @type Object
+     */
+    activeButton: null,
+
+    /**
+     * This property determines whether the buttons of this button group are selectable or not. If
+     * set to YES, a click on one of the buttons will set this button as the currently active button
+     * and automatically change its styling to visualize its selection.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * Renders a button group as a div container and calls the renderChildViews
+     * method to render the included buttons.
+     *
+     * @private
+     * @returns {String} The button group view's html representation.
+     */
+    render: function() {
+        /* check if multiple lines are necessary before rendering */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
+                var numberOfButtons = 0;
+                for(var i in childViews) {
+                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                        numberOfButtons = numberOfButtons + 1;
+                    }
+                }
+                if(this.buttonsPerLine < numberOfButtons) {
+                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
+                }
+            }
+        }
+        this.html = '';
+        /* if there are multiple lines, render multiple horizontally aligned button groups */
+        if(this.numberOfLines) {
+            /* set the direction to horizontally, no matter what it was set to before */
+            this.direction = M.HORIZONTAL;
+
+            /* this is a wrapper for the multiple button groups.
+               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
+            this.html += '<div id="' + this.id + '"';
+            this.html += this.style();
+            this.html += '>';
+
+            /* create a button group for every line */
+            this.lines = [];
+            for(var i = 0; i < this.numberOfLines; i++) {
+                this.currentLine = i + 1;
+                /* store current line in lines property for use in renderChildViews() */
+                this.lines.push(this.id + '_' + i);
+
+                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
+
+                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
+                if(!this.isInset || this.isCompact) {
+                    if(i == 0) {
+                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
+                    } else if(i > 0 && i < this.numberOfLines - 1) {
+                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
+                    } else if(i < this.numberOfLines) {
+                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
+                    }
+                }
+
+                this.html += '>';
+
+                /* render the buttons for the current line */
+                this.renderChildViews();
+
+                this.html += '</div>';
+            }
+            this.html += '</div>';
+        } else {
+            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
+
+            this.renderChildViews();
+
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.ButtonGroupView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var currentButtonIndex = 0;
+
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    currentButtonIndex = currentButtonIndex + 1;
+
+                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
+
+                        var button = this[childViews[i]];
+                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
+                        button.html = '';
+
+                        button.parentView = this;
+                        button.internalEvents = {
+                            tap: {
+                                target: this,
+                                action: 'buttonSelected'
+                            }
+                        }
+
+                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
+                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
+                           the right of the button group */
+                        if(this.direction === M.HORIZONTAL) {
+                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
+                        }
+
+                        /* set the button's _name property */
+                        this[childViews[i]]._name = childViews[i];
+
+                        /* finally render the button and add it to the button groups html */
+                        this.html += this[childViews[i]].render();
+                    }
+                } else {
+                    M.Logger.log('childview of button group is no button.', M.WARN);
+                }
+            }
+        }
+    },
+
+    /**
+     * This method themes the button group and activates one of the included buttons
+     * if its isActive property is set.
+     *
+     * @private
+     */
+    theme: function() {
+        /* if there are multiple lines of buttons, it's getting heavy */
+        if(this.numberOfLines) {
+            
+            /* iterate through all lines */
+            for(var line in this.lines) {
+                line = parseIntRadixTen(line);
+
+                /* style the current line */
+                $('#' + this.lines[line]).controlgroup();
+                var childViews = this.getChildViewsAsArray();
+                var currentButtonIndex = 0;
+                
+                /* if isCompact, iterate through all buttons */
+                if(this.isCompact) {
+                    for(var i in childViews) {
+                        i = parseIntRadixTen(i);
+                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                            currentButtonIndex = currentButtonIndex + 1;
+                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
+                            var button = this[childViews[i]];
+
+                            /* if the button belongs to the current line adjust its styling according to its position,
+                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
+                            if(line === currentLine) {
+
+                                /* first line */
+                                if(line === 0 && this.numberOfLines > 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tl');
+                                        }
+                                    /* last button */
+                                    } else if(currentButtonIndex === this.buttonsPerLine) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tr');
+                                        }
+                                    }
+                                /* last line */
+                                } else if(line === this.numberOfLines - 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        $('#' + button.id).addClass('ui-corner-bl');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        $('#' + button.id).addClass('ui-corner-br');
+                                    }
+                                /* all other lines */
+                                } else {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        /* if there is only on row, simply style that button group */
+        } else {
+            $('#' + this.id).controlgroup();
+        }
+
+        /* iterate through all buttons and activate on of them, according to the button's isActive property */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    var button = this[childViews[i]];
+                    if(button.isActive) {
+                        this.setActiveButton(button.id);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * This method returns the currently selected button of this button group. If no
+     * button is selected, null is returned.
+     *
+     * @returns {M.ButtonView} The currently active button of this button group.
+     */
+    getActiveButton: function() {
+        return this.activeButton;  
+    },
+
+    /**
+     * This method activates one button within the button group.
+     *
+     * @param {M.ButtonView, String} button The button to be set active or its id.
+     */
+    setActiveButton: function(button) {
+        if(this.isSelectable) {
+            if(this.activeButton) {
+                this.activeButton.removeCssClass('ui-btn-active');
+                this.activeButton.isActive = NO;
+            }
+
+            var obj = this[button];
+            if(!obj){
+                obj = M.ViewManager.getViewById(button);
+            }
+            if(!obj) {
+                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
+                    obj = button;
+                }
+            }
+            if(obj) {
+                obj.addCssClass('ui-btn-active');
+                obj.isActive = YES;
+                this.activeButton = obj;
+            }
+        }
+    },
+
+    /**
+     * This method activates one button within the button group at the given index.
+     *
+     * @param {Number} index The index of the button to be set active.
+     */
+    setActiveButtonAtIndex: function(index) {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var button = this[childViews[index]];
+            if(button && button.type === 'M.ButtonView') {
+                this.setActiveButton(button);
+            }
+        }
+    },
+
+    /**
+     * This method is called everytime a button is activated / clicked.
+     *
+     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
+     */
+    buttonSelected: function(id, event, nextEvent) {
+        /* if selected button is disabled, do nothing */
+        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
+            return;
+        }
+
+        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
+            if(this.isSelectable) {
+                if(this.activeButton) {
+                    this.activeButton.removeCssClass('ui-btn-active');
+                    this.activeButton.isActive = NO;
+                }
+
+                var button = M.ViewManager.getViewById(id);
+                if(!button) {
+                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
+                        button = id;
+                    }
+                }
+                if(button) {
+                    button.addCssClass('ui-btn-active');
+                    button.isActive = YES;
+                    this.activeButton = button;
+                }
+            }
+
+            /* trigger change event for the button group */
+            $('#' + this.id).trigger('change');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button group.
+     *
+     * @private
+     * @returns {String} The button group's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.numberOfLines && !this.isInset) {
+            html += ' class="ui-listview';
+        }
+        if(this.cssClass) {
+            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      28.10.11
@@ -9971,610 +10575,6 @@ M.CanvasView = M.View.extend(
      */
     getHeight: function() {
         return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for map type: roadmap
- *
- * @type String
- */
-M.MAP_ROADMAP = 'ROADMAP';
-
-/**
- * A constant value for map type: hybrid
- *
- * @type String
- */
-M.MAP_HYBRID = 'HYBRID';
-
-/**
- * A constant value for map type: satellite
- *
- * @type String
- */
-M.MAP_SATELLITE = 'SATELLITE';
-
-/**
- * A constant value for map type: terrain
- *
- * @type String
- */
-M.MAP_TERRAIN = 'TERRAIN';
-
-/**
- * A global reference to the first instances of M.MapView. We use this to have a accessible hook
- * to the map we can pass to google as a callback object.
- *
- * @type Object
- */
-M.INITIAL_MAP = null;
-
-/**
- * @class
- *
- * M.MapView is the prototype of a map view. It defines a set of methods for
- * displaying a map, setting markers and showing the current location. This
- * map view is based on google maps, but other implementations are possible.
- *
- * @extends M.View
- */
-M.MapView = M.View.extend(
-/** @scope M.MapView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapView',
-
-    /**
-     * This property is used to save a reference to the actual google map. It
-     * is set automatically when the map is firstly initialized.
-     *
-     * @type Object
-     */
-    map: null,
-
-    /**
-     * This property is used to store the map's M.MapMarkerViews. If a marker
-     * is set within the init() method or by calling the addMarker() method,
-     * it is automatically pushed into this array.
-     *
-     * @type Object
-     */
-    markers: null,
-
-    /**
-     * Determines whether to display the map view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * This property specifies the zoom level for this map view. It is directly
-     * mapped to the zoom property of a google map view. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/de-DE/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Number
-     */
-    zoomLevel: 15,
-
-    /**
-     * This property specifies the map type for this map view. It is directly
-     * mapped to the 'mapTypeId' property of a google map view. Possible values
-     * for this property are:
-     *
-     *   - M.MAP_ROADMAP --> This map type displays a normal street map.
-     *   - M.MAP_HYBRID --> This map type displays a transparent layer of major streets on satellite images.
-     *   - M.MAP_SATELLITE --> This map type displays satellite images.
-     *   - M.MAP_TERRAIN --> This map type displays maps with physical features such as terrain and vegetation.
-     *
-     * For further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type String
-     */
-    mapType: M.MAP_ROADMAP,
-
-    /**
-     * This property specifies whether or not to display the map type controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showMapTypeControl: NO,
-
-    /**
-     * This property specifies whether or not to display the navigation controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showNavigationControl: NO,
-
-    /**
-     * This property specifies whether or not to display the street view controls
-     * inside of this map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    showStreetViewControl: NO,
-
-    /**
-     * This property specifies whether the map is draggable or not. If set to NO,
-     * a user won't be able to move the map, respectively the visible sector. For
-     * further information see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: YES,
-
-    /**
-     * This property specifies the initial location for this map view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the center
-     * property of a google map view. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MapOptions
-     *
-     * @type M.Location
-     */
-
-    initialLocation: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property determines whether or not to show a marker at the map view's
-     * initial location. This location can be specified by the initialLocation
-     * property of this map view.
-     *
-     * @type Boolean
-     */
-    setMarkerAtInitialLocation: NO,
-
-    /**
-     * This property can be used to specify the animation type for this map view's
-     * markers. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: M.MAP_MARKER_ANIMATION_NONE,
-
-    /**
-     * This property spacifies whether or not this map has already been initialized.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property specifies whether or not to remove all existing markers on a
-     * map update. A map update can either be an automatic update due to content
-     * binding or a implicit call of the map view's updateMap() method.
-     *
-     * @type Boolean
-     */
-    removeMarkersOnUpdate: YES,
-
-    /**
-     * If set, contains the map view's callback in sub a object named 'error',
-     * which will be called if no connection is available and the map service
-     * (google maps api) can not be loaded.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This flag can be used to specify whether or not to load the google places
-     * library. By default this property is set to YES. If you do not need the
-     * library, you should set this to NO in order to save some bandwidth.
-     *
-     * @type Boolean
-     */
-    loadPlacesLibrary: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a map view, respectively a map view container.
-     *
-     * @private
-     * @returns {String} The map view's html representation.
-     */
-    render: function() {
-        this.html = '<div data-fullscreen="true" id="' + this.id + '"';
-        this.html += !this.isInset ? ' class="ui-listview"' : '';
-        this.html += '><div id="' + this.id + '_map"' + this.style() + '></div></div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is called if the bound content changed. This content must be
-     * an array of M.Location objects or M.MapMarkerView objects. This method
-     * will take care of a re-rendering of the map view and all of its bound
-     * markers.
-     *
-     * If M.Location objects are passed, the default settings for map markers
-     * of this map view are assigned.
-     *
-     * Note that you can not use individual click events for your markers if
-     * you pass M.Location objects.
-     */
-    renderUpdate: function() {
-        /* check if content binding is valid */
-        var content = null;
-        if(!(this.contentBinding && this.contentBinding.target && typeof(this.contentBinding.target) === 'object' && this.contentBinding.property && typeof(this.contentBinding.property) === 'string' && this.contentBinding.target[this.contentBinding.property])) {
-            M.Logger.log('No valid content binding specified for M.MapView (' + this.id + ')!', M.WARN);
-            return;
-        }
-
-        /* get the marker / location objects from content binding */
-        var content = this.contentBinding.target[this.contentBinding.property];
-        var markers = [];
-
-        /* save a reference to the map */
-        var that = this;
-
-        /* if we got locations, transform to markers */
-        if(content && content[0] && content[0].type === 'M.Location') {
-            _.each(content, function(location) {
-                if(location && typeof(location) === 'object' && location.type === 'M.Location') {
-                    markers.push(M.MapMarkerView.init({
-                        location: location,
-                        map: that
-                    }));
-                }
-            });
-        /* otherwise check and filter for map markers */
-        } else if(content && content[0] && content[0].type === 'M.MapMarkerView') {
-            markers = _.select(content, function(marker) {
-                return (marker && marker.type === 'M.MapMarkerView')
-            })
-        }
-
-        /* remove current markers */
-        if(this.removeMarkersOnUpdate) {
-            this.removeAllMarkers();
-        }
-
-        /* add all new markers */
-        _.each(markers, function(marker) {
-            that.addMarker(marker);
-        })
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * We use this to disable event registration for M.MapView, since we only use the 'events' property
-     * for determining the handler for possible map markers of this map.
-     */
-    registerEvents: function() {
-
-    },
-
-    /**
-     * Applies some style-attributes to the map view.
-     *
-     * @private
-     * @returns {String} The maps view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is used to initialize a map view, typically out of a controller.
-     * With its options parameter you can set or update almost every parameter of
-     * a map view. This allows you to define a map view within your view, but then
-     * update its parameters later when you want this view to display a map.
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * Once the google api is initialized, the success callback specified with the
-     * options parameter is called. If an error occurs (e.g. no network connection),
-     * the error callback is called instead. They can be specified like the
-     * following:
-     *
-     *   {
-     *     callbacks: {
-     *       success: {
-     *         target: this,
-     *         action: function() {
-     *           // success callback
-     *         }
-     *       },
-     *       error: {
-     *         target: this,
-     *         action: function() {
-     *           // error callback
-     *         }
-     *       }
-     *     }
-     *   }
-     *   
-     * @param {Object} options The options for the map view.
-     * @param {Boolean} isUpdate Indicates whether this is an update call or not.
-     */
-    initMap: function(options, isUpdate) {
-        if(!this.isInitialized || isUpdate) {
-            if(!isUpdate) {
-                this.markers = [];
-            }
-
-            if(typeof(google) === 'undefined') {
-                /* store the passed params and this map globally for further use */
-                M.INITIAL_MAP = {
-                    map: this,
-                    options: options,
-                    isUpdate: isUpdate
-                };
-
-                /* check the connection status */
-                M.Environment.getConnectionStatus({
-                    target: this,
-                    action: 'didRetrieveConnectionStatus'
-                });
-            } else {
-                this.googleDidLoad(options, isUpdate, true);
-            }
-        } else {
-            M.Logger.log('The M.MapView has already been initialized', M.WARN);
-        }
-    },
-
-    /**
-     * This method is used internally to retrieve the connection status. If there is a connection
-     * available, we will include the google maps api.
-     *
-     * @private
-     */
-    didRetrieveConnectionStatus: function(connectionStatus) {
-        if(connectionStatus === M.ONLINE) {
-            $.getScript(
-                'http://maps.google.com/maps/api/js?' + (this.loadPlacesLibrary ? 'libraries=places&' : '') + 'sensor=true&callback=M.INITIAL_MAP.map.googleDidLoad'
-            );
-        } else {
-            var callback = M.INITIAL_MAP.options ? M.INITIAL_MAP.options.callbacks : null;
-            if(callback && M.EventDispatcher.checkHandler(callback.error)){
-                this.bindToCaller(callback.error.target, callback.error.action)();
-            }
-        }
-    },
-
-    /**
-     * This method is used internally to initialite the map if the google api hasn't been loaded
-     * before. If so, we use this method as callback for google.
-     *
-     * @private
-     */
-    googleDidLoad: function(options, isUpdate, isInternalCall) {
-        if(!isInternalCall) {
-            options = M.INITIAL_MAP.options;
-            isUpdate = M.INITIAL_MAP.isUpdate;
-        }
-
-        for(var i in options) {
-             switch (i) {
-                 case 'zoomLevel':
-                    this[i] = (typeof(options[i]) === 'number' && options[i] > 0) ? (options[i] > 22 ? 22 : options[i]) : this[i];
-                    break;
-                 case 'mapType':
-                    this[i] = (options[i] === M.MAP_ROADMAP || options[i] === M.MAP_HYBRID || options[i] === M.MAP_SATELLITE || options[i] === M.MAP_TERRAIN) ? options[i] : this[i];
-                    break;
-                 case 'markerAnimationType':
-                    this[i] = (options[i] === M.MAP_MARKER_ANIMATION_BOUNCE || options[i] === M.MAP_MARKER_ANIMATION_DROP) ? options[i] : this[i];
-                    break;
-                 case 'showMapTypeControl':
-                 case 'showNavigationControl':
-                 case 'showStreetViewControl':
-                 case 'isDraggable':
-                 case 'setMarkerAtInitialLocation':
-                 case 'removeMarkersOnUpdate':
-                    this[i] = typeof(options[i]) === 'boolean' ? options[i] : this[i];
-                    break;
-                 case 'initialLocation':
-                    this[i] = (typeof(options[i]) === 'object' && options[i].type === 'M.Location') ? options[i] : this[i];
-                    break;
-                 case 'callbacks':
-                    this[i] = (typeof(options[i]) === 'object') ? options[i] : this[i];
-                    break;
-                 default:
-                    break;
-             }
-        };
-        if(isUpdate) {
-            if(this.removeMarkersOnUpdate) {
-                this.removeAllMarkers();
-            }
-            this.map.setOptions({
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        } else {
-            this.map = new google.maps.Map($('#' + this.id + '_map')[0], {
-                zoom: this.zoomLevel,
-                center: new google.maps.LatLng(this.initialLocation.latitude, this.initialLocation.longitude),
-                mapTypeId: google.maps.MapTypeId[this.mapType],
-                mapTypeControl: this.showMapTypeControl,
-                navigationControl: this.showNavigationControl,
-                streetViewControl: this.showStreetViewControl,
-                draggable: this.isDraggable
-            });
-        }
-
-        if(this.setMarkerAtInitialLocation) {
-            var that = this;
-            this.addMarker(M.MapMarkerView.init({
-                location: this.initialLocation,
-                map: that.map
-            }));
-        }
-
-        this.isInitialized = YES;
-
-        /* now call callback of "the outside world" */
-        if(!isUpdate && this.callbacks.success && M.EventDispatcher.checkHandler(this.callbacks.success)) {
-            this.bindToCaller(this.callbacks.success.target, this.callbacks.success.action)();
-        }
-    },
-
-    /**
-     * This method is used to update a map view, typically out of a controller.
-     * With its options parameter you can update or update almost every parameter
-     * of a map view. This allows you to define a map view within your view, but
-     * then update its parameters later when you want this view to display a map
-     * and to update those options over and over again for this map. 
-     *
-     * The options parameter must be passed as a simple object, containing all of
-     * the M.MapView's properties you want to be updated. Such an options object
-     * could look like the following:
-     *
-     *   {
-     *     zoomLevel: 12,
-     *     mapType: M.MAP_HYBRID,
-     *     initialLocation: location
-     *   }
-     *
-     * While all properties of the options parameter can be given as Number, String
-     * or a constant value, the location must be a valid M.Location object.
-     *
-     * @param {Object} options The options for the map view.
-     */
-    updateMap: function(options) {
-        this.initMap(options, YES);
-    },
-
-    /**
-     * This method can be used to add a marker to the map view. Simply pass a
-     * valid M.MapMarkerView object and a map marker is created automatically,
-     * displayed on the map and added to this map view's markers property.
-     *
-     * @param {M.MapMarkerView} marker The marker to be added.
-     */
-    addMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView' && typeof(google) !== 'undefined') {
-            var that = this;
-            marker.marker = new google.maps.Marker({
-                map: that.map,
-                draggable: NO,
-                animation: google.maps.Animation[marker.markerAnimationType ? marker.markerAnimationType : that.markerAnimationType],
-                position: new google.maps.LatLng(marker.location.latitude, marker.location.longitude),
-                icon: marker.icon ? new google.maps.MarkerImage(
-                    marker.icon,
-                    null,
-                    null,
-                    marker.iconSize && marker.isIconCentered ? new google.maps.Point(marker.iconSize.width / 2, marker.iconSize.height / 2) : null,
-                    marker.iconSize ? new google.maps.Size(marker.iconSize.width, marker.iconSize.height) : null
-                ) : marker.icon
-            });
-            marker.registerEvents();
-            this.markers.push(
-                marker
-            );
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for addMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method can be used to remove a certain marker from the map view. In
-     * order to do this, you need to pass the M.MapMarkerView object that you
-     * want to be removed from the map view.
-     *
-     * @param {M.MapMarkerView} marker The marker to be removed.
-     */
-    removeMarker: function(marker) {
-        if(marker && typeof(marker) === 'object' && marker.type === 'M.MapMarkerView') {
-            var didRemoveMarker = NO;
-            this.markers = _.select(this.markers, function(m) {
-                if(marker === m){
-                    m.marker.setMap(null);
-                    didRemoveMarker = YES;
-                }
-                return !(marker === m);
-            });
-            if(!didRemoveMarker) {
-                M.Logger.log('No marker found matching the passed marker in removeMarker().', M.WARN);    
-            }
-        } else {
-            M.Logger.log('No valid M.MapMarkerView passed for removeMarker().', M.WARN);
-        }
-    },
-
-    /**
-     * This method removes all markers from this map view. It both cleans up the
-     * markers array and deletes the marker's visual representation from the map
-     * view.
-     */
-    removeAllMarkers: function() {
-        _.each(this.markers, function(marker) {
-            marker.marker.setMap(null);
-        });
-        this.markers = [];
     }
 
 });
