@@ -505,6 +505,618 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for horizontal alignment.
+ *
+ * @type String
+ */
+M.HORIZONTAL = 'horizontal';
+
+/**
+ * A constant value for vertical alignment.
+ *
+ * @type String
+ */
+M.VERTICAL = 'vertical';
+
+
+/**
+ * @class
+ *
+ * A button group is a vertically or / and horizontally aligned group of buttons. There
+ * are basically three different types of a button group:
+ *
+ * - horizontally aligned buttons
+ *     1 - 2 - 3
+ *
+ * - vertically aligned buttons
+ *     1
+ *     |
+ *     2
+ *     |
+ *     3
+ *
+ * - horizontally and vertically aligned buttons
+ *     1 - 2
+ *     |   |
+ *     3 - 4
+ * 
+ * @extends M.View
+ */
+M.ButtonGroupView = M.View.extend(
+/** @scope M.ButtonGroupView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonGroupView',
+
+    /**
+     * This property determines whether to render the button group horizontally
+     * or vertically. Default: horizontal.
+     *
+     * Possible values are:
+     * - M.HORIZONTAL: horizontal
+     * - M.VERTICAL: vertical
+     *
+     * @type String
+     */
+    direction: M.HORIZONTAL,
+
+    /**
+     * Determines whether to display the button group view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * Determines whether to display the button group compact, i.e. without top/bottom
+     * margin. This property only is relevant in combination with multiple lines of
+     * buttons (c.p.: buttonsPerLine property).
+     *
+     * @type Boolean
+     */
+    isCompact: YES,
+
+    /**
+     * This property, if set, defines how many buttons are rendered per line. If there
+     * are more buttons defined that fitting into one line, the following buttons are
+     * rendered into a new line. Make sure, the number of your buttons is divisible by
+     * the number of buttons per line, since only full lines are displayed. So if you
+     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
+     * visible.
+     *
+     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
+     * be as follows:
+     *
+     *     1 -- 2
+     *     3 -- 4
+     *
+     * @type Number
+     */
+    buttonsPerLine: null,
+
+    /**
+     * This property is used to internally store the number of lines that are necessary
+     * to render all buttons according to the buttonsPerLine property.
+     *
+     * @private
+     * @type Number
+     */
+    numberOfLines: null,
+
+    /**
+     * This property refers to the currently rendered line, if there is more than one.
+     *
+     * @private
+     * @type Number
+     */
+    currentLine: null,
+
+    /**
+     * This property contains an array of html ids referring to the several lines of grouped
+     * buttons, if there is more than one at all.
+     *
+     * @private
+     * @type Array
+     */
+    lines: null,
+
+    /**
+     * This property contains a reference to the currently selected button.
+     *
+     * @private
+     * @type Object
+     */
+    activeButton: null,
+
+    /**
+     * This property determines whether the buttons of this button group are selectable or not. If
+     * set to YES, a click on one of the buttons will set this button as the currently active button
+     * and automatically change its styling to visualize its selection.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * Renders a button group as a div container and calls the renderChildViews
+     * method to render the included buttons.
+     *
+     * @private
+     * @returns {String} The button group view's html representation.
+     */
+    render: function() {
+        /* check if multiple lines are necessary before rendering */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
+                var numberOfButtons = 0;
+                for(var i in childViews) {
+                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                        numberOfButtons = numberOfButtons + 1;
+                    }
+                }
+                if(this.buttonsPerLine < numberOfButtons) {
+                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
+                }
+            }
+        }
+        this.html = '';
+        /* if there are multiple lines, render multiple horizontally aligned button groups */
+        if(this.numberOfLines) {
+            /* set the direction to horizontally, no matter what it was set to before */
+            this.direction = M.HORIZONTAL;
+
+            /* this is a wrapper for the multiple button groups.
+               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
+            this.html += '<div id="' + this.id + '"';
+            this.html += this.style();
+            this.html += '>';
+
+            /* create a button group for every line */
+            this.lines = [];
+            for(var i = 0; i < this.numberOfLines; i++) {
+                this.currentLine = i + 1;
+                /* store current line in lines property for use in renderChildViews() */
+                this.lines.push(this.id + '_' + i);
+
+                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
+
+                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
+                if(!this.isInset || this.isCompact) {
+                    if(i == 0) {
+                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
+                    } else if(i > 0 && i < this.numberOfLines - 1) {
+                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
+                    } else if(i < this.numberOfLines) {
+                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
+                    }
+                }
+
+                this.html += '>';
+
+                /* render the buttons for the current line */
+                this.renderChildViews();
+
+                this.html += '</div>';
+            }
+            this.html += '</div>';
+        } else {
+            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
+
+            this.renderChildViews();
+
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.ButtonGroupView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var currentButtonIndex = 0;
+
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    currentButtonIndex = currentButtonIndex + 1;
+
+                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
+
+                        var button = this[childViews[i]];
+                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
+                        button.html = '';
+
+                        button.parentView = this;
+                        button.internalEvents = {
+                            tap: {
+                                target: this,
+                                action: 'buttonSelected'
+                            }
+                        }
+
+                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
+                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
+                           the right of the button group */
+                        if(this.direction === M.HORIZONTAL) {
+                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
+                        }
+
+                        /* set the button's _name property */
+                        this[childViews[i]]._name = childViews[i];
+
+                        /* finally render the button and add it to the button groups html */
+                        this.html += this[childViews[i]].render();
+                    }
+                } else {
+                    M.Logger.log('childview of button group is no button.', M.WARN);
+                }
+            }
+        }
+    },
+
+    /**
+     * This method themes the button group and activates one of the included buttons
+     * if its isActive property is set.
+     *
+     * @private
+     */
+    theme: function() {
+        /* if there are multiple lines of buttons, it's getting heavy */
+        if(this.numberOfLines) {
+            
+            /* iterate through all lines */
+            for(var line in this.lines) {
+                line = parseIntRadixTen(line);
+
+                /* style the current line */
+                $('#' + this.lines[line]).controlgroup();
+                var childViews = this.getChildViewsAsArray();
+                var currentButtonIndex = 0;
+                
+                /* if isCompact, iterate through all buttons */
+                if(this.isCompact) {
+                    for(var i in childViews) {
+                        i = parseIntRadixTen(i);
+                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                            currentButtonIndex = currentButtonIndex + 1;
+                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
+                            var button = this[childViews[i]];
+
+                            /* if the button belongs to the current line adjust its styling according to its position,
+                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
+                            if(line === currentLine) {
+
+                                /* first line */
+                                if(line === 0 && this.numberOfLines > 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tl');
+                                        }
+                                    /* last button */
+                                    } else if(currentButtonIndex === this.buttonsPerLine) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tr');
+                                        }
+                                    }
+                                /* last line */
+                                } else if(line === this.numberOfLines - 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        $('#' + button.id).addClass('ui-corner-bl');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        $('#' + button.id).addClass('ui-corner-br');
+                                    }
+                                /* all other lines */
+                                } else {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        /* if there is only on row, simply style that button group */
+        } else {
+            $('#' + this.id).controlgroup();
+        }
+
+        /* iterate through all buttons and activate on of them, according to the button's isActive property */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    var button = this[childViews[i]];
+                    if(button.isActive) {
+                        this.setActiveButton(button.id);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * This method returns the currently selected button of this button group. If no
+     * button is selected, null is returned.
+     *
+     * @returns {M.ButtonView} The currently active button of this button group.
+     */
+    getActiveButton: function() {
+        return this.activeButton;  
+    },
+
+    /**
+     * This method activates one button within the button group.
+     *
+     * @param {M.ButtonView, String} button The button to be set active or its id.
+     */
+    setActiveButton: function(button) {
+        if(this.isSelectable) {
+            if(this.activeButton) {
+                this.activeButton.removeCssClass('ui-btn-active');
+                this.activeButton.isActive = NO;
+            }
+
+            var obj = this[button];
+            if(!obj){
+                obj = M.ViewManager.getViewById(button);
+            }
+            if(!obj) {
+                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
+                    obj = button;
+                }
+            }
+            if(obj) {
+                obj.addCssClass('ui-btn-active');
+                obj.isActive = YES;
+                this.activeButton = obj;
+            }
+        }
+    },
+
+    /**
+     * This method activates one button within the button group at the given index.
+     *
+     * @param {Number} index The index of the button to be set active.
+     */
+    setActiveButtonAtIndex: function(index) {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var button = this[childViews[index]];
+            if(button && button.type === 'M.ButtonView') {
+                this.setActiveButton(button);
+            }
+        }
+    },
+
+    /**
+     * This method is called everytime a button is activated / clicked.
+     *
+     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
+     */
+    buttonSelected: function(id, event, nextEvent) {
+        /* if selected button is disabled, do nothing */
+        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
+            return;
+        }
+
+        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
+            if(this.isSelectable) {
+                if(this.activeButton) {
+                    this.activeButton.removeCssClass('ui-btn-active');
+                    this.activeButton.isActive = NO;
+                }
+
+                var button = M.ViewManager.getViewById(id);
+                if(!button) {
+                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
+                        button = id;
+                    }
+                }
+                if(button) {
+                    button.addCssClass('ui-btn-active');
+                    button.isActive = YES;
+                    this.activeButton = button;
+                }
+            }
+
+            /* trigger change event for the button group */
+            $('#' + this.id).trigger('change');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button group.
+     *
+     * @private
+     * @returns {String} The button group's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.numberOfLines && !this.isInset) {
+            html += ' class="ui-listview';
+        }
+        if(this.cssClass) {
+            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      10.04.12
@@ -1913,6 +2525,697 @@ M.DashboardItemView = M.View.extend(
             html += 'style="' + this.cssStyle + '"';
         }
         return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a date picker view. A date picker is a special view, that can
+ * be called out of a controller. It is shown as a date picker popup, based on the mobiscroll
+ * library. You can either connect a date picker with an existing view and automatically pass
+ * the selected date to the source's value property, or you can simply use the date picker to
+ * select a date, return it to the controller (respectively the callback) and handle the date
+ * by yourself.
+ *
+ * @extends M.View
+ */
+M.DatePickerView = M.View.extend(
+/** @scope M.DatePickerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DatePickerView',
+
+    /**
+     * This property is used to link the date picker to a source. You can either pass the DOM id of
+     * the corresponding source or the javascript object itself. Linking the date picker directly
+     * to a source results in automatic value updates of this source.
+     *
+     * Note: Valid sources need to provide a setValue() method.
+     *
+     * If you do not pass a source, the date picker isn't linked to any view. It simply returns the
+     * selected value/date to given callbacks. So you can call the date picker out of a controller
+     * and handle the selected date all by yourself.
+     *
+     * @type String|Object
+     */
+    source: null,
+
+    /**
+     * This property can be used to specify several callbacks for the date picker view. There are
+     * three types of callbacks available:
+     *
+     *     - before
+     *         This callback gets called, right before the date picker is shown. It passes along two
+     *         parameters:
+     *             - value      -> The initial date of the date picker, formatted as a string
+     *             - date       -> The initial date of the date picker as d8 object
+     *     - confirm
+     *         This callback gets called, when a selected date was confirmed. It passes along two
+     *         parameters:
+     *             - value      -> The selected date of the date picker, formatted as a string
+     *             - date       -> The selected date of the date picker as d8 object
+     *     - cancel
+     *         This callback gets called, when the cancel button is hit. It doesn't pass any
+     *         parameters.
+     *
+     * Setting up one of those callbacks works the same as with other controls of The-M-Project. You
+     * simply have to specify an object containing a target function, e.g.:
+     *
+     * callbacks: {
+     *     confirm: {
+     *         target: this,
+     *         action: 'dateSelected'
+     *     },
+     *     cancel: {
+     *         action: function() {
+     *             // do something
+     *         }
+     *     }
+     * }
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This property can be used to specify the initial date for the date picker. If you use the
+     * date picker without a source, this date is always picked as the initial date. If nothing is
+     * specified, the current date will be displayed.
+     *
+     * If you use the date picker with a valid source, the initial date is picked as long as there
+     * is no valid date available by the source. Once a date was selected and assigned to the source,
+     * this is taken as initial date the next time the date picker is opened.
+     *
+     * @type Object|String
+     */
+    initialDate: null,
+
+    /**
+     * This property can be used to determine whether to use the data source's value as initial date
+     * or not. If there is no source specified, this property is irrelevant.
+     *
+     * Note: If there is a source specified and this property is set to NO, the 'initialDate' property
+     * will be used anyway if there is no date value available for the source!
+     *
+     * @type Boolean
+     */
+    useSourceDateAsInitialDate: YES,
+
+    /**
+     * This property can be used to specify whether to show scrollers for picking a date or not.
+     *
+     * Note: If both this and the 'showTimePicker' property are set to NO, no date picker will
+     * be shown!
+     *
+     * @type Boolean
+     */
+    showDatePicker: YES,
+
+    /**
+     * This property can be used to specify whether to show scrollers for picking a time or not.
+     *
+     * Note: If both this and the 'showDatePicker' property are set to NO, no date picker will
+     * be shown!
+     *
+     * @type Boolean
+     */
+    showTimePicker: YES,
+
+    /**
+     * This property can be used to specify whether or not to show labels above of the scrollers.
+     * If set to YES, the labels specified with the '...Label' properties are displayed above of
+     * the corresponding scroller.
+     *
+     * @type Boolean
+     */
+    showLabels: YES,
+
+    /**
+     * This property specified the label shown above of the 'year' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    yearLabel: 'Year',
+
+    /**
+     * This property specified the label shown above of the 'month' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    monthLabel: 'Month',
+
+    /**
+     * This property specified the label shown above of the 'day' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    dayLabel: 'Day',
+
+    /**
+     * This property specified the label shown above of the 'hours' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    hoursLabel: 'Hours',
+
+    /**
+     * This property specified the label shown above of the 'minutes' scroller.
+     *
+     * Note: This label is only shown if the 'showLabels' property is set to YES.
+     *
+     * @type String
+     */
+    minutesLabel: 'Minutes',
+
+    /**
+     * You can use this property to enable or disable the AM/PM scroller. If set to NO, the
+     * date picker will use the 24h format.
+     *
+     * @type Boolean
+     */
+    showAmPm: YES,
+
+    /**
+     * This property can be used to specify the first year of the 'year' scroller. By default,
+     * this will be set to 20 years before the current year.
+     *
+     * @type Number
+     */
+    startYear: null,
+
+    /**
+     * This property can be used to specify the last year of the 'year' scroller. By default,
+     * this will be set to 20 years after the current year.
+     *
+     * @type Number
+     */
+    endYear: null,
+
+    /**
+     * This property can be used to customize the date format of the date picker. This is important
+     * if you use the date picker on a valid source since the date picker will then automatically
+     * push the selected date/datetime to the 'value' property of the source - based on this format.
+     *
+     * The possible keys:
+     *
+     *     - m      -> month (without leading zero)
+     *     - mm     -> month (two-digit)
+     *     - M      -> month name (short)
+     *     - MM     -> month name (long)
+     *     - d      -> day (without leading zero)
+     *     - d      -> day (two digit)
+     *     - D      -> day name (short)
+     *     - DD     -> day name (long)
+     *     - y      -> year (two digit)
+     *     - yy     -> year (four digit)
+     *
+     * @type String
+     */
+    dateFormat: 'M dd, yy',
+
+    /**
+     * This property can be used to customize the date format of the date picker if it is associated
+     * with a text input with the type 'month'. It works the same as the dateFormat property.
+     *
+     * @type String
+     */
+    dateFormatMonthOnly: 'MM yy',
+
+    /**
+     * This property can be used to customize the time format of the date picker. This is important
+     * if you use the date picker on a valid source since the date picker will then automatically
+     * push the selected time/datetime to the 'value' property of the source - based on this format.
+     *
+     * The possible keys:
+     *
+     *     - h      -> hours (without leading zero, 12h format)
+     *     - hh     -> hours (two-digit, 12h format)
+     *     - H      -> hours (without leading zero, 24h format)
+     *     - HH     -> hours (two-digit, 24h format)
+     *     - i      -> minutes (without leading zero)
+     *     - ii     -> minutes (two-digit)
+     *     - A      -> AM/PM
+     *
+     * @type String
+     */
+    timeFormat: 'h:ii A',
+
+    /**
+     * This property determines the order and formating of the date scrollers. The following keys
+     * are possible:
+     *
+     *     - m      -> month (without leading zero)
+     *     - mm     -> month (two-digit)
+     *     - M      -> month name (short)
+     *     - MM     -> month name (long)
+     *     - d      -> day (without leading zero)
+     *     - d      -> day (two digit)
+     *     - y      -> year (two digit)
+     *     - yy     -> year (four digit)
+     *
+     * By default, we use this format: Mddyy
+     *
+     * @type String
+     */
+    dateOrder: 'Mddyy',
+
+    /**
+     * This property determines the order and formating of the date scrollers if it is associated
+     * with an input field of type 'month'. It works the same as the dateOrder property.
+     *
+     * By default, we use this format: MMyy
+     *
+     * @type String
+     */
+    dateOrderMonthOnly: 'MMyy',
+
+
+
+    /**
+     * This property specifies a list of full month names.
+     *
+     * @type Array
+     */
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+    /**
+     * This property specifies a list of short month names.
+     *
+     * @type Array
+     */
+    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
+    /**
+     * This property specifies a list of full day names.
+     *
+     * @type Array
+     */
+    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+
+    /**
+     * This property specifies a list of short day names.
+     *
+     * @type Array
+     */
+    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+
+    /**
+     * This property can be used to specify the label of the date picker's cancel button. By default
+     * it shows 'Cancel'.
+     *
+     * @type String
+     */
+    cancelButtonValue: 'Cancel',
+
+    /**
+     * This property can be used to specify the label of the date picker's cancel button. By default
+     * it shows 'Ok'.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * This property can be used to specify the steps between hours in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepHour: 1,
+
+    /**
+     * This property can be used to specify the steps between minutes in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepMinute: 1,
+
+    /**
+     * This property can be used to specify the steps between seconds in the time / date-time picker.
+     *
+     * @type Number
+     */
+    stepSecond: 1,
+
+    /**
+     * This property can be used to activate the seconds wheel on a time/date-time picker.
+     *
+     * @type Boolean
+     */
+    seconds: NO,
+
+    /**
+     * This property is used internally to indicate whether the current date picker works on a valid
+     * source or was called without one. This is important for stuff like auto-updating the source's
+     * DOM representation.
+     *
+     * @private
+     */
+    hasSource: YES,
+
+    /**
+     * This property is used internally to state whether a value, respectively a date, was selected
+     * or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isValueSelected: NO,
+
+    /**
+     * This property is used internally to state whether a the date picker is currently activated
+     * or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This method is the only important method of a date picker view for 'the outside world'. From within
+     * an application, simply call this method and pass along an object, containing all the properties
+     * you want to set, different from default.
+     *
+     * A sample call:
+     *
+     * M.DatePickerView.show({
+     *     source: M.ViewManager.getView('mainPage', 'myTextField')
+     *     initialDate: D8.create('30.04.1985 10:30'),
+     *     callbacks: {
+     *          confirm: {
+     *              target: this,
+     *              action: function(value, date) {
+     *                  // do something...
+     *              }
+     *          }
+     *     }
+     * });
+     *
+     * @param obj
+     */
+    show: function(obj) {
+        var datepicker = M.DatePickerView.design(obj);
+
+        /* if a datepicker is active already, return */
+        if(Object.getPrototypeOf(datepicker).isActive) {
+            return;
+        /* otherwise go on and set the flag to active */
+        } else {
+            Object.getPrototypeOf(datepicker).isActive = YES;
+        }
+
+        /* check if it's worth the work at all */
+        if(!(datepicker.showDatePicker || datepicker.showTimePicker)) {
+            M.Logger.log('In order to use the M.DatepickerView, you have to set the \'showDatePicker\' or \'showTimePicker\' property to YES.', M.ERR);
+            return;
+        }
+
+        /* calculate the default start and end years */
+        this.startYear = this.startYear ? this.startYear : D8.now().format('yyyy') - 20;
+        this.endYear = this.endYear ? this.endYear : D8.now().format('yyyy') + 20;
+
+        /* check if we got a valid source */
+        if(datepicker.source) {
+            /* if we got a view, get its id */
+            datepicker.source = typeof(datepicker.source) === 'object' && datepicker.source.type ? datepicker.source.id : datepicker.source;
+
+            var view = M.ViewManager.getViewById(datepicker.source);
+            if(view && typeof(view.setValue) === 'function' && $('#' + datepicker.source) && $('#' + datepicker.source).length > 0) {
+                datepicker.init();
+            } else {
+                M.Logger.log('The specified source for the M.DatepickerView is invalid!', M.ERR);
+            }
+        } else {
+            /* use default source (the current page) */
+            datepicker.hasSource = NO;
+            var page = M.ViewManager.getCurrentPage();
+            if(page) {
+                datepicker.source = page.id;
+                datepicker.init();
+            }
+        }
+    },
+
+    /**
+     * This method is used internally to communicate with the mobiscroll library. It actually initializes
+     * the creation of the date picker and is responsible for reacting on events. If the cancel or confirm
+     * button is hit, this method dispatches the events to the corresponding callbacks.
+     *
+     * @private
+     */
+    init: function() {
+        var that = this;
+        $('#' + this.source).scroller({
+            preset: (this.showDatePicker && this.showTimePicker ? 'datetime' : (this.showDatePicker ? 'date' : (this.showTimePicker ? 'time' : null))),
+            ampm: this.showAmPm,
+            startYear: this.startYear,
+            endYear: this.endYear,
+            dateFormat: this.dateFormat,
+            timeFormat: this.timeFormat,
+            dateOrder: this.dateOrder,
+            dayText: this.dayLabel,
+            hourText: this.hoursLabel,
+            minuteText: this.minutesLabel,
+            monthText: this.monthLabel,
+            yearText: this.yearLabel,
+            monthNames: this.monthNames,
+            monthNamesShort: this.monthNamesShort,
+            dayNames: this.dayNames,
+            dayNamesShort: this.dayNamesShort,
+            cancelText: this.cancelButtonValue,
+            setText: this.confirmButtonValue,
+            stepHour: this.stepHour,
+            stepMinute: this.stepMinute,
+            stepSecond: this.stepSecond,
+            seconds: this.seconds,
+
+            /* now set the width of the scrollers */
+            width: (M.Environment.getWidth() - 20) / 3 - 20 > 90 ? 90 : (M.Environment.getWidth() - 20) / 3 - 20,
+
+            beforeShow: function(input, scroller) {
+                that.bindToCaller(that, that.beforeShow, [input, scroller])();
+            },
+            onClose: function(value, scroller) {
+                that.bindToCaller(that, that.onClose, [value, scroller])();
+            },
+            onSelect: function(value, scroller) {
+                that.bindToCaller(that, that.onSelect, [value, scroller])();
+            }
+        });
+        $('#' + this.source).scroller('show');
+    },
+
+    /**
+     * This method is used internally to handle the 'beforeShow' event. It does some adjustments to the
+     * rendered scroller by mobiscroll and finally calls the application's 'before' callback, if it is
+     * defined.
+     *
+     * @param source
+     * @param scroller
+     */
+    beforeShow: function(source, scroller) {
+        var source = null;
+        var date = null;
+
+        /* try to set the date picker's initial date based on its source */
+        if(this.hasSource && this.useSourceDateAsInitialDate) {
+            source = M.ViewManager.getViewById(this.source);
+            if(source.value) {
+                try {
+                    date = D8.create(source.value);
+                } catch(e) {
+
+                }
+                if(date) {
+                    if(date.format('yyyy') < this.startYear) {
+                        if(this.hasOwnProperty('startYear')) {
+                            M.Logger.log('The given date of the source (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
+                        } else {
+                            M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the given date of the source (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
+                            $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
+                            $('#' + this.source).scroller('setDate', date.date);
+                        }
+                    } else {
+                        $('#' + this.source).scroller('setDate', date.date);
+                    }
+                }
+            }
+        }
+
+        /* if there is no source or the retrieval of the date went wrong, try to set it based on the initial date property */
+        if(this.initialDate && !date) {
+            if(this.initialDate.date) {
+                date = this.initialDate;
+            } else {
+                try {
+                    date = D8.create(this.initialDate);
+                } catch(e) {
+
+                }
+            }
+            if(date) {
+                if(date.format('yyyy') < this.startYear) {
+                    if(this.hasOwnProperty('startYear')) {
+                        M.Logger.log('The specified initial date (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
+                    } else {
+                        M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the specified initial date (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
+                        $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
+                        $('#' + this.source).scroller('setDate', date.date);
+                    }
+                } else {
+                    $('#' + this.source).scroller('setDate', date.date);
+                }
+            }
+        }
+
+        /* now we got the date (or use the current date as default), lets compute this as a formatted text for the callback */
+        value = scroller.formatDate(
+            this.showDatePicker ? this.dateFormat + (this.showTimePicker ? ' ' + this.timeFormat : '') : this.timeFormat,
+            scroller.getDate()
+        );
+
+        /* kill parts of the scoller */
+        $('.dwv').remove();
+
+        /* give it some shiny jqm style */
+        window.setTimeout(function() {
+            $('.dw').addClass('ui-btn-up-a');
+        }, 1);
+
+        /* disable scrolling for the background */
+        $('.dwo').bind('touchmove', function(e) {
+            e.preventDefault();
+        });
+
+        /* inject TMP buttons*/
+        var confirmButton = M.ButtonView.design({
+            value: this.confirmButtonValue,
+            cssClass: 'b tmp-dialog-smallerbtn-confirm',
+            events: {
+                tap: {
+                    action: function() {
+                        $('#dw_set').trigger('click');
+                    }
+                }
+            }
+        });
+        var cancelButton = M.ButtonView.design({
+            value: this.cancelButtonValue,
+            cssClass: 'd tmp-dialog-smallerbtn-confirm',
+            events: {
+                tap: {
+                    action: function() {
+                        $('#dw_cancel').trigger('click');
+                    }
+                }
+            }
+        });
+
+        if(this.showDatePicker) {
+            var grid = M.GridView.design({
+                childViews: 'confirm cancel',
+                layout: M.TWO_COLUMNS,
+                cssClass: 'tmp-datepicker-buttongrid',
+                confirm: confirmButton,
+                cancel: cancelButton
+            });
+
+            var html = grid.render();
+            $('.dw').append(html);
+            grid.theme();
+            grid.registerEvents();
+        } else {
+            var html = confirmButton.render();
+            html += cancelButton.render();
+            $('.dw').append(html);
+            confirmButton.theme();
+            confirmButton.registerEvents();
+            cancelButton.theme();
+            cancelButton.registerEvents();
+        }
+
+        /* hide default buttons */
+        $('#dw_cancel').hide();
+        $('#dw_set').hide();
+
+        /* add class to body as selector for showing/hiding labels */
+        if(!this.showLabels) {
+            $('body').addClass('tmp-datepicker-no-label');
+        }
+
+        /* call callback */
+        if(this.callbacks && this.callbacks['before'] && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
+            M.EventDispatcher.callHandler(this.callbacks['before'], null, NO, [value, date]);
+        }
+    },
+
+    onClose: function(value, scroller) {
+        /* set value if one was selected */
+        var source = null;
+        var date = null;
+        if(this.isValueSelected) {
+            /* first compute the date */
+            try {
+                date = D8.create(scroller.getDate());
+            } catch(e) {
+
+            }
+
+            /* now, if there is a source, auto-update its value */
+            if(this.hasSource) {
+                source = M.ViewManager.getViewById(this.source);
+                if(source) {
+                    source.setValue(value, NO, YES);
+                }
+            }
+        }
+
+        /* remove class from body as selector for showing/hiding labels */
+        if(!this.showLabels) {
+            $('body').removeClass('tmp-datepicker-no-label');
+        }
+
+        /* call cancel callback */
+        if(!this.isValueSelected && this.callbacks && this.callbacks['cancel'] && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
+            M.EventDispatcher.callHandler(this.callbacks['cancel'], null, NO, []);
+        } else if(this.isValueSelected && this.callbacks && this.callbacks['confirm'] && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
+            M.EventDispatcher.callHandler(this.callbacks['confirm'], null, NO, [value, date]);
+        }
+
+        /* kill the datepicker */
+        Object.getPrototypeOf(this).isActive = NO;
+        $('#' + this.source).scroller('destroy');
+        $('.dwo').remove();
+        $('.dw').remove();
+        this.destroy();
+    },
+
+    onSelect: function(value) {
+        /* mark the datepicker as 'valueSelected' */
+        this.isValueSelected = YES;
     }
 
 });
@@ -9868,1309 +11171,6 @@ M.WebView = M.View.extend(
      */
     reload: function() {
         $('#' + this.id).attr('src', this.value);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for horizontal alignment.
- *
- * @type String
- */
-M.HORIZONTAL = 'horizontal';
-
-/**
- * A constant value for vertical alignment.
- *
- * @type String
- */
-M.VERTICAL = 'vertical';
-
-
-/**
- * @class
- *
- * A button group is a vertically or / and horizontally aligned group of buttons. There
- * are basically three different types of a button group:
- *
- * - horizontally aligned buttons
- *     1 - 2 - 3
- *
- * - vertically aligned buttons
- *     1
- *     |
- *     2
- *     |
- *     3
- *
- * - horizontally and vertically aligned buttons
- *     1 - 2
- *     |   |
- *     3 - 4
- * 
- * @extends M.View
- */
-M.ButtonGroupView = M.View.extend(
-/** @scope M.ButtonGroupView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonGroupView',
-
-    /**
-     * This property determines whether to render the button group horizontally
-     * or vertically. Default: horizontal.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /**
-     * Determines whether to display the button group view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * Determines whether to display the button group compact, i.e. without top/bottom
-     * margin. This property only is relevant in combination with multiple lines of
-     * buttons (c.p.: buttonsPerLine property).
-     *
-     * @type Boolean
-     */
-    isCompact: YES,
-
-    /**
-     * This property, if set, defines how many buttons are rendered per line. If there
-     * are more buttons defined that fitting into one line, the following buttons are
-     * rendered into a new line. Make sure, the number of your buttons is divisible by
-     * the number of buttons per line, since only full lines are displayed. So if you
-     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
-     * visible.
-     *
-     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
-     * be as follows:
-     *
-     *     1 -- 2
-     *     3 -- 4
-     *
-     * @type Number
-     */
-    buttonsPerLine: null,
-
-    /**
-     * This property is used to internally store the number of lines that are necessary
-     * to render all buttons according to the buttonsPerLine property.
-     *
-     * @private
-     * @type Number
-     */
-    numberOfLines: null,
-
-    /**
-     * This property refers to the currently rendered line, if there is more than one.
-     *
-     * @private
-     * @type Number
-     */
-    currentLine: null,
-
-    /**
-     * This property contains an array of html ids referring to the several lines of grouped
-     * buttons, if there is more than one at all.
-     *
-     * @private
-     * @type Array
-     */
-    lines: null,
-
-    /**
-     * This property contains a reference to the currently selected button.
-     *
-     * @private
-     * @type Object
-     */
-    activeButton: null,
-
-    /**
-     * This property determines whether the buttons of this button group are selectable or not. If
-     * set to YES, a click on one of the buttons will set this button as the currently active button
-     * and automatically change its styling to visualize its selection.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Renders a button group as a div container and calls the renderChildViews
-     * method to render the included buttons.
-     *
-     * @private
-     * @returns {String} The button group view's html representation.
-     */
-    render: function() {
-        /* check if multiple lines are necessary before rendering */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
-                var numberOfButtons = 0;
-                for(var i in childViews) {
-                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                        numberOfButtons = numberOfButtons + 1;
-                    }
-                }
-                if(this.buttonsPerLine < numberOfButtons) {
-                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
-                }
-            }
-        }
-        this.html = '';
-        /* if there are multiple lines, render multiple horizontally aligned button groups */
-        if(this.numberOfLines) {
-            /* set the direction to horizontally, no matter what it was set to before */
-            this.direction = M.HORIZONTAL;
-
-            /* this is a wrapper for the multiple button groups.
-               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
-            this.html += '<div id="' + this.id + '"';
-            this.html += this.style();
-            this.html += '>';
-
-            /* create a button group for every line */
-            this.lines = [];
-            for(var i = 0; i < this.numberOfLines; i++) {
-                this.currentLine = i + 1;
-                /* store current line in lines property for use in renderChildViews() */
-                this.lines.push(this.id + '_' + i);
-
-                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
-
-                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
-                if(!this.isInset || this.isCompact) {
-                    if(i == 0) {
-                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
-                    } else if(i > 0 && i < this.numberOfLines - 1) {
-                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
-                    } else if(i < this.numberOfLines) {
-                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
-                    }
-                }
-
-                this.html += '>';
-
-                /* render the buttons for the current line */
-                this.renderChildViews();
-
-                this.html += '</div>';
-            }
-            this.html += '</div>';
-        } else {
-            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
-
-            this.renderChildViews();
-
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonGroupView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var currentButtonIndex = 0;
-
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    currentButtonIndex = currentButtonIndex + 1;
-
-                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
-
-                        var button = this[childViews[i]];
-                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
-                        button.html = '';
-
-                        button.parentView = this;
-                        button.internalEvents = {
-                            tap: {
-                                target: this,
-                                action: 'buttonSelected'
-                            }
-                        }
-
-                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
-                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
-                           the right of the button group */
-                        if(this.direction === M.HORIZONTAL) {
-                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
-                        }
-
-                        /* set the button's _name property */
-                        this[childViews[i]]._name = childViews[i];
-
-                        /* finally render the button and add it to the button groups html */
-                        this.html += this[childViews[i]].render();
-                    }
-                } else {
-                    M.Logger.log('childview of button group is no button.', M.WARN);
-                }
-            }
-        }
-    },
-
-    /**
-     * This method themes the button group and activates one of the included buttons
-     * if its isActive property is set.
-     *
-     * @private
-     */
-    theme: function() {
-        /* if there are multiple lines of buttons, it's getting heavy */
-        if(this.numberOfLines) {
-            
-            /* iterate through all lines */
-            for(var line in this.lines) {
-                line = parseIntRadixTen(line);
-
-                /* style the current line */
-                $('#' + this.lines[line]).controlgroup();
-                var childViews = this.getChildViewsAsArray();
-                var currentButtonIndex = 0;
-                
-                /* if isCompact, iterate through all buttons */
-                if(this.isCompact) {
-                    for(var i in childViews) {
-                        i = parseIntRadixTen(i);
-                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                            currentButtonIndex = currentButtonIndex + 1;
-                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
-                            var button = this[childViews[i]];
-
-                            /* if the button belongs to the current line adjust its styling according to its position,
-                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
-                            if(line === currentLine) {
-
-                                /* first line */
-                                if(line === 0 && this.numberOfLines > 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tl');
-                                        }
-                                    /* last button */
-                                    } else if(currentButtonIndex === this.buttonsPerLine) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tr');
-                                        }
-                                    }
-                                /* last line */
-                                } else if(line === this.numberOfLines - 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        $('#' + button.id).addClass('ui-corner-bl');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        $('#' + button.id).addClass('ui-corner-br');
-                                    }
-                                /* all other lines */
-                                } else {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        /* if there is only on row, simply style that button group */
-        } else {
-            $('#' + this.id).controlgroup();
-        }
-
-        /* iterate through all buttons and activate on of them, according to the button's isActive property */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    var button = this[childViews[i]];
-                    if(button.isActive) {
-                        this.setActiveButton(button.id);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
-     * This method returns the currently selected button of this button group. If no
-     * button is selected, null is returned.
-     *
-     * @returns {M.ButtonView} The currently active button of this button group.
-     */
-    getActiveButton: function() {
-        return this.activeButton;  
-    },
-
-    /**
-     * This method activates one button within the button group.
-     *
-     * @param {M.ButtonView, String} button The button to be set active or its id.
-     */
-    setActiveButton: function(button) {
-        if(this.isSelectable) {
-            if(this.activeButton) {
-                this.activeButton.removeCssClass('ui-btn-active');
-                this.activeButton.isActive = NO;
-            }
-
-            var obj = this[button];
-            if(!obj){
-                obj = M.ViewManager.getViewById(button);
-            }
-            if(!obj) {
-                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
-                    obj = button;
-                }
-            }
-            if(obj) {
-                obj.addCssClass('ui-btn-active');
-                obj.isActive = YES;
-                this.activeButton = obj;
-            }
-        }
-    },
-
-    /**
-     * This method activates one button within the button group at the given index.
-     *
-     * @param {Number} index The index of the button to be set active.
-     */
-    setActiveButtonAtIndex: function(index) {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var button = this[childViews[index]];
-            if(button && button.type === 'M.ButtonView') {
-                this.setActiveButton(button);
-            }
-        }
-    },
-
-    /**
-     * This method is called everytime a button is activated / clicked.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    buttonSelected: function(id, event, nextEvent) {
-        /* if selected button is disabled, do nothing */
-        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
-            return;
-        }
-
-        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
-            if(this.isSelectable) {
-                if(this.activeButton) {
-                    this.activeButton.removeCssClass('ui-btn-active');
-                    this.activeButton.isActive = NO;
-                }
-
-                var button = M.ViewManager.getViewById(id);
-                if(!button) {
-                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
-                        button = id;
-                    }
-                }
-                if(button) {
-                    button.addCssClass('ui-btn-active');
-                    button.isActive = YES;
-                    this.activeButton = button;
-                }
-            }
-
-            /* trigger change event for the button group */
-            $('#' + this.id).trigger('change');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button group.
-     *
-     * @private
-     * @returns {String} The button group's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.numberOfLines && !this.isInset) {
-            html += ' class="ui-listview';
-        }
-        if(this.cssClass) {
-            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a date picker view. A date picker is a special view, that can
- * be called out of a controller. It is shown as a date picker popup, based on the mobiscroll
- * library. You can either connect a date picker with an existing view and automatically pass
- * the selected date to the source's value property, or you can simply use the date picker to
- * select a date, return it to the controller (respectively the callback) and handle the date
- * by yourself.
- *
- * @extends M.View
- */
-M.DatePickerView = M.View.extend(
-/** @scope M.DatePickerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DatePickerView',
-
-    /**
-     * This property is used to link the date picker to a source. You can either pass the DOM id of
-     * the corresponding source or the javascript object itself. Linking the date picker directly
-     * to a source results in automatic value updates of this source.
-     *
-     * Note: Valid sources need to provide a setValue() method.
-     *
-     * If you do not pass a source, the date picker isn't linked to any view. It simply returns the
-     * selected value/date to given callbacks. So you can call the date picker out of a controller
-     * and handle the selected date all by yourself.
-     *
-     * @type String|Object
-     */
-    source: null,
-
-    /**
-     * This property can be used to specify several callbacks for the date picker view. There are
-     * three types of callbacks available:
-     *
-     *     - before
-     *         This callback gets called, right before the date picker is shown. It passes along two
-     *         parameters:
-     *             - value      -> The initial date of the date picker, formatted as a string
-     *             - date       -> The initial date of the date picker as d8 object
-     *     - confirm
-     *         This callback gets called, when a selected date was confirmed. It passes along two
-     *         parameters:
-     *             - value      -> The selected date of the date picker, formatted as a string
-     *             - date       -> The selected date of the date picker as d8 object
-     *     - cancel
-     *         This callback gets called, when the cancel button is hit. It doesn't pass any
-     *         parameters.
-     *
-     * Setting up one of those callbacks works the same as with other controls of The-M-Project. You
-     * simply have to specify an object containing a target function, e.g.:
-     *
-     * callbacks: {
-     *     confirm: {
-     *         target: this,
-     *         action: 'dateSelected'
-     *     },
-     *     cancel: {
-     *         action: function() {
-     *             // do something
-     *         }
-     *     }
-     * }
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This property can be used to specify the initial date for the date picker. If you use the
-     * date picker without a source, this date is always picked as the initial date. If nothing is
-     * specified, the current date will be displayed.
-     *
-     * If you use the date picker with a valid source, the initial date is picked as long as there
-     * is no valid date available by the source. Once a date was selected and assigned to the source,
-     * this is taken as initial date the next time the date picker is opened.
-     *
-     * @type Object|String
-     */
-    initialDate: null,
-
-    /**
-     * This property can be used to determine whether to use the data source's value as initial date
-     * or not. If there is no source specified, this property is irrelevant.
-     *
-     * Note: If there is a source specified and this property is set to NO, the 'initialDate' property
-     * will be used anyway if there is no date value available for the source!
-     *
-     * @type Boolean
-     */
-    useSourceDateAsInitialDate: YES,
-
-    /**
-     * This property can be used to specify whether to show scrollers for picking a date or not.
-     *
-     * Note: If both this and the 'showTimePicker' property are set to NO, no date picker will
-     * be shown!
-     *
-     * @type Boolean
-     */
-    showDatePicker: YES,
-
-    /**
-     * This property can be used to specify whether to show scrollers for picking a time or not.
-     *
-     * Note: If both this and the 'showDatePicker' property are set to NO, no date picker will
-     * be shown!
-     *
-     * @type Boolean
-     */
-    showTimePicker: YES,
-
-    /**
-     * This property can be used to specify whether or not to show labels above of the scrollers.
-     * If set to YES, the labels specified with the '...Label' properties are displayed above of
-     * the corresponding scroller.
-     *
-     * @type Boolean
-     */
-    showLabels: YES,
-
-    /**
-     * This property specified the label shown above of the 'year' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    yearLabel: 'Year',
-
-    /**
-     * This property specified the label shown above of the 'month' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    monthLabel: 'Month',
-
-    /**
-     * This property specified the label shown above of the 'day' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    dayLabel: 'Day',
-
-    /**
-     * This property specified the label shown above of the 'hours' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    hoursLabel: 'Hours',
-
-    /**
-     * This property specified the label shown above of the 'minutes' scroller.
-     *
-     * Note: This label is only shown if the 'showLabels' property is set to YES.
-     *
-     * @type String
-     */
-    minutesLabel: 'Minutes',
-
-    /**
-     * You can use this property to enable or disable the AM/PM scroller. If set to NO, the
-     * date picker will use the 24h format.
-     *
-     * @type Boolean
-     */
-    showAmPm: YES,
-
-    /**
-     * This property can be used to specify the first year of the 'year' scroller. By default,
-     * this will be set to 20 years before the current year.
-     *
-     * @type Number
-     */
-    startYear: null,
-
-    /**
-     * This property can be used to specify the last year of the 'year' scroller. By default,
-     * this will be set to 20 years after the current year.
-     *
-     * @type Number
-     */
-    endYear: null,
-
-    /**
-     * This property can be used to customize the date format of the date picker. This is important
-     * if you use the date picker on a valid source since the date picker will then automatically
-     * push the selected date/datetime to the 'value' property of the source - based on this format.
-     *
-     * The possible keys:
-     *
-     *     - m      -> month (without leading zero)
-     *     - mm     -> month (two-digit)
-     *     - M      -> month name (short)
-     *     - MM     -> month name (long)
-     *     - d      -> day (without leading zero)
-     *     - d      -> day (two digit)
-     *     - D      -> day name (short)
-     *     - DD     -> day name (long)
-     *     - y      -> year (two digit)
-     *     - yy     -> year (four digit)
-     *
-     * @type String
-     */
-    dateFormat: 'M dd, yy',
-
-    /**
-     * This property can be used to customize the date format of the date picker if it is associated
-     * with a text input with the type 'month'. It works the same as the dateFormat property.
-     *
-     * @type String
-     */
-    dateFormatMonthOnly: 'MM yy',
-
-    /**
-     * This property can be used to customize the time format of the date picker. This is important
-     * if you use the date picker on a valid source since the date picker will then automatically
-     * push the selected time/datetime to the 'value' property of the source - based on this format.
-     *
-     * The possible keys:
-     *
-     *     - h      -> hours (without leading zero, 12h format)
-     *     - hh     -> hours (two-digit, 12h format)
-     *     - H      -> hours (without leading zero, 24h format)
-     *     - HH     -> hours (two-digit, 24h format)
-     *     - i      -> minutes (without leading zero)
-     *     - ii     -> minutes (two-digit)
-     *     - A      -> AM/PM
-     *
-     * @type String
-     */
-    timeFormat: 'h:ii A',
-
-    /**
-     * This property determines the order and formating of the date scrollers. The following keys
-     * are possible:
-     *
-     *     - m      -> month (without leading zero)
-     *     - mm     -> month (two-digit)
-     *     - M      -> month name (short)
-     *     - MM     -> month name (long)
-     *     - d      -> day (without leading zero)
-     *     - d      -> day (two digit)
-     *     - y      -> year (two digit)
-     *     - yy     -> year (four digit)
-     *
-     * By default, we use this format: Mddyy
-     *
-     * @type String
-     */
-    dateOrder: 'Mddyy',
-
-    /**
-     * This property determines the order and formating of the date scrollers if it is associated
-     * with an input field of type 'month'. It works the same as the dateOrder property.
-     *
-     * By default, we use this format: MMyy
-     *
-     * @type String
-     */
-    dateOrderMonthOnly: 'MMyy',
-
-
-
-    /**
-     * This property specifies a list of full month names.
-     *
-     * @type Array
-     */
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-
-    /**
-     * This property specifies a list of short month names.
-     *
-     * @type Array
-     */
-    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-
-    /**
-     * This property specifies a list of full day names.
-     *
-     * @type Array
-     */
-    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-
-    /**
-     * This property specifies a list of short day names.
-     *
-     * @type Array
-     */
-    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-
-    /**
-     * This property can be used to specify the label of the date picker's cancel button. By default
-     * it shows 'Cancel'.
-     *
-     * @type String
-     */
-    cancelButtonValue: 'Cancel',
-
-    /**
-     * This property can be used to specify the label of the date picker's cancel button. By default
-     * it shows 'Ok'.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * This property can be used to specify the steps between hours in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepHour: 1,
-
-    /**
-     * This property can be used to specify the steps between minutes in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepMinute: 1,
-
-    /**
-     * This property can be used to specify the steps between seconds in the time / date-time picker.
-     *
-     * @type Number
-     */
-    stepSecond: 1,
-
-    /**
-     * This property can be used to activate the seconds wheel on a time/date-time picker.
-     *
-     * @type Boolean
-     */
-    seconds: NO,
-
-    /**
-     * This property is used internally to indicate whether the current date picker works on a valid
-     * source or was called without one. This is important for stuff like auto-updating the source's
-     * DOM representation.
-     *
-     * @private
-     */
-    hasSource: YES,
-
-    /**
-     * This property is used internally to state whether a value, respectively a date, was selected
-     * or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isValueSelected: NO,
-
-    /**
-     * This property is used internally to state whether a the date picker is currently activated
-     * or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This method is the only important method of a date picker view for 'the outside world'. From within
-     * an application, simply call this method and pass along an object, containing all the properties
-     * you want to set, different from default.
-     *
-     * A sample call:
-     *
-     * M.DatePickerView.show({
-     *     source: M.ViewManager.getView('mainPage', 'myTextField')
-     *     initialDate: D8.create('30.04.1985 10:30'),
-     *     callbacks: {
-     *          confirm: {
-     *              target: this,
-     *              action: function(value, date) {
-     *                  // do something...
-     *              }
-     *          }
-     *     }
-     * });
-     *
-     * @param obj
-     */
-    show: function(obj) {
-        var datepicker = M.DatePickerView.design(obj);
-
-        /* if a datepicker is active already, return */
-        if(Object.getPrototypeOf(datepicker).isActive) {
-            return;
-        /* otherwise go on and set the flag to active */
-        } else {
-            Object.getPrototypeOf(datepicker).isActive = YES;
-        }
-
-        /* check if it's worth the work at all */
-        if(!(datepicker.showDatePicker || datepicker.showTimePicker)) {
-            M.Logger.log('In order to use the M.DatepickerView, you have to set the \'showDatePicker\' or \'showTimePicker\' property to YES.', M.ERR);
-            return;
-        }
-
-        /* calculate the default start and end years */
-        this.startYear = this.startYear ? this.startYear : D8.now().format('yyyy') - 20;
-        this.endYear = this.endYear ? this.endYear : D8.now().format('yyyy') + 20;
-
-        /* check if we got a valid source */
-        if(datepicker.source) {
-            /* if we got a view, get its id */
-            datepicker.source = typeof(datepicker.source) === 'object' && datepicker.source.type ? datepicker.source.id : datepicker.source;
-
-            var view = M.ViewManager.getViewById(datepicker.source);
-            if(view && typeof(view.setValue) === 'function' && $('#' + datepicker.source) && $('#' + datepicker.source).length > 0) {
-                datepicker.init();
-            } else {
-                M.Logger.log('The specified source for the M.DatepickerView is invalid!', M.ERR);
-            }
-        } else {
-            /* use default source (the current page) */
-            datepicker.hasSource = NO;
-            var page = M.ViewManager.getCurrentPage();
-            if(page) {
-                datepicker.source = page.id;
-                datepicker.init();
-            }
-        }
-    },
-
-    /**
-     * This method is used internally to communicate with the mobiscroll library. It actually initializes
-     * the creation of the date picker and is responsible for reacting on events. If the cancel or confirm
-     * button is hit, this method dispatches the events to the corresponding callbacks.
-     *
-     * @private
-     */
-    init: function() {
-        var that = this;
-        $('#' + this.source).scroller({
-            preset: (this.showDatePicker && this.showTimePicker ? 'datetime' : (this.showDatePicker ? 'date' : (this.showTimePicker ? 'time' : null))),
-            ampm: this.showAmPm,
-            startYear: this.startYear,
-            endYear: this.endYear,
-            dateFormat: this.dateFormat,
-            timeFormat: this.timeFormat,
-            dateOrder: this.dateOrder,
-            dayText: this.dayLabel,
-            hourText: this.hoursLabel,
-            minuteText: this.minutesLabel,
-            monthText: this.monthLabel,
-            yearText: this.yearLabel,
-            monthNames: this.monthNames,
-            monthNamesShort: this.monthNamesShort,
-            dayNames: this.dayNames,
-            dayNamesShort: this.dayNamesShort,
-            cancelText: this.cancelButtonValue,
-            setText: this.confirmButtonValue,
-            stepHour: this.stepHour,
-            stepMinute: this.stepMinute,
-            stepSecond: this.stepSecond,
-            seconds: this.seconds,
-
-            /* now set the width of the scrollers */
-            width: (M.Environment.getWidth() - 20) / 3 - 20 > 90 ? 90 : (M.Environment.getWidth() - 20) / 3 - 20,
-
-            beforeShow: function(input, scroller) {
-                that.bindToCaller(that, that.beforeShow, [input, scroller])();
-            },
-            onClose: function(value, scroller) {
-                that.bindToCaller(that, that.onClose, [value, scroller])();
-            },
-            onSelect: function(value, scroller) {
-                that.bindToCaller(that, that.onSelect, [value, scroller])();
-            }
-        });
-        $('#' + this.source).scroller('show');
-    },
-
-    /**
-     * This method is used internally to handle the 'beforeShow' event. It does some adjustments to the
-     * rendered scroller by mobiscroll and finally calls the application's 'before' callback, if it is
-     * defined.
-     *
-     * @param source
-     * @param scroller
-     */
-    beforeShow: function(source, scroller) {
-        var source = null;
-        var date = null;
-
-        /* try to set the date picker's initial date based on its source */
-        if(this.hasSource && this.useSourceDateAsInitialDate) {
-            source = M.ViewManager.getViewById(this.source);
-            if(source.value) {
-                try {
-                    date = D8.create(source.value);
-                } catch(e) {
-
-                }
-                if(date) {
-                    if(date.format('yyyy') < this.startYear) {
-                        if(this.hasOwnProperty('startYear')) {
-                            M.Logger.log('The given date of the source (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
-                        } else {
-                            M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the given date of the source (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
-                            $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
-                            $('#' + this.source).scroller('setDate', date.date);
-                        }
-                    } else {
-                        $('#' + this.source).scroller('setDate', date.date);
-                    }
-                }
-            }
-        }
-
-        /* if there is no source or the retrieval of the date went wrong, try to set it based on the initial date property */
-        if(this.initialDate && !date) {
-            if(this.initialDate.date) {
-                date = this.initialDate;
-            } else {
-                try {
-                    date = D8.create(this.initialDate);
-                } catch(e) {
-
-                }
-            }
-            if(date) {
-                if(date.format('yyyy') < this.startYear) {
-                    if(this.hasOwnProperty('startYear')) {
-                        M.Logger.log('The specified initial date (' + date.format('yyyy') + ') conflicts with the \'startYear\' property (' + this.startYear + ') and therefore will be ignored!', M.WARN);
-                    } else {
-                        M.Logger.log('The date picker\'s default \'startYear\' property (' + this.startYear + ') conflicts with the specified initial date (' + date.format('yyyy') + ') and therefore will be ignored!', M.WARN);
-                        $('#' + this.source).scroller('option', 'startYear', date.format('yyyy'));
-                        $('#' + this.source).scroller('setDate', date.date);
-                    }
-                } else {
-                    $('#' + this.source).scroller('setDate', date.date);
-                }
-            }
-        }
-
-        /* now we got the date (or use the current date as default), lets compute this as a formatted text for the callback */
-        value = scroller.formatDate(
-            this.showDatePicker ? this.dateFormat + (this.showTimePicker ? ' ' + this.timeFormat : '') : this.timeFormat,
-            scroller.getDate()
-        );
-
-        /* kill parts of the scoller */
-        $('.dwv').remove();
-
-        /* give it some shiny jqm style */
-        window.setTimeout(function() {
-            $('.dw').addClass('ui-btn-up-a');
-        }, 1);
-
-        /* disable scrolling for the background */
-        $('.dwo').bind('touchmove', function(e) {
-            e.preventDefault();
-        });
-
-        /* inject TMP buttons*/
-        var confirmButton = M.ButtonView.design({
-            value: this.confirmButtonValue,
-            cssClass: 'b tmp-dialog-smallerbtn-confirm',
-            events: {
-                tap: {
-                    action: function() {
-                        $('#dw_set').trigger('click');
-                    }
-                }
-            }
-        });
-        var cancelButton = M.ButtonView.design({
-            value: this.cancelButtonValue,
-            cssClass: 'd tmp-dialog-smallerbtn-confirm',
-            events: {
-                tap: {
-                    action: function() {
-                        $('#dw_cancel').trigger('click');
-                    }
-                }
-            }
-        });
-
-        if(this.showDatePicker) {
-            var grid = M.GridView.design({
-                childViews: 'confirm cancel',
-                layout: M.TWO_COLUMNS,
-                cssClass: 'tmp-datepicker-buttongrid',
-                confirm: confirmButton,
-                cancel: cancelButton
-            });
-
-            var html = grid.render();
-            $('.dw').append(html);
-            grid.theme();
-            grid.registerEvents();
-        } else {
-            var html = confirmButton.render();
-            html += cancelButton.render();
-            $('.dw').append(html);
-            confirmButton.theme();
-            confirmButton.registerEvents();
-            cancelButton.theme();
-            cancelButton.registerEvents();
-        }
-
-        /* hide default buttons */
-        $('#dw_cancel').hide();
-        $('#dw_set').hide();
-
-        /* add class to body as selector for showing/hiding labels */
-        if(!this.showLabels) {
-            $('body').addClass('tmp-datepicker-no-label');
-        }
-
-        /* call callback */
-        if(this.callbacks && this.callbacks['before'] && M.EventDispatcher.checkHandler(this.callbacks['before'])) {
-            M.EventDispatcher.callHandler(this.callbacks['before'], null, NO, [value, date]);
-        }
-    },
-
-    onClose: function(value, scroller) {
-        /* set value if one was selected */
-        var source = null;
-        var date = null;
-        if(this.isValueSelected) {
-            /* first compute the date */
-            try {
-                date = D8.create(scroller.getDate());
-            } catch(e) {
-
-            }
-
-            /* now, if there is a source, auto-update its value */
-            if(this.hasSource) {
-                source = M.ViewManager.getViewById(this.source);
-                if(source) {
-                    source.setValue(value, NO, YES);
-                }
-            }
-        }
-
-        /* remove class from body as selector for showing/hiding labels */
-        if(!this.showLabels) {
-            $('body').removeClass('tmp-datepicker-no-label');
-        }
-
-        /* call cancel callback */
-        if(!this.isValueSelected && this.callbacks && this.callbacks['cancel'] && M.EventDispatcher.checkHandler(this.callbacks['cancel'])) {
-            M.EventDispatcher.callHandler(this.callbacks['cancel'], null, NO, []);
-        } else if(this.isValueSelected && this.callbacks && this.callbacks['confirm'] && M.EventDispatcher.checkHandler(this.callbacks['confirm'])) {
-            M.EventDispatcher.callHandler(this.callbacks['confirm'], null, NO, [value, date]);
-        }
-
-        /* kill the datepicker */
-        Object.getPrototypeOf(this).isActive = NO;
-        $('#' + this.source).scroller('destroy');
-        $('.dwo').remove();
-        $('.dw').remove();
-        this.destroy();
-    },
-
-    onSelect: function(value) {
-        /* mark the datepicker as 'valueSelected' */
-        this.isValueSelected = YES;
     }
 
 });
