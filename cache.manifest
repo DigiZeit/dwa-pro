@@ -1,35 +1,35 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.2.5770 beta, Timestamp:1416078307708
+#Application:DigiWebApp, Version:1.8.2.5771 beta, Timestamp:1416078569015
 
 
 # Explicitly cached entries
 CACHE:
 underscore-min.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
+jquery-1.9.1.js
+theme/tmp.css
+bootstrap.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-jquery-1.9.1.js
-theme/tmp.css
-bootstrap.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
+jquery_mobile.js
+jstz.js
+jquery.xml2json_1.3.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-jstz.js
-jquery_mobile.js
-jquery.xml2json_1.3.js
+Math.uuid.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
-Math.uuid.js
 pen.cur
 theme/style.css
-theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/1024x1024_90_SCHOLPP.png
+theme/images/1024x1024_90_DIGI-WebApp.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_DIGI-WebApp.png
@@ -43,12 +43,12 @@ theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
+theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
-theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_about.png
@@ -65,9 +65,9 @@ theme/images/48x48_plain_gears.png
 theme/images/48x48_plain_graphics-tablet.png
 theme/images/48x48_plain_handauftrag.png
 theme/images/48x48_plain_home.png
-theme/images/48x48_plain_note_delete.png
 theme/images/48x48_plain_note_view.png
 theme/images/48x48_plain_pda_write.png
+theme/images/48x48_plain_note_delete.png
 theme/images/48x48_plain_refresh.png
 theme/images/48x48_plain_shelf.png
 theme/images/48x48_plain_text_code.png
@@ -77,7 +77,6 @@ theme/images/5000x5000_90_SCHOLPP.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
 theme/images/640x960_90_DIGI-WebApp.png
 theme/images/640x960_90_DIGI-WebApp_mitLogo.png
-theme/images/640x960_90_SCHOLPP.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/720x960_90_DIGI-WebApp_mitLogo.png
@@ -97,6 +96,7 @@ theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
 theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
+theme/images/640x960_90_SCHOLPP.png
 theme/images/icon_ios_114.png
 theme/images/icon_ios_120.png
 theme/images/icon_ios_144.png
@@ -130,12 +130,13 @@ theme/journal.woff
 theme/jquery.signaturepad.css
 json2.min.js
 pen.cur
+accept-multiple-signatures.html
 accept-signature.html
 full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
-accept-multiple-signatures.html
+core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
@@ -143,7 +144,6 @@ theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
-core.js
 DigiWebApp_App.js
 
 
