@@ -3861,345 +3861,6 @@ M.DataConsumer = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      25.02.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-M.TARGET_REMOTE = 'remote';
-M.TARGET_LOCAL = 'local';
-M.TARGET_BOTH = 'both';
-
-M.PRIO_REMOTE = 'prio_remote';
-M.PRIO_LOCAL = 'prio_local';
-M.PRIO_BOTH = 'prio_both';
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * 
- *
- * @extends M.Object
- */
-M.DataProviderHybrid = M.Object.extend(
-/** @scope M.DataProviderHybrid.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProviderHybrid',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: YES,
-
-    /**
-     *
-     * @type Object
-     */
-    localProvider: null,
-
-    /**
-     *
-     * @type Object
-     */
-    remoteProvider: null,
-
-    /**
-     * Defines the operation type: 1 for 'remote' or 'local', 2 for 'both'
-     * @type Number
-     */
-    usedProviders: 0,
-
-    callbackCounter: 0,
-
-    onSuccess: null,
-
-    onError: null,
-
-    callbacks: {
-        success: {
-            local: null,
-            remote: null
-        },
-        error: {
-            local: null,
-            remote: null
-        }
-    },
-
-    /**
-     * 
-     * @type Object
-     */
-    config: null,
-
-    configure: function(obj) {
-        var dp = this.extend({
-            config:obj
-        });
-        if(!dp.config.local) {
-            throw M.Error.extend({
-                code: M.ERR_MODEL_PROVIDER_NOT_SET,
-                msg: 'No local data provider passed'
-            });
-        }
-        if(!dp.config.remote) {
-            throw M.Error.extend({
-                code: M.ERR_MODEL_PROVIDER_NOT_SET,
-                msg: 'No remote data provider passed'
-            });
-        }
-        dp.localProvider = dp.config.local;
-        dp.remoteProvider = dp.config.remote;
-
-        // maybe some value checking before
-        return dp;
-    },
-
-    /**
-     *
-     */
-    find: function(obj) {
-        this.crud(obj, 'find');
-    },
-
-    /**
-     * 
-     */
-    save: function(obj) {
-        this.crud(obj, 'save');
-    },
-
-    /**
-     *
-     */
-    del: function(obj) {
-        this.crud(obj, 'del');
-    },
-
-
-    /**
-     *
-     * @param {Obj} obj The param obj
-     * @param {String} op The operation to be performed on the actual data provider
-     */
-    crud: function(obj, op) {
-
-        obj.target = obj.target || M.TARGET_BOTH;
-
-        if(!obj.prio) {
-            if(obj.target === M.TARGET_BOTH) {
-                obj.prio = M.PRIO_BOTH;
-            } else {
-                if(obj.target === M.TARGET_LOCAL) {
-                    obj.prio = M.PRIO_LOCAL;
-                } else if(obj.target === M.PRIO_REMOTE) {
-                    obj.prio = M.PRIO_REMOTE;
-                }
-            }
-        }
-
-        this.callbackCounter = 0;
-        this.setOriginCallbacks(obj);
-        /* set intermediate callbacks for data provider call */
-        this.setIntermediateCallbacks(obj);
-
-        switch(obj.target) {
-
-            case M.TARGET_LOCAL:
-                this.usedProviders = 1;
-                this.localProvider[op](obj);
-                break;
-
-            case M.TARGET_REMOTE:
-                this.usedProviders = 1;
-                this.remoteProvider[op](obj);
-                break;
-
-            case M.TARGET_BOTH:
-                this.usedProviders = 2;
-                this.localProvider[op](obj);
-                this.remoteProvider[op](obj);
-                break;
-        }
-    },
-    
-    setOriginCallbacks: function(obj) {
-        if (obj.onSuccess && obj.onSuccess.target && obj.onSuccess.action) {
-            obj.onSuccess = this.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action]);
-            this.onSuccess = obj.onSuccess;
-        } else if(obj.onSuccess === 'function') {
-            this.onSuccess = obj.onSuccess;
-        }
-
-        if (obj.onError && obj.onError.target && obj.onError.action) {
-            obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onSuccess.action]);
-            this.onError = obj.onError;
-        } else if(obj.onError === 'function') {
-            this.onError = obj.onError;
-        }
-    },
-
-    setIntermediateCallbacks: function(obj) {
-        obj.onSuccess = {
-            target: this,
-            action: 'handleSuccessCallback'
-        };
-        obj.onError = {
-            target: this,
-            action: 'handleErrorCallback'
-        };
-    },
-
-    handleSuccessCallback: function(res, obj, dp) {
-
-        if(dp.type === this.localProvider.type) {
-            this.callbacks.success.local = {result: res, param: obj, dataProvider:dp};
-        } else if(dp.type === this.remoteProvider.type) {
-            this.callbacks.success.remote = {result: res, param: obj, dataProvider:dp};
-        }
-
-        this.callbackCounter = this.callbackCounter + 1;
-
-        if(this.callbackCounter === this.usedProviders) {
-            this.calculateOperationState();
-        }
-    },
-
-    handleErrorCallback: function(err, obj, dp) {
- 
-        if(dp.type === this.localProvider.type) {
-            this.callbacks.error.local = {err: err, param: obj, dataProvider:dp};
-        } else if(dp.type === this.remoteProvider.type) {
-            this.callbacks.error.remote = {err: err, param: obj, dataProvider:dp};
-
-            // TODO: put into remote data providers
-            obj.model.state_remote = M.STATE_FAIL;
-        }
-
-        this.callbackCounter = this.callbackCounter + 1;
-
-        /* if this is the last callback */
-        if(this.callbackCounter === this.usedProviders) {
-            this.calculateOperationState();
-        }
-    },
-    
-    calculateOperationState: function(obj) {
-        switch(obj.prio) {
-            case M.PRIO_LOCAL:
-                if(!this.callbacks.success.local) {
-                    this.onError(this.error.local.err, obj);
-                } else {
-                    this.onSuccess(this.success.local.result, obj);
-                }
-            case M.PRIO_REMOTE:
-                if(!this.callbacks.error.local) {
-                    this.onError(this.error.remote.err, obj);
-                } else {
-                    this.onSuccess(this.success.remote.result, obj);
-                }
-            case M.PRIO_BOTH:
-                /* if one of the callback failed */
-                if(!this.callbacks.success.local || !this.callbacks.success.remote) {
-                    /* return remote error */
-                    this.onError(this.error.remote.err, obj);
-                } else {  /* if both callbacks have been success callbacks */
-                    this.onSuccess(this.success.remote.result, obj);
-                }
-            break;
-        }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      18.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4393,6 +4054,80 @@ M.Validator = M.Object.extend(
     }
 
 
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
 
 });
 // ==========================================================================
@@ -5269,535 +5004,266 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      20.12.2010
+// Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/datastore/data_provider.js');
+M.TARGET_REMOTE = 'remote';
+M.TARGET_LOCAL = 'local';
+M.TARGET_BOTH = 'both';
+
+M.PRIO_REMOTE = 'prio_remote';
+M.PRIO_LOCAL = 'prio_local';
+M.PRIO_BOTH = 'prio_both';
+
+
+m_require('core/utility/logger.js');
 
 /**
  * @class
  *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
+ * 
  *
- * @extends M.DataProvider
+ * @extends M.Object
  */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      15.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to LocalStorage (in-browser key value store).
- * LocalStorage is an in-browser key-value store to persist data.
- * This data provider persists model records as JSON strings with their name and id as key.
- * When fetching these strings from storage, their automatically converted in their corresponding model records.
- *
- * Operates synchronous.
- *
- * @extends M.DataProvider
- */
-M.DataProviderLocalStorage = M.DataProvider.extend(
-    /** @scope M.DataProviderLocalStorage.prototype */ {
+M.DataProviderHybrid = M.Object.extend(
+/** @scope M.DataProviderHybrid.prototype */ {
 
     /**
      * The type of this object.
+     *
      * @type String
      */
-    type:'M.DataProviderLocalStorage',
+    type: 'M.DataProviderHybrid',
 
     /**
-     * Saves a model record to the local storage
-     * The key is the model record's name combined with id, value is stringified object
-     * e.g.
-     * Note_123 => '{ text: 'buy some food' }'
+     * Indicates whether data provider operates asynchronously or not.
      *
-     * @param {Object} that (is a model).
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     * @type Boolean
      */
-    save:function (obj) {
-        try {
-            //console.log(obj);
-            /* add m_id to saved object */
-            /*var a = JSON.stringify(obj.model.record).split('{', 2);
-             a[2] = a[1];
-             a[1] = '"m_id":' + obj.model.m_id + ',';
-             a[0] = '{';
-             var value = a.join('');*/
-            var value = JSON.stringify(obj.model.record);
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
-            return YES;
-        } catch (e) {
-            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
-            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
-            return NO;
-        }
-
-    },
+    isAsync: YES,
 
     /**
-     * deletes a model from the local storage
-     * key defines which one to delete
-     * e.g. key: 'Note_123'
      *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     * @type Object
      */
-    del:function (obj) {
-        try {
-            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
-                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
-                obj.model.recordManager.remove(obj.model.m_id);
-                return YES;
-            }
-            return NO;
-        } catch (e) {
-            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
-            return NO;
+    localProvider: null,
+
+    /**
+     *
+     * @type Object
+     */
+    remoteProvider: null,
+
+    /**
+     * Defines the operation type: 1 for 'remote' or 'local', 2 for 'both'
+     * @type Number
+     */
+    usedProviders: 0,
+
+    callbackCounter: 0,
+
+    onSuccess: null,
+
+    onError: null,
+
+    callbacks: {
+        success: {
+            local: null,
+            remote: null
+        },
+        error: {
+            local: null,
+            remote: null
         }
     },
 
     /**
-     * Finds all models of type defined by modelName that match a key or a simple query.
-     * A simple query example: 'price < 2.21'
-     * Right now, no AND or OR joins possible, just one query constraint.
-     *
-     * If no query is passed, all models are returned by calling findAll()
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
-     * @throws Exception when query tries to compare two different data types
-     */
-    find:function (obj) {
-        if (obj.key) {
-            var record = this.findByKey(obj);
-            if (!record) {
-                return NO;
-            }
-            /*construct new model record with the saved id*/
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
-            var m_id = reg && reg[1] ? reg[1] : null;
-            if (!m_id) {
-                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
-                return NO;
-            }
-            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-            return m;
-        }
-
-        if (obj.query) {
-            var q = obj.query;
-            var missing = [];
-            if (!q.identifier) {
-                missing.push('identifier');
-            }
-            if (!q.operator) {
-                missing.push('operator');
-            }
-            if (q.value === undefined || q.value === null) {
-                missing.push('value');
-            }
-
-            if (missing.length > 0) {
-                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
-                return [];
-            }
-
-            var ident = q.identifier;
-            var op = q.operator;
-            var val = q.value;
-
-            var res = this.findAll(obj);
-
-            // check if query is correct in respect of data types
-            if(res && res.length > 0) {
-                var o = res[0];
-                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
-					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
-						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
-                }
-            }
-
-            switch (op) {
-                case '=':
-
-                    res = _.select(res, function (o) {
-                        return o.record[ident] === val;
-                    });
-                    break;
-
-                case '~=': // => includes (works only on strings)
-
-                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
-                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
-                    }
-                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
-                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
-
-                    for(var i in metaChars) {
-                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
-                    }
-
-                    // replace whitespaces with regex equivalent
-                    val = val.replace(/\s/g, '\\s');
-
-                    var regex = new RegExp(val);
-
-                    res = _.select(res, function(o) {
-                        return regex.test(o.record[ident]);
-                    });
-
-                    break;
-
-                case '!=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] !== val;
-                    });
-                    break;
-                case '<':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] < val;
-                    });
-                    break;
-                case '>':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] > val;
-                    });
-                    break;
-                case '<=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] <= val;
-                    });
-                    break;
-                case '>=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] >= val;
-                    });
-                    break;
-                default:
-                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
-                    res = [];
-                    break;
-
-            }
-
-            return res;
-
-        } else { /* if no query is passed, all models for modelName shall be returned */
-            return this.findAll(obj);
-        }
-    },
-
-    /**
-     * Finds a record identified by the key.
-     *
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
-     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
-     * parameter passed.
-     */
-    findByKey:function (obj) {
-        if (obj.key) {
-
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
-            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
-            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
-
-            if (localStorage.getItem(obj.key)) { // if key is available
-                return this.buildRecord(obj.key, obj)
-            } else {
-                return NO;
-            }
-        }
-        M.Logger.log("Please provide a key.", M.WARN);
-        return NO;
-    },
-
-    /**
-     * Returns all models defined by modelName.
-     *
-     * Models are saved with key: Modelname_ID, e.g. Note_123
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
-     */
-    findAll:function (obj) {
-        var result = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i);
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
-
-                /*construct new model record with the saved m_id*/
-                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
-                var m_id = reg && reg[1] ? reg[1] : null;
-                if (!m_id) {
-                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
-                    continue; // if m_id does not exist, continue with next record element
-                }
-                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-
-                result.push(m);
-            }
-        }
-        return result;
-    },
-
-    /**
-     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
-     * Means: check whether resulting object's properties have the data type define by their model attribute object.
-     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
-     * 'Date' set for this property.
-     *
-     * @param {String} key The key to fetch the element from LocalStorage
-     * @param {Object} obj The param object, includes model
-     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
-     */
-    buildRecord:function (key, obj) {
-        var record = JSON.parse(localStorage.getItem(key));
-        for (var i in record) {
-            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
-                switch (obj.model.__meta[i].dataType) {
-                    case 'Date':
-                        record[i] = M.Date.create(record[i]);
-                        break;
-                }
-            }
-        }
-        return record;
-    },
-
-    /**
-     * Returns all keys for model defined by modelName.
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
-     */
-    allKeys:function (obj) {
-        var keys = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i)
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
+     * 
      * @type Object
      */
     config: null,
 
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+    configure: function(obj) {
+        var dp = this.extend({
+            config:obj
+        });
+        if(!dp.config.local) {
+            throw M.Error.extend({
+                code: M.ERR_MODEL_PROVIDER_NOT_SET,
+                msg: 'No local data provider passed'
             });
         }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        if(!dp.config.remote) {
+            throw M.Error.extend({
+                code: M.ERR_MODEL_PROVIDER_NOT_SET,
+                msg: 'No remote data provider passed'
+            });
         }
-        callback(result);
-    },
+        dp.localProvider = dp.config.local;
+        dp.remoteProvider = dp.config.remote;
 
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
+        // maybe some value checking before
+        return dp;
     },
 
     /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
+     *
      */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
+    find: function(obj) {
+        this.crud(obj, 'find');
+    },
 
-}); 
+    /**
+     * 
+     */
+    save: function(obj) {
+        this.crud(obj, 'save');
+    },
+
+    /**
+     *
+     */
+    del: function(obj) {
+        this.crud(obj, 'del');
+    },
+
+
+    /**
+     *
+     * @param {Obj} obj The param obj
+     * @param {String} op The operation to be performed on the actual data provider
+     */
+    crud: function(obj, op) {
+
+        obj.target = obj.target || M.TARGET_BOTH;
+
+        if(!obj.prio) {
+            if(obj.target === M.TARGET_BOTH) {
+                obj.prio = M.PRIO_BOTH;
+            } else {
+                if(obj.target === M.TARGET_LOCAL) {
+                    obj.prio = M.PRIO_LOCAL;
+                } else if(obj.target === M.PRIO_REMOTE) {
+                    obj.prio = M.PRIO_REMOTE;
+                }
+            }
+        }
+
+        this.callbackCounter = 0;
+        this.setOriginCallbacks(obj);
+        /* set intermediate callbacks for data provider call */
+        this.setIntermediateCallbacks(obj);
+
+        switch(obj.target) {
+
+            case M.TARGET_LOCAL:
+                this.usedProviders = 1;
+                this.localProvider[op](obj);
+                break;
+
+            case M.TARGET_REMOTE:
+                this.usedProviders = 1;
+                this.remoteProvider[op](obj);
+                break;
+
+            case M.TARGET_BOTH:
+                this.usedProviders = 2;
+                this.localProvider[op](obj);
+                this.remoteProvider[op](obj);
+                break;
+        }
+    },
+    
+    setOriginCallbacks: function(obj) {
+        if (obj.onSuccess && obj.onSuccess.target && obj.onSuccess.action) {
+            obj.onSuccess = this.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action]);
+            this.onSuccess = obj.onSuccess;
+        } else if(obj.onSuccess === 'function') {
+            this.onSuccess = obj.onSuccess;
+        }
+
+        if (obj.onError && obj.onError.target && obj.onError.action) {
+            obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onSuccess.action]);
+            this.onError = obj.onError;
+        } else if(obj.onError === 'function') {
+            this.onError = obj.onError;
+        }
+    },
+
+    setIntermediateCallbacks: function(obj) {
+        obj.onSuccess = {
+            target: this,
+            action: 'handleSuccessCallback'
+        };
+        obj.onError = {
+            target: this,
+            action: 'handleErrorCallback'
+        };
+    },
+
+    handleSuccessCallback: function(res, obj, dp) {
+
+        if(dp.type === this.localProvider.type) {
+            this.callbacks.success.local = {result: res, param: obj, dataProvider:dp};
+        } else if(dp.type === this.remoteProvider.type) {
+            this.callbacks.success.remote = {result: res, param: obj, dataProvider:dp};
+        }
+
+        this.callbackCounter = this.callbackCounter + 1;
+
+        if(this.callbackCounter === this.usedProviders) {
+            this.calculateOperationState();
+        }
+    },
+
+    handleErrorCallback: function(err, obj, dp) {
+ 
+        if(dp.type === this.localProvider.type) {
+            this.callbacks.error.local = {err: err, param: obj, dataProvider:dp};
+        } else if(dp.type === this.remoteProvider.type) {
+            this.callbacks.error.remote = {err: err, param: obj, dataProvider:dp};
+
+            // TODO: put into remote data providers
+            obj.model.state_remote = M.STATE_FAIL;
+        }
+
+        this.callbackCounter = this.callbackCounter + 1;
+
+        /* if this is the last callback */
+        if(this.callbackCounter === this.usedProviders) {
+            this.calculateOperationState();
+        }
+    },
+    
+    calculateOperationState: function(obj) {
+        switch(obj.prio) {
+            case M.PRIO_LOCAL:
+                if(!this.callbacks.success.local) {
+                    this.onError(this.error.local.err, obj);
+                } else {
+                    this.onSuccess(this.success.local.result, obj);
+                }
+            case M.PRIO_REMOTE:
+                if(!this.callbacks.error.local) {
+                    this.onError(this.error.remote.err, obj);
+                } else {
+                    this.onSuccess(this.success.remote.result, obj);
+                }
+            case M.PRIO_BOTH:
+                /* if one of the callback failed */
+                if(!this.callbacks.success.local || !this.callbacks.success.remote) {
+                    /* return remote error */
+                    this.onError(this.error.remote.err, obj);
+                } else {  /* if both callbacks have been success callbacks */
+                    this.onSuccess(this.success.remote.result, obj);
+                }
+            break;
+        }
+    }
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6323,6 +5789,540 @@ M.UrlValidator = M.Validator.extend(
         return NO;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      15.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to LocalStorage (in-browser key value store).
+ * LocalStorage is an in-browser key-value store to persist data.
+ * This data provider persists model records as JSON strings with their name and id as key.
+ * When fetching these strings from storage, their automatically converted in their corresponding model records.
+ *
+ * Operates synchronous.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderLocalStorage = M.DataProvider.extend(
+    /** @scope M.DataProviderLocalStorage.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type:'M.DataProviderLocalStorage',
+
+    /**
+     * Saves a model record to the local storage
+     * The key is the model record's name combined with id, value is stringified object
+     * e.g.
+     * Note_123 => '{ text: 'buy some food' }'
+     *
+     * @param {Object} that (is a model).
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    save:function (obj) {
+        try {
+            //console.log(obj);
+            /* add m_id to saved object */
+            /*var a = JSON.stringify(obj.model.record).split('{', 2);
+             a[2] = a[1];
+             a[1] = '"m_id":' + obj.model.m_id + ',';
+             a[0] = '{';
+             var value = a.join('');*/
+            var value = JSON.stringify(obj.model.record);
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
+            return YES;
+        } catch (e) {
+            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
+            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
+            return NO;
+        }
+
+    },
+
+    /**
+     * deletes a model from the local storage
+     * key defines which one to delete
+     * e.g. key: 'Note_123'
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    del:function (obj) {
+        try {
+            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
+                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
+                obj.model.recordManager.remove(obj.model.m_id);
+                return YES;
+            }
+            return NO;
+        } catch (e) {
+            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
+            return NO;
+        }
+    },
+
+    /**
+     * Finds all models of type defined by modelName that match a key or a simple query.
+     * A simple query example: 'price < 2.21'
+     * Right now, no AND or OR joins possible, just one query constraint.
+     *
+     * If no query is passed, all models are returned by calling findAll()
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
+     * @throws Exception when query tries to compare two different data types
+     */
+    find:function (obj) {
+        if (obj.key) {
+            var record = this.findByKey(obj);
+            if (!record) {
+                return NO;
+            }
+            /*construct new model record with the saved id*/
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
+            var m_id = reg && reg[1] ? reg[1] : null;
+            if (!m_id) {
+                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
+                return NO;
+            }
+            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+            return m;
+        }
+
+        if (obj.query) {
+            var q = obj.query;
+            var missing = [];
+            if (!q.identifier) {
+                missing.push('identifier');
+            }
+            if (!q.operator) {
+                missing.push('operator');
+            }
+            if (q.value === undefined || q.value === null) {
+                missing.push('value');
+            }
+
+            if (missing.length > 0) {
+                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
+                return [];
+            }
+
+            var ident = q.identifier;
+            var op = q.operator;
+            var val = q.value;
+
+            var res = this.findAll(obj);
+
+            // check if query is correct in respect of data types
+            if(res && res.length > 0) {
+                var o = res[0];
+                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
+					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
+						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
+                }
+            }
+
+            switch (op) {
+                case '=':
+
+                    res = _.select(res, function (o) {
+                        return o.record[ident] === val;
+                    });
+                    break;
+
+                case '~=': // => includes (works only on strings)
+
+                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
+                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
+                    }
+                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
+                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
+
+                    for(var i in metaChars) {
+                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
+                    }
+
+                    // replace whitespaces with regex equivalent
+                    val = val.replace(/\s/g, '\\s');
+
+                    var regex = new RegExp(val);
+
+                    res = _.select(res, function(o) {
+                        return regex.test(o.record[ident]);
+                    });
+
+                    break;
+
+                case '!=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] !== val;
+                    });
+                    break;
+                case '<':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] < val;
+                    });
+                    break;
+                case '>':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] > val;
+                    });
+                    break;
+                case '<=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] <= val;
+                    });
+                    break;
+                case '>=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] >= val;
+                    });
+                    break;
+                default:
+                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
+                    res = [];
+                    break;
+
+            }
+
+            return res;
+
+        } else { /* if no query is passed, all models for modelName shall be returned */
+            return this.findAll(obj);
+        }
+    },
+
+    /**
+     * Finds a record identified by the key.
+     *
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
+     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
+     * parameter passed.
+     */
+    findByKey:function (obj) {
+        if (obj.key) {
+
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
+            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
+            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
+
+            if (localStorage.getItem(obj.key)) { // if key is available
+                return this.buildRecord(obj.key, obj)
+            } else {
+                return NO;
+            }
+        }
+        M.Logger.log("Please provide a key.", M.WARN);
+        return NO;
+    },
+
+    /**
+     * Returns all models defined by modelName.
+     *
+     * Models are saved with key: Modelname_ID, e.g. Note_123
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
+     */
+    findAll:function (obj) {
+        var result = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
+
+                /*construct new model record with the saved m_id*/
+                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
+                var m_id = reg && reg[1] ? reg[1] : null;
+                if (!m_id) {
+                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
+                    continue; // if m_id does not exist, continue with next record element
+                }
+                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+
+                result.push(m);
+            }
+        }
+        return result;
+    },
+
+    /**
+     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
+     * Means: check whether resulting object's properties have the data type define by their model attribute object.
+     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
+     * 'Date' set for this property.
+     *
+     * @param {String} key The key to fetch the element from LocalStorage
+     * @param {Object} obj The param object, includes model
+     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
+     */
+    buildRecord:function (key, obj) {
+        var record = JSON.parse(localStorage.getItem(key));
+        for (var i in record) {
+            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
+                switch (obj.model.__meta[i].dataType) {
+                    case 'Date':
+                        record[i] = M.Date.create(record[i]);
+                        break;
+                }
+            }
+        }
+        return record;
+    },
+
+    /**
+     * Returns all keys for model defined by modelName.
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
+     */
+    allKeys:function (obj) {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i)
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      20.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
