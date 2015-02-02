@@ -1104,81 +1104,6 @@ M.Date = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.05.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.DeviceSwitch defines a prototype for using device specific objects within
- * an application developed with The M-Project.
- *
- * @extends M.Object
- */
-M.DeviceSwitch = M.Object.extend(
-/** @scope M.DeviceSwitch.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DeviceSwitch',
-
-    /**
-     * The name of the current device.
-     *
-     * @type String
-     */
-    device: null,
-
-    /**
-     * This method returns the specialized string for the given key based on
-     * the current device/environment.
-     *
-     * @param {String} key The key to the specialized string.
-     * @returns {String} The specialized string based on the current device/environment.
-     */
-    s: function(key) {
-        return this.specialize(key);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @returns {String} The localizes string based on the current application language.
-     */
-    specialize: function(key) {
-        if(!this.device) {
-            M.Logger.log('No device specified!', M.ERR);
-            return null;
-        }
-
-        if(this[this.device] && this[this.device][key]) {
-            return this[this.device][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
-            return null;
-        }
-    }
-
-});
-
-M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -1451,9 +1376,10 @@ M.Environment = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      09.11.2012
+// Date:      03.05.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -1464,115 +1390,65 @@ m_require('core/foundation/object.js');
 /**
  * @class
  *
- * This prototype defines methods for preloading images.
+ * M.DeviceSwitch defines a prototype for using device specific objects within
+ * an application developed with The M-Project.
  *
  * @extends M.Object
  */
-M.ImagePreloader = M.Object.extend(
-/** @scope M.ImagePreloader.prototype */ {
+M.DeviceSwitch = M.Object.extend(
+/** @scope M.DeviceSwitch.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.ImagePreloader',
+    type: 'M.DeviceSwitch',
 
-    images: null,
+    /**
+     * The name of the current device.
+     *
+     * @type String
+     */
+    device: null,
 
-    refId: '',
-
-    bodyDOM: null,
-
-    loadCounter: 0,
-
-    init: function(obj) {
-        obj.refId = obj.refId || M.UniqueId.uuid();
-        obj.bodyDOM = $('body');
-
-        return this.extend(obj);
+    /**
+     * This method returns the specialized string for the given key based on
+     * the current device/environment.
+     *
+     * @param {String} key The key to the specialized string.
+     * @returns {String} The specialized string based on the current device/environment.
+     */
+    s: function(key) {
+        return this.specialize(key);
     },
 
-    preload: function() {
-        var that = this;
-        if(this.images && this.images.length > 0) {
-            _.each(this.images, function(i) {
-                window.setTimeout(function() {
-                    that.preloadSingleImage(i);
-                }, 1);
-            });
-        }
-    },
-
-    preloadSingleImage: function(image) {
-        var imageView = M.ImageView.design({
-            value: image,
-            cssClass: 'tmp-image-preloading',
-            events: {
-                load: {
-                    target: this,
-                    action: 'loadSingle'
-                },
-                error: {
-                    target: this,
-                    action: 'error'
-                }
-            }
-        });
-
-        this.bodyDOM.append(imageView.render());
-        imageView.registerEvents();
-    },
-
-    loadSingle: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call load event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
-            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @returns {String} The localizes string based on the current application language.
+     */
+    specialize: function(key) {
+        if(!this.device) {
+            M.Logger.log('No device specified!', M.ERR);
+            return null;
         }
 
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    error: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call error event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
-            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    finish: function() {
-        /* doublecheck */
-        if(this.loadCounter !== this.images.length) {
-            return;
-        }
-
-        /* call finish event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
-            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
+        if(this[this.device] && this[this.device][key]) {
+            return this[this.device][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
+            return null;
         }
     }
 
 });
+
+M.DS = M.DeviceSwitch;
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1745,6 +1621,130 @@ M.I18N = M.Object.extend(
         } else {
             M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
             return false;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2012
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines methods for preloading images.
+ *
+ * @extends M.Object
+ */
+M.ImagePreloader = M.Object.extend(
+/** @scope M.ImagePreloader.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImagePreloader',
+
+    images: null,
+
+    refId: '',
+
+    bodyDOM: null,
+
+    loadCounter: 0,
+
+    init: function(obj) {
+        obj.refId = obj.refId || M.UniqueId.uuid();
+        obj.bodyDOM = $('body');
+
+        return this.extend(obj);
+    },
+
+    preload: function() {
+        var that = this;
+        if(this.images && this.images.length > 0) {
+            _.each(this.images, function(i) {
+                window.setTimeout(function() {
+                    that.preloadSingleImage(i);
+                }, 1);
+            });
+        }
+    },
+
+    preloadSingleImage: function(image) {
+        var imageView = M.ImageView.design({
+            value: image,
+            cssClass: 'tmp-image-preloading',
+            events: {
+                load: {
+                    target: this,
+                    action: 'loadSingle'
+                },
+                error: {
+                    target: this,
+                    action: 'error'
+                }
+            }
+        });
+
+        this.bodyDOM.append(imageView.render());
+        imageView.registerEvents();
+    },
+
+    loadSingle: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call load event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
+            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    error: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call error event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
+            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    finish: function() {
+        /* doublecheck */
+        if(this.loadCounter !== this.images.length) {
+            return;
+        }
+
+        /* call finish event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
+            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
         }
     }
 
@@ -2241,6 +2241,119 @@ m_require('core/foundation/object.js');
 /**
  * @class
  *
+ * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
+ * normally don't call this object respectively its methods directly, but let M.Cypher handle
+ * this.
+ *
+ * @extends M.Object
+ */
+M.Base64 = M.Object.extend(
+/** @scope M.Base64.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Base64',
+
+    /**
+     * The key string for the base 64 decoding and encoding.
+     *
+     * @type String
+     */
+    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
+
+    /**
+     * This method encodes a given input string, using the base64 encoding.
+     *
+     * @param {String} input The string to be encoded.
+     * @returns {String} The base64 encoded string.
+     */
+    encode: function(input) {
+        var output = '';
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = M.Cypher.utf8_encode(input);
+
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if(isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if(isNaN(chr3)) {
+                enc4 = 64;
+            }
+
+            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
+        }
+
+        return output;
+    },
+
+    /**
+     * This method decodes a given input string, using the base64 decoding.
+     *
+     * @param {String} input The string to be decoded.
+     * @returns {String} The base64 decoded string.
+     */
+    decode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        while (i < input.length) {
+            enc1 = this.keyString.indexOf(input.charAt(i++));
+            enc2 = this.keyString.indexOf(input.charAt(i++));
+            enc3 = this.keyString.indexOf(input.charAt(i++));
+            enc4 = this.keyString.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if(enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            
+            if(enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+
+        return M.Cypher.utf8_decode(output);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      11.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
  * This prototype defines a hashing mechanism based on the SHA256 algorithm. You normally
  * don't call this object respectively its methods directly, but let M.Cypher handle
  * this.
@@ -2423,119 +2536,6 @@ M.SHA256 = M.Object.extend(
                     hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
         }
         return str;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      11.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
- * normally don't call this object respectively its methods directly, but let M.Cypher handle
- * this.
- *
- * @extends M.Object
- */
-M.Base64 = M.Object.extend(
-/** @scope M.Base64.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Base64',
-
-    /**
-     * The key string for the base 64 decoding and encoding.
-     *
-     * @type String
-     */
-    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
-
-    /**
-     * This method encodes a given input string, using the base64 encoding.
-     *
-     * @param {String} input The string to be encoded.
-     * @returns {String} The base64 encoded string.
-     */
-    encode: function(input) {
-        var output = '';
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = M.Cypher.utf8_encode(input);
-
-        while (i < input.length) {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if(isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if(isNaN(chr3)) {
-                enc4 = 64;
-            }
-
-            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
-        }
-
-        return output;
-    },
-
-    /**
-     * This method decodes a given input string, using the base64 decoding.
-     *
-     * @param {String} input The string to be decoded.
-     * @returns {String} The base64 decoded string.
-     */
-    decode: function(input) {
-        var output = "";
-        var chr1, chr2, chr3;
-        var enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        while (i < input.length) {
-            enc1 = this.keyString.indexOf(input.charAt(i++));
-            enc2 = this.keyString.indexOf(input.charAt(i++));
-            enc3 = this.keyString.indexOf(input.charAt(i++));
-            enc4 = this.keyString.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if(enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            
-            if(enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-        }
-
-        return M.Cypher.utf8_decode(output);
     }
 
 });
@@ -5802,75 +5802,6 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5958,6 +5889,75 @@ M.DateValidator = M.Validator.extend(
             return YES;
         }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
