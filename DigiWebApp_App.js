@@ -9965,884 +9965,6 @@ DigiWebApp.BautagebuchBautagesberichteListeController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: BautagebuchDatenuebertragungController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
-
-	  successReturnCallback: function() {}
-	, errorReturnCallback: function() {}
-
-	, consoleLogOutput: NO
-	
-	, empfangen: function(successReturnCallback, errorReturnCallback) {
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		
-		that.successReturnCallback = successReturnCallback;
-		that.errorReturnCallback = function() {
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-			errorReturnCallback();
-		}
-
-		//var successCallback = function(data, msg, request) {};
-		//var errorCallback = function(request, msg) {};
-		
-		// Verarbeitungskette definieren und starten
-		DigiWebApp.RequestController.getDatabaseServer(function() {
-			that.empfangeProjektleiter(function() {
-				that.empfangeMitarbeiter(function() {
-					that.empfangeMengeneinheiten(function() {
-						that.empfangeMaterialien(
-							that.successReturnCallback
-						  , that.successReturnCallback);
-					}, that.errorReturnCallback);
-				}, that.errorReturnCallback);
-			}, that.errorReturnCallback);
-		});
-	
-		
-	}
-
-	, senden: function(item, successReturnCallback, errorReturnCallback) {
-		// item ist ein Bautagesbericht
-
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		
-		that.successReturnCallback = successReturnCallback;
-		that.errorReturnCallback = function() {
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-			errorReturnCallback();
-		}
-
-		//var successCallback = function(data, msg, request) {};
-		//var errorCallback = function(request, msg) {};
-		
-		// Verarbeitungskette definieren und starten
-		DigiWebApp.RequestController.getDatabaseServer(function() {
-			that.sendeBautagesbericht(item,function() {
-				that.sendeZeitbuchungen(item,function() {
-					that.sendeMaterialbuchungen(item,function() {
-						that.sendeNotizen(item,function() {
-							that.sendeMedien(item,function() {
-								that.sendeBautagesberichtFertig(
-										item
-									  , that.successReturnCallback
-									  , that.errorReturnCallback);
-							}, that.errorReturnCallback);
-						}, that.errorReturnCallback);
-					}, that.errorReturnCallback);
-				}, that.errorReturnCallback);
-			}, that.errorReturnCallback);
-		});
-	}
-
-	, abgeschlosseneUebertragen: function() {
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var abgeschlosseneBautagesberichte = _.filter(DigiWebApp.BautagebuchBautagesbericht.find(), function(item) { return parseBool(item.get("abgeschlossen")); });
-		if (abgeschlosseneBautagesberichte.length > 0) {
-			var doSenden = function(item, callback) {
-				DigiWebApp.BautagebuchDatenuebertragungController.senden(
-						  item
-						, function(msg) {
-							  DigiWebApp.BautagebuchBautagesberichteListeController.init(); // Liste aktualisieren
-							  callback();
-						}
-						, function(xhr,err) {
-							trackError(err);
-				            DigiWebApp.ApplicationController.nativeAlertDialogView({
-				                title: M.I18N.l('BautagebuchUebertragungsfehler')
-				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
-				            });
-						}
-				);
-			};
-			var itemToSend = abgeschlosseneBautagesberichte[0];
-			doSenden(itemToSend, DigiWebApp.BautagebuchDatenuebertragungController.abgeschlosseneUebertragen);
-		} else {
-			// nothing to do
-		}
-	}
-	
-	, empfangeMengeneinheiten: function(successCallback, errorCallback) {
-		// wird noch nicht via WebService befüllt
-		
-		// direkt weiter in der Verarbeitungskette
-		successCallback();
-
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-						
-		if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeMengeneinheiten Status: " + request.status);
-
-			// wurde eine Mengeneinheitenliste erhalten?
-			if (typeof(data.mengeneinheiten) === "undefined") {
-				trackError("missing mengeneinheiten");
-	    		return errorCallback();
-			}
-			
-			// enthält die Mengeneinheitenliste Mengeneinheiten?
-			if (data.mengeneinheiten === null) {
-				// ohne Mengeneinheiten geht im Bautagebuch nichts
-				return errorCallback();
-			} else {
-				// ist data.mengeneinheiten auch wirklich ein Array?
-				var myLength = null;
-				try {
-					myLength = data.mengeneinheiten.length;
-				} catch(e) {
-					return errorCallback();
-				}
-			}
-			
-			// data.mengeneinheiten enthält also myLength Elemente
-    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('mengeneinheiten'), myLength, 0);
-
-    		// alle "alten" Mengeneinheiten löschen
-			DigiWebApp.BautagebuchMengeneinheit.deleteAll();
-			
-			// die empfangenen Mengeneinheiten mit Model ablegen
-			_.each(data.mengeneinheiten, function(el) {
-	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
-				if (typeof(el.id) === "undefined") {
-					trackError("missing mengeneinheit id");
-					return errorCallback();
-//				} else if (typeof(el.bezeichnung) === "undefined") {
-//					trackError("missing mengeneinheit bezeichnung");
-//					return errorCallback();
-				} else if (typeof(el.kuerzel) === "undefined") {
-					trackError("missing mengeneinheit kuerzel");
-					return errorCallback();
-				} else {
-					
-					// mengeneinheit (el) zur Liste hinzufügen
-					DigiWebApp.BautagebuchMengeneinheit.createRecord({id: "" + el.id, kuerzel: "" + el.kuerzel}).saveSorted();
-
-				}
-			});
-			
-			// weiter in der Verarbeitungskette
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-			successCallback();
-		};
-		
-		var recieveObj = {
-				  webservice: "mengeneinheiten"
-				, loaderText: M.I18N.l('BautagebuchLadeMengeneinheiten')
-				, successCallback: internalSuccessCallback
-				, errorCallback: errorCallback
-				//, additionalQueryParameter: 
-				//, timeout: 
-				//, geraeteIdOverride: 
-				//, modus: 
-		};
-		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
-		
-	}
-	
-	, empfangeMaterialien: function(successCallback, errorCallback) {
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-			
-			if (that.consoleLogOutput) console.log("empfangeMaterialien Status: " + request.status);
-
-			//var myMaterialliste = [];
-			
-			// wurde eine materialliste erhalten?
-			if (typeof(data.materialliste) === "undefined") {
-				trackError("missing materialliste");
-				return errorCallback();
-			}
-			
-			// enthält die Materialliste Materialien?
-			if (data.materialliste === null) {
-				// hier könnte man wenn gewünscht verhindern, dass es im Bautagebuch gar keine Materialien gibt
-				//return errorCallback();
-			} else {
-				// ist data.materialliste auch wirklich ein Array?
-				var myLength = null;
-				try {
-					myLength = data.materialliste.length;
-				} catch(e2) {
-					trackError("data.materialliste hat Länge " + myLength);
-					//return errorCallback();
-				}
-			}
-			
-			// data.materialliste enthält also myLength (oder gar keine) Elemente
-    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('materialien'), myLength, 0);
-
-			// alle "alten" Materialien löschen
-			DigiWebApp.BautagebuchMaterial.deleteAll();
-			DigiWebApp.BautagebuchLieferant.deleteAll();
-			DigiWebApp.BautagebuchHersteller.deleteAll();
-			DigiWebApp.BautagebuchMaterialtyp.deleteAll();
-			DigiWebApp.BautagebuchMaterialgruppe.deleteAll();
-			
-			// die empfangenen Materialien mit Model ablegen
-			_.each(data.materialliste, function(el) {
-	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
-				//console.log(el);
-				if (typeof(el.bezeichnung) === "undefined") {
-					trackError("missing bezeichnung");
-					return errorCallback();
-				} else {
-					
-					// Lieferanten
-					var lieferantenIds = [];
-					_.each(el.lieferanten, function(lieferant) {
-						lieferantenIds.push("" + lieferant.id);
-						var lief = DigiWebApp.BautagebuchLieferant.find({query:{identifier: 'id', operator: '=', value: "" + lieferant.id}})[0];
-						if (!lief) {
-							// Lieferant anlegen
-							DigiWebApp.BautagebuchLieferant.createRecord({
-								  id: "" + lieferant.id
-								, bezeichnung: "" + lieferant.bezeichnung
-								, nummer: "" + lieferant.nummer
-							}).saveSorted();
-						}
-					});
-					
-					// Hersteller
-					var herst = DigiWebApp.BautagebuchHersteller.find({query:{identifier: 'id', operator: '=', value: "" + el.herstellerId}})[0];
-					if (!herst) {
-						// Hersteller anlegen
-						DigiWebApp.BautagebuchHersteller.createRecord({
-							  id: "" + el.herstellerId
-							, bezeichnung: "" + el.hersteller
-						}).saveSorted();
-					}
-
-					// Materialgruppen
-					var materialgruppenIds = [];
-					_.each(el.materialgruppen, function(materialgruppe) {
-						materialgruppenIds.push("" + materialgruppe.id);
-						var matgr = DigiWebApp.BautagebuchMaterialgruppe.find({query:{identifier: 'id', operator: '=', value: "" + materialgruppe.id}})[0];
-						if (!matgr) {
-							// Materialgruppe anlegen
-							DigiWebApp.BautagebuchMaterialgruppe.createRecord({
-								  id: "" + materialgruppe.id
-								, bezeichnung: "" + materialgruppe.bezeichnung
-								, vaterId: "" + materialgruppe.vaterId
-							}).saveSorted();
-						}
-					});
-
-					// Materialtypen
-					var materialtypId = 0;
-					if (el.materialtyp) {
-						materialtypId = "" + el.materialtyp.id;
-						var matTyp = DigiWebApp.BautagebuchMaterialtyp.find({query:{identifier: 'id', operator: '=', value: "" + el.materialtyp.id}})[0];
-						if (!matTyp) {
-							// Lieferant anlegen
-							DigiWebApp.BautagebuchMaterialtyp.createRecord({
-								  id: "" + el.materialtyp.id
-								, bezeichnung: "" + el.materialtyp.bezeichnung
-							}).saveSorted();
-						}
-					}
-					var myEinheitenIds = [];
-					_.each(el.einheitenIds, function(einheitId) {
-						myEinheitenIds.push("" + einheitId);
-					});
-					
-					var myNummer = null;
-					if (el.nummer) {
-						myNummer = "" + el.nummer;
-					}
-					
-					// Material anlegen
-					DigiWebApp.BautagebuchMaterial.createRecord({
-						  id: "" + el.id
-						, bezeichnung: "" + el.bezeichnung
-						, nummer: myNummer
-						, standardEinheitId: "" + el.standardEinheitId
-						, herstellerId: "" + el.herstellerId
-						, einheitenIds: JSON.stringify(myEinheitenIds)
-						, lieferantenIds: JSON.stringify(lieferantenIds)
-						, materialgruppenIds: JSON.stringify(materialgruppenIds)
-						, materialtypId: "" + materialtypId
-						, einzelpreis: el.einzelpreis
-					}).saveSorted();
-				}
-			});
-			
-			// weiter in der Verarbeitungskette
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-			successCallback();
-		};
-		
-		var recieveObj = {
-			  webservice: "materialliste"
-			, loaderText: M.I18N.l('BautagebuchLadeMaterialien')
-			, successCallback: internalSuccessCallback
-			, errorCallback: errorCallback
-			//, additionalQueryParameter: 
-			//, timeout: 
-			//, geraeteIdOverride: 
-			//, modus: 
-		};
-		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
-		
-	}
-
-	, empfangeProjektleiter: function(successCallback, errorCallback) {
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-						
-			if (that.consoleLogOutput) console.log("empfangeProjektleiter Status: " + request.status);
-
-			// wurde eine Projektleiterliste erhalten?
-			if (typeof(data.projektleiter) === "undefined") {
-				trackError("missing mitarbeiterliste");
-				return errorCallback();
-			}
-			
-			// enthält die Projektleiterliste Projektleiter?
-			if (data.projektleiter === null) {
-				// ohne Projektleiter geht im Bautagebuch nichts
-				return errorCallback();
-			} else {
-				// ist data.materialliste auch wirklich ein Array?
-				var myLength = null;
-				try {
-					myLength = data.projektleiter.length;
-				} catch(e1) {
-					// ohne Projektleiter geht im Bautagebuch nichts
-					trackError("data.projektleiter hat Länge " + myLength);
-					return errorCallback();
-				}
-			}
-			
-			// data.projektleiter enthält also myLength Elemente
-    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('projektleiter'), myLength, 0);
-
-    		// alle "alten" Projektleiter löschen
-			DigiWebApp.BautagebuchProjektleiter.deleteAll();
-			
-			// die empfangenen Projektleiter mit Model ablegen
-			_.each(data.projektleiter, function(el) {
-	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
-				if (typeof(el.id) === "undefined") {
-					trackError("missing id");
-					return errorCallback();
-//				} else if (typeof(el.projektleiterId) === "undefined") {
-//					trackError("missing projektleiterId");
-//					return errorCallback();
-				} else if (typeof(el.vorname) === "undefined") {
-					trackError("missing projektleiter vorname");
-					return errorCallback();
-				} else if (typeof(el.nachname) === "undefined") {
-					trackError("missing projektleiter nachname");
-					return errorCallback();
-				} else {
-					
-					//if (el.id === el.projektleiterId) {
-						// projektleiter (el) zur Liste hinzufügen
-						// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-						if (DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
-							DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
-						}
-					//}
-
-				}
-			});
-			
-			// weiter in der Verarbeitungskette
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-    		successCallback();
-		};
-		
-		var recieveObj = {
-			  webservice: "projektleiter"
-			, loaderText: M.I18N.l('BautagebuchLadeProjektleiter')
-			, successCallback: internalSuccessCallback
-			, errorCallback: errorCallback
-			//, additionalQueryParameter: 'getAll=true&nurKolonne=false'
-			//, timeout: 
-			//, geraeteIdOverride: 
-			//, modus: 
-		};
-		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
-		
-	}
-
-	, empfangeMitarbeiter: function(successCallback, errorCallback) {
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-						
-			if (that.consoleLogOutput) console.log("empfangeMitarbeiter Status: " + request.status);
-			
-			// wurde eine Mitarbeiterliste erhalten?
-			if (typeof(data.mitarbeiter) === "undefined") {
-				trackError("missing projektleiterliste");
-				return errorCallback();
-			}
-			
-			// enthält die Mitarbeiterliste Mitarbeiter?
-			if (data.mitarbeiter === null) {
-				// ohne Mitarbeiter geht im Bautagebuch nichts
-				return errorCallback();
-			} else {
-				// ist data.materialliste auch wirklich ein Array?
-				var myLength = null;
-				try {
-					myLength = data.mitarbeiter.length;
-				} catch(e2) {
-					// ohne Mitarbeiter geht im Bautagebuch nichts
-					trackError("data.mitarbeiter hat Länge " + myLength);
-					return errorCallback();
-				}
-			}
-			
-			// data.projektleiter enthält also myLength Elemente
-    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('employees'), myLength, 0);
-
-			// alle "alten" Mitarbeiter löschen
-			DigiWebApp.BautagebuchMitarbeiter.deleteAll();
-			
-			// die empfangenen Projektleiter im Model ablegen
-			_.each(data.mitarbeiter, function(el) {
-	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
-				if (typeof(el.id) === "undefined") {
-					trackError("missing mitarbeiter id");
-					return errorCallback();
-				} else if (typeof(el.vorname) === "undefined") {
-					trackError("missing mitarbeiter vorname");
-					return errorCallback();
-				} else if (typeof(el.nachname) === "undefined") {
-					trackError("missing mitarbeiter nachname");
-					return errorCallback();
-				} else if (typeof(el.projektleiterId) === "undefined") {
-					trackError("missing mitarbeiter projektleiterId");
-					return errorCallback();
-				} else {
-					
-					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
-					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
-						DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
-					}
-
-				}
-			});
-			
-			// weiter in der Verarbeitungskette
-    		DigiWebApp.ApplicationController.DigiProgressView.hide();
-			successCallback();
-		};
-		// getAll=true  Alle
-		// getAll=false KolonnenMAs
-		var recieveObj = {
-			  webservice: "mitarbeiter"
-			, loaderText: M.I18N.l('BautagebuchLadeProjektleiter')
-			, successCallback: internalSuccessCallback
-			, errorCallback: errorCallback
-			, additionalQueryParameter: 'getAll=true&nurKolonne=true'
-			//, timeout: 
-			//, geraeteIdOverride: 
-			//, modus: 
-		};
-		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
-		
-	}
-		
-	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		if (item.get('id')) {
-			item.set("bautagesberichtId", item.get('id'));
-		}
-		item.set("transferCompleted", NO);
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-			if (that.consoleLogOutput) console.log("sendeBautagesbericht Status: " + request.status);
-			// weiter in der Verarbeitungskette
-			successCallback();
-			
-		};
-		var sendObj = {
-				  data: item.record
-				, webservice: "bautagesbericht"
-				, loaderText: M.I18N.l('BautagebuchSendeBautagesbericht')
-				, successCallback: internalSuccessCallback
-				, errorCallback: errorCallback
-				//, additionalQueryParameter:
-				//, timeout: 
-		};
-		if (item.hasFileName()) {
-			item.readFromFile(function(result){
-				item.set("unterschrift", JSON.parse(result));
-				sendObj.data = item.record;
-				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-			},function(err){
-				item.set("unterschrift", [{"lx":1,"ly":1,"mx":1,"my":1}]);
-				sendObj.data = item.record;
-				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-			});
-		} else {
-			item.set("unterschrift", [{"lx":1,"ly":1,"mx":1,"my":1}]);
-			sendObj.data = item.record;
-			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		}
-		
-	}
-
-	, sendeZeitbuchungen: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		
-		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		
-		var items = [];
-		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}); 
-		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
-            return parseIntRadixTen(z.get('_createdAt'));
-        });
-		_.each(relevanteZeitbuchungenSorted, function(el) {
-			_.each(JSON.parse(el.get("mitarbeiterIds")), function(maId) {
-				var zeitbuch = DigiWebApp.BautagebuchZeitbuchung.createRecord({
-					  bautagesberichtId: item.get('id')
-				});
-				for (var prop in el.record) {
-					try {
-						if (typeof(JSON.parse(el.get(prop)).length) !== "undefined") {
-							zeitbuch.set(prop, JSON.parse(el.get(prop)));
-						} else {
-							zeitbuch.set(prop, el.get(prop));
-						}
-					} catch(e2) {
-						zeitbuch.set(prop, el.get(prop));
-					}
-				}
-				zeitbuch.set("mitarbeiterId", parseIntRadixTen(maId));
-				if (zeitbuch.get('dauer') != "00:00") {
-					items.push(zeitbuch.record);
-				}
-			});
-		});
-		if (items.length !== 0) {
-			var data = {"zeitdaten": items};
-			
-			var internalSuccessCallback = function(data2, msg, request) {
-				// verarbeite empfangene Daten
-				console.log("sendeZeitbuchungen Status: " + request.status);
-				// weiter in der Verarbeitungskette
-				successCallback();
-				
-			};
-			var sendObj = {
-					  data: data
-					, webservice: "zeitdaten"
-					, loaderText: M.I18N.l('BautagebuchSendeZeitbuchungen')
-					, successCallback: internalSuccessCallback
-					, errorCallback: errorCallback
-					//, additionalQueryParameter:
-					//, timeout: 
-			};
-			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		} else {
-			successCallback();
-		}
-	}
-
-	, sendeMaterialbuchungen: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		
-		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var items = [];
-		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}), function(el) {
-			var tmp = el.record;
-			tmp.menge = parseFloat(tmp.menge);
-			items.push(tmp);
-		});
-		
-		if (items.length !== 0) {
-			var data = {"materialbuchungen": items};
-			
-			var internalSuccessCallback = function(data2, msg, request) {
-				// verarbeite empfangene Daten
-				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMaterialbuchungen Status: " + request.status);
-				// weiter in der Verarbeitungskette
-				successCallback();
-				
-			};
-			var sendObj = {
-					  data: data
-					, webservice: "bautagesbericht/materialbuchung"
-					, loaderText: M.I18N.l('BautagebuchSendeMaterialbuchungen')
-					, successCallback: internalSuccessCallback
-					, errorCallback: errorCallback
-					//, additionalQueryParameter:
-					//, timeout: 
-			};
-			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		} else {
-			successCallback();
-		}
-	}
-
-	, sendeNotizen: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		
-		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
-		var items = [];
-		_.each(DigiWebApp.BautagebuchNotiz.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}), function(el) {
-			items.push(el.record);
-		});
-		
-		if (items.length !== 0) {
-			var data = {"notizen": items};
-			
-			var internalSuccessCallback = function(data2, msg, request) {
-				// verarbeite empfangene Daten
-				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeNotizen Status: " + request.status);										
-				// weiter in der Verarbeitungskette
-				successCallback();
-				
-			};
-			var sendObj = {
-					  data: data
-					, webservice: "bautagesbericht/notiz"
-					, loaderText: M.I18N.l('BautagebuchSendeNotizen')
-					, successCallback: internalSuccessCallback
-					, errorCallback: errorCallback
-					//, additionalQueryParameter:
-					//, timeout: 
-			};
-			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		} else {
-			successCallback();
-		}
-	}
-
-	, sendeMedien: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
-
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
-
-		var proceed = function(mediaFiles) {
-			
-			if (mediaFiles.length !== 0) {
-				var items = [];
-				
-				_.each(mediaFiles, function(mf){
-					items.push(mf.record);
-				});
-				
-				var data = {"medien": items};
-				
-				var internalSuccessCallback = function(data2, msg, request) {
-					// verarbeite empfangene Daten
-					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMedien Status: " + request.status);
-					// weiter in der Verarbeitungskette
-					successCallback();
-								
-				};
-				var sendObj = {
-						  data: data
-						, webservice: "medien"
-						, loaderText: M.I18N.l('BautagebuchSendeMedien')
-						, successCallback: internalSuccessCallback
-						, errorCallback: errorCallback
-						//, additionalQueryParameter:
-						//, timeout: 
-				};
-				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-			} else {
-				// no files to send
-
-				// weiter in der Verarbeitungskette
-				successCallback();
-			}
-    	};
-
-		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}});
-		var mediaFilesLength = mediaFiles.length;
-    	var mediaFilesIndex = 0;
-    	var done = false;
-    	
-    	if (mediaFilesLength !== 0) { 
-	    	_.each(mediaFiles, function(el) {
-	    		
-    			console.log('loading mediaFile for mediaFilesIndex ' + mediaFilesIndex);
-    			if (el.hasFileName()) {
-	    			console.log("fileName: " + el.get('fileName'));
-					// load signature into el
-					el.readFromFile(function(fileContent){
-						//console.log("fileContent: " + fileContent);
-						if (fileContent && (fileContent !== "")) {
-					    	_.each(mediaFiles, function(mf) {
-					            if (mf.m_id === el.m_id) {
-					            	mf.set("data", fileContent);
-					            	mediaFilesIndex = mediaFilesIndex + 1;
-					            }
-					        });
-						}
-						if ( mediaFilesIndex === mediaFilesLength && done === false) {
-							// last mediaFile loaded
-				    		console.log('last mediaFile done (with file)');
-		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		    				done = true;
-		    				proceed(mediaFiles);
-						}
-					}, function() {
-						if ( mediaFilesIndex === mediaFilesLength && done === false) {
-							// last mediaFile loaded
-				    		console.log('last mediaFile done (last file load failed)');
-		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		    				done = true;
-		    				proceed(mediaFiles);
-						}
-					});
-    			} else {
-	    			// this mediaFile has no file
-					if ( mediaFilesIndex === mediaFilesLength && done === false) {
-						// last mediaFile loaded
-			    		console.log('last mediaFile done (no file)');
-	    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	    				done = true;
-	    				proceed(mediaFiles);
-					}
-	    		}
-	        });
-    	} else {
-    		//console.log('no mediafiles');
-			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			proceed(mediaFiles);
-    	}
-
-	}
-
-	, sendeBautagesberichtFertig: function(item, successCallback, errorCallback) {
-		// item ist ein Bautagesbericht
-		//var that = this;
-		item.set("bautagesberichtId", item.get('id'));
-		item.set("transferCompleted", YES);
-		var internalSuccessCallback = function(data, msg, request) {
-			// verarbeite empfangene Daten
-			
-			if (request.status > 199 && request.status < 300) {
-				// scheint alles gut gegangen zu sein
-				item.deleteSorted(function() {
-					DigiWebApp.BautagebuchBautagesberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
-					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeBautagesberichtFertig Status: " + request.status);
-					if (typeof(successCallback) === "function") successCallback(data, msg, request);
-				});
-			} else {
-				trackError("Request ended with status: " + request.status);
-			}
-						
-		};
-		var sendObj = {
-				  data: item.record
-				, webservice: "bautagesbericht"
-				, loaderText: M.I18N.l('BautagebuchSendeBautagesbericht')
-				, successCallback: internalSuccessCallback
-				, errorCallback: errorCallback
-				//, additionalQueryParameter:
-				//, timeout: 
-		};
-		DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		
-	}
-
- 	, sendBautagesberichtFunc: function(callback) {
- 		var that = this;
- 		if (DigiWebApp.BautagebuchZusammenfassungController.item) {
-	  			DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchZusammenfassungController.item);
-	  			that.senden(
-						DigiWebApp.BautagebuchZusammenfassungController.item
-					    , function(msg) {
-							//DigiWebApp.BautagebuchBautagesberichtDetailsController.deleteBautagesbericht(callback, callback, YES);
-							if (typeof(callback) == "function") callback();
-						}
-						, function(xhr,err) {
-							if (typeof(callback) == "function") callback();
-						}
-				);
- 		} else {
- 			if (typeof(callback) == "function") callback();
- 		}	     	    				
- 	}
-
- 	, ausgekoppelteNotizSenden: function(mainCallback) {
-		var that = this;
-
- 		var processNotizenOnly = function(callback) { 
-
- 			// Datenübertragung für Notiz-only und Feierabend           
- 			
-       		DigiWebApp.BautagebuchBautagesberichteListeController.init();
-       		var bautagesberichte = DigiWebApp.BautagebuchBautagesbericht.find();
-       		var myBautagesbericht = null;
-       		_.each(bautagesberichte, function(bautagesbericht){
-       			if (bautagesbericht.get('bautagesberichtTyp') == "<notizen_only>") {
-       				myBautagesbericht = bautagesbericht;
-       			}
-       		});
-       		
-       		if (myBautagesbericht) {
-       			DigiWebApp.BautagebuchBautagesberichtDetailsController.load(myBautagesbericht);
-           	  	DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchBautagesberichtDetailsController.item);
-           	  	DigiWebApp.BautagebuchZusammenfassungController.finish(callback);
-       		} else {
-				if (typeof(callback) == "function") callback();
-       		}
- 		}
-
-		processNotizenOnly(function(){
-			that.sendBautagesberichtFunc(mainCallback);
-		});
-		
-	}
-
-	, ausgekoppelteMaterialerfassungSenden: function(mainCallback) {
-		var that = this;
-
- 		var processMaterialerfassungOnly = function(callback) { 
-     		// Datenübertragung für Materialerfassung-only und Feierabend
-         	  	
-       		DigiWebApp.BautagebuchBautagesberichteListeController.init();
-       		var bautagesberichte = DigiWebApp.BautagebuchBautagesbericht.find();
-       		var myBautagesbericht = null;
-       		_.each(bautagesberichte, function(bautagesbericht){
-       			if (bautagesbericht.get('bautagesberichtTyp') == "<materialerfassung_only>") {
-       				myBautagesbericht = bautagesbericht;
-       			}
-       		});
-       		
-       		if (myBautagesbericht) {
-       			DigiWebApp.BautagebuchBautagesberichtDetailsController.load(myBautagesbericht);
-           	  	DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchBautagesberichtDetailsController.item);
-           	  	DigiWebApp.BautagebuchZusammenfassungController.finish(callback);
-       		} else {
-				if (typeof(callback) == "function") callback();
-       		}
- 		}
- 		
- 		processMaterialerfassungOnly(function(){
- 			that.sendBautagesberichtFunc(mainCallback);
- 		});	        		              	  	
-
-	}
-
-	, ausgekoppelteSenden: function(mainCallback) {
-		var that = this;
-		
-		that.ausgekoppelteMaterialerfassungSenden(function() {
-			that.ausgekoppelteNotizSenden(mainCallback);
-		});
-	}
-	
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: BautagebuchEinstellungenController
 // ==========================================================================
 // manuell var-checked
@@ -11747,299 +10869,877 @@ DigiWebApp.BautagebuchMaterialienListeController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: BautagebuchMedienDetailsController
+// Controller: BautagebuchDatenuebertragungController
 // ==========================================================================
 // manuell var-checked
-DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
+DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 
-	  item: null
-	  
-	, handOrderId: null // runtime
-	, handOrderName: null // runtime
+	  successReturnCallback: function() {}
+	, errorReturnCallback: function() {}
 
-	, auftragId: null // runtime
-	, auftragName: null // runtime
-	, auftraegeList: null // runtime
+	, consoleLogOutput: NO
+	
+	, empfangen: function(successReturnCallback, errorReturnCallback) {
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		
+		that.successReturnCallback = successReturnCallback;
+		that.errorReturnCallback = function() {
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+			errorReturnCallback();
+		}
 
-	, positionId: null // in model
-	, positionName: null // in model
-	, positionenList: null // runtime
-
-	, activityId: null // in model
-	, activityName: null // in model
-	, activityList: null // runtime
-
-	, mitarbeiterId: null // in model
-
-	, data: null // runtime (base64-string)
-	, remark: null // in model
-	, fileType: null // in model
-	, loadedFileName: null // runtime
-
-	, init: function(isFirstLoad) {
-		//var that = this;
-	}
-
-	, load: function(myItem) {
-		var that = this;
-		that.set("item", myItem);
-		var myPosition = _.filter(DigiWebApp.Position.findSorted(), function(position) {
-			return (position.get('id') == myItem.get("positionId"));
-		})[0];
-		var myAuftrag = _.filter(DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()), function(auftrag) {
-			if (myItem.get("handOrderId") && myItem.get("handOrderId").length > 0) {
-				return (auftrag.get('id') == myItem.get('handOrderId'));
-			} else {
-				return (auftrag.get('id') == myPosition.get('orderId'));
-			}
-		})[0];
-		var myAuftragId = myAuftrag.get('id');
-		var myAuftragName = myAuftrag.get('name');
-		that.set("auftragId", myAuftragId);
-		that.set("auftragName", myAuftragName);
-		that.set("handOrderId", myItem.get("handOrderId"));
-		that.set("handOrderName", myItem.get("handOrderName"));
-		that.set("positionId", myItem.get("positionId"));
-		that.set("positionName", myItem.get("positionName"));
-		that.set("activityId", myItem.get("activityId"));
-		that.set("activityName", myItem.get("activityName"));
-		that.set("mitarbeiterId", myItem.get("mitarbeiterId"));
-		var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-	    image.src = '';
-	    myItem.readFromFile(function(fileContent){
-	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			if (fileContent && (fileContent !== "")) {
-				  that.set("data", fileContent);
-			      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-			      //image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
-			      image.src = fileContent;
-			}
-		}, function() {
-			  that.set("data", null);
-		      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-		      image.src = '';
+		//var successCallback = function(data, msg, request) {};
+		//var errorCallback = function(request, msg) {};
+		
+		// Verarbeitungskette definieren und starten
+		DigiWebApp.RequestController.getDatabaseServer(function() {
+			that.empfangeProjektleiter(function() {
+				that.empfangeMitarbeiter(function() {
+					that.empfangeMengeneinheiten(function() {
+						that.empfangeMaterialien(
+							that.successReturnCallback
+						  , that.successReturnCallback);
+					}, that.errorReturnCallback);
+				}, that.errorReturnCallback);
+			}, that.errorReturnCallback);
 		});
-		that.set("remark", myItem.get("remark"));
+	
+		
 	}
 
-	, save: function() {
-		var that = this;
+	, senden: function(item, successReturnCallback, errorReturnCallback) {
+		// item ist ein Bautagesbericht
+
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
 		
-		var positionSelected = (M.ViewManager.getView('bautagebuchMedienDetailsPage', 'positionComboBox').getSelection() !== "0" );
-		if (!positionSelected) {
-            DigiWebApp.ApplicationController.nativeAlertDialogView({
-                title: M.I18N.l('noPosSelected')
-              , message: M.I18N.l('noPosSelectedMsg')
-            });
-			return false;
+		that.successReturnCallback = successReturnCallback;
+		that.errorReturnCallback = function() {
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+			errorReturnCallback();
 		}
+
+		//var successCallback = function(data, msg, request) {};
+		//var errorCallback = function(request, msg) {};
 		
-		//var activitySelected = (M.ViewManager.getView('bautagebuchMedienDetailsPage', 'activityComboBox').getSelection() !== "0" );
-		//if (!activitySelected) {
-        //    DigiWebApp.ApplicationController.nativeAlertDialogView({
-        //        title: M.I18N.l('noActSelected')
-        //      , message: M.I18N.l('noActSelectedMsg')
-        //    });
-		//	return false;
-		//}
+		// Verarbeitungskette definieren und starten
+		DigiWebApp.RequestController.getDatabaseServer(function() {
+			that.sendeBautagesbericht(item,function() {
+				that.sendeZeitbuchungen(item,function() {
+					that.sendeMaterialbuchungen(item,function() {
+						that.sendeNotizen(item,function() {
+							that.sendeMedien(item,function() {
+								that.sendeBautagesberichtFertig(
+										item
+									  , that.successReturnCallback
+									  , that.errorReturnCallback);
+							}, that.errorReturnCallback);
+						}, that.errorReturnCallback);
+					}, that.errorReturnCallback);
+				}, that.errorReturnCallback);
+			}, that.errorReturnCallback);
+		});
+	}
 
-		if (that.handOrderId) {
-			that.item.set("handOrderId", that.handOrderId);
-			that.item.set("handOrderName", that.handOrderName);
-			that.item.set("positionId", null);
-			that.item.set("positionName", null);
+	, abgeschlosseneUebertragen: function() {
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var abgeschlosseneBautagesberichte = _.filter(DigiWebApp.BautagebuchBautagesbericht.find(), function(item) { return parseBool(item.get("abgeschlossen")); });
+		if (abgeschlosseneBautagesberichte.length > 0) {
+			var doSenden = function(item, callback) {
+				DigiWebApp.BautagebuchDatenuebertragungController.senden(
+						  item
+						, function(msg) {
+							  DigiWebApp.BautagebuchBautagesberichteListeController.init(); // Liste aktualisieren
+							  callback();
+						}
+						, function(xhr,err) {
+							trackError(err);
+				            DigiWebApp.ApplicationController.nativeAlertDialogView({
+				                title: M.I18N.l('BautagebuchUebertragungsfehler')
+				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
+				            });
+						}
+				);
+			};
+			var itemToSend = abgeschlosseneBautagesberichte[0];
+			doSenden(itemToSend, DigiWebApp.BautagebuchDatenuebertragungController.abgeschlosseneUebertragen);
 		} else {
-			that.item.set("handOrderId", null);
-			that.item.set("handOrderName", null);
-			that.item.set("positionId", that.positionId);
-			that.item.set("positionName", that.positionName);
-		}
-
-		if (parseIntRadixTen(that.activityId) !== 0) {
-			that.item.set("activityId", that.activityId);
-			that.item.set("activityName", that.activityName);
-		} else {
-			that.item.set("activityId", null);
-			that.item.set("activityName", null);
-		}
-		if (that.remark !== DigiWebApp.BautagebuchMedienDetailsPage.content.remarkInput.initialText) {
-			that.item.set("remark", that.remark);
-		} else {
-			that.item.set("remark", null);
-		}
-		
-		that.item.set("mitarbeiterId", that.mitarbeiterId);
-
-		//var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
-
-	    //that.item.set('fileType', DigiWebApp.ApplicationController.CONSTImageFiletype);
-
-		var itemWasNew = (that.item.state == M.STATE_NEW);
-
-		if (that.item.saveSorted()) {
-			var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-		    var saveCallback = function() {
-				var backToListFunc = function() {
-	  		        DigiWebApp.ApplicationController.DigiLoaderView.hide();
-					DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
-					DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
-				}
-				if (itemWasNew) {
-		    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
-		          	  title: M.I18N.l('bautagebuchWeiteresFoto')
-				        , message: M.I18N.l('bautagebuchWeiteresFotoMsg')
-			            , confirmButtonValue: M.I18N.l('yes')
-			      		, cancelButtonValue: M.I18N.l('no')
-			      		, callbacks: {
-			          		  confirm: {
-			              		  target: this
-			              		, action: function() {
-			    					var myOldItem = JSON.parse(JSON.stringify(that.item));
-			    					DigiWebApp.BautagebuchMedienListeController.neu(YES);
-			    					if (that.handOrderId) {
-				    					that.set("handOrderId", myOldItem.record.handOrderId);
-				    					that.set("handOrderName", myOldItem.record.handOrderName);
-			    						that.set("positionId", null);
-			    						that.set("positionName", null);
-			    					} else {
-				    					that.set("handOrderId", null);
-				    					that.set("handOrderName", null);
-				    					that.set("positionId", myOldItem.record.positionId);
-				    					that.set("positionName", myOldItem.record.positionName);
-			    					}
-			    					that.set("activityId", myOldItem.record.activityId);
-			    					that.set("activityName", myOldItem.record.activityName);
-			    					that.set("mitarbeiterId", myOldItem.record.mitarbeiterId);
-			    					//that.setTaetigkeiten(myOldItem.record.positionId);
-								}
-			          		}
-			          		, cancel: {
-			              		  target: this
-			              		, action: function() {
-			          				backToListFunc();
-				        			return true;
-			      				}
-			          		}
-			      		}
-		    		});
-				} else {
-					// item wurde editiert
-					backToListFunc();
-					return true;
-				}
-		    }
-		    that.item.saveToFile(image.src, saveCallback);
-			return true;
-		} else {
-			return false;
+			// nothing to do
 		}
 	}
 	
-	, deleteMedienBuchung: function() {
-		var that = this;
-		DigiWebApp.ApplicationController.nativeConfirmDialogView({
-      	  title: M.I18N.l('deleteLabel')
-	        , message: M.I18N.l('wirklichLoeschenMsg')
-          , confirmButtonValue: M.I18N.l('yes')
-    		, cancelButtonValue: M.I18N.l('no')
-    		, callbacks: {
-        		  confirm: {
-            		  target: this
-            		, action: function() {
-						if (that.item.deleteSorted() !== false) {		
-							DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
-							DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
-							return true;
-						} else {
-							return false;
+	, empfangeMengeneinheiten: function(successCallback, errorCallback) {
+		// wird noch nicht via WebService befüllt
+		
+		// direkt weiter in der Verarbeitungskette
+		successCallback();
+
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+						
+		if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("empfangeMengeneinheiten Status: " + request.status);
+
+			// wurde eine Mengeneinheitenliste erhalten?
+			if (typeof(data.mengeneinheiten) === "undefined") {
+				trackError("missing mengeneinheiten");
+	    		return errorCallback();
+			}
+			
+			// enthält die Mengeneinheitenliste Mengeneinheiten?
+			if (data.mengeneinheiten === null) {
+				// ohne Mengeneinheiten geht im Bautagebuch nichts
+				return errorCallback();
+			} else {
+				// ist data.mengeneinheiten auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.mengeneinheiten.length;
+				} catch(e) {
+					return errorCallback();
+				}
+			}
+			
+			// data.mengeneinheiten enthält also myLength Elemente
+    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('mengeneinheiten'), myLength, 0);
+
+    		// alle "alten" Mengeneinheiten löschen
+			DigiWebApp.BautagebuchMengeneinheit.deleteAll();
+			
+			// die empfangenen Mengeneinheiten mit Model ablegen
+			_.each(data.mengeneinheiten, function(el) {
+	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
+				if (typeof(el.id) === "undefined") {
+					trackError("missing mengeneinheit id");
+					return errorCallback();
+//				} else if (typeof(el.bezeichnung) === "undefined") {
+//					trackError("missing mengeneinheit bezeichnung");
+//					return errorCallback();
+				} else if (typeof(el.kuerzel) === "undefined") {
+					trackError("missing mengeneinheit kuerzel");
+					return errorCallback();
+				} else {
+					
+					// mengeneinheit (el) zur Liste hinzufügen
+					DigiWebApp.BautagebuchMengeneinheit.createRecord({id: "" + el.id, kuerzel: "" + el.kuerzel}).saveSorted();
+
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+			successCallback();
+		};
+		
+		var recieveObj = {
+				  webservice: "mengeneinheiten"
+				, loaderText: M.I18N.l('BautagebuchLadeMengeneinheiten')
+				, successCallback: internalSuccessCallback
+				, errorCallback: errorCallback
+				//, additionalQueryParameter: 
+				//, timeout: 
+				//, geraeteIdOverride: 
+				//, modus: 
+		};
+		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
+		
+	}
+	
+	, empfangeMaterialien: function(successCallback, errorCallback) {
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+			
+			if (that.consoleLogOutput) console.log("empfangeMaterialien Status: " + request.status);
+
+			//var myMaterialliste = [];
+			
+			// wurde eine materialliste erhalten?
+			if (typeof(data.materialliste) === "undefined") {
+				trackError("missing materialliste");
+				return errorCallback();
+			}
+			
+			// enthält die Materialliste Materialien?
+			if (data.materialliste === null) {
+				// hier könnte man wenn gewünscht verhindern, dass es im Bautagebuch gar keine Materialien gibt
+				//return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.materialliste.length;
+				} catch(e2) {
+					trackError("data.materialliste hat Länge " + myLength);
+					//return errorCallback();
+				}
+			}
+			
+			// data.materialliste enthält also myLength (oder gar keine) Elemente
+    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('materialien'), myLength, 0);
+
+			// alle "alten" Materialien löschen
+			DigiWebApp.BautagebuchMaterial.deleteAll();
+			DigiWebApp.BautagebuchLieferant.deleteAll();
+			DigiWebApp.BautagebuchHersteller.deleteAll();
+			DigiWebApp.BautagebuchMaterialtyp.deleteAll();
+			DigiWebApp.BautagebuchMaterialgruppe.deleteAll();
+			
+			// die empfangenen Materialien mit Model ablegen
+			_.each(data.materialliste, function(el) {
+	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
+				//console.log(el);
+				if (typeof(el.bezeichnung) === "undefined") {
+					trackError("missing bezeichnung");
+					return errorCallback();
+				} else {
+					
+					// Lieferanten
+					var lieferantenIds = [];
+					_.each(el.lieferanten, function(lieferant) {
+						lieferantenIds.push("" + lieferant.id);
+						var lief = DigiWebApp.BautagebuchLieferant.find({query:{identifier: 'id', operator: '=', value: "" + lieferant.id}})[0];
+						if (!lief) {
+							// Lieferant anlegen
+							DigiWebApp.BautagebuchLieferant.createRecord({
+								  id: "" + lieferant.id
+								, bezeichnung: "" + lieferant.bezeichnung
+								, nummer: "" + lieferant.nummer
+							}).saveSorted();
+						}
+					});
+					
+					// Hersteller
+					var herst = DigiWebApp.BautagebuchHersteller.find({query:{identifier: 'id', operator: '=', value: "" + el.herstellerId}})[0];
+					if (!herst) {
+						// Hersteller anlegen
+						DigiWebApp.BautagebuchHersteller.createRecord({
+							  id: "" + el.herstellerId
+							, bezeichnung: "" + el.hersteller
+						}).saveSorted();
+					}
+
+					// Materialgruppen
+					var materialgruppenIds = [];
+					_.each(el.materialgruppen, function(materialgruppe) {
+						materialgruppenIds.push("" + materialgruppe.id);
+						var matgr = DigiWebApp.BautagebuchMaterialgruppe.find({query:{identifier: 'id', operator: '=', value: "" + materialgruppe.id}})[0];
+						if (!matgr) {
+							// Materialgruppe anlegen
+							DigiWebApp.BautagebuchMaterialgruppe.createRecord({
+								  id: "" + materialgruppe.id
+								, bezeichnung: "" + materialgruppe.bezeichnung
+								, vaterId: "" + materialgruppe.vaterId
+							}).saveSorted();
+						}
+					});
+
+					// Materialtypen
+					var materialtypId = 0;
+					if (el.materialtyp) {
+						materialtypId = "" + el.materialtyp.id;
+						var matTyp = DigiWebApp.BautagebuchMaterialtyp.find({query:{identifier: 'id', operator: '=', value: "" + el.materialtyp.id}})[0];
+						if (!matTyp) {
+							// Lieferant anlegen
+							DigiWebApp.BautagebuchMaterialtyp.createRecord({
+								  id: "" + el.materialtyp.id
+								, bezeichnung: "" + el.materialtyp.bezeichnung
+							}).saveSorted();
 						}
 					}
-        		}
-        		, cancel: {
-            		  target: this
-            		, action: function() {
-	        			return true;
-    				}
-        		}
-    		}
+					var myEinheitenIds = [];
+					_.each(el.einheitenIds, function(einheitId) {
+						myEinheitenIds.push("" + einheitId);
+					});
+					
+					var myNummer = null;
+					if (el.nummer) {
+						myNummer = "" + el.nummer;
+					}
+					
+					// Material anlegen
+					DigiWebApp.BautagebuchMaterial.createRecord({
+						  id: "" + el.id
+						, bezeichnung: "" + el.bezeichnung
+						, nummer: myNummer
+						, standardEinheitId: "" + el.standardEinheitId
+						, herstellerId: "" + el.herstellerId
+						, einheitenIds: JSON.stringify(myEinheitenIds)
+						, lieferantenIds: JSON.stringify(lieferantenIds)
+						, materialgruppenIds: JSON.stringify(materialgruppenIds)
+						, materialtypId: "" + materialtypId
+						, einzelpreis: el.einzelpreis
+					}).saveSorted();
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+			successCallback();
+		};
+		
+		var recieveObj = {
+			  webservice: "materialliste"
+			, loaderText: M.I18N.l('BautagebuchLadeMaterialien')
+			, successCallback: internalSuccessCallback
+			, errorCallback: errorCallback
+			//, additionalQueryParameter: 
+			//, timeout: 
+			//, geraeteIdOverride: 
+			//, modus: 
+		};
+		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
+		
+	}
+
+	, empfangeProjektleiter: function(successCallback, errorCallback) {
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+						
+			if (that.consoleLogOutput) console.log("empfangeProjektleiter Status: " + request.status);
+
+			// wurde eine Projektleiterliste erhalten?
+			if (typeof(data.projektleiter) === "undefined") {
+				trackError("missing mitarbeiterliste");
+				return errorCallback();
+			}
+			
+			// enthält die Projektleiterliste Projektleiter?
+			if (data.projektleiter === null) {
+				// ohne Projektleiter geht im Bautagebuch nichts
+				return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.projektleiter.length;
+				} catch(e1) {
+					// ohne Projektleiter geht im Bautagebuch nichts
+					trackError("data.projektleiter hat Länge " + myLength);
+					return errorCallback();
+				}
+			}
+			
+			// data.projektleiter enthält also myLength Elemente
+    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('projektleiter'), myLength, 0);
+
+    		// alle "alten" Projektleiter löschen
+			DigiWebApp.BautagebuchProjektleiter.deleteAll();
+			
+			// die empfangenen Projektleiter mit Model ablegen
+			_.each(data.projektleiter, function(el) {
+	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
+				if (typeof(el.id) === "undefined") {
+					trackError("missing id");
+					return errorCallback();
+//				} else if (typeof(el.projektleiterId) === "undefined") {
+//					trackError("missing projektleiterId");
+//					return errorCallback();
+				} else if (typeof(el.vorname) === "undefined") {
+					trackError("missing projektleiter vorname");
+					return errorCallback();
+				} else if (typeof(el.nachname) === "undefined") {
+					trackError("missing projektleiter nachname");
+					return errorCallback();
+				} else {
+					
+					//if (el.id === el.projektleiterId) {
+						// projektleiter (el) zur Liste hinzufügen
+						// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
+						if (DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
+							DigiWebApp.BautagebuchProjektleiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname}).saveSorted();
+						}
+					//}
+
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+    		successCallback();
+		};
+		
+		var recieveObj = {
+			  webservice: "projektleiter"
+			, loaderText: M.I18N.l('BautagebuchLadeProjektleiter')
+			, successCallback: internalSuccessCallback
+			, errorCallback: errorCallback
+			//, additionalQueryParameter: 'getAll=true&nurKolonne=false'
+			//, timeout: 
+			//, geraeteIdOverride: 
+			//, modus: 
+		};
+		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
+		
+	}
+
+	, empfangeMitarbeiter: function(successCallback, errorCallback) {
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+						
+			if (that.consoleLogOutput) console.log("empfangeMitarbeiter Status: " + request.status);
+			
+			// wurde eine Mitarbeiterliste erhalten?
+			if (typeof(data.mitarbeiter) === "undefined") {
+				trackError("missing projektleiterliste");
+				return errorCallback();
+			}
+			
+			// enthält die Mitarbeiterliste Mitarbeiter?
+			if (data.mitarbeiter === null) {
+				// ohne Mitarbeiter geht im Bautagebuch nichts
+				return errorCallback();
+			} else {
+				// ist data.materialliste auch wirklich ein Array?
+				var myLength = null;
+				try {
+					myLength = data.mitarbeiter.length;
+				} catch(e2) {
+					// ohne Mitarbeiter geht im Bautagebuch nichts
+					trackError("data.mitarbeiter hat Länge " + myLength);
+					return errorCallback();
+				}
+			}
+			
+			// data.projektleiter enthält also myLength Elemente
+    		DigiWebApp.ApplicationController.DigiProgressView.show(M.I18N.l('Save'), M.I18N.l('employees'), myLength, 0);
+
+			// alle "alten" Mitarbeiter löschen
+			DigiWebApp.BautagebuchMitarbeiter.deleteAll();
+			
+			// die empfangenen Projektleiter im Model ablegen
+			_.each(data.mitarbeiter, function(el) {
+	    		DigiWebApp.ApplicationController.DigiProgressView.increase();
+				if (typeof(el.id) === "undefined") {
+					trackError("missing mitarbeiter id");
+					return errorCallback();
+				} else if (typeof(el.vorname) === "undefined") {
+					trackError("missing mitarbeiter vorname");
+					return errorCallback();
+				} else if (typeof(el.nachname) === "undefined") {
+					trackError("missing mitarbeiter nachname");
+					return errorCallback();
+				} else if (typeof(el.projektleiterId) === "undefined") {
+					trackError("missing mitarbeiter projektleiterId");
+					return errorCallback();
+				} else {
+					
+					// Mitarbeiter (el) zur Liste hinzufügen wenn dieser nicht schon hinzugefügt wurde
+					if (DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: el.id}}).length === 0) {
+						DigiWebApp.BautagebuchMitarbeiter.createRecord({id: el.id, vorname: el.vorname, nachname: el.nachname, projektleiterId: el.projektleiterId, webAppId: el.webAppId, webAppPin: el.webAppPin}).saveSorted();
+					}
+
+				}
+			});
+			
+			// weiter in der Verarbeitungskette
+    		DigiWebApp.ApplicationController.DigiProgressView.hide();
+			successCallback();
+		};
+		// getAll=true  Alle
+		// getAll=false KolonnenMAs
+		var recieveObj = {
+			  webservice: "mitarbeiter"
+			, loaderText: M.I18N.l('BautagebuchLadeProjektleiter')
+			, successCallback: internalSuccessCallback
+			, errorCallback: errorCallback
+			, additionalQueryParameter: 'getAll=true&nurKolonne=true'
+			//, timeout: 
+			//, geraeteIdOverride: 
+			//, modus: 
+		};
+		DigiWebApp.JSONDatenuebertragungController.recieveData(recieveObj);
+		
+	}
+		
+	, sendeBautagesbericht: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		if (item.get('id')) {
+			item.set("bautagesberichtId", item.get('id'));
+		}
+		item.set("transferCompleted", NO);
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+			if (that.consoleLogOutput) console.log("sendeBautagesbericht Status: " + request.status);
+			// weiter in der Verarbeitungskette
+			successCallback();
+			
+		};
+		var sendObj = {
+				  data: item.record
+				, webservice: "bautagesbericht"
+				, loaderText: M.I18N.l('BautagebuchSendeBautagesbericht')
+				, successCallback: internalSuccessCallback
+				, errorCallback: errorCallback
+				//, additionalQueryParameter:
+				//, timeout: 
+		};
+		if (item.hasFileName()) {
+			item.readFromFile(function(result){
+				item.set("unterschrift", JSON.parse(result));
+				sendObj.data = item.record;
+				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+			},function(err){
+				item.set("unterschrift", [{"lx":1,"ly":1,"mx":1,"my":1}]);
+				sendObj.data = item.record;
+				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+			});
+		} else {
+			item.set("unterschrift", [{"lx":1,"ly":1,"mx":1,"my":1}]);
+			sendObj.data = item.record;
+			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		}
+		
+	}
+
+	, sendeZeitbuchungen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		
+		var items = [];
+		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}); 
+		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
+            return parseIntRadixTen(z.get('_createdAt'));
+        });
+		_.each(relevanteZeitbuchungenSorted, function(el) {
+			_.each(JSON.parse(el.get("mitarbeiterIds")), function(maId) {
+				var zeitbuch = DigiWebApp.BautagebuchZeitbuchung.createRecord({
+					  bautagesberichtId: item.get('id')
+				});
+				for (var prop in el.record) {
+					try {
+						if (typeof(JSON.parse(el.get(prop)).length) !== "undefined") {
+							zeitbuch.set(prop, JSON.parse(el.get(prop)));
+						} else {
+							zeitbuch.set(prop, el.get(prop));
+						}
+					} catch(e2) {
+						zeitbuch.set(prop, el.get(prop));
+					}
+				}
+				zeitbuch.set("mitarbeiterId", parseIntRadixTen(maId));
+				if (zeitbuch.get('dauer') != "00:00") {
+					items.push(zeitbuch.record);
+				}
+			});
+		});
+		if (items.length !== 0) {
+			var data = {"zeitdaten": items};
+			
+			var internalSuccessCallback = function(data2, msg, request) {
+				// verarbeite empfangene Daten
+				console.log("sendeZeitbuchungen Status: " + request.status);
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			var sendObj = {
+					  data: data
+					, webservice: "zeitdaten"
+					, loaderText: M.I18N.l('BautagebuchSendeZeitbuchungen')
+					, successCallback: internalSuccessCallback
+					, errorCallback: errorCallback
+					//, additionalQueryParameter:
+					//, timeout: 
+			};
+			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		} else {
+			successCallback();
+		}
+	}
+
+	, sendeMaterialbuchungen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var items = [];
+		_.each(DigiWebApp.BautagebuchMaterialBuchung.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}), function(el) {
+			var tmp = el.record;
+			tmp.menge = parseFloat(tmp.menge);
+			items.push(tmp);
+		});
+		
+		if (items.length !== 0) {
+			var data = {"materialbuchungen": items};
+			
+			var internalSuccessCallback = function(data2, msg, request) {
+				// verarbeite empfangene Daten
+				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMaterialbuchungen Status: " + request.status);
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			var sendObj = {
+					  data: data
+					, webservice: "bautagesbericht/materialbuchung"
+					, loaderText: M.I18N.l('BautagebuchSendeMaterialbuchungen')
+					, successCallback: internalSuccessCallback
+					, errorCallback: errorCallback
+					//, additionalQueryParameter:
+					//, timeout: 
+			};
+			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		} else {
+			successCallback();
+		}
+	}
+
+	, sendeNotizen: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		
+		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
+		var items = [];
+		_.each(DigiWebApp.BautagebuchNotiz.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}}), function(el) {
+			items.push(el.record);
+		});
+		
+		if (items.length !== 0) {
+			var data = {"notizen": items};
+			
+			var internalSuccessCallback = function(data2, msg, request) {
+				// verarbeite empfangene Daten
+				if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeNotizen Status: " + request.status);										
+				// weiter in der Verarbeitungskette
+				successCallback();
+				
+			};
+			var sendObj = {
+					  data: data
+					, webservice: "bautagesbericht/notiz"
+					, loaderText: M.I18N.l('BautagebuchSendeNotizen')
+					, successCallback: internalSuccessCallback
+					, errorCallback: errorCallback
+					//, additionalQueryParameter:
+					//, timeout: 
+			};
+			DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		} else {
+			successCallback();
+		}
+	}
+
+	, sendeMedien: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		//var that = DigiWebApp.BautagebuchDatenuebertragungController;
+
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
+
+		var proceed = function(mediaFiles) {
+			
+			if (mediaFiles.length !== 0) {
+				var items = [];
+				
+				_.each(mediaFiles, function(mf){
+					items.push(mf.record);
+				});
+				
+				var data = {"medien": items};
+				
+				var internalSuccessCallback = function(data2, msg, request) {
+					// verarbeite empfangene Daten
+					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeMedien Status: " + request.status);
+					// weiter in der Verarbeitungskette
+					successCallback();
+								
+				};
+				var sendObj = {
+						  data: data
+						, webservice: "medien"
+						, loaderText: M.I18N.l('BautagebuchSendeMedien')
+						, successCallback: internalSuccessCallback
+						, errorCallback: errorCallback
+						//, additionalQueryParameter:
+						//, timeout: 
+				};
+				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+			} else {
+				// no files to send
+
+				// weiter in der Verarbeitungskette
+				successCallback();
+			}
+    	};
+
+		var mediaFiles = DigiWebApp.BautagebuchMediaFile.find({query:{identifier: 'bautagesberichtId', operator: '=', value: item.get('id')}});
+		var mediaFilesLength = mediaFiles.length;
+    	var mediaFilesIndex = 0;
+    	var done = false;
+    	
+    	if (mediaFilesLength !== 0) { 
+	    	_.each(mediaFiles, function(el) {
+	    		
+    			console.log('loading mediaFile for mediaFilesIndex ' + mediaFilesIndex);
+    			if (el.hasFileName()) {
+	    			console.log("fileName: " + el.get('fileName'));
+					// load signature into el
+					el.readFromFile(function(fileContent){
+						//console.log("fileContent: " + fileContent);
+						if (fileContent && (fileContent !== "")) {
+					    	_.each(mediaFiles, function(mf) {
+					            if (mf.m_id === el.m_id) {
+					            	mf.set("data", fileContent);
+					            	mediaFilesIndex = mediaFilesIndex + 1;
+					            }
+					        });
+						}
+						if ( mediaFilesIndex === mediaFilesLength && done === false) {
+							// last mediaFile loaded
+				    		console.log('last mediaFile done (with file)');
+		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				done = true;
+		    				proceed(mediaFiles);
+						}
+					}, function() {
+						if ( mediaFilesIndex === mediaFilesLength && done === false) {
+							// last mediaFile loaded
+				    		console.log('last mediaFile done (last file load failed)');
+		    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				done = true;
+		    				proceed(mediaFiles);
+						}
+					});
+    			} else {
+	    			// this mediaFile has no file
+					if ( mediaFilesIndex === mediaFilesLength && done === false) {
+						// last mediaFile loaded
+			    		console.log('last mediaFile done (no file)');
+	    				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	    				done = true;
+	    				proceed(mediaFiles);
+					}
+	    		}
+	        });
+    	} else {
+    		//console.log('no mediafiles');
+			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			proceed(mediaFiles);
+    	}
+
+	}
+
+	, sendeBautagesberichtFertig: function(item, successCallback, errorCallback) {
+		// item ist ein Bautagesbericht
+		//var that = this;
+		item.set("bautagesberichtId", item.get('id'));
+		item.set("transferCompleted", YES);
+		var internalSuccessCallback = function(data, msg, request) {
+			// verarbeite empfangene Daten
+			
+			if (request.status > 199 && request.status < 300) {
+				// scheint alles gut gegangen zu sein
+				item.deleteSorted(function() {
+					DigiWebApp.BautagebuchBautagesberichteListeController.set("items", DigiWebApp.BautagebuchBautagesbericht.findSorted());
+					if (DigiWebApp.BautagebuchDatenuebertragungController.consoleLogOutput) console.log("sendeBautagesberichtFertig Status: " + request.status);
+					if (typeof(successCallback) === "function") successCallback(data, msg, request);
+				});
+			} else {
+				trackError("Request ended with status: " + request.status);
+			}
+						
+		};
+		var sendObj = {
+				  data: item.record
+				, webservice: "bautagesbericht"
+				, loaderText: M.I18N.l('BautagebuchSendeBautagesbericht')
+				, successCallback: internalSuccessCallback
+				, errorCallback: errorCallback
+				//, additionalQueryParameter:
+				//, timeout: 
+		};
+		DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		
+	}
+
+ 	, sendBautagesberichtFunc: function(callback) {
+ 		var that = this;
+ 		if (DigiWebApp.BautagebuchZusammenfassungController.item) {
+	  			DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchZusammenfassungController.item);
+	  			that.senden(
+						DigiWebApp.BautagebuchZusammenfassungController.item
+					    , function(msg) {
+							//DigiWebApp.BautagebuchBautagesberichtDetailsController.deleteBautagesbericht(callback, callback, YES);
+							if (typeof(callback) == "function") callback();
+						}
+						, function(xhr,err) {
+							if (typeof(callback) == "function") callback();
+						}
+				);
+ 		} else {
+ 			if (typeof(callback) == "function") callback();
+ 		}	     	    				
+ 	}
+
+ 	, ausgekoppelteNotizSenden: function(mainCallback) {
+		var that = this;
+
+ 		var processNotizenOnly = function(callback) { 
+
+ 			// Datenübertragung für Notiz-only und Feierabend           
+ 			
+       		DigiWebApp.BautagebuchBautagesberichteListeController.init();
+       		var bautagesberichte = DigiWebApp.BautagebuchBautagesbericht.find();
+       		var myBautagesbericht = null;
+       		_.each(bautagesberichte, function(bautagesbericht){
+       			if (bautagesbericht.get('bautagesberichtTyp') == "<notizen_only>") {
+       				myBautagesbericht = bautagesbericht;
+       			}
+       		});
+       		
+       		if (myBautagesbericht) {
+       			DigiWebApp.BautagebuchBautagesberichtDetailsController.load(myBautagesbericht);
+           	  	DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchBautagesberichtDetailsController.item);
+           	  	DigiWebApp.BautagebuchZusammenfassungController.finish(callback);
+       		} else {
+				if (typeof(callback) == "function") callback();
+       		}
+ 		}
+
+		processNotizenOnly(function(){
+			that.sendBautagesberichtFunc(mainCallback);
+		});
+		
+	}
+
+	, ausgekoppelteMaterialerfassungSenden: function(mainCallback) {
+		var that = this;
+
+ 		var processMaterialerfassungOnly = function(callback) { 
+     		// Datenübertragung für Materialerfassung-only und Feierabend
+         	  	
+       		DigiWebApp.BautagebuchBautagesberichteListeController.init();
+       		var bautagesberichte = DigiWebApp.BautagebuchBautagesbericht.find();
+       		var myBautagesbericht = null;
+       		_.each(bautagesberichte, function(bautagesbericht){
+       			if (bautagesbericht.get('bautagesberichtTyp') == "<materialerfassung_only>") {
+       				myBautagesbericht = bautagesbericht;
+       			}
+       		});
+       		
+       		if (myBautagesbericht) {
+       			DigiWebApp.BautagebuchBautagesberichtDetailsController.load(myBautagesbericht);
+           	  	DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchBautagesberichtDetailsController.item);
+           	  	DigiWebApp.BautagebuchZusammenfassungController.finish(callback);
+       		} else {
+				if (typeof(callback) == "function") callback();
+       		}
+ 		}
+ 		
+ 		processMaterialerfassungOnly(function(){
+ 			that.sendBautagesberichtFunc(mainCallback);
+ 		});	        		              	  	
+
+	}
+
+	, ausgekoppelteSenden: function(mainCallback) {
+		var that = this;
+		
+		that.ausgekoppelteMaterialerfassungSenden(function() {
+			that.ausgekoppelteNotizSenden(mainCallback);
 		});
 	}
 	
-	, setTaetigkeiten: function(positionId) {
-		var that = this;
-		if (typeof(positionId) !== "undefined") {
-
-			var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-	            if (wp) return wp.get('id') == positionId;
-	        });
-
-	        var itemSelected = NO;
-
-	        /* if a workplan exists, only use those activities that are in the workplan */
-	        var activities = null;
-	        if (workPlans.length > 0) {
-	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
-	        } else {
-	            activities = DigiWebApp.SelectionController.getActivities();
-	        }
-
-			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
-		    var taetigkeitenArray = _.map(activities, function(act) {
-		    	if ( typeof(act) === "undefined" ) {
-		    		console.log("UNDEFINED activity");
-		    	} else {
-	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
-	    			if (that.activityId === obj.value) {
-	    				obj.isSelected = YES;
-	    				itemSelected = YES;
-	    			}
-	    			return obj;
-		    	}
-		    });
-		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
-			that.set("activityList", taetigkeitenArray);
-		}
-	}
-	
-    , takePicture: function() {
-    	var that = this;
-		navigator.camera.getPicture(
-			  that.cameraSuccessBase64
-			, that.cameraError
-			, { 
-				  quality: 40
-				//, allowEdit: true
-				, destinationType : navigator.camera.DestinationType.DATA_URL
-				//, sourceType: navigator.camera.PictureSourceType.CAMERA 
-			  }
-		);    	
-    }
-    
-    , cameraSuccessBase64: function(imageData) {
-    	var that = DigiWebApp.BautagebuchMedienDetailsController;
-    	that.set("data", imageData);
-    	that.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
-        var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
-        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
-        DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
-    }
-    
-    , cameraError: function(mymessage) {
-        DigiWebApp.ApplicationController.nativeAlertDialogView({
-              title: 'ERROR'
-            , message: mymessage
-            , callbacks: {
-	            confirm: {
-	                  target: this
-	                , action: function () {
-	    				DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
-		              }
-		       }
-		    }
-        });
-    }
-
 });
 
 // ==========================================================================
@@ -12535,6 +12235,306 @@ DigiWebApp.BautagebuchNotizenDetailsController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchMedienDetailsController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.BautagebuchMedienDetailsController = M.Controller.extend({
+
+	  item: null
+	  
+	, handOrderId: null // runtime
+	, handOrderName: null // runtime
+
+	, auftragId: null // runtime
+	, auftragName: null // runtime
+	, auftraegeList: null // runtime
+
+	, positionId: null // in model
+	, positionName: null // in model
+	, positionenList: null // runtime
+
+	, activityId: null // in model
+	, activityName: null // in model
+	, activityList: null // runtime
+
+	, mitarbeiterId: null // in model
+
+	, data: null // runtime (base64-string)
+	, remark: null // in model
+	, fileType: null // in model
+	, loadedFileName: null // runtime
+
+	, init: function(isFirstLoad) {
+		//var that = this;
+	}
+
+	, load: function(myItem) {
+		var that = this;
+		that.set("item", myItem);
+		var myPosition = _.filter(DigiWebApp.Position.findSorted(), function(position) {
+			return (position.get('id') == myItem.get("positionId"));
+		})[0];
+		var myAuftrag = _.filter(DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()), function(auftrag) {
+			if (myItem.get("handOrderId") && myItem.get("handOrderId").length > 0) {
+				return (auftrag.get('id') == myItem.get('handOrderId'));
+			} else {
+				return (auftrag.get('id') == myPosition.get('orderId'));
+			}
+		})[0];
+		var myAuftragId = myAuftrag.get('id');
+		var myAuftragName = myAuftrag.get('name');
+		that.set("auftragId", myAuftragId);
+		that.set("auftragName", myAuftragName);
+		that.set("handOrderId", myItem.get("handOrderId"));
+		that.set("handOrderName", myItem.get("handOrderName"));
+		that.set("positionId", myItem.get("positionId"));
+		that.set("positionName", myItem.get("positionName"));
+		that.set("activityId", myItem.get("activityId"));
+		that.set("activityName", myItem.get("activityName"));
+		that.set("mitarbeiterId", myItem.get("mitarbeiterId"));
+		var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+	    image.src = '';
+	    myItem.readFromFile(function(fileContent){
+	        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			if (fileContent && (fileContent !== "")) {
+				  that.set("data", fileContent);
+			      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+			      //image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + fileContent;
+			      image.src = fileContent;
+			}
+		}, function() {
+			  that.set("data", null);
+		      var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		      image.src = '';
+		});
+		that.set("remark", myItem.get("remark"));
+	}
+
+	, save: function() {
+		var that = this;
+		
+		var positionSelected = (M.ViewManager.getView('bautagebuchMedienDetailsPage', 'positionComboBox').getSelection() !== "0" );
+		if (!positionSelected) {
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                title: M.I18N.l('noPosSelected')
+              , message: M.I18N.l('noPosSelectedMsg')
+            });
+			return false;
+		}
+		
+		//var activitySelected = (M.ViewManager.getView('bautagebuchMedienDetailsPage', 'activityComboBox').getSelection() !== "0" );
+		//if (!activitySelected) {
+        //    DigiWebApp.ApplicationController.nativeAlertDialogView({
+        //        title: M.I18N.l('noActSelected')
+        //      , message: M.I18N.l('noActSelectedMsg')
+        //    });
+		//	return false;
+		//}
+
+		if (that.handOrderId) {
+			that.item.set("handOrderId", that.handOrderId);
+			that.item.set("handOrderName", that.handOrderName);
+			that.item.set("positionId", null);
+			that.item.set("positionName", null);
+		} else {
+			that.item.set("handOrderId", null);
+			that.item.set("handOrderName", null);
+			that.item.set("positionId", that.positionId);
+			that.item.set("positionName", that.positionName);
+		}
+
+		if (parseIntRadixTen(that.activityId) !== 0) {
+			that.item.set("activityId", that.activityId);
+			that.item.set("activityName", that.activityName);
+		} else {
+			that.item.set("activityId", null);
+			that.item.set("activityName", null);
+		}
+		if (that.remark !== DigiWebApp.BautagebuchMedienDetailsPage.content.remarkInput.initialText) {
+			that.item.set("remark", that.remark);
+		} else {
+			that.item.set("remark", null);
+		}
+		
+		that.item.set("mitarbeiterId", that.mitarbeiterId);
+
+		//var image = document.getElementById(DigiWebApp.EditPicturePage.content.image.id);
+
+	    //that.item.set('fileType', DigiWebApp.ApplicationController.CONSTImageFiletype);
+
+		var itemWasNew = (that.item.state == M.STATE_NEW);
+
+		if (that.item.saveSorted()) {
+			var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+		    var saveCallback = function() {
+				var backToListFunc = function() {
+	  		        DigiWebApp.ApplicationController.DigiLoaderView.hide();
+					DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
+					DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
+				}
+				if (itemWasNew) {
+		    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
+		          	  title: M.I18N.l('bautagebuchWeiteresFoto')
+				        , message: M.I18N.l('bautagebuchWeiteresFotoMsg')
+			            , confirmButtonValue: M.I18N.l('yes')
+			      		, cancelButtonValue: M.I18N.l('no')
+			      		, callbacks: {
+			          		  confirm: {
+			              		  target: this
+			              		, action: function() {
+			    					var myOldItem = JSON.parse(JSON.stringify(that.item));
+			    					DigiWebApp.BautagebuchMedienListeController.neu(YES);
+			    					if (that.handOrderId) {
+				    					that.set("handOrderId", myOldItem.record.handOrderId);
+				    					that.set("handOrderName", myOldItem.record.handOrderName);
+			    						that.set("positionId", null);
+			    						that.set("positionName", null);
+			    					} else {
+				    					that.set("handOrderId", null);
+				    					that.set("handOrderName", null);
+				    					that.set("positionId", myOldItem.record.positionId);
+				    					that.set("positionName", myOldItem.record.positionName);
+			    					}
+			    					that.set("activityId", myOldItem.record.activityId);
+			    					that.set("activityName", myOldItem.record.activityName);
+			    					that.set("mitarbeiterId", myOldItem.record.mitarbeiterId);
+			    					//that.setTaetigkeiten(myOldItem.record.positionId);
+								}
+			          		}
+			          		, cancel: {
+			              		  target: this
+			              		, action: function() {
+			          				backToListFunc();
+				        			return true;
+			      				}
+			          		}
+			      		}
+		    		});
+				} else {
+					// item wurde editiert
+					backToListFunc();
+					return true;
+				}
+		    }
+		    that.item.saveToFile(image.src, saveCallback);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	, deleteMedienBuchung: function() {
+		var that = this;
+		DigiWebApp.ApplicationController.nativeConfirmDialogView({
+      	  title: M.I18N.l('deleteLabel')
+	        , message: M.I18N.l('wirklichLoeschenMsg')
+          , confirmButtonValue: M.I18N.l('yes')
+    		, cancelButtonValue: M.I18N.l('no')
+    		, callbacks: {
+        		  confirm: {
+            		  target: this
+            		, action: function() {
+						if (that.item.deleteSorted() !== false) {		
+							DigiWebApp.BautagebuchMedienListeController.set("items", DigiWebApp.BautagebuchMediaFile.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
+							DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
+							return true;
+						} else {
+							return false;
+						}
+					}
+        		}
+        		, cancel: {
+            		  target: this
+            		, action: function() {
+	        			return true;
+    				}
+        		}
+    		}
+		});
+	}
+	
+	, setTaetigkeiten: function(positionId) {
+		var that = this;
+		if (typeof(positionId) !== "undefined") {
+
+			var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+	            if (wp) return wp.get('id') == positionId;
+	        });
+
+	        var itemSelected = NO;
+
+	        /* if a workplan exists, only use those activities that are in the workplan */
+	        var activities = null;
+	        if (workPlans.length > 0) {
+	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
+	        } else {
+	            activities = DigiWebApp.SelectionController.getActivities();
+	        }
+
+			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
+		    var taetigkeitenArray = _.map(activities, function(act) {
+		    	if ( typeof(act) === "undefined" ) {
+		    		console.log("UNDEFINED activity");
+		    	} else {
+	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
+	    			if (that.activityId === obj.value) {
+	    				obj.isSelected = YES;
+	    				itemSelected = YES;
+	    			}
+	    			return obj;
+		    	}
+		    });
+		    taetigkeitenArray = _.compact(taetigkeitenArray);
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomethingOptional'), value: '0', isSelected: !itemSelected});
+			that.set("activityList", taetigkeitenArray);
+		}
+	}
+	
+    , takePicture: function() {
+    	var that = this;
+		navigator.camera.getPicture(
+			  that.cameraSuccessBase64
+			, that.cameraError
+			, { 
+				  quality: 40
+				//, allowEdit: true
+				, destinationType : navigator.camera.DestinationType.DATA_URL
+				//, sourceType: navigator.camera.PictureSourceType.CAMERA 
+			  }
+		);    	
+    }
+    
+    , cameraSuccessBase64: function(imageData) {
+    	var that = DigiWebApp.BautagebuchMedienDetailsController;
+    	that.set("data", imageData);
+    	that.set("fileType", DigiWebApp.ApplicationController.CONSTImageFiletype);
+        var image = document.getElementById(DigiWebApp.BautagebuchMedienDetailsPage.content.image.id);
+        image.src = 'data:' + DigiWebApp.ApplicationController.CONSTImageFiletype + ',' + imageData;
+        DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+    }
+    
+    , cameraError: function(mymessage) {
+        DigiWebApp.ApplicationController.nativeAlertDialogView({
+              title: 'ERROR'
+            , message: mymessage
+            , callbacks: {
+	            confirm: {
+	                  target: this
+	                , action: function () {
+	    				DigiWebApp.NavigationController.backToBautagebuchMedienListePageTransition();
+		              }
+		       }
+		    }
+        });
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: BautagebuchNotizenListeController
 // ==========================================================================
 // manuell var-checked
@@ -12587,384 +12587,6 @@ DigiWebApp.BautagebuchNotizenListeController = M.Controller.extend({
 
 		DigiWebApp.NavigationController.toBautagebuchNotizenDetailsPageTransition();
 	
-	}
-	
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: BautagebuchZeitenDetailsController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
-
-	  item: null
-
-	, handOrderId: null // runtime
-	, handOrderName: null // runtime
-
-	, auftragId: null // runtime
-	, auftragName: null // runtime
-	, auftraegeList: null // runtime
-
-	, positionId: null // in model
-	, positionName: null // in model
-	, positionenList: null // runtime
-
-	, activityId: null // in model
-	, activityName: null // in model
-	, activityList: null // runtime
-	
-	, mitarbeiterIds: null // in model
-	, mitarbeiterList: null // runtime
-	
-	, von: "00:00" // in model
-	, timeStampStart: "" // in model
-
-	, bis: "00:00" // in model
-	, timeStampEnd: "" // in model
-		
-	, dauer: "00:00" // in model
-	, remark: ""
-
-	, verbuchen: YES // in model
-
-	, latitude: "" // in model
-	, longitude: "" // in model
-	, latitude_bis: "" // in model
-	, longitude_bis: "" // in model
-
-	, init: function(isFirstLoad) {
-		//var that = this;
-	}
-
-	, load: function(myItem) {
-		var that = this;
-		that.set("item", myItem);
-		var myPosition = _.filter(DigiWebApp.Position.findSorted(), function(position) {
-			return (position.get('id') == myItem.get("positionId"));
-		})[0];
-		var myAuftrag = _.filter(DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()), function(auftrag) {
-			if (myItem.get("handOrderId") && myItem.get("handOrderId").length > 0) {
-				return (auftrag.get('id') == myItem.get('handOrderId'));
-			} else {
-				return (auftrag.get('id') == myPosition.get('orderId'));
-			}
-		})[0];
-		var myAuftragId = myAuftrag.get('id');
-		var myAuftragName = myAuftrag.get('name');
-		that.set("auftragId", myAuftragId);
-		that.set("auftragName", myAuftragName);
-		that.set("handOrderId", myItem.get("handOrderId"));
-		that.set("handOrderName", myItem.get("handOrderName"));
-		that.set("positionId", myItem.get("positionId"));
-		that.set("positionName", myItem.get("positionName"));
-		that.set("activityId", myItem.get("activityId"));
-		that.set("activityName", myItem.get("activityName"));
-		that.set("mitarbeiterIds", toIntArray(JSON.parse(myItem.get("mitarbeiterIds"))));
-		that.set("verbuchen", myItem.get("verbuchen"));
-		that.set("timeStampStart", myItem.get("timeStampStart"));
-		that.set("timeStampEnd", myItem.get("timeStampEnd"));
-		that.set("von", myItem.get("von"));
-		that.set("bis", myItem.get("bis"));
-		that.setVonBis();
-		that.set("dauer", myItem.get("dauer"));
-		that.setDauer();
-		that.set("remark", myItem.get("remark"));
-	}
-	
-	, save: function() {
-		var that = this;
-		
-		var positionSelected = (M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'positionComboBox').getSelection() !== "0" );
-		var activitySelected = (M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'activityComboBox').getSelection() !== "0" );
-		var mitarbeiterSelected = (!(DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds === null || DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds.length === 0));
-		
-		if (!positionSelected) {
-            DigiWebApp.ApplicationController.nativeAlertDialogView({
-                title: M.I18N.l('noPosSelected')
-              , message: M.I18N.l('noPosSelectedMsg')
-            });
-			return false;
-		}
-		if (!activitySelected) {
-            DigiWebApp.ApplicationController.nativeAlertDialogView({
-                title: M.I18N.l('noActSelected')
-              , message: M.I18N.l('noActSelectedMsg')
-            });
-			return false;
-		}
-		if (!mitarbeiterSelected) {
-            DigiWebApp.ApplicationController.nativeAlertDialogView({
-                title: M.I18N.l('noMitarbeiterSelected')
-              , message: M.I18N.l('noMitarbeiterSelectedMsg')
-            });
-			return false;
-		}
-		
-		var ueberschneidungFound = NO;
-		if (!DigiWebApp.BautagebuchEinstellungenController.settings.falscheZeitenIgnorieren && !DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen) {
-			// prüfen, ob einer der selektierten MAs bereits eine ggfs. überschneidende Zeitbuchung hat
-			var bautagesberichteAmGleichenDatum = DigiWebApp.BautagebuchBautagesbericht.find({query:{
-				  identifier: 'datum'
-				, operator: '='
-				, value: DigiWebApp.BautagebuchBautagesberichtDetailsController.datum
-			}});
-			_.each(that.mitarbeiterIds, function(m) {
-				_.each(bautagesberichteAmGleichenDatum, function(b) {
-					var myZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{
-							  identifier: 'bautagesberichtId'
-							, operator: '='
-							, value: b.get("id")
-					}});
-					_.each(myZeitbuchungen, function(z) {
-						if (JSON.parse(z.get("mitarbeiterIds")).indexOf(m) != -1 && z.m_id != that.item.m_id) {
-							var zVonD8Timestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + z.get("von")).getTimestamp();
-							var zBisD8Timestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + z.get("bis")).getTimestamp();
-							var thatVonTimestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + that.von).getTimestamp();
-							var thatBisTimestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + that.bis).getTimestamp();
-							// neuer Von-Zeitpunkt in anderer Zeitbuchung?
-							if (zVonD8Timestamp < thatVonTimestamp && thatVonTimestamp < zBisD8Timestamp) {
-								ueberschneidungFound = YES;
-							}
-							// neuer Bis-Zeitpunkt in anderer Zeitbuchung?
-							if (zVonD8Timestamp < thatBisTimestamp && thatBisTimestamp < zBisD8Timestamp) {
-								ueberschneidungFound = YES;
-							}
-							// andere Zeitbuchung enthalten?
-							if (thatVonTimestamp < zVonD8Timestamp && zBisD8Timestamp < thatBisTimestamp) {
-								ueberschneidungFound = YES;
-							}
-							// diese Zeitbuchung enthalten?
-							if (zVonD8Timestamp < thatVonTimestamp && thatBisTimestamp < zBisD8Timestamp) {
-								ueberschneidungFound = YES;
-							}
-							// identische Zeitbuchung?
-							if (thatVonTimestamp == zVonD8Timestamp && zBisD8Timestamp == thatBisTimestamp) {
-								ueberschneidungFound = YES;
-							}
-						}
-					});
-				});
-			});
-		}
-			
-		var continueSave = function() {
-			if (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen") && !DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
-				var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
-				var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
-				if (myVon.getTimestamp() > myBis.getTimestamp()) {
-					DigiWebApp.ApplicationController.nativeAlertDialogView({
-		                title: M.I18N.l('wrongTimes')
-		              , message: M.I18N.l('wrongTimesMsg')
-		            });
-					return false;
-				}
-			}
-			
-			if (that.handOrderId) {
-				that.item.set("handOrderId", that.handOrderId);
-				that.item.set("handOrderName", that.handOrderName);
-				that.item.set("positionId", null);
-				that.item.set("positionName", null);
-			} else {
-				that.item.set("handOrderId", null);
-				that.item.set("handOrderName", null);
-				that.item.set("positionId", that.positionId);
-				that.item.set("positionName", that.positionName);
-			}
-	
-			that.item.set("activityId", that.activityId);
-			that.item.set("activityName", that.activityName);
-			that.item.set("mitarbeiterIds", JSON.stringify(toIntArray(that.mitarbeiterIds)));
-			that.item.set("verbuchen", that.verbuchen);
-			that.item.set("von", that.von);
-			that.item.set("timeStampStart", that.timeStampStart);
-			that.item.set("bis", that.bis);
-			that.item.set("timeStampEnd", that.timeStampEnd);
-			that.item.set("dauer", that.dauer);
-			that.item.set("remark", that.remark);
-			var itemWasNew = (that.item.state == M.STATE_NEW);
-			if (that.item.saveSorted()) {
-				var backToListFunc = function() {
-	    			DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
-	    			DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
-				}
-				if (itemWasNew) {
-		    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
-		          	  	  title: M.I18N.l('bautagebuchWeitereZeitbuchung')
-				        , message: M.I18N.l('bautagebuchWeitereZeitbuchungMsg')
-			            , confirmButtonValue: M.I18N.l('yes')
-			      		, cancelButtonValue: M.I18N.l('no')
-			      		, callbacks: {
-			          		  confirm: {
-			              		  target: this
-			              		, action: function() {
-			    					var myOldItem = JSON.parse(JSON.stringify(that.item));
-			    					DigiWebApp.BautagebuchZeitenListeController.neu();
-			    					that.set("positionId", myOldItem.record.positionId);
-			    					that.set("positionName", myOldItem.record.positionName);
-			    					that.set("handOrderId", myOldItem.record.handOrderId);
-			    					that.set("handOrderName", myOldItem.record.handOrderName);
-			    					//that.set("activityId", myOldItem.record.activityId);
-			    					//that.set("activityName", myOldItem.record.activityName);
-			    					that.setTaetigkeiten(myOldItem.record.positionId);
-			    					that.set("mitarbeiterIds", toIntArray(JSON.parse(myOldItem.record.mitarbeiterIds)));
-			    					that.set("von", myOldItem.record.bis);
-			    					that.set("bis", myOldItem.record.bis);
-			    					that.setVonBis();
-			    					that.set("dauer", "00:00");
-			    					that.setDauer();
-			    					that.set("remark", "");
-			    					$('#' + DigiWebApp.BautagebuchZeitenDetailsPage.content.remarkInput.id)[0].value = "";
-								}
-			          		}
-			          		, cancel: {
-			              		  target: this
-			              		, action: function() {
-			          				backToListFunc();
-				        			return true;
-			      				}
-			          		}
-			      		}
-		    		});
-				} else {
-					// item wurde editiert
-					backToListFunc();
-					return true;
-				}
-			} else {
-				return false;
-			}
-		}
-		
-		if (ueberschneidungFound) {
-    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
-        	  	  title: M.I18N.l('BautagebuchUeberschneidendeZeitbuchung')
-		        , message: M.I18N.l('BautagebuchUeberschneidendeZeitbuchungMsg')
-	            , confirmButtonValue: M.I18N.l('yes')
-	      		, cancelButtonValue: M.I18N.l('no')
-	      		, callbacks: {
-	          		  confirm: {
-	              		  target: that
-	              		, action: function() {
-    						continueSave();
-						}
-	          		}
-	          		, cancel: {
-	              		  target: that
-	              		, action: function() {
-		        			return false;
-	      				}
-	          		}
-	      		}
-    		});
-		} else {
-			continueSave();
-		}
-		
-	}
-	
-	, deleteZeitbuchung: function() {
-		var that = this;
-		DigiWebApp.ApplicationController.nativeConfirmDialogView({
-        	  title: M.I18N.l('deleteLabel')
-	        , message: M.I18N.l('wirklichLoeschenMsg')
-            , confirmButtonValue: M.I18N.l('yes')
-      		, cancelButtonValue: M.I18N.l('no')
-      		, callbacks: {
-          		  confirm: {
-              		  target: this
-              		, action: function() {
-						if (that.item.deleteSorted()) {		
-							DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
-							DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
-							return true;
-						} else {
-							return false;
-						}
-					}
-          		}
-          		, cancel: {
-              		  target: this
-              		, action: function() {
-	        			return true;
-      				}
-          		}
-      		}
-  		});
-	}
-
-	, setTaetigkeiten: function(positionId) {
-		var that = this;
-		if (typeof(positionId) !== "undefined") {
-
-			var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-	            if (wp) return wp.get('id') == positionId;
-	        });
-
-	        var itemSelected = NO;
-
-	        /* if a workplan exists, only use those activities that are in the workplan */
-	        var activities;
-	        if (workPlans.length > 0) {
-	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
-	        } else {
-	            activities = DigiWebApp.SelectionController.getActivities();
-	        }
-
-			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
-		    var taetigkeitenArray = _.map(activities, function(act) {
-		    	if ( typeof(act) === "undefined" ) {
-		    		console.log("UNDEFINED activity");
-		    	} else {
-	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
-	    			if (parseIntRadixTen(that.activityId) === parseIntRadixTen(obj.value)) {
-	    				obj.isSelected = YES;
-	    				itemSelected = YES;
-	    				//try {DigiWebApp.BautagebuchZeitenDetailsPage.content.activityButton.setValue(obj.label)}catch(e2){};
-	    			}
-	    			return obj;
-		    	}
-		    });
-		    taetigkeitenArray = _.compact(taetigkeitenArray);
-		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
-			that.set("activityList", taetigkeitenArray);
-			try {DigiWebApp.BautagebuchZeitenDetailsPage.content.activityComboBox.events.change.action()}catch(e2){};
-		}
-	}
-
-	, setDauer: function() {
-		var that = this;
-  		if (DigiWebApp.BautagebuchZeitenDetailsController.dauer) {
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerContainer.dauerGrid.stundeFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.dauer.split(":")[0]).padLeft(2,"0");
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerContainer.dauerGrid.minuteFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.dauer.split(":")[1]).padLeft(2,"0");
-  		}
-	}
-	
-	, setVonBis: function() {
-		var that = this;
-  		if (DigiWebApp.BautagebuchZeitenDetailsController.von) {
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.stundeVonFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.von.split(":")[0]).padLeft(2,"0");
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.minuteVonFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.von.split(":")[1]).padLeft(2,"0");
-  		}
-  		if (DigiWebApp.BautagebuchZeitenDetailsController.bis) {
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.stundeBisFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.bis.split(":")[0]).padLeft(2,"0");
-  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.minuteBisFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.bis.split(":")[1]).padLeft(2,"0");
-  		}
-  		if (DigiWebApp.BautagebuchZeitenDetailsController.von && DigiWebApp.BautagebuchZeitenDetailsController.bis && !DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen) {
-  			// Dauer aktualisieren
-				var myVon = D8.create("01.01.2000 " + DigiWebApp.BautagebuchZeitenDetailsController.von);
-				var myBis = D8.create("01.01.2000 " + DigiWebApp.BautagebuchZeitenDetailsController.bis);
-				var minutesInBetween = myVon.timeBetween(myBis, "minutes");
-				var hoursInBetween = Math.floor(minutesInBetween / 60);
-				var remainingMinutes = minutesInBetween % 60;
-				DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", hoursInBetween.padLeft(2) + ":" + remainingMinutes.padLeft(2));
-				that.setDauer();
-  		}
 	}
 	
 });
@@ -18617,6 +18239,384 @@ DigiWebApp.HandOrderController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: BautagebuchZeitenDetailsController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.BautagebuchZeitenDetailsController = M.Controller.extend({
+
+	  item: null
+
+	, handOrderId: null // runtime
+	, handOrderName: null // runtime
+
+	, auftragId: null // runtime
+	, auftragName: null // runtime
+	, auftraegeList: null // runtime
+
+	, positionId: null // in model
+	, positionName: null // in model
+	, positionenList: null // runtime
+
+	, activityId: null // in model
+	, activityName: null // in model
+	, activityList: null // runtime
+	
+	, mitarbeiterIds: null // in model
+	, mitarbeiterList: null // runtime
+	
+	, von: "00:00" // in model
+	, timeStampStart: "" // in model
+
+	, bis: "00:00" // in model
+	, timeStampEnd: "" // in model
+		
+	, dauer: "00:00" // in model
+	, remark: ""
+
+	, verbuchen: YES // in model
+
+	, latitude: "" // in model
+	, longitude: "" // in model
+	, latitude_bis: "" // in model
+	, longitude_bis: "" // in model
+
+	, init: function(isFirstLoad) {
+		//var that = this;
+	}
+
+	, load: function(myItem) {
+		var that = this;
+		that.set("item", myItem);
+		var myPosition = _.filter(DigiWebApp.Position.findSorted(), function(position) {
+			return (position.get('id') == myItem.get("positionId"));
+		})[0];
+		var myAuftrag = _.filter(DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()), function(auftrag) {
+			if (myItem.get("handOrderId") && myItem.get("handOrderId").length > 0) {
+				return (auftrag.get('id') == myItem.get('handOrderId'));
+			} else {
+				return (auftrag.get('id') == myPosition.get('orderId'));
+			}
+		})[0];
+		var myAuftragId = myAuftrag.get('id');
+		var myAuftragName = myAuftrag.get('name');
+		that.set("auftragId", myAuftragId);
+		that.set("auftragName", myAuftragName);
+		that.set("handOrderId", myItem.get("handOrderId"));
+		that.set("handOrderName", myItem.get("handOrderName"));
+		that.set("positionId", myItem.get("positionId"));
+		that.set("positionName", myItem.get("positionName"));
+		that.set("activityId", myItem.get("activityId"));
+		that.set("activityName", myItem.get("activityName"));
+		that.set("mitarbeiterIds", toIntArray(JSON.parse(myItem.get("mitarbeiterIds"))));
+		that.set("verbuchen", myItem.get("verbuchen"));
+		that.set("timeStampStart", myItem.get("timeStampStart"));
+		that.set("timeStampEnd", myItem.get("timeStampEnd"));
+		that.set("von", myItem.get("von"));
+		that.set("bis", myItem.get("bis"));
+		that.setVonBis();
+		that.set("dauer", myItem.get("dauer"));
+		that.setDauer();
+		that.set("remark", myItem.get("remark"));
+	}
+	
+	, save: function() {
+		var that = this;
+		
+		var positionSelected = (M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'positionComboBox').getSelection() !== "0" );
+		var activitySelected = (M.ViewManager.getView('bautagebuchZeitenDetailsPage', 'activityComboBox').getSelection() !== "0" );
+		var mitarbeiterSelected = (!(DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds === null || DigiWebApp.BautagebuchZeitenDetailsController.mitarbeiterIds.length === 0));
+		
+		if (!positionSelected) {
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                title: M.I18N.l('noPosSelected')
+              , message: M.I18N.l('noPosSelectedMsg')
+            });
+			return false;
+		}
+		if (!activitySelected) {
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                title: M.I18N.l('noActSelected')
+              , message: M.I18N.l('noActSelectedMsg')
+            });
+			return false;
+		}
+		if (!mitarbeiterSelected) {
+            DigiWebApp.ApplicationController.nativeAlertDialogView({
+                title: M.I18N.l('noMitarbeiterSelected')
+              , message: M.I18N.l('noMitarbeiterSelectedMsg')
+            });
+			return false;
+		}
+		
+		var ueberschneidungFound = NO;
+		if (!DigiWebApp.BautagebuchEinstellungenController.settings.falscheZeitenIgnorieren && !DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen) {
+			// prüfen, ob einer der selektierten MAs bereits eine ggfs. überschneidende Zeitbuchung hat
+			var bautagesberichteAmGleichenDatum = DigiWebApp.BautagebuchBautagesbericht.find({query:{
+				  identifier: 'datum'
+				, operator: '='
+				, value: DigiWebApp.BautagebuchBautagesberichtDetailsController.datum
+			}});
+			_.each(that.mitarbeiterIds, function(m) {
+				_.each(bautagesberichteAmGleichenDatum, function(b) {
+					var myZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find({query:{
+							  identifier: 'bautagesberichtId'
+							, operator: '='
+							, value: b.get("id")
+					}});
+					_.each(myZeitbuchungen, function(z) {
+						if (JSON.parse(z.get("mitarbeiterIds")).indexOf(m) != -1 && z.m_id != that.item.m_id) {
+							var zVonD8Timestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + z.get("von")).getTimestamp();
+							var zBisD8Timestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + z.get("bis")).getTimestamp();
+							var thatVonTimestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + that.von).getTimestamp();
+							var thatBisTimestamp = D8.create(DigiWebApp.BautagebuchBautagesberichtDetailsController.datum + " " + that.bis).getTimestamp();
+							// neuer Von-Zeitpunkt in anderer Zeitbuchung?
+							if (zVonD8Timestamp < thatVonTimestamp && thatVonTimestamp < zBisD8Timestamp) {
+								ueberschneidungFound = YES;
+							}
+							// neuer Bis-Zeitpunkt in anderer Zeitbuchung?
+							if (zVonD8Timestamp < thatBisTimestamp && thatBisTimestamp < zBisD8Timestamp) {
+								ueberschneidungFound = YES;
+							}
+							// andere Zeitbuchung enthalten?
+							if (thatVonTimestamp < zVonD8Timestamp && zBisD8Timestamp < thatBisTimestamp) {
+								ueberschneidungFound = YES;
+							}
+							// diese Zeitbuchung enthalten?
+							if (zVonD8Timestamp < thatVonTimestamp && thatBisTimestamp < zBisD8Timestamp) {
+								ueberschneidungFound = YES;
+							}
+							// identische Zeitbuchung?
+							if (thatVonTimestamp == zVonD8Timestamp && zBisD8Timestamp == thatBisTimestamp) {
+								ueberschneidungFound = YES;
+							}
+						}
+					});
+				});
+			});
+		}
+			
+		var continueSave = function() {
+			if (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen") && !DigiWebApp.BautagebuchEinstellungen.find()[0].get("falscheZeitenIgnorieren")) {
+				var myVon = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("von"));
+				var myBis = D8.create("01.01.1993 " + DigiWebApp.BautagebuchZeitenDetailsController.get("bis"));
+				if (myVon.getTimestamp() > myBis.getTimestamp()) {
+					DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                title: M.I18N.l('wrongTimes')
+		              , message: M.I18N.l('wrongTimesMsg')
+		            });
+					return false;
+				}
+			}
+			
+			if (that.handOrderId) {
+				that.item.set("handOrderId", that.handOrderId);
+				that.item.set("handOrderName", that.handOrderName);
+				that.item.set("positionId", null);
+				that.item.set("positionName", null);
+			} else {
+				that.item.set("handOrderId", null);
+				that.item.set("handOrderName", null);
+				that.item.set("positionId", that.positionId);
+				that.item.set("positionName", that.positionName);
+			}
+	
+			that.item.set("activityId", that.activityId);
+			that.item.set("activityName", that.activityName);
+			that.item.set("mitarbeiterIds", JSON.stringify(toIntArray(that.mitarbeiterIds)));
+			that.item.set("verbuchen", that.verbuchen);
+			that.item.set("von", that.von);
+			that.item.set("timeStampStart", that.timeStampStart);
+			that.item.set("bis", that.bis);
+			that.item.set("timeStampEnd", that.timeStampEnd);
+			that.item.set("dauer", that.dauer);
+			that.item.set("remark", that.remark);
+			var itemWasNew = (that.item.state == M.STATE_NEW);
+			if (that.item.saveSorted()) {
+				var backToListFunc = function() {
+	    			DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
+	    			DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
+				}
+				if (itemWasNew) {
+		    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
+		          	  	  title: M.I18N.l('bautagebuchWeitereZeitbuchung')
+				        , message: M.I18N.l('bautagebuchWeitereZeitbuchungMsg')
+			            , confirmButtonValue: M.I18N.l('yes')
+			      		, cancelButtonValue: M.I18N.l('no')
+			      		, callbacks: {
+			          		  confirm: {
+			              		  target: this
+			              		, action: function() {
+			    					var myOldItem = JSON.parse(JSON.stringify(that.item));
+			    					DigiWebApp.BautagebuchZeitenListeController.neu();
+			    					that.set("positionId", myOldItem.record.positionId);
+			    					that.set("positionName", myOldItem.record.positionName);
+			    					that.set("handOrderId", myOldItem.record.handOrderId);
+			    					that.set("handOrderName", myOldItem.record.handOrderName);
+			    					//that.set("activityId", myOldItem.record.activityId);
+			    					//that.set("activityName", myOldItem.record.activityName);
+			    					that.setTaetigkeiten(myOldItem.record.positionId);
+			    					that.set("mitarbeiterIds", toIntArray(JSON.parse(myOldItem.record.mitarbeiterIds)));
+			    					that.set("von", myOldItem.record.bis);
+			    					that.set("bis", myOldItem.record.bis);
+			    					that.setVonBis();
+			    					that.set("dauer", "00:00");
+			    					that.setDauer();
+			    					that.set("remark", "");
+			    					$('#' + DigiWebApp.BautagebuchZeitenDetailsPage.content.remarkInput.id)[0].value = "";
+								}
+			          		}
+			          		, cancel: {
+			              		  target: this
+			              		, action: function() {
+			          				backToListFunc();
+				        			return true;
+			      				}
+			          		}
+			      		}
+		    		});
+				} else {
+					// item wurde editiert
+					backToListFunc();
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+		
+		if (ueberschneidungFound) {
+    		DigiWebApp.ApplicationController.nativeConfirmDialogView({
+        	  	  title: M.I18N.l('BautagebuchUeberschneidendeZeitbuchung')
+		        , message: M.I18N.l('BautagebuchUeberschneidendeZeitbuchungMsg')
+	            , confirmButtonValue: M.I18N.l('yes')
+	      		, cancelButtonValue: M.I18N.l('no')
+	      		, callbacks: {
+	          		  confirm: {
+	              		  target: that
+	              		, action: function() {
+    						continueSave();
+						}
+	          		}
+	          		, cancel: {
+	              		  target: that
+	              		, action: function() {
+		        			return false;
+	      				}
+	          		}
+	      		}
+    		});
+		} else {
+			continueSave();
+		}
+		
+	}
+	
+	, deleteZeitbuchung: function() {
+		var that = this;
+		DigiWebApp.ApplicationController.nativeConfirmDialogView({
+        	  title: M.I18N.l('deleteLabel')
+	        , message: M.I18N.l('wirklichLoeschenMsg')
+            , confirmButtonValue: M.I18N.l('yes')
+      		, cancelButtonValue: M.I18N.l('no')
+      		, callbacks: {
+          		  confirm: {
+              		  target: this
+              		, action: function() {
+						if (that.item.deleteSorted()) {		
+							DigiWebApp.BautagebuchZeitenListeController.set("items", DigiWebApp.BautagebuchZeitbuchung.findSorted(DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('id')));
+							DigiWebApp.NavigationController.backToBautagebuchZeitenListePageTransition();
+							return true;
+						} else {
+							return false;
+						}
+					}
+          		}
+          		, cancel: {
+              		  target: this
+              		, action: function() {
+	        			return true;
+      				}
+          		}
+      		}
+  		});
+	}
+
+	, setTaetigkeiten: function(positionId) {
+		var that = this;
+		if (typeof(positionId) !== "undefined") {
+
+			var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+	            if (wp) return wp.get('id') == positionId;
+	        });
+
+	        var itemSelected = NO;
+
+	        /* if a workplan exists, only use those activities that are in the workplan */
+	        var activities;
+	        if (workPlans.length > 0) {
+	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
+	        } else {
+	            activities = DigiWebApp.SelectionController.getActivities();
+	        }
+
+			// verfügbare Tätigkeiten kopieren und ausgewähltes selektieren
+		    var taetigkeitenArray = _.map(activities, function(act) {
+		    	if ( typeof(act) === "undefined" ) {
+		    		console.log("UNDEFINED activity");
+		    	} else {
+	    			var obj = { label: act.get('name'), value: act.get('id'), isSelected: NO };
+	    			if (parseIntRadixTen(that.activityId) === parseIntRadixTen(obj.value)) {
+	    				obj.isSelected = YES;
+	    				itemSelected = YES;
+	    				//try {DigiWebApp.BautagebuchZeitenDetailsPage.content.activityButton.setValue(obj.label)}catch(e2){};
+	    			}
+	    			return obj;
+		    	}
+		    });
+		    taetigkeitenArray = _.compact(taetigkeitenArray);
+		    taetigkeitenArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected: !itemSelected});
+			that.set("activityList", taetigkeitenArray);
+			try {DigiWebApp.BautagebuchZeitenDetailsPage.content.activityComboBox.events.change.action()}catch(e2){};
+		}
+	}
+
+	, setDauer: function() {
+		var that = this;
+  		if (DigiWebApp.BautagebuchZeitenDetailsController.dauer) {
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerContainer.dauerGrid.stundeFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.dauer.split(":")[0]).padLeft(2,"0");
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.dauerContainer.dauerGrid.minuteFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.dauer.split(":")[1]).padLeft(2,"0");
+  		}
+	}
+	
+	, setVonBis: function() {
+		var that = this;
+  		if (DigiWebApp.BautagebuchZeitenDetailsController.von) {
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.stundeVonFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.von.split(":")[0]).padLeft(2,"0");
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.minuteVonFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.von.split(":")[1]).padLeft(2,"0");
+  		}
+  		if (DigiWebApp.BautagebuchZeitenDetailsController.bis) {
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.stundeBisFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.bis.split(":")[0]).padLeft(2,"0");
+  			$('#'+DigiWebApp.BautagebuchZeitenDetailsPage.content.VonBisContainer.VonBisGrid.minuteBisFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchZeitenDetailsController.bis.split(":")[1]).padLeft(2,"0");
+  		}
+  		if (DigiWebApp.BautagebuchZeitenDetailsController.von && DigiWebApp.BautagebuchZeitenDetailsController.bis && !DigiWebApp.BautagebuchEinstellungenController.settings.inStundenBuchen) {
+  			// Dauer aktualisieren
+				var myVon = D8.create("01.01.2000 " + DigiWebApp.BautagebuchZeitenDetailsController.von);
+				var myBis = D8.create("01.01.2000 " + DigiWebApp.BautagebuchZeitenDetailsController.bis);
+				var minutesInBetween = myVon.timeBetween(myBis, "minutes");
+				var hoursInBetween = Math.floor(minutesInBetween / 60);
+				var remainingMinutes = minutesInBetween % 60;
+				DigiWebApp.BautagebuchZeitenDetailsController.set("dauer", hoursInBetween.padLeft(2) + ":" + remainingMinutes.padLeft(2));
+				that.setDauer();
+  		}
+	}
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: JSONDatenuebertragungController
 // ==========================================================================
 // manuell var-checked
@@ -21104,7 +21104,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 5896
+    , softwareVersion: 5897
 
 
     /**
@@ -28924,247 +28924,6 @@ DigiWebApp.BautagebuchMaterialienDetailsPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchMaterialienTemplateView
-// ==========================================================================
-
-DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'orderName positionName handOrderName activityName spacer menge einheit artikel'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-			    var view = M.ViewManager.getViewById(id);
-			    var view_modelId = view.modelId;
-			    _.each(DigiWebApp.BautagebuchMaterialienListeController.items, function(selectedItem) {
-					if (selectedItem.m_id === view_modelId) {
-						DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
-					}
-				});
-			    DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
-			}
-        }
-    }
-	
-	, spacer: M.LabelView.design({
-	      value: ''
-	})
-
-	, orderName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= orderName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null && DigiWebApp.BautagebuchBautagesberichtDetailsController.bautagesberichtTyp != "<standard>") {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, positionName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= positionName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						if (DigiWebApp.BautagebuchBautagesberichtDetailsController.bautagesberichtTyp == "<standard>") {
-							return v;
-						} else {
-							return ", " + v;
-						}
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, handOrderName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= handOrderName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, activityName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= activityName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return ", " + v + ":";
-					} else {
-						return ":";
-					}
-	          }
-	  }
-	})
-	
-	, menge: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= menge %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, einheit: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= einheit %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return " " + v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-
-	, artikel: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= artikel %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return " \"" + v + "\"";
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-    
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: BautagebuchMaterialienListePage
-// ==========================================================================
-
-m_require('app/views/BautagebuchMaterialienTemplateView');
-
-DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
-
-    events: {
-		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchMaterialienListeController
-            , action: 'init'
-        }
-    }
-
-    , childViews: 'header uebertragenButton content'
-
-    , cssClass: 'bautagebuchListePage unselectable'
-
-    , header: M.ToolbarView.design({
-        childViews: 'backButton title newButton'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-                    	var myTyp = DigiWebApp.BautagebuchBautagesberichtDetailsController.get("bautagesberichtTyp");
-                    	if (myTyp == "<standard>") {
-                    		this.backToBautagebuchBautagesberichtDetailsPageTransition();
-                    	} else if (myTyp == "<materialerfassung_only>") {
-                    		DigiWebApp.NavigationController.backToDashboardPage();
-                    	} else {
-                    		history.back();
-                    	}
-                    }
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchMaterialien')
-            , anchorLocation: M.CENTER
-        })
-        , newButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchAdd')
-            , icon: 'new'
-            , anchorLocation: M.RIGHT
-            , cssClass: 'green_background'
-            , events: {
-                tap: {
-        			action: function() {
-        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
-        				DigiWebApp.BautagebuchMaterialienListeController.neu();
-					}
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , uebertragenButton: M.ButtonView.design({
-	        value: M.I18N.l('BautagebuchUebertragen')
-	      , events: {
-	          tap: {
-	                action: function() {
-				    	DigiWebApp.BautagebuchDatenuebertragungController.ausgekoppelteMaterialerfassungSenden(function(){
-				    		DigiWebApp.BautagebuchMaterialienListeController.init();
-						});
-	    			}
-	          }
-	      }
-     })
-
-     , content: M.ScrollView.design({
-          childViews: 'list'
-        , list: M.ListView.design({
-              contentBinding: {
-                  target: DigiWebApp.BautagebuchMaterialienListeController
-                , property: 'items'
-            }
-            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
-        })
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: BautagebuchMedienDetailsPage
 // ==========================================================================
 
@@ -29495,32 +29254,47 @@ DigiWebApp.BautagebuchMedienDetailsPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchMedienTemplateView
+// View: BautagebuchMaterialienTemplateView
 // ==========================================================================
 
-DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
+DigiWebApp.BautagebuchMaterialienTemplateView = M.ListItemView.design({
 
       isSelectable: YES
 
-    , childViews: 'positionName handOrderName activityName spacer remark'
+    , childViews: 'orderName positionName handOrderName activityName spacer menge einheit artikel'
 
     , events: {
         tap: {
 			action: function(id, m_id) {
-				    var view = M.ViewManager.getViewById(id);
-				    var view_modelId = view.modelId;
-				    _.each(DigiWebApp.BautagebuchMedienListeController.items, function(selectedItem) {
-						if (selectedItem.m_id === view_modelId) {
-							DigiWebApp.BautagebuchMedienDetailsController.load(selectedItem);
-						}
-					});
-				    DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchMaterialienListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
 			}
         }
     }
 	
 	, spacer: M.LabelView.design({
-	    value: ''
+	      value: ''
+	})
+
+	, orderName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= orderName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null && DigiWebApp.BautagebuchBautagesberichtDetailsController.bautagesberichtTyp != "<standard>") {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
 	})
 	
 	, positionName: M.LabelView.design({
@@ -29530,7 +29304,11 @@ DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
 	        valuePattern: '<%= positionName %>'
 	      , operation: function(v) {
 					if (v !== "" && v !== null) {
-						return v;
+						if (DigiWebApp.BautagebuchBautagesberichtDetailsController.bautagesberichtTyp == "<standard>") {
+							return v;
+						} else {
+							return ", " + v;
+						}
 					} else {
 						return "";
 					}
@@ -29554,37 +29332,63 @@ DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
 	})
 	
 	, activityName: M.LabelView.design({
-	      cssClass: 'normal unselectable'
-	    , isInline: YES
-		, computedValue: {
-		      valuePattern: '<%= activityName %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return ", " + v + ":";
-						} else {
-							return ":";
-						}
-		        }
-		}
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= activityName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return ", " + v + ":";
+					} else {
+						return ":";
+					}
+	          }
+	  }
+	})
+	
+	, menge: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= menge %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, einheit: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= einheit %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return " " + v;
+					} else {
+						return "";
+					}
+	          }
+	  }
 	})
 
-	, remark: M.LabelView.design({
-	      cssClass: 'small unselectable'
-		, computedValue: {
-		      valuePattern: '<%= remark %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null) {
-							var outputLength = 50;
-							if (v.length > outputLength) { 
-								return v.substring(0,outputLength) + "..."; 
-							} else { 
-								return v.substring(0,outputLength);
-							}
-						} else {
-							return "";
-						}
-		        }
-		}
+	, artikel: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= artikel %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return " \"" + v + "\"";
+					} else {
+						return "";
+					}
+	          }
+	  }
 	})
     
 });
@@ -29596,24 +29400,21 @@ DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchMedienListePage
+// View: BautagebuchMaterialienListePage
 // ==========================================================================
 
-m_require('app/views/BautagebuchMedienTemplateView');
+m_require('app/views/BautagebuchMaterialienTemplateView');
 
-DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
+DigiWebApp.BautagebuchMaterialienListePage = M.PageView.design({
 
     events: {
 		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchMedienListeController
+              target: DigiWebApp.BautagebuchMaterialienListeController
             , action: 'init'
         }
     }
 
-	, controller: DigiWebApp.BautagebuchMedienListeController
-	, navigationController: DigiWebApp.NavigationController
-	
-    , childViews: 'header content'
+    , childViews: 'header uebertragenButton content'
 
     , cssClass: 'bautagebuchListePage unselectable'
 
@@ -29628,12 +29429,21 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
             , events: {
                 tap: {
                       target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautagesberichtDetailsPageTransition();}
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+                    	var myTyp = DigiWebApp.BautagebuchBautagesberichtDetailsController.get("bautagesberichtTyp");
+                    	if (myTyp == "<standard>") {
+                    		this.backToBautagebuchBautagesberichtDetailsPageTransition();
+                    	} else if (myTyp == "<materialerfassung_only>") {
+                    		DigiWebApp.NavigationController.backToDashboardPage();
+                    	} else {
+                    		history.back();
+                    	}
+                    }
                 }
             }
         })
         , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchMedien')
+              value: M.I18N.l('BautagebuchMaterialien')
             , anchorLocation: M.CENTER
         })
         , newButton: M.ButtonView.design({
@@ -29645,7 +29455,7 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
                 tap: {
         			action: function() {
         				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
-						DigiWebApp.BautagebuchMedienListeController.neu();
+        				DigiWebApp.BautagebuchMaterialienListeController.neu();
 					}
                 }
             }
@@ -29653,14 +29463,27 @@ DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
         , anchorLocation: M.TOP
     })
 
-    , content: M.ScrollView.design({
+    , uebertragenButton: M.ButtonView.design({
+	        value: M.I18N.l('BautagebuchUebertragen')
+	      , events: {
+	          tap: {
+	                action: function() {
+				    	DigiWebApp.BautagebuchDatenuebertragungController.ausgekoppelteMaterialerfassungSenden(function(){
+				    		DigiWebApp.BautagebuchMaterialienListeController.init();
+						});
+	    			}
+	          }
+	      }
+     })
+
+     , content: M.ScrollView.design({
           childViews: 'list'
         , list: M.ListView.design({
               contentBinding: {
-                  target: DigiWebApp.BautagebuchMedienListeController
+                  target: DigiWebApp.BautagebuchMaterialienListeController
                 , property: 'items'
             }
-            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
+            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
         })
     })
 
@@ -29851,6 +29674,183 @@ DigiWebApp.BautagebuchMitarbeiterAuswahlPage = M.PageView.design({
             })
         })
 
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchMedienTemplateView
+// ==========================================================================
+
+DigiWebApp.BautagebuchMedienTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'positionName handOrderName activityName spacer remark'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+				    var view = M.ViewManager.getViewById(id);
+				    var view_modelId = view.modelId;
+				    _.each(DigiWebApp.BautagebuchMedienListeController.items, function(selectedItem) {
+						if (selectedItem.m_id === view_modelId) {
+							DigiWebApp.BautagebuchMedienDetailsController.load(selectedItem);
+						}
+					});
+				    DigiWebApp.NavigationController.toBautagebuchMedienDetailsPageTransition();
+			}
+        }
+    }
+	
+	, spacer: M.LabelView.design({
+	    value: ''
+	})
+	
+	, positionName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= positionName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, handOrderName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= handOrderName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, activityName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= activityName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v + ":";
+						} else {
+							return ":";
+						}
+		        }
+		}
+	})
+
+	, remark: M.LabelView.design({
+	      cssClass: 'small unselectable'
+		, computedValue: {
+		      valuePattern: '<%= remark %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							var outputLength = 50;
+							if (v.length > outputLength) { 
+								return v.substring(0,outputLength) + "..."; 
+							} else { 
+								return v.substring(0,outputLength);
+							}
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+    
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchMedienListePage
+// ==========================================================================
+
+m_require('app/views/BautagebuchMedienTemplateView');
+
+DigiWebApp.BautagebuchMedienListePage = M.PageView.design({
+
+    events: {
+		pagebeforeshow: {
+              target: DigiWebApp.BautagebuchMedienListeController
+            , action: 'init'
+        }
+    }
+
+	, controller: DigiWebApp.BautagebuchMedienListeController
+	, navigationController: DigiWebApp.NavigationController
+	
+    , childViews: 'header content'
+
+    , cssClass: 'bautagebuchListePage unselectable'
+
+    , header: M.ToolbarView.design({
+        childViews: 'backButton title newButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautagesberichtDetailsPageTransition();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchMedien')
+            , anchorLocation: M.CENTER
+        })
+        , newButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchAdd')
+            , icon: 'new'
+            , anchorLocation: M.RIGHT
+            , cssClass: 'green_background'
+            , events: {
+                tap: {
+        			action: function() {
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
+						DigiWebApp.BautagebuchMedienListeController.neu();
+					}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'list'
+        , list: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.BautagebuchMedienListeController
+                , property: 'items'
+            }
+            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
+        })
     })
 
 });
@@ -37479,7 +37479,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 5896'
+              value: 'Build: 5897'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -38322,198 +38322,6 @@ DigiWebApp.TerminlisteTemplateView = M.ListItemView.design({
 
 });
 
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: TerminlisteVorZurueckTabBar
-// ==========================================================================
-
-DigiWebApp.TerminlisteVorZurueckTabBar = M.TabBarView.design({
-
-      childViews: 'tabItemZurueck tabItemDayToShow tabItemVor'
-
-    , anchorLocation: M.BOTTOM
-
-    , isFixed: YES 
-
-    , transition: M.TRANSITION.FADE
-
-    , name: 'terminlistevorzuruecktabbar'
-
-    , tabItemZurueck: M.TabBarItemView.design({
-          value: M.I18N.l('backward')
-        , page: 'terminlistePage'
-        , icon: 'arrow-l'
-        , switchPage: function() {
-    		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-			DigiWebApp.TerminlisteVorZurueckTabBar.backwardHandler();
-    	}
-    })
-
-    , tabItemDayToShow: M.TabBarItemView.design({
-          value: ''
-        , page: 'terminlistePage'
-        , icon: ''
-    })
-
-    , tabItemVor: M.TabBarItemView.design({
-          value: M.I18N.l('forward')
-        , page: 'terminlistePage'
-        , icon: 'arrow-r'
-        , switchPage: function() {
-    		try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
-    		DigiWebApp.TerminlisteVorZurueckTabBar.forwardHandler();
-    	}
-    })
-        
-    , backwardHandler: function() {
-		//DigiWebApp.TerminlisteController.set('items', null);
-		DigiWebApp.TerminlisteController.items = null;
-		var today = D8.create(DigiWebApp.TerminlisteController.datum);
-		var yesterday = today.yesterday();
-		DigiWebApp.TerminlisteController.set('datum', today.addMinutes(-today.date.getTimezoneOffset() + yesterday.date.getTimezoneOffset()).addDays(-1).format("dd.mm.yyyy"));
-		DigiWebApp.TerminlisteController.init(YES);
-	}
-
-	, forwardHandler: function() {
-		//DigiWebApp.TerminlisteController.set('items', null);
-		DigiWebApp.TerminlisteController.items = null;
-		var today = D8.create(DigiWebApp.TerminlisteController.datum);
-		var tomorrow = today.tomorrow();
-		DigiWebApp.TerminlisteController.set('datum', today.addMinutes(-today.date.getTimezoneOffset() + tomorrow.date.getTimezoneOffset()).addDays(1).format("dd.mm.yyyy"));
-		DigiWebApp.TerminlisteController.init(YES);
-	}
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: TerminlistePage
-// ==========================================================================
-
-m_require('app/views/TerminlisteTemplateView');
-m_require('app/views/TerminlisteVorZurueckTabBar.js');
-
-DigiWebApp.TerminlistePage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		pagebeforeshow: {
-            target: DigiWebApp.TerminlisteController,
-            action: 'init'
-        }
-    }
-
-    , childViews: 'header content tabBar'
-
-    , cssClass: 'terminlistePage'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton titleGrid'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                    //  target: DigiWebApp.NavigationController
-                    //, action: 'backToDashboardPagePOP'
-        			action: function() {
-        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-						if (DigiWebApp.SettingsController.featureAvailable('404')) {
-			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
-						} else {
-			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
-						}
-        			}
-                }
-            }
-        })
-        , titleGrid: M.GridView.design({
-        	  childViews: 'titleDay titleTextFieldView'
-            , anchorLocation: M.CENTER
-            , layout: { 
-        		cssClass: 'dateTitleGrid' 
-	    		, columns: { 
-	    		      0: 'dateTitleGridColumn1' 
-	    		    , 1: 'dateTitleGridColumn2' 
-	    		}
-	        }
-	        , titleDay: M.LabelView.design({
-	        	computedValue: {
-		            contentBinding: {
-		                target: DigiWebApp.TerminlisteController,
-		                property: 'datumAsDate'
-		            },
-		            value: 0,
-		            operation: function(v) {
-		                return DigiWebApp.ApplicationController.dayNamesShort[D8.create(v).date.getDay()].substring(0,2);
-		            }
-		        }
-	        	, cssClass: 'dateTitleDay'
-	        })
-	        , titleTextFieldView: M.TextFieldView.design({
-	              value: ''
-	            , cssClass: 'dateTitle'
-	            , anchorLocation: M.CENTER
-	            , inputType: M.INPUT_DATE
-	            , contentBinding: {
-	        		  target: DigiWebApp.TerminlisteController
-	        		, property: 'datumAsDate'
-	        	}
-		        , contentBindingReverse: {
-		    		  target: DigiWebApp.TerminlisteController
-		    		, property: 'datumAsDate'
-		    	}
-	            , events: {
-	            	  blur: {
-	            		action: function() {
-	            			if (DigiWebApp.TerminlisteController.datumAsDate) {
-	            				var datumArray = DigiWebApp.TerminlisteController.datumAsDate.split("-");
-								DigiWebApp.TerminlisteController.set("datum", datumArray[2] + "." + datumArray[1] + "." + datumArray[0]);
-	            			}
-	            		}
-	            	}
-		            , tap: {
-		                action: function() {
-	            			try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
-	        			}
-		            }
-		        }
-	        })
-        })
-        , titleLabel: M.LabelView.design({
-              value: M.I18N.l('Terminliste')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-            childViews: 'terminliste'
-          , terminliste: M.ListView.design({
-        	  	  isDividedList: YES
-                , contentBinding: {
-	                  target: DigiWebApp.TerminlisteController
-	                , property: 'items'
-	            }
-	            , listItemTemplateView: DigiWebApp.TerminlisteTemplateView
-	      })
-    })
-
-    , tabBar: DigiWebApp.TerminlisteVorZurueckTabBar
-
-});
 
 
 // ==========================================================================
@@ -39850,6 +39658,198 @@ DigiWebApp.TimeDataArchivePage = M.PageView.design({
             , listItemTemplateView: DigiWebApp.TimeDataSentTemplateView
         })
     })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: TerminlisteVorZurueckTabBar
+// ==========================================================================
+
+DigiWebApp.TerminlisteVorZurueckTabBar = M.TabBarView.design({
+
+      childViews: 'tabItemZurueck tabItemDayToShow tabItemVor'
+
+    , anchorLocation: M.BOTTOM
+
+    , isFixed: YES 
+
+    , transition: M.TRANSITION.FADE
+
+    , name: 'terminlistevorzuruecktabbar'
+
+    , tabItemZurueck: M.TabBarItemView.design({
+          value: M.I18N.l('backward')
+        , page: 'terminlistePage'
+        , icon: 'arrow-l'
+        , switchPage: function() {
+    		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+			DigiWebApp.TerminlisteVorZurueckTabBar.backwardHandler();
+    	}
+    })
+
+    , tabItemDayToShow: M.TabBarItemView.design({
+          value: ''
+        , page: 'terminlistePage'
+        , icon: ''
+    })
+
+    , tabItemVor: M.TabBarItemView.design({
+          value: M.I18N.l('forward')
+        , page: 'terminlistePage'
+        , icon: 'arrow-r'
+        , switchPage: function() {
+    		try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
+    		DigiWebApp.TerminlisteVorZurueckTabBar.forwardHandler();
+    	}
+    })
+        
+    , backwardHandler: function() {
+		//DigiWebApp.TerminlisteController.set('items', null);
+		DigiWebApp.TerminlisteController.items = null;
+		var today = D8.create(DigiWebApp.TerminlisteController.datum);
+		var yesterday = today.yesterday();
+		DigiWebApp.TerminlisteController.set('datum', today.addMinutes(-today.date.getTimezoneOffset() + yesterday.date.getTimezoneOffset()).addDays(-1).format("dd.mm.yyyy"));
+		DigiWebApp.TerminlisteController.init(YES);
+	}
+
+	, forwardHandler: function() {
+		//DigiWebApp.TerminlisteController.set('items', null);
+		DigiWebApp.TerminlisteController.items = null;
+		var today = D8.create(DigiWebApp.TerminlisteController.datum);
+		var tomorrow = today.tomorrow();
+		DigiWebApp.TerminlisteController.set('datum', today.addMinutes(-today.date.getTimezoneOffset() + tomorrow.date.getTimezoneOffset()).addDays(1).format("dd.mm.yyyy"));
+		DigiWebApp.TerminlisteController.init(YES);
+	}
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: TerminlistePage
+// ==========================================================================
+
+m_require('app/views/TerminlisteTemplateView');
+m_require('app/views/TerminlisteVorZurueckTabBar.js');
+
+DigiWebApp.TerminlistePage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		pagebeforeshow: {
+            target: DigiWebApp.TerminlisteController,
+            action: 'init'
+        }
+    }
+
+    , childViews: 'header content tabBar'
+
+    , cssClass: 'terminlistePage'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton titleGrid'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToDashboardPagePOP'
+        			action: function() {
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+						if (DigiWebApp.SettingsController.featureAvailable('404')) {
+			        		DigiWebApp.NavigationController.backToButtonDashboardPagePOP();
+						} else {
+			        		DigiWebApp.NavigationController.backToDashboardPagePOP();
+						}
+        			}
+                }
+            }
+        })
+        , titleGrid: M.GridView.design({
+        	  childViews: 'titleDay titleTextFieldView'
+            , anchorLocation: M.CENTER
+            , layout: { 
+        		cssClass: 'dateTitleGrid' 
+	    		, columns: { 
+	    		      0: 'dateTitleGridColumn1' 
+	    		    , 1: 'dateTitleGridColumn2' 
+	    		}
+	        }
+	        , titleDay: M.LabelView.design({
+	        	computedValue: {
+		            contentBinding: {
+		                target: DigiWebApp.TerminlisteController,
+		                property: 'datumAsDate'
+		            },
+		            value: 0,
+		            operation: function(v) {
+		                return DigiWebApp.ApplicationController.dayNamesShort[D8.create(v).date.getDay()].substring(0,2);
+		            }
+		        }
+	        	, cssClass: 'dateTitleDay'
+	        })
+	        , titleTextFieldView: M.TextFieldView.design({
+	              value: ''
+	            , cssClass: 'dateTitle'
+	            , anchorLocation: M.CENTER
+	            , inputType: M.INPUT_DATE
+	            , contentBinding: {
+	        		  target: DigiWebApp.TerminlisteController
+	        		, property: 'datumAsDate'
+	        	}
+		        , contentBindingReverse: {
+		    		  target: DigiWebApp.TerminlisteController
+		    		, property: 'datumAsDate'
+		    	}
+	            , events: {
+	            	  blur: {
+	            		action: function() {
+	            			if (DigiWebApp.TerminlisteController.datumAsDate) {
+	            				var datumArray = DigiWebApp.TerminlisteController.datumAsDate.split("-");
+								DigiWebApp.TerminlisteController.set("datum", datumArray[2] + "." + datumArray[1] + "." + datumArray[0]);
+	            			}
+	            		}
+	            	}
+		            , tap: {
+		                action: function() {
+	            			try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
+	        			}
+		            }
+		        }
+	        })
+        })
+        , titleLabel: M.LabelView.design({
+              value: M.I18N.l('Terminliste')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+            childViews: 'terminliste'
+          , terminliste: M.ListView.design({
+        	  	  isDividedList: YES
+                , contentBinding: {
+	                  target: DigiWebApp.TerminlisteController
+	                , property: 'items'
+	            }
+	            , listItemTemplateView: DigiWebApp.TerminlisteTemplateView
+	      })
+    })
+
+    , tabBar: DigiWebApp.TerminlisteVorZurueckTabBar
 
 });
 
