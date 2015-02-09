@@ -9134,118 +9134,48 @@ M.SplitView = M.View.extend(
  *
  * @extends M.View
  */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
+    type: 'M.SplitItemView',
 
     /**
-     * Triggers render() on all children.
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
      *
      * @private
      */
-    renderChildViews: function() {
+    renderUpdate: function() {
+        // ...
+    },
 
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
     }
 
 });
@@ -9435,48 +9365,118 @@ M.TabBarView = M.View.extend(
  *
  * @extends M.View
  */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
+M.SplitToolbarView = M.View.extend(
+/** @scope M.SplitToolbarView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.SplitItemView',
+    type: 'M.SplitToolbarView',
+
+    showSelectedItemInMainHeader: YES,
+
+    showMenuButtonInPortraitMode: YES,
+
+    popover: null,
+
+    splitview: null,
 
     /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
+     * Triggers render() on all children.
      *
      * @private
      */
-    renderUpdate: function() {
-        // ...
-    },
+    renderChildViews: function() {
 
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
+        if(this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+
+            var currentToolbar = 0;
+            for(var i in childViews) { // toolbar1, toolbar 2
+                
+                var toolbar = this[childViews[i]]; //zugriff wie 
+                
+                if(toolbar && toolbar.type === 'M.ToolbarView') {
+
+                    toolbar.parentView = this;
+                    if(currentToolbar === 0) {
+
+
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
+
+
+
+                    } else if(currentToolbar === 1) {
+                        //toolbar2
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
+
+                        /* check if this is a simple toolbar so we can add the menu button */
+                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
+                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
+                            toolbar.childViews = 'menuButton label';
+
+
+
+                            var buttonLabel = this[childViews[0]].value;
+                            toolbar.menuButton = M.ButtonView.design({
+                                value: buttonLabel,
+                                icon: 'arrow-d',
+                                anchorLocation: M.LEFT,
+                                internalEvents: {
+                                    tap: {
+                                        target: this,
+                                        action: function() {
+                                           if(!this.popover) {
+                                                var content;
+                                                if(this.splitview.contentBinding) {
+                                                    content = this.splitview.value;
+                                                } else if(this.splitview.childViews) {
+                                                    var childViews = this.splitview.getChildViewsAsArray();
+                                                    content = [];
+                                                    for(var i = 0; i < childViews.length; i++) {
+                                                        content.push(this.splitview[childViews[i]]);
+                                                    }
+                                                }
+                                                var items = [];
+                                                for(var i in content) {
+                                                    items.push(content[i]);
+                                                }
+                                                this.popover = M.PopoverView.design({
+                                                    items: items,
+                                                    splitview: this.splitview
+                                                });
+                                                this.popover.show();
+                                            } else {
+                                                this.popover.renderUpdate();
+                                                this.popover.toggle();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            toolbar.label = M.LabelView.design({
+                                value: toolbar.value,
+                                anchorLocation: M.CENTER
+                            });
+
+                            toolbar.value = '';
+                        }
+                    } else {
+                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
+                        return;
+                    }
+                    this.html += toolbar.render();
+                    currentToolbar++;
+                } else {
+                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
+                }
+            }
+            return this.html;
+        }
     }
 
 });
@@ -10478,6 +10478,178 @@ M.TextFieldView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
+ *
+ * @extends M.View
+ */
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ToggleView',
+
+    /**
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
+     *
+     * @type Boolean
+     */
+    isInFirstState: YES,
+
+    /**
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
+     *
+     * @type Boolean
+     */
+    toggleOnClick: NO,
+
+    /**
+     * Contains a reference to the currently displayed view.
+     *
+     * @type M.View
+     */
+    currentView: null,
+
+    /**
+     * Renders a ToggleView and its child views.
+     *
+     * @private
+     * @returns {String} The toggle view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method renders one child view of the toggle view, based on the isInFirstState
+     * property: YES = first child view, NO = second child view.
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            if(childViews.length !== 2) {
+                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
+            } else {
+                for(var i in childViews) {
+                    if(this[childViews[i]]) {
+                        if(this.toggleOnClick) {
+                            this[childViews[i]].internalEvents = {
+                                vclick: {
+                                    target: this,
+                                    action: 'toggleView'
+                                }
+                            }
+                        }
+                        this[childViews[i]]._name = childViews[i];
+                        this[childViews[i]].parentView = this;
+                        
+                        this.html += '<div id="' + this.id + '_' + i + '">';
+                        this.html += this[childViews[i]].render();
+                        this.html += '</div>';
+                    }
+                }
+                this.currentView = this[childViews[0]];
+            }
+        }
+    },
+
+    /**
+     * This method toggles the child views by first emptying the toggle view's content
+     * and then rendering the next child view by calling renderUpdateChildViews().
+     */
+    toggleView: function(id, event, nextEvent) {
+        this.isInFirstState = !this.isInFirstState;
+        var currentViewIndex = this.isInFirstState ? 0 : 1;
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        $('#' + this.id + '_' + currentViewIndex).show();
+
+        /* set current view */
+        var childViews = this.getChildViewsAsArray();
+        if(this[childViews[currentViewIndex]]) {
+            this.currentView = this[childViews[currentViewIndex]];
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
+     * the view, its id or its name.
+     *
+     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
+     * done.
+     *
+     * @param {Object|String} view The corresponding view.
+     */
+    setView: function(view) {
+        if(typeof(view) === 'string') {
+            /* assume a name was given */
+            var childViews = this.getChildViewsAsArray();
+            if(_.indexOf(childViews, view) >= 0) {
+                view = this[view];
+            /* assume an id was given */
+            } else {
+                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
+            }
+        }
+
+        if(view && typeof(view) === 'object' && view.parentView === this) {
+            if(this.currentView !== view) {
+                this.toggleView();
+            }
+        } else {
+            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.currentView) {
+            this.themeChildViews();
+            var currentViewIndex = this.isInFirstState ? 0 : 1;
+
+            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        }
+    }
+
+});
 /**
  * @class
  *
@@ -11081,178 +11253,6 @@ M.WebView = M.View.extend(
      */
     reload: function() {
         $('#' + this.id).attr('src', this.value);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
- * two child views and provides an easy mechanism to toggle between these two views. An
- * easy example would be to define two different button views that can be toggled, a more
- * complex scenario would be to define two content views (M.ScrollView) with own child views
- * and toggle between them.
- *
- * @extends M.View
- */
-M.ToggleView = M.View.extend(
-/** @scope M.ToggleView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToggleView',
-
-    /**
-     * States whether the toggle view currently displays its first child view or its second
-     * child view.
-     *
-     * @type Boolean
-     */
-    isInFirstState: YES,
-
-    /**
-     * Determines whether to toggle the view on click. This might be useful if the child views
-     * are e.g. buttons.
-     *
-     * @type Boolean
-     */
-    toggleOnClick: NO,
-
-    /**
-     * Contains a reference to the currently displayed view.
-     *
-     * @type M.View
-     */
-    currentView: null,
-
-    /**
-     * Renders a ToggleView and its child views.
-     *
-     * @private
-     * @returns {String} The toggle view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method renders one child view of the toggle view, based on the isInFirstState
-     * property: YES = first child view, NO = second child view.
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            if(childViews.length !== 2) {
-                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
-            } else {
-                for(var i in childViews) {
-                    if(this[childViews[i]]) {
-                        if(this.toggleOnClick) {
-                            this[childViews[i]].internalEvents = {
-                                vclick: {
-                                    target: this,
-                                    action: 'toggleView'
-                                }
-                            }
-                        }
-                        this[childViews[i]]._name = childViews[i];
-                        this[childViews[i]].parentView = this;
-                        
-                        this.html += '<div id="' + this.id + '_' + i + '">';
-                        this.html += this[childViews[i]].render();
-                        this.html += '</div>';
-                    }
-                }
-                this.currentView = this[childViews[0]];
-            }
-        }
-    },
-
-    /**
-     * This method toggles the child views by first emptying the toggle view's content
-     * and then rendering the next child view by calling renderUpdateChildViews().
-     */
-    toggleView: function(id, event, nextEvent) {
-        this.isInFirstState = !this.isInFirstState;
-        var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        $('#' + this.id + '_' + currentViewIndex).show();
-
-        /* set current view */
-        var childViews = this.getChildViewsAsArray();
-        if(this[childViews[currentViewIndex]]) {
-            this.currentView = this[childViews[currentViewIndex]];
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
-     * the view, its id or its name.
-     *
-     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
-     * done.
-     *
-     * @param {Object|String} view The corresponding view.
-     */
-    setView: function(view) {
-        if(typeof(view) === 'string') {
-            /* assume a name was given */
-            var childViews = this.getChildViewsAsArray();
-            if(_.indexOf(childViews, view) >= 0) {
-                view = this[view];
-            /* assume an id was given */
-            } else {
-                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
-            }
-        }
-
-        if(view && typeof(view) === 'object' && view.parentView === this) {
-            if(this.currentView !== view) {
-                this.toggleView();
-            }
-        } else {
-            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.currentView) {
-            this.themeChildViews();
-            var currentViewIndex = this.isInFirstState ? 0 : 1;
-
-            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        }
     }
 
 });
