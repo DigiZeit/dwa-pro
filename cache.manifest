@@ -1,27 +1,27 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.5922 beta, Timestamp:1423556305272
+#Application:DigiWebApp, Version:1.8.3.5923 beta, Timestamp:1423672611544
 
 
 # Explicitly cached entries
 CACHE:
-jquery-1.9.1.js
-underscore-min.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
+underscore-min.js
+jquery-1.9.1.js
+jquery_mobile.js
+theme/tmp.css
 d8-0.1.3.min.js
 d8-0.4.0.min.js
-bootstrap.js
-theme/tmp.css
-jquery_mobile.js
-Math.uuid.js
-jstz.js
 jquery.xml2json_1.3.js
+bootstrap.js
 barcodescanner.js
 childbrowser.js
 cordova.js
+jstz.js
+Math.uuid.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
@@ -29,8 +29,8 @@ digi_selection_list_item.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_DIGI-WebApp.png
-theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x1024_90_SCHOLPP.png
+theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/1080x1920_90_DIGI-WebApp_mitLogo.png
