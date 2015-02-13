@@ -1,26 +1,26 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.5931, Timestamp:1423750269963
+#Application:DigiWebApp, Version:1.8.3.5932 beta, Timestamp:1423814084148
 
 
 # Explicitly cached entries
 CACHE:
-underscore-min.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-theme/tmp.css
+d8-0.1.3.min.js
+d8-0.4.0.min.js
 bootstrap.js
 jquery-1.9.1.js
+theme/tmp.css
+underscore-min.js
+jquery_mobile.js
 jquery.xml2json_1.3.js
 barcodescanner.js
 childbrowser.js
 cordova.js
 jstz.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
-jquery_mobile.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
@@ -29,9 +29,9 @@ Math.uuid.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_DIGI-WebApp.png
-theme/images/1024x1024_90_SCHOLPP.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
+theme/images/1024x1024_90_SCHOLPP.png
 theme/images/1080x1920_90_DIGI-WebApp.png
 theme/images/1080x1920_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_SCHOLPP.png
@@ -44,9 +44,9 @@ theme/images/2048x2048_90_DIGI-WebApp.png
 theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
-theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
+theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/480x640_90_DIGI-WebApp_mitLogo.png
 theme/images/480x800_90_DIGI-WebApp.png
@@ -101,8 +101,8 @@ theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
 theme/images/icon_ios_120.png
-theme/images/icon_ios_152.png
 theme/images/icon_ios_144.png
+theme/images/icon_ios_152.png
 theme/images/icon_ios_57.png
 theme/images/icon_ios_72.png
 theme/images/icon_ios_76.png
@@ -114,6 +114,7 @@ theme/images/tabSprite.png
 theme/images/tile-icon-winphone.png
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+ui.js
 CHANGELOG.md
 Gruntfile.coffee
 LICENSE.txt
@@ -125,9 +126,9 @@ pen.psd
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
-theme/journal.svg
 theme/journal.ttf
 theme/journal.woff
+theme/journal.svg
 theme/jquery.signaturepad.css
 json2.min.js
 pen.cur
@@ -137,6 +138,7 @@ full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
+core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
@@ -144,8 +146,6 @@ theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
-core.js
-ui.js
 DigiWebApp_App.js
 
 
