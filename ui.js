@@ -505,131 +505,6 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1119,7 +994,7 @@ M.ButtonGroupView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
-// Date:      10.04.12
+// Date:      28.10.11
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -1128,47 +1003,115 @@ M.ButtonGroupView = M.View.extend(
 /**
  * @class
  *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
  *
  * @extends M.View
  */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.CarouselItemView',
+    type: 'M.CanvasView',
 
     /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
+     * This property specifies the recommended events for this type of view.
      *
-     * @type String
+     * @type Array
      */
-    tag: null,
+    recommendedEvents: ['tap'],
 
     /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
+     * This method simply renders a canvas view as a html canvas element.
      *
      * @private
-     * @returns {String} The carousel item view's html representation.
+     * @returns {String} The image view's styling as html representation.
      */
     render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
-
-        this.renderChildViews();
-
-        this.html += '</li>';
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
 
         return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
     }
 
 });
@@ -1768,6 +1711,63 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      10.04.12
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A carousel item view is the one and only valid sub view of a carousel view. It basically
+ * serves as a container that allows you to put anything into such an element. Simply
+ * apply as much child views as you like and let this view (in combination with the carousel)
+ * take care of the rest.
+ *
+ * @extends M.View
+ */
+M.CarouselItemView = M.View.extend(
+/** @scope M.CarouselItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CarouselItemView',
+
+    /**
+     * This property can be used to specify a tag, that is independent from the carousel
+     * item's content. This allows you to identify a carousel item e.g. within the callback
+     * of the carousel's change event.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This method renders a carousel item and its content with an li element as the
+     * surrounding element.
+     *
+     * @private
+     * @returns {String} The carousel item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+
+        this.renderChildViews();
+
+        this.html += '</li>';
+
+        return this.html;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5187,6 +5187,274 @@ M.MapView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      27.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the map's marker animation type: none
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_NONE = 'NONE';
+
+/**
+ * A constant value for the map's marker animation type: drop
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_DROP = 'DROP';
+
+/**
+ * A constant value for the map's marker animation type: bounce
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
+
+/**
+ * @class
+ *
+ * M.MapMarkerView is the prototype of a map marker view. It defines a set
+ * of methods for adding, removing and managing the markers of a M.MapView.
+ *
+ * The M.MapMarkerView is based on google maps markers.
+ *
+ * @extends M.View
+ */
+M.MapMarkerView = M.View.extend(
+/** @scope M.MapMarkerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapMarkerView',
+
+    /**
+     * This property is used to save a reference to the actual google map marker.
+     * It is set automatically when the map marker is firstly initialized.
+     *
+     * @type Object
+     */
+    marker: null,
+
+    /**
+     * This property can be used to store additional information about a marker.
+     * Since this property is an object, you can store pretty much anything in
+     * this property.
+     *
+     * This can be useful especially if you are using the click event for map
+     * markers. So you can store any information with a marker and retrieve
+     * this information on the click event.
+     *
+     * @type Object
+     */
+    data: null,
+
+    /**
+     * This property contains a reference to the marker's map view.
+     *
+     * @type M.MapView
+     */
+    map: null,
+
+    /**
+     * This property specifies the title of a map marker view. It can be used in
+     * an annotation.
+     *
+     * @type String
+     */
+    title: null,
+
+    /**
+     * This property specifies the message of a map marker view respectively for
+     * its annotation.
+     *
+     * @type String
+     */
+    message: null,
+
+    /**
+     * This property can be used to specify whether or not to show the annotation,
+     * if title and / or message are defined, automatically on click event.
+     *
+     * @type Boolean
+     */
+    showAnnotationOnClick: NO,
+
+    /**
+     * This property contains a reference to a google maps info window that is
+     * connected to this map marker. By calling either the showAnnotation() or
+     * the hideAnnotation() method, this info window can be toggled.
+     *
+     * Additionally the info window will be automatically set to visible if the
+     * showAnnotationOnClick property is set to YES.
+     *
+     * @type Object
+     */
+    annotation: null,
+
+    /**
+     * This property specifies whether the marker is draggable or not. If set
+     * to NO, a user won't be able to move the marker. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: NO,
+
+    /**
+     * This property specifies the location for this map marker view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the position
+     * property of a google maps marker. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type M.Location
+     */
+    location: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property can be used to specify the animation type for this map marker
+     * view. If this property is set, the markerAnimationType property of the parent
+     * map view is ignored. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: null,
+
+    /**
+     * This property can be used to specify a custom marker icon. Simply pass a valid
+     * path to an image and it will be shown instead of google's default marker.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * This property can be used to specify the display size of the icon used for the
+     * marker. This is important if you want to support e.g. the iphone's retina display.
+     *
+     * Pass along an object containing the desired width and height, e.g.:
+     *
+     *     {
+     *         width: 20,
+     *         height: 20
+     *     }
+     *
+     * @type Object
+     */
+    iconSize: null,
+
+    /**
+     * This property can be used to display a map marker icon centered about its location.
+     * By default a map marker is positioned with its bottom center at the location.
+     *
+     * @type Boolean
+     */
+    isIconCentered: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This method initializes an M.MapMarkerView. It connects a map marker directly with
+     * the parent map view and returns the created M.MapMarkerView object.
+     *
+     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
+     * initialized and can no be displayed by using the map view's addMarker() method or via
+     * content binding.
+     *
+     * @param {Object} options The options for the map marker view.
+     */
+    init: function(options) {
+        var marker = this.extend(options);
+
+        if(marker.annotation || marker.message) {
+            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
+            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
+            
+            marker.annotation = new google.maps.InfoWindow({
+                content: content,
+                maxWidth: 100
+            });
+        }
+
+        return marker;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'showAnnotation'
+            }
+        }
+
+        var that = this;
+        google.maps.event.addListener(this.marker, 'click', function() {
+            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        });
+    },
+
+    /**
+     * This method can be used to remove a map marker from a map view.
+     */
+    remove: function() {
+        this.map.removeMarker(this);
+    },
+
+    /**
+     * This method can be used to show a map markers annotation.
+     */
+    showAnnotation: function(id, event, nextEvent) {
+        if(this.annotation) {
+            this.annotation.open(this.map.map, this.marker);
+        }
+
+        /* delegate event to external handler, if specified */
+        if(this.events || this.map.events) {
+            var events = this.events ? this.events : this.map.events;
+            for(var e in events) {
+                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+                }
+            }
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5848,6 +6116,138 @@ M.PageView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -6110,138 +6510,6 @@ M.ScrollView = M.View.extend(
             html += ' class="' + this.cssClass + '"';
         }
         return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
     }
 
 });
@@ -7257,269 +7525,752 @@ M.ListView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      27.01.2011
+// Date:      17.11.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
- * A constant value for the map's marker animation type: none
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_NONE = 'NONE';
-
-/**
- * A constant value for the map's marker animation type: drop
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_DROP = 'DROP';
-
-/**
- * A constant value for the map's marker animation type: bounce
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
-
-/**
  * @class
  *
- * M.MapMarkerView is the prototype of a map marker view. It defines a set
- * of methods for adding, removing and managing the markers of a M.MapView.
- *
- * The M.MapMarkerView is based on google maps markers.
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
  *
  * @extends M.View
  */
-M.MapMarkerView = M.View.extend(
-/** @scope M.MapMarkerView.prototype */ {
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.MapMarkerView',
+    type: 'M.SliderView',
 
     /**
-     * This property is used to save a reference to the actual google map marker.
-     * It is set automatically when the map marker is firstly initialized.
-     *
-     * @type Object
+     * This property contains the slider's value.
      */
-    marker: null,
+    value: 0,
 
     /**
-     * This property can be used to store additional information about a marker.
-     * Since this property is an object, you can store pretty much anything in
-     * this property.
+     * This property contains the slider's initial value.
      *
-     * This can be useful especially if you are using the click event for map
-     * markers. So you can store any information with a marker and retrieve
-     * this information on the click event.
-     *
-     * @type Object
+     * @private
      */
-    data: null,
+    initialValue: 0,
 
     /**
-     * This property contains a reference to the marker's map view.
+     * This property specifies the min value of the slider.
      *
-     * @type M.MapView
+     * @type Number
      */
-    map: null,
+    min: 0,
 
     /**
-     * This property specifies the title of a map marker view. It can be used in
-     * an annotation.
+     * This property specifies the max value of the slider.
      *
-     * @type String
+     * @type Number
      */
-    title: null,
+    max: 100,
 
     /**
-     * This property specifies the message of a map marker view respectively for
-     * its annotation.
+     * This property specifies the step value of the slider.
      *
-     * @type String
+     * @type Number
      */
-    message: null,
+    step: 1,
 
     /**
-     * This property can be used to specify whether or not to show the annotation,
-     * if title and / or message are defined, automatically on click event.
+     * This property determines whether or not to display the corresponding input of the slider.
      *
      * @type Boolean
      */
-    showAnnotationOnClick: NO,
+    isSliderOnly: NO,
 
     /**
-     * This property contains a reference to a google maps info window that is
-     * connected to this map marker. By calling either the showAnnotation() or
-     * the hideAnnotation() method, this info window can be toggled.
-     *
-     * Additionally the info window will be automatically set to visible if the
-     * showAnnotationOnClick property is set to YES.
-     *
-     * @type Object
-     */
-    annotation: null,
-
-    /**
-     * This property specifies whether the marker is draggable or not. If set
-     * to NO, a user won't be able to move the marker. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
      *
      * @type Boolean
      */
-    isDraggable: NO,
-
-    /**
-     * This property specifies the location for this map marker view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the position
-     * property of a google maps marker. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type M.Location
-     */
-    location: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property can be used to specify the animation type for this map marker
-     * view. If this property is set, the markerAnimationType property of the parent
-     * map view is ignored. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: null,
-
-    /**
-     * This property can be used to specify a custom marker icon. Simply pass a valid
-     * path to an image and it will be shown instead of google's default marker.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
+    highlightLeftPart: NO,
 
     /**
      * This property specifies the recommended events for this type of view.
      *
      * @type Array
      */
-    recommendedEvents: ['click', 'tap'],
+    recommendedEvents: ['change'],
 
     /**
-     * This method initializes an M.MapMarkerView. It connects a map marker directly with
-     * the parent map view and returns the created M.MapMarkerView object.
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
      *
-     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
-     * initialized and can no be displayed by using the map view's addMarker() method or via
-     * content binding.
-     *
-     * @param {Object} options The options for the map marker view.
+     * @type String
      */
-    init: function(options) {
-        var marker = this.extend(options);
-
-        if(marker.annotation || marker.message) {
-            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
-            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
-            
-            marker.annotation = new google.maps.InfoWindow({
-                content: content,
-                maxWidth: 100
-            });
-        }
-
-        return marker;
-    },
+    label: null,
 
     /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
+     * Define whether putting an asterisk to the right of the label for this slider.
      *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
+     * @type Boolean
      */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'showAnnotation'
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
             }
         }
 
-        var that = this;
-        google.maps.event.addListener(this.marker, 'click', function() {
-            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
-        });
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
+        return this.html;
     },
 
     /**
-     * This method can be used to remove a map marker from a map view.
+     * This method registers the change event to internally re-set the value of the
+     * slider.
      */
-    remove: function() {
-        this.map.removeMarker(this);
-    },
-
-    /**
-     * This method can be used to show a map markers annotation.
-     */
-    showAnnotation: function(id, event, nextEvent) {
-        if(this.annotation) {
-            this.annotation.open(this.map.map, this.marker);
-        }
-
-        /* delegate event to external handler, if specified */
-        if(this.events || this.map.events) {
-            var events = this.events ? this.events : this.map.events;
-            for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
-                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
                 }
             }
         }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the slider.
+     *
+     * @private
+     * @returns {String} The slider's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitView = M.View.extend(
+/** @scope M.SplitView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitView',
+
+    menu: null,
+
+    content: null,
+
+    isInitialized: NO,
+
+    selectedItem: null,
+
+    orientation: null,
+
+    headerheight: null,
+
+    footerheight: null,
+
+    itemheight: null,
+
+    contentLoaded: NO,
+
+    scrollviewsInitialized: NO,
+
+    hasMenuScrollview: NO,
+
+    shouldHaveScrollview: YES,
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if (this.childViews || this.contentBinding) {
+            var childViews = this.getChildViewsAsArray();
+            if (childViews.length > 0 || this.contentBinding) {
+                this.menu = M.ScrollView.design({
+                    childViews: 'menu',
+                    menu: M.ListView.design({})
+                });
+                this.menu.parentView = this;
+                this.menu.menu.parentView = this.menu;
+                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
+                this.html += this.menu.render();
+
+                this.content = M.ScrollView.design({});
+                this.content.parentView = this;
+                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
+                this.html += this.content.render();
+
+                return this.html;
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var content = null;
+
+        if (this.contentBinding) {
+            content = this.value;
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            content = [];
+            for (var i = 0; i < childViews.length; i++) {
+                content.push(this[childViews[i]]);
+            }
+        }
+
+        if (content) {
+            if (content.length > 0) {
+
+                /* reset menu list before filling it up again */
+                this.menu.menu.removeAllItems();
+
+                var entryItem = null;
+                var currentItem = 0;
+                for (var i in content) {
+                    if (content[i] && content[i].type === 'M.SplitItemView') {
+                        /* add item to list */
+                        var item = M.ListItemView.design({
+                            childViews: 'label',
+                            parentView: this.menu.menu,
+                            splitViewItem: content[i],
+                            label: M.LabelView.design({
+                                value: content[i].value
+                            }),
+                            events: {
+                                tap: {
+                                    target: this,
+                                    action: 'listItemSelected'
+                                }
+                            }
+                        });
+                        this.menu.menu.addItem(item.render());
+
+                        /* register events for item */
+                        item.registerEvents();
+
+                        /* save id of the current item if it is either the first item or isActive is set */
+                        if (currentItem === 0 || content[i].isActive) {
+                            entryItem = item.id;
+                        }
+
+                        /* increase item counter */
+                        currentItem++;
+                    } else {
+                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
+                    }
+                }
+
+                /* theme the list */
+                this.menu.menu.themeUpdate();
+
+                /* now set the active list item */
+                this.menu.menu.setActiveListItem(entryItem);
+
+                /* finally show the active list item's content */
+                this.listItemSelected(entryItem);
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+
+        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
+        if (!this.contentLoaded) {
+            var that = this;
+            $(document).bind('DOMContentLoaded', function() {
+                that.initializeVar();
+            });
+        }
+    },
+
+    themeUpdate: function() {
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+
+        /* landscape mode */
+        if (M.Environment.getWidth() > M.Environment.getHeight()) {
+            this.orientation = 'landscape';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseIntRadixTen($('#' + this.menu.id).css('border-right-width'))) + 'px');
+            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('#' + this.menu.id).css('border-right-width')) + 'px');
+
+            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
+            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+        /* portrait mode */
+        } else {
+            this.orientation = 'portrait';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.content.id).css('width', width - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', '0px');
+
+            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
+        }
+
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* set the min height of the page based on if there's a footer or not */
+        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
+            $('#' + page.id).css('min-height', height + 'px');
+        } else {
+            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
+        }
+
+        /* set the height of the menu based on header/footer */
+        if ($('#' + page.id + ' .ui-footer').length === 0) {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
+        } else {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
+        }
+
+        /* initialize the scrolling stuff (if not done yet) */
+        if (!this.scrollviewsInitialized) {
+            $('#' + this.content.id).scrollview({
+                direction: 'y'
+            });
+
+            /* check whether scrolling is required or not for the menu */
+            if (this.orientation === 'landscape') {
+                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
+                var itemCount = $('#' + this.menu.menu.id).find('li').length;
+
+                if (this.itemheight !== 0) {
+                    var menuHeight = M.Environment.getHeight();
+                    var itemListHeight = itemCount * this.itemheight;
+                    if (menuHeight < itemListHeight) {
+                        $('#' + this.menu.menu.id).scrollview({
+                            direction: 'y'
+                        });
+                        this.hasMenuScrollview = YES;
+                    } else {
+                        this.shouldHaveScrollview = NO;
+                    }
+                }
+                this.scrollviewsInitialized = YES;
+            }
+
+        }
+    },
+
+    /**
+     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
+     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
+     */
+    initializeVar: function() {
+        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
+        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
+        this.contentLoaded = YES;
+        this.themeUpdate();
+    },
+
+    registerEvents: function() {
+        /* register for orientation change events of the current page */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        M.EventDispatcher.registerEvent(
+            'orientationdidchange',
+            page.id,
+            {
+                target: this,
+                action:  function() {
+                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
+                    var that = this;
+                    window.setTimeout(function() {
+                        that.orientationDidChange();
+                    }, 100);
+                }
+            },
+            ['orientationdidchange'],
+            null,
+            NO,
+            YES
+        );
+    },
+
+    listItemSelected: function(id) {
+        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
+
+        if (!contentView) {
+            return;
+        }
+
+        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+        if (!this.isInitialized) {
+            if (contentView.html) {
+                $('#' + this.content.id).html(contentView.html);
+            } else {
+                $('#' + this.content.id).html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            this.isInitialized = YES;
+        } else {
+            if (contentView.html) {
+                $('#' + this.content.id + ' div:first').html(contentView.html);
+            } else {
+                $('#' + this.content.id + ' div:first').html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+        }
+
+        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        var that = this;
+        if (page) {
+            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
+                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
+                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
+                    $('#' + toolbar.id + ' h1').html(toolbar.value);
+
+                    /* now link the menu with the toolbar if not yet done */
+                    if (!toolbar.parentView.splitview) {
+                        toolbar.parentView.splitview = that;
+                    }
+                }
+            });
+
+            /* add special css class if there is no footer */
+            if ($('#' + page.id + ' .ui-footer').length === 0) {
+                page.addCssClass('tmp-splitview-no-footer');
+            }
+
+            /* add special css class if there is no header */
+            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
+                page.addCssClass('tmp-splitview-no-header');
+            }
+        }
+    },
+
+    orientationDidChange: function() {
+        var orientation = M.Environment.getOrientation();
+        var that = this;
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* portrait */
+        if (M.Environment.getHeight() > M.Environment.getWidth()) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        /* landscape */
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+
+            /* hide the popover */
+            var toolbar;
+            if (page) {
+                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
+                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
+                        toolbar.parentView.popover.hide();
+                    }
+                });
+            }
+
+            /* update the menu */
+            var id;
+            $('#' + this.menu.id).find('li').each(function() {
+                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
+                    id = $(this).attr('id');
+                }
+            });
+
+            /* activate the current item */
+            if (id) {
+                this.menu.menu.setActiveListItem(id);
+            }
+
+            /* set the selected item */
+            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+            /* scroll the menu so we def. see the selected item */
+            this.scrollListToRightPosition(id);
+        }
+
+        /* scroll content to top */
+        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+
+        /* call theme update */
+        this.themeUpdate();
+    },
+
+    scrollListToRightPosition: function(id) {
+        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + id).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
+        var middle = menuHeight / 2;
+        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < middle) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - middle);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < middle) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - middle);
+            }
+        }
+
+        /* if there already is a scroll view, just scroll */
+        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
+            $('#' + this.menu.menu.id).scrollview({
+                direction: 'y'
+            });
+        }
+        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitItemView',
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // ...
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
     }
 
 });
@@ -8428,757 +9179,6 @@ M.SelectionListView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitView = M.View.extend(
-/** @scope M.SplitView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitView',
-
-    menu: null,
-
-    content: null,
-
-    isInitialized: NO,
-
-    selectedItem: null,
-
-    orientation: null,
-
-    headerheight: null,
-
-    footerheight: null,
-
-    itemheight: null,
-
-    contentLoaded: NO,
-
-    scrollviewsInitialized: NO,
-
-    hasMenuScrollview: NO,
-
-    shouldHaveScrollview: YES,
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if (this.childViews || this.contentBinding) {
-            var childViews = this.getChildViewsAsArray();
-            if (childViews.length > 0 || this.contentBinding) {
-                this.menu = M.ScrollView.design({
-                    childViews: 'menu',
-                    menu: M.ListView.design({})
-                });
-                this.menu.parentView = this;
-                this.menu.menu.parentView = this.menu;
-                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
-                this.html += this.menu.render();
-
-                this.content = M.ScrollView.design({});
-                this.content.parentView = this;
-                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
-                this.html += this.content.render();
-
-                return this.html;
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var content = null;
-
-        if (this.contentBinding) {
-            content = this.value;
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            content = [];
-            for (var i = 0; i < childViews.length; i++) {
-                content.push(this[childViews[i]]);
-            }
-        }
-
-        if (content) {
-            if (content.length > 0) {
-
-                /* reset menu list before filling it up again */
-                this.menu.menu.removeAllItems();
-
-                var entryItem = null;
-                var currentItem = 0;
-                for (var i in content) {
-                    if (content[i] && content[i].type === 'M.SplitItemView') {
-                        /* add item to list */
-                        var item = M.ListItemView.design({
-                            childViews: 'label',
-                            parentView: this.menu.menu,
-                            splitViewItem: content[i],
-                            label: M.LabelView.design({
-                                value: content[i].value
-                            }),
-                            events: {
-                                tap: {
-                                    target: this,
-                                    action: 'listItemSelected'
-                                }
-                            }
-                        });
-                        this.menu.menu.addItem(item.render());
-
-                        /* register events for item */
-                        item.registerEvents();
-
-                        /* save id of the current item if it is either the first item or isActive is set */
-                        if (currentItem === 0 || content[i].isActive) {
-                            entryItem = item.id;
-                        }
-
-                        /* increase item counter */
-                        currentItem++;
-                    } else {
-                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
-                    }
-                }
-
-                /* theme the list */
-                this.menu.menu.themeUpdate();
-
-                /* now set the active list item */
-                this.menu.menu.setActiveListItem(entryItem);
-
-                /* finally show the active list item's content */
-                this.listItemSelected(entryItem);
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-
-        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
-        if (!this.contentLoaded) {
-            var that = this;
-            $(document).bind('DOMContentLoaded', function() {
-                that.initializeVar();
-            });
-        }
-    },
-
-    themeUpdate: function() {
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-
-        /* landscape mode */
-        if (M.Environment.getWidth() > M.Environment.getHeight()) {
-            this.orientation = 'landscape';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseIntRadixTen($('#' + this.menu.id).css('border-right-width'))) + 'px');
-            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('#' + this.menu.id).css('border-right-width')) + 'px');
-
-            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
-            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-        /* portrait mode */
-        } else {
-            this.orientation = 'portrait';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.content.id).css('width', width - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', '0px');
-
-            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
-        }
-
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* set the min height of the page based on if there's a footer or not */
-        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
-            $('#' + page.id).css('min-height', height + 'px');
-        } else {
-            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
-        }
-
-        /* set the height of the menu based on header/footer */
-        if ($('#' + page.id + ' .ui-footer').length === 0) {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
-        } else {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
-        }
-
-        /* initialize the scrolling stuff (if not done yet) */
-        if (!this.scrollviewsInitialized) {
-            $('#' + this.content.id).scrollview({
-                direction: 'y'
-            });
-
-            /* check whether scrolling is required or not for the menu */
-            if (this.orientation === 'landscape') {
-                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
-                var itemCount = $('#' + this.menu.menu.id).find('li').length;
-
-                if (this.itemheight !== 0) {
-                    var menuHeight = M.Environment.getHeight();
-                    var itemListHeight = itemCount * this.itemheight;
-                    if (menuHeight < itemListHeight) {
-                        $('#' + this.menu.menu.id).scrollview({
-                            direction: 'y'
-                        });
-                        this.hasMenuScrollview = YES;
-                    } else {
-                        this.shouldHaveScrollview = NO;
-                    }
-                }
-                this.scrollviewsInitialized = YES;
-            }
-
-        }
-    },
-
-    /**
-     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
-     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
-     */
-    initializeVar: function() {
-        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
-        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
-        this.contentLoaded = YES;
-        this.themeUpdate();
-    },
-
-    registerEvents: function() {
-        /* register for orientation change events of the current page */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        M.EventDispatcher.registerEvent(
-            'orientationdidchange',
-            page.id,
-            {
-                target: this,
-                action:  function() {
-                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
-                    var that = this;
-                    window.setTimeout(function() {
-                        that.orientationDidChange();
-                    }, 100);
-                }
-            },
-            ['orientationdidchange'],
-            null,
-            NO,
-            YES
-        );
-    },
-
-    listItemSelected: function(id) {
-        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
-
-        if (!contentView) {
-            return;
-        }
-
-        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-        if (!this.isInitialized) {
-            if (contentView.html) {
-                $('#' + this.content.id).html(contentView.html);
-            } else {
-                $('#' + this.content.id).html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            this.isInitialized = YES;
-        } else {
-            if (contentView.html) {
-                $('#' + this.content.id + ' div:first').html(contentView.html);
-            } else {
-                $('#' + this.content.id + ' div:first').html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-        }
-
-        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        var that = this;
-        if (page) {
-            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
-                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
-                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
-                    $('#' + toolbar.id + ' h1').html(toolbar.value);
-
-                    /* now link the menu with the toolbar if not yet done */
-                    if (!toolbar.parentView.splitview) {
-                        toolbar.parentView.splitview = that;
-                    }
-                }
-            });
-
-            /* add special css class if there is no footer */
-            if ($('#' + page.id + ' .ui-footer').length === 0) {
-                page.addCssClass('tmp-splitview-no-footer');
-            }
-
-            /* add special css class if there is no header */
-            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
-                page.addCssClass('tmp-splitview-no-header');
-            }
-        }
-    },
-
-    orientationDidChange: function() {
-        var orientation = M.Environment.getOrientation();
-        var that = this;
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* portrait */
-        if (M.Environment.getHeight() > M.Environment.getWidth()) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        /* landscape */
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-
-            /* hide the popover */
-            var toolbar;
-            if (page) {
-                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
-                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
-                        toolbar.parentView.popover.hide();
-                    }
-                });
-            }
-
-            /* update the menu */
-            var id;
-            $('#' + this.menu.id).find('li').each(function() {
-                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
-                    id = $(this).attr('id');
-                }
-            });
-
-            /* activate the current item */
-            if (id) {
-                this.menu.menu.setActiveListItem(id);
-            }
-
-            /* set the selected item */
-            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-            /* scroll the menu so we def. see the selected item */
-            this.scrollListToRightPosition(id);
-        }
-
-        /* scroll content to top */
-        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-
-        /* call theme update */
-        this.themeUpdate();
-    },
-
-    scrollListToRightPosition: function(id) {
-        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + id).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
-        var middle = menuHeight / 2;
-        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < middle) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - middle);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < middle) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - middle);
-            }
-        }
-
-        /* if there already is a scroll view, just scroll */
-        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
-            $('#' + this.menu.menu.id).scrollview({
-                direction: 'y'
-            });
-        }
-        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
