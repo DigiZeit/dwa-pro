@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.5961 beta, Timestamp:1424186669070
+#Application:DigiWebApp, Version:1.8.3.5962 beta, Timestamp:1424187355211
 
 
 # Explicitly cached entries
@@ -17,8 +17,8 @@ theme/tmp.css
 bootstrap.js
 jquery_mobile.js
 jquery.xml2json_1.3.js
-childbrowser.js
 barcodescanner.js
+childbrowser.js
 cordova.js
 jstz.js
 digi_list.js
@@ -42,10 +42,10 @@ theme/images/200x320_90_DIGI-WEBAPP-WHITE.png
 theme/images/200x320_90_DIGI-WEBAPP-WHITE_mitLogo.png
 theme/images/200x320_90_DIGI-WebApp_mitLogo.png
 theme/images/2048x2048_90_DIGI-WebApp.png
-theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/320x470_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE.png
 theme/images/320x480_90_DIGI-WEBAPP-WHITE_mitLogo.png
+theme/images/320x426_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_DIGI-WebApp.png
 theme/images/320x480_90_DIGI-WebApp_mitLogo.png
 theme/images/320x480_90_SCHOLPP.png
@@ -119,8 +119,8 @@ theme/images/tile-icon-winphone.png
 ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-CHANGELOG.md
 Gruntfile.coffee
+CHANGELOG.md
 LICENSE.txt
 README.md
 jquery.signaturepad.js
@@ -148,8 +148,8 @@ theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
 theme/images/icons-18-black.png
 theme/images/icons-18-white.png
-theme/images/icons-36-white.png
 theme/images/icons-36-black.png
+theme/images/icons-36-white.png
 DigiWebApp_App.js
 
 
