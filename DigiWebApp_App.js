@@ -1784,139 +1784,6 @@ DigiWebApp.BautagebuchMaterialgruppe = M.Model.create({
 
 }, M.DataProviderLocalStorage);
 
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: BautagebuchMaterialtyp
-// 
-// zu bestücken mittels WebService
-// ==========================================================================
-
-DigiWebApp.BautagebuchMaterialtyp = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchMaterialtyp'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , bezeichnung: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-	, getMaterialien: function() {
-		var that = this;
-		return _.filter(DigiWebApp.BautagebuchMaterial.findSorted(), function(mat) {
-			var foundIndex = _.find([JSON.parse(mat.get('materialtypId'))], function(myId) {
-				return (that.get('id') == myId);
-			});
-			return (foundIndex);
-		});
-	}
-
-	, getList: function(paramObj) {
-		if (!paramObj) paramObj = {};
-		var that = this;
-		var resultList = [];
-		var items = DigiWebApp[that.name].findSorted();
-		var itemSelected = NO;
-		_.each(items, function(obj){
-			var item = { label: obj.get('bezeichnung'), value: obj.get('id') };
-//			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
-//				item.isSelected = YES;
-//				itemSelected = YES;
-//			}
-			resultList.push(item);
-		});
-		resultList.push({label: M.I18N.l('alle'), value: '0', isSelected:!itemSelected});
-		return resultList;
-	}
-	
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
-    }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-	        });
-	    }
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
 "use strict";
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -2552,6 +2419,139 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 	        	var item = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
 	        	if (item && ( (idToFind && item.get("id") === idToFind) || (typeof(idToFind) === "undefined") )) {
 	        		records.push(item);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchMaterialtyp
+// 
+// zu bestücken mittels WebService
+// ==========================================================================
+
+DigiWebApp.BautagebuchMaterialtyp = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMaterialtyp'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , bezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+	, getMaterialien: function() {
+		var that = this;
+		return _.filter(DigiWebApp.BautagebuchMaterial.findSorted(), function(mat) {
+			var foundIndex = _.find([JSON.parse(mat.get('materialtypId'))], function(myId) {
+				return (that.get('id') == myId);
+			});
+			return (foundIndex);
+		});
+	}
+
+	, getList: function(paramObj) {
+		if (!paramObj) paramObj = {};
+		var that = this;
+		var resultList = [];
+		var items = DigiWebApp[that.name].findSorted();
+		var itemSelected = NO;
+		_.each(items, function(obj){
+			var item = { label: obj.get('bezeichnung'), value: obj.get('id') };
+//			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
+//				item.isSelected = YES;
+//				itemSelected = YES;
+//			}
+			resultList.push(item);
+		});
+		resultList.push({label: M.I18N.l('alle'), value: '0', isSelected:!itemSelected});
+		return resultList;
+	}
+	
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
 	        	}
 	        });
 	    }
@@ -21246,7 +21246,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6009
+    , softwareVersion: 6010
 
 
     /**
@@ -23444,6 +23444,727 @@ DigiWebApp.SelectionController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: ServiceAppController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.ServiceAppController = M.Controller.extend({
+
+	ServiceAppCommunication: function(data, callback, timeout) {
+	
+		if (typeof(timeout) !== "undefined") {
+			this.timeout = timeout;
+		} else {
+			this.timeout = 5000;
+		}
+		//this._requestInterval = this.timeout / 10; // immer zehnmal innerhalb des gewünschten Timeouts nach Antwort der ServiceApp suchen 
+		this._requestInterval = 300; // immer alle 300ms nach Antwort der ServiceApp suchen 
+		this.sendData = data;
+		this.callback = callback;
+		this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json";
+		this.returnData = null;
+		this.internalCallback = function(data2) {
+			var that = this;
+			//DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			that.callback(data2);
+		};
+		
+		this.available = null;
+		
+		this.ermittleGeokoordinate = DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate");
+		this.uebertragen = DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen");
+		this.engeKopplung = DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung");
+		this.debug = DigiWebApp.SettingsController.getSetting("debug");
+		this.password = DigiWebApp.SettingsController.getSetting("password");
+		this.workerId = DigiWebApp.SettingsController.getSetting("workerId");
+		if (this.workerId === "") {
+			this.workerId = 0;
+		}
+		this.company = DigiWebApp.SettingsController.getSetting("company");
+		if (this.company === "") {
+			this.company = 0;
+		}
+		this.WebAppVersion = DigiWebApp.app.config.version;
+		this.WebAppGPSTimeout = DigiWebApp.SettingsController.getSetting("GPSTimeOut");
+	
+		this.sendData.parameter = {};
+	
+		this.send = function() {
+			var that = this;
+			that.sendData.parameter = {
+			        "ermittleGeokoordinate": this.ermittleGeokoordinate
+			      , "uebertragen": this.uebertragen
+			      , "engeKopplung": this.engeKopplung
+			      , "debug": this.debug
+			      , "fileName": this._requestFileName
+			      , "kennwort": this.password
+			      , "GeraeteId": this.workerId
+			      , "firmenId": this.company
+			      , "WebAppVersion": this.WebAppVersion
+			      , "WebAppGPSTimeout": this.WebAppGPSTimeout
+				};
+		    $.ajax({
+		        dataType: "json"
+		      , type: "POST"
+		             , crossDomain: true
+		             , processData: false
+		             , async: true
+		             , contentType: 'application/json'
+		      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
+		      , data: JSON.stringify(data)
+		      , success: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
+		      , error: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
+		      , timeout: 1000
+			});
+		};
+		
+		this.returnHandler = function(jqXHR, textStatus, errorThrown) {
+			var that = this;
+			this._readFile_Interval_Counter = 0;
+			this._readFile_IntervalVar = window.setInterval(function() { that.readFileHandler(); }, this._requestInterval);
+		};
+		
+		this.readFileHandler = function() {
+			 var that = this;
+	    	 this._readFile_Interval_Counter++;
+	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this._readFile_Interval_Counter: " + this._readFile_Interval_Counter);
+	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.timeout: " + this.timeout);
+	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this._requestInterval: " + this._requestInterval);
+	         if (this._readFile_Interval_Counter > (this.timeout / this._requestInterval)) { // if ServiceApp-File has not been found --> ServiceApp seems to be unavailable 
+	        	 window.clearInterval(this._readFile_IntervalVar);
+	        	 this._readFile_Interval_Counter = null;
+	        	 this.available = false;
+	        	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("@@@ ServiceApp is UNavailable !!!");
+	        	 var e = new Error('@@@ ServiceApp is UNavailable !!!');
+//	        	 var stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+//	        	      .replace(/^\s+at\s+/gm, '')
+//	        	      .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+//	        	      .split('\n');
+	        	 console.log(e.stack);
+	        	  
+	        	 DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	        	 this.callback(null);
+	         }
+	         this.readFromFile(this._requestFileName, function(data3) {
+	             window.clearInterval(that._readFile_IntervalVar);
+	             that.returnData = data3;
+	             that.available = true;
+	        	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("@@@ ServiceApp is available");
+	             if (false) { // nicht direkt löschen (kann zu Java-Exceptions führen)
+		             that.deleteFile(that._requestFileName, function(){
+		                 //console.log("erfolgreich gelöscht");
+		            	 that.internalCallback(that.returnData);
+		             }, function(){
+		                 //console.log("nicht gelöscht");
+		            	 that.internalCallback(that.returnData);
+		             });
+	             } else {
+	            	 that.internalCallback(that.returnData);
+	             }
+	         }, function(err) {
+	        	 that.available = false;
+	         });          
+		};
+	
+		this.readFromFile = function(fileName, successCallback, myErrorCallback) {
+		               
+		      // check for errorCallback is a function (optional)
+			  var errorCallback;
+		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
+		         errorCallback = function(evt) {
+		               trackError("readFromFileError");
+		         };
+		      } else {
+		    	  errorCallback = myErrorCallback;
+		      }
+		      
+		        // check for successCallback is a function
+		        if (typeof successCallback !== "function") {
+		               trackError("readFromFileError: successCallback is not a function");
+		          return false;
+		      }
+		        
+		        // check if fileName is set
+		        if (!fileName || (fileName) && (fileName.length === 0)) {
+		               trackError("readFromFileError: no fileName given");
+		               errorCallback();
+		          return false;
+		      }
+		
+		        // check if LocalFileSystem is defined
+		        if (typeof window.requestFileSystem === "undefined") {
+		               trackError("readFromFileError: no LocalFileSystem available");
+		               successCallback("");
+		          return true;
+		      }
+		        
+		        try {
+		               var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		            // open filesystem
+		               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+		                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+		                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+		                      
+		                             // get dataDirectory from filesystem (create if not exists)
+		                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                                 
+		                                    // get fileEntry from filesystem
+		                                    dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                          
+		                                          // get file from fileEntry
+		                                          fileEntry.file(function(file) {
+		                                                 
+			                                          try {
+				                                          // read from file
+				                                          var reader = new FileReader();
+				                                          reader.onloadend = function(evt) {
+				                                        	  // return content via successCallback
+				                                              successCallback(evt.target.result);
+				                                          };
+				                                          reader.readAsText(file);
+			                                          } catch(e3) {}
+		                                            
+		                                          }, errorCallback); // fileEntry.file
+		                                    }, errorCallback);     // dataDirectory.getFile
+		                                 }, errorCallback);         // fileSystem.root.getDirectory
+		                          }, errorCallback);             // window.requestFileSystem
+		                      }, function(e) {
+		                               trackError('Error while requesting Quota');
+		                           DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                               title: M.I18N.l('error')
+		                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+		                           });                                                          
+		                      });
+		                      
+		               } else {
+		
+		                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		                             
+		                      // get dataDirectory from filesystem (create if not exists)
+		                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                          
+		                             // get fileEntry from filesystem
+		                             dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                   
+		                                   // get file from fileEntry
+		                                   fileEntry.file(function(file) {
+		                                	   
+		                                          try {
+			                                          // read from file
+			                                          var reader = new FileReader();
+			                                          reader.onloadend = function(evt) {
+			                                        	  // return content via successCallback
+			                                              successCallback(evt.target.result);
+			                                          };
+			                                          reader.readAsText(file);
+		                                          } catch(e4) {}
+		                                     
+		                                   }, errorCallback); // fileEntry.file
+		                             }, errorCallback);     // dataDirectory.getFile
+		                          }, errorCallback);         // fileSystem.root.getDirectory
+		                   }, errorCallback);             // window.requestFileSystem
+		               }
+		        } catch(e5) {
+		               errorCallback(e5);
+		        }
+		};
+	
+		this.deleteFile = function(fileName, successCallback, myErrorCallback) {
+		      
+		    // check if fileName is set
+		    if (!fileName || (fileName) && (fileName.length === 0)) {
+		    	  trackError("deleteFileError: no fileName given");
+		    	  return false;
+		    }
+			
+		    // check for successCallback is a function
+		    if (typeof successCallback !== "function") {
+		             trackError("deleteFileError: successCallback is not a function");
+		        return false;
+		    }
+		      
+		      // check for errorCallback is a function (optional)
+			  var errorCallback;
+		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
+		         errorCallback = function(evt) {
+		               trackError("deleteFileError");
+		         };
+		      } else {
+		    	  errorCallback = myErrorCallback;
+		      }
+		    
+		    // check if LocalFileSystem is defined
+		    if (typeof window.requestFileSystem === "undefined") {
+		             trackError("deleteFileError: no LocalFileSystem available");
+		             successCallback("");
+		        return true;
+		    }
+		
+		      try {
+		             var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+		          // open filesystem
+		             if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+		                    navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+		                           window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+		                                 
+		                           // get dataDirectory from filesystem (create if not exists)
+		                           fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                               
+		                                  // get fileEntry from filesystem
+		                                  dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                        
+		                                        // remove fileEntry
+		                                	  	try {
+		                                	  		fileEntry.remove(successCallback, errorCallback);
+		                                	  	} catch(e6) {}
+		                                        
+		                                  }, errorCallback);     // dataDirectory.getFile
+		                               }, errorCallback);         // fileSystem.root.getDirectory
+		                        }, errorCallback);             // window.requestFileSystem
+		                    }, function(e) {
+		                             trackError('Error while requesting Quota');
+		                         DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                             title: M.I18N.l('error')
+		                           , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+		                         });                                                          
+		                    });
+		             } else {
+		                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+		             
+		                    // get dataDirectory from filesystem (create if not exists)
+		                    fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+		                                        
+		                           // get fileEntry from filesystem
+		                           dataDirectory.getFile(fileName, null, function(fileEntry) {
+		                                 
+		                                 // remove fileEntry
+	                               	  	try {
+	                            	  		fileEntry.remove(successCallback, errorCallback);
+	                            	  	} catch(e7) {}
+		                                 
+		                           }, errorCallback);     // dataDirectory.getFile
+		                        }, errorCallback);         // fileSystem.root.getDirectory
+		                 }, errorCallback);             // window.requestFileSystem
+		             }
+		      } catch(e8) {
+		             errorCallback(e8);
+		      }
+		};
+		
+		this.listDataDirectory = function(successCallback, myErrorCallback) {
+			
+			// check for errorCallback is a function (optional)
+			  var errorCallback;
+		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
+		         errorCallback = function(evt) {
+		               trackError("deleteFileError");
+		         };
+		      } else {
+		    	  errorCallback = myErrorCallback;
+		      }
+			  
+			// check for successCallback is a function
+			if (typeof successCallback !== "function") {
+				trackError("listDataDirectoryError: successCallback is not a function");
+				return false;
+			}
+	
+	        // check if LocalFileSystem is defined
+	        if (typeof window.requestFileSystem === "undefined") {
+	               trackError("listDataDirectoryError: no LocalFileSystem available");
+	               successCallback("");
+	          return true;
+	      }
+	        
+	        try {
+	            var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
+	            // open filesystem
+	               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
+	                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
+	                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
+	                      
+	                             // get dataDirectory from filesystem (create if not exists)
+	                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+	                            	 
+//	                            	 var toArray = function(list) {
+//	                            		 return Array.prototype.slice.call(list || [], 0);
+//	                            	 };
+
+	                            	 var myDirReader = dataDirectory.createReader();
+	                            	 //var entries = [];
+	                            	 var readEntries = function() {
+	                            		 myDirReader.readEntries (function(results) {
+//	                            			 if (!results.length) {
+	                            				 // alle Verzeichniseinträge geladen
+	                            				 var result = [];
+//	                            				 _.each(entries.sort(), function(fileEntry) {
+	                                		     _.each(results, function(fileEntry) {
+	                                		    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(fileEntry.fullPath);
+	                                		    	 var myArr = fileEntry.fullPath.split("/");
+	                            					 result.push(myArr[myArr.length - 1]);
+	                            				 });
+	                                		     //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("listDirectory result", result);
+	                            				 successCallback(result);
+//	                            			 } else {
+//	                            				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("results", results);
+//	                            				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("entries", entries);
+//	                            				 entries = entries.concat(toArray(results));
+//	                            				 readEntries();
+//	                            			 }
+	                            		 }, function(err){trackError("error in readEntries:" + err);});
+	                            	  };
+
+	                            	  readEntries(); // Start reading dirs.
+	                                                 
+	                             }, errorCallback);         // fileSystem.root.getDirectory
+	                          }, errorCallback);             // window.requestFileSystem
+	                      }, function(e) {
+	                           trackError('Error while requesting Quota: ' + e);
+	                           DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                               title: M.I18N.l('error')
+	                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
+	                           });                                                          
+	                      });
+	                      
+	               } else {
+	
+	                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+	                             
+	                      // get dataDirectory from filesystem (create if not exists)
+	                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
+	                    	  
+//                         	 var toArray = function(list) {
+//                         		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in toArray");
+//                        		 return Array.prototype.slice.call(list || [], 0);
+//                        	 }
+
+                         	 //var i = 0;
+                        	 var myDirReader = dataDirectory.createReader();
+                        	 //var entries = [];
+                        	 var readEntries = function() {
+                        		 myDirReader.readEntries (function(results) {
+//                        			 if (!results.length) {
+                        				 // alle Verzeichniseinträge geladen
+                        				 var result = [];
+//                        				 _.each(entries.sort(), function(fileEntry) {
+                            		     _.each(results, function(fileEntry) {
+                            		    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(fileEntry.fullPath);
+                            		    	 var myArr = fileEntry.fullPath.split("/");
+                        					 result.push(myArr[myArr.length - 1]);
+                        				 });
+                            		     ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("listDirectory result", result);
+                        				 successCallback(result);
+//                        			 } else {
+//                        				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("results", results);
+//                        				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("entries", entries);
+//                        				 entries = entries.concat(toArray(results));
+//                        				 i++;
+//                        				 if (i < 10) {
+//                        					 readEntries();
+//                        				 } else {
+//                        					 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(entries);
+//                            			 }
+//                        			 }
+                        		 }, function(err){trackError("error in readEntries: " + err);});
+                        	  };
+
+                        	  readEntries(); // Start reading dirs.
+
+	                      }, errorCallback);         // fileSystem.root.getDirectory
+	                   }, errorCallback);             // window.requestFileSystem
+	               }
+	        } catch(e9) {
+	               errorCallback(e9);
+	        }
+		};
+	}
+//	, directoryServiceAppObj: null
+	, listDirectory: function(callback) {
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
+//	    this.directoryServiceAppObj = myServiceApp;
+	    myServiceApp.listDataDirectory(callback);
+	}
+	
+	, deleteFile: function(fileName, callback) {
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
+	    myServiceApp.deleteFile(fileName, callback, callback);
+	}
+	
+	, knockknock: function(successCallback, errorCallback, timeout) {
+		////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in knockknock");
+	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   console.log("this.available = " + this.available);
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback, timeout);
+	    myServiceApp.send();
+	}
+	
+	, getBookings: function(ids, successCallback, errorCallback, timeout, engeKopplungOverride) {
+		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in getBookings");
+	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("getBookings Success");
+				   successCallback(data);
+			   } else {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("getBookings Error");
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
+	    myServiceApp.send();
+	}
+
+	, deleteFilesInServiceApp: function(fileNames, successCallback, errorCallback, timeout, engeKopplungOverride) {
+		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in deleteFilesInServiceApp");
+	    var payloadData = { "DELETEFILES": { "files": [] , "queryParameter": {"fileNames": fileNames} } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteFilesInServiceApp Success");
+				   successCallback(data);
+			   } else {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+				   ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteFilesInServiceApp Error");
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
+	    myServiceApp.send();
+	}
+	
+	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in pollBookings");
+		var internalErrorCallback = function() {				   
+			//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+			errorCallback();
+		};
+
+		var internalSuccessCallback = function(data) {
+			try {
+				//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings Success");
+				var datensaetze = [];
+				_.each(JSON.parse(data).GET.buchungen, function(buchung) {
+					if (buchung.status === "OK") {
+						datensaetze.push(buchung.datensatz);
+					}
+				});
+				//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings Success mit " + datensaetze.length + " Datensätzen");
+				successCallback(datensaetze);
+			} catch(e10) {
+				trackError(e10);
+				errorCallback(e10.message);
+			}
+		};
+		this.getBookings(ids, internalSuccessCallback, internalErrorCallback, timeout, true);
+	}
+	
+	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in putBookings");
+		var payloadData = { "PUT": { "buchungen": [] } };
+	    _.each(bookings, function(booking) {
+	    	payloadData.PUT.buchungen.push({"datensatz": booking, "status": "WAIT"});
+	    });
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.send();
+	}
+	
+	, postBookings: function(bookings, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in postBookings");
+		var payloadData = { "POST": { "buchungen": [] } };
+	    _.each(bookings, function(booking) {
+	    	payloadData.POST.buchungen.push({ "datensatz": booking, "status": "WAIT" });
+	    });
+	    var callback = function(data) {
+			   if (this.available) {
+				   successCallback(data);
+			   } else {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.send();
+	}
+
+	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in deleteBookings");
+	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
+	    var callback = function(data) {
+			   if (this.available) {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteBookings Success");
+				   successCallback(data);
+			   } else {
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
+				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteBookings Error");
+				   errorCallback();
+			   }
+	    };
+	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
+	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
+	    myServiceApp.send();
+	}
+
+	, refreshWAITBookings: function(successCallback, errorCallback, fileNamesToDelete, doEngeKopplung) {
+		var that = this;
+
+		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
+		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in refreshWAITBookings");
+		var bookings = DigiWebApp.Booking.find();
+		var bookingIdsRefresh = [];
+		_.each(bookings, function(booking){
+			if (typeof(booking.get("ServiceApp_Status")) == "undefined" || booking.get("ServiceApp_Status") === "WAIT") {
+				bookingIdsRefresh.push(booking.m_id);
+			}
+		});
+		var iDsOnWAITgefunden = [];
+		if (bookingIdsRefresh.length > 0) {
+			//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("bookingIdsRefresh: " + JSON.stringify(bookingIdsRefresh));
+			that.getBookings(bookingIdsRefresh, function(data){
+				if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
+//					that.deleteFilesInServiceApp(fileNamesToDelete, function(data2){
+//					}, function(){
+//					});
+				}
+				try {
+					//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("data: ", data);
+					var recievedBookings = JSON.parse(data).GET.buchungen;
+					_.each(recievedBookings, function(rBooking) {
+						var datensatz = rBooking.datensatz;
+						var updateModelBooking = function(modelBooking, datensatzObj) {
+							if (DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")) {
+								var datensatz = datensatzObj.record;
+								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("veraebeite datensatz ", datensatz);
+								if (typeof(datensatz.latitude) !== "undefined") { modelBooking.set("latitude", datensatz.latitude); }
+								if (typeof(datensatz.latitude_bis) !== "undefined") { modelBooking.set("latitude_bis", datensatz.latitude_bis); }
+								if (typeof(datensatz.longitude) !== "undefined") { modelBooking.set("longitude", datensatz.longitude); }
+								if (typeof(datensatz.longitude_bis) !== "undefined") { modelBooking.set("longitude_bis", datensatz.longitude_bis); }
+								if (typeof(datensatz.ermittlungsverfahren_bis) !== "undefined") { modelBooking.set("ermittlungsverfahrenBis", datensatz.ermittlungsverfahren_bis); }
+								if (typeof(datensatz.ermittlungsverfahren) !== "undefined") { modelBooking.set("ermittlungsverfahrenVon", datensatz.ermittlungsverfahren); }
+								if (typeof(datensatz.genauigkeit_bis) !== "undefined") { modelBooking.set("genauigkeitBis", datensatz.genauigkeit_bis); }
+								if (typeof(datensatz.genauigkeit) !== "undefined") { modelBooking.set("genauigkeitVon", datensatz.genauigkeit); }
+								if (typeof(datensatz.gps_zeitstempel_bis) !== "undefined") { modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempel_bis); }
+								if (typeof(datensatz.gps_zeitstempel) !== "undefined") { modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempel); }
+								if (typeof(datensatz.status) !== "undefined") { modelBooking.set("ServiceApp_Status", datensatz.status); }
+								modelBooking.save();
+								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("refreshWAITBookings: datensatz " + datensatzObj.m_id + " gespeichert");
+							}
+						};
+						var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id;});
+						modelBooking.set("ServiceApp_Status", rBooking.status);
+						modelBooking.save();
+						switch(rBooking.status) {
+							case "WAIT":
+								updateModelBooking(modelBooking, datensatz);
+								iDsOnWAITgefunden.push(datensatz.m_id);
+								break;
+							case "OK":
+								updateModelBooking(modelBooking, datensatz);
+								break;
+							case "SENT":
+								// move to SentBookings
+								if (DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")) {
+									var mySentBooking = DigiWebApp.BookingController.sentBooking(modelBooking);
+									if (mySentBooking != null) {
+										mySentBooking.save();
+									}
+									modelBooking.del();
+								}
+								break;
+							case "DELETE":
+								modelBooking.del();
+								break;
+							default:
+								errorCallback("refreshWAITBookings: Unbekannter Status");
+						}
+					});
+					DigiWebApp.ApplicationController.DigiLoaderView.hide();
+					if (iDsOnWAITgefunden.length > 0 && typeof(successCallback) === "function" && doEngeKopplung) {
+						//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings (enge Kopplung) mit", iDsOnWAITgefunden);
+						var checkForOK = function(datensaetze) {
+							//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(datensaetze.length + " Datensätze empfangen");
+							_.each(datensaetze, function(datensatzObj) {
+								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("speichere gepollten Datensatz " + datensatzObj.m_id);
+								try {
+									var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatzObj.m_id; } );
+									var datensatz = datensatzObj.record;
+									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("modelBooking: ", modelBooking);
+									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz: ", datensatz);
+									modelBooking.set("latitude", datensatz.latitude);
+									modelBooking.set("latitude_bis", datensatz.latitude_bis);
+									modelBooking.set("longitude", datensatz.longitude);
+									modelBooking.set("longitude_bis", datensatz.longitude_bis);
+									modelBooking.set("ermittlungsverfahrenBis", datensatz.ermittlungsverfahren_bis);
+									modelBooking.set("ermittlungsverfahrenVon", datensatz.ermittlungsverfahren);
+									modelBooking.set("genauigkeitBis", datensatz.genauigkeit_bis);
+									modelBooking.set("genauigkeitVon", datensatz.genauigkeit);
+									modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempel_bis);
+									modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempel);
+									modelBooking.set("ServiceApp_Status", datensatz.status);
+									modelBooking.save();
+									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz " + datensatzObj.m_id + " gespeichert");
+								} catch(exNotFound) {
+									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz " + datensatzObj.m_id + " nicht gefunden");
+								}
+							});
+							successCallback();
+						};
+						that.pollBookings(iDsOnWAITgefunden, checkForOK, successCallback, DigiWebApp.SettingsController.getSetting('GPSTimeOut'));
+					} else {
+						if (typeof(successCallback) === "function") successCallback();	
+					}
+				} catch(e11) {
+					DigiWebApp.ApplicationController.DigiLoaderView.hide();
+					errorCallback("ERROR in refreshWAITBookings: " + e11.message);
+				}
+			}, function(){
+				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+				if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
+//					that.deleteFilesInServiceApp(fileNamesToDelete, function(data){
+//					}, function(){
+//					});
+				}
+				errorCallback("refreshWAITBookings: ServiceApp hat nicht geantwortet!");
+			});
+		} else {
+			// es gibt keine Buchungen zu aktialisieren
+			if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
+//				that.deleteFilesInServiceApp(fileNamesToDelete, function(data){
+//				}, function(){
+//				});
+			}
+			if (typeof(successCallback) === "function") successCallback();
+		}
+	}
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: SettingsController
 // ==========================================================================
 // manuell var-checked
@@ -25021,727 +25742,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	  	, "items": []
     }]
 
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: ServiceAppController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.ServiceAppController = M.Controller.extend({
-
-	ServiceAppCommunication: function(data, callback, timeout) {
-	
-		if (typeof(timeout) !== "undefined") {
-			this.timeout = timeout;
-		} else {
-			this.timeout = 5000;
-		}
-		//this._requestInterval = this.timeout / 10; // immer zehnmal innerhalb des gewünschten Timeouts nach Antwort der ServiceApp suchen 
-		this._requestInterval = 300; // immer alle 300ms nach Antwort der ServiceApp suchen 
-		this.sendData = data;
-		this.callback = callback;
-		this._requestFileName = "DigiWebAppServiceApp." + new Date().getTime() + ".response.json";
-		this.returnData = null;
-		this.internalCallback = function(data2) {
-			var that = this;
-			//DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			that.callback(data2);
-		};
-		
-		this.available = null;
-		
-		this.ermittleGeokoordinate = DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate");
-		this.uebertragen = DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen");
-		this.engeKopplung = DigiWebApp.SettingsController.getSetting("ServiceApp_engeKopplung");
-		this.debug = DigiWebApp.SettingsController.getSetting("debug");
-		this.password = DigiWebApp.SettingsController.getSetting("password");
-		this.workerId = DigiWebApp.SettingsController.getSetting("workerId");
-		if (this.workerId === "") {
-			this.workerId = 0;
-		}
-		this.company = DigiWebApp.SettingsController.getSetting("company");
-		if (this.company === "") {
-			this.company = 0;
-		}
-		this.WebAppVersion = DigiWebApp.app.config.version;
-		this.WebAppGPSTimeout = DigiWebApp.SettingsController.getSetting("GPSTimeOut");
-	
-		this.sendData.parameter = {};
-	
-		this.send = function() {
-			var that = this;
-			that.sendData.parameter = {
-			        "ermittleGeokoordinate": this.ermittleGeokoordinate
-			      , "uebertragen": this.uebertragen
-			      , "engeKopplung": this.engeKopplung
-			      , "debug": this.debug
-			      , "fileName": this._requestFileName
-			      , "kennwort": this.password
-			      , "GeraeteId": this.workerId
-			      , "firmenId": this.company
-			      , "WebAppVersion": this.WebAppVersion
-			      , "WebAppGPSTimeout": this.WebAppGPSTimeout
-				};
-		    $.ajax({
-		        dataType: "json"
-		      , type: "POST"
-		             , crossDomain: true
-		             , processData: false
-		             , async: true
-		             , contentType: 'application/json'
-		      , url: 'http://127.0.0.1:' + DigiWebApp.SettingsController.getSetting("ServiceApp_PORT") + '/'
-		      , data: JSON.stringify(data)
-		      , success: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
-		      , error: function(jqXHR, textStatus, errorThrown) { that.returnHandler(jqXHR, textStatus, errorThrown); }
-		      , timeout: 1000
-			});
-		};
-		
-		this.returnHandler = function(jqXHR, textStatus, errorThrown) {
-			var that = this;
-			this._readFile_Interval_Counter = 0;
-			this._readFile_IntervalVar = window.setInterval(function() { that.readFileHandler(); }, this._requestInterval);
-		};
-		
-		this.readFileHandler = function() {
-			 var that = this;
-	    	 this._readFile_Interval_Counter++;
-	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this._readFile_Interval_Counter: " + this._readFile_Interval_Counter);
-	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.timeout: " + this.timeout);
-	    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this._requestInterval: " + this._requestInterval);
-	         if (this._readFile_Interval_Counter > (this.timeout / this._requestInterval)) { // if ServiceApp-File has not been found --> ServiceApp seems to be unavailable 
-	        	 window.clearInterval(this._readFile_IntervalVar);
-	        	 this._readFile_Interval_Counter = null;
-	        	 this.available = false;
-	        	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("@@@ ServiceApp is UNavailable !!!");
-	        	 var e = new Error('@@@ ServiceApp is UNavailable !!!');
-//	        	 var stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
-//	        	      .replace(/^\s+at\s+/gm, '')
-//	        	      .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
-//	        	      .split('\n');
-	        	 console.log(e.stack);
-	        	  
-	        	 DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	        	 this.callback(null);
-	         }
-	         this.readFromFile(this._requestFileName, function(data3) {
-	             window.clearInterval(that._readFile_IntervalVar);
-	             that.returnData = data3;
-	             that.available = true;
-	        	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("@@@ ServiceApp is available");
-	             if (false) { // nicht direkt löschen (kann zu Java-Exceptions führen)
-		             that.deleteFile(that._requestFileName, function(){
-		                 //console.log("erfolgreich gelöscht");
-		            	 that.internalCallback(that.returnData);
-		             }, function(){
-		                 //console.log("nicht gelöscht");
-		            	 that.internalCallback(that.returnData);
-		             });
-	             } else {
-	            	 that.internalCallback(that.returnData);
-	             }
-	         }, function(err) {
-	        	 that.available = false;
-	         });          
-		};
-	
-		this.readFromFile = function(fileName, successCallback, myErrorCallback) {
-		               
-		      // check for errorCallback is a function (optional)
-			  var errorCallback;
-		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
-		         errorCallback = function(evt) {
-		               trackError("readFromFileError");
-		         };
-		      } else {
-		    	  errorCallback = myErrorCallback;
-		      }
-		      
-		        // check for successCallback is a function
-		        if (typeof successCallback !== "function") {
-		               trackError("readFromFileError: successCallback is not a function");
-		          return false;
-		      }
-		        
-		        // check if fileName is set
-		        if (!fileName || (fileName) && (fileName.length === 0)) {
-		               trackError("readFromFileError: no fileName given");
-		               errorCallback();
-		          return false;
-		      }
-		
-		        // check if LocalFileSystem is defined
-		        if (typeof window.requestFileSystem === "undefined") {
-		               trackError("readFromFileError: no LocalFileSystem available");
-		               successCallback("");
-		          return true;
-		      }
-		        
-		        try {
-		               var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
-		            // open filesystem
-		               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-		                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
-		                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
-		                      
-		                             // get dataDirectory from filesystem (create if not exists)
-		                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		                                                 
-		                                    // get fileEntry from filesystem
-		                                    dataDirectory.getFile(fileName, null, function(fileEntry) {
-		                                          
-		                                          // get file from fileEntry
-		                                          fileEntry.file(function(file) {
-		                                                 
-			                                          try {
-				                                          // read from file
-				                                          var reader = new FileReader();
-				                                          reader.onloadend = function(evt) {
-				                                        	  // return content via successCallback
-				                                              successCallback(evt.target.result);
-				                                          };
-				                                          reader.readAsText(file);
-			                                          } catch(e3) {}
-		                                            
-		                                          }, errorCallback); // fileEntry.file
-		                                    }, errorCallback);     // dataDirectory.getFile
-		                                 }, errorCallback);         // fileSystem.root.getDirectory
-		                          }, errorCallback);             // window.requestFileSystem
-		                      }, function(e) {
-		                               trackError('Error while requesting Quota');
-		                           DigiWebApp.ApplicationController.nativeAlertDialogView({
-		                               title: M.I18N.l('error')
-		                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
-		                           });                                                          
-		                      });
-		                      
-		               } else {
-		
-		                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-		                             
-		                      // get dataDirectory from filesystem (create if not exists)
-		                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		                                          
-		                             // get fileEntry from filesystem
-		                             dataDirectory.getFile(fileName, null, function(fileEntry) {
-		                                   
-		                                   // get file from fileEntry
-		                                   fileEntry.file(function(file) {
-		                                	   
-		                                          try {
-			                                          // read from file
-			                                          var reader = new FileReader();
-			                                          reader.onloadend = function(evt) {
-			                                        	  // return content via successCallback
-			                                              successCallback(evt.target.result);
-			                                          };
-			                                          reader.readAsText(file);
-		                                          } catch(e4) {}
-		                                     
-		                                   }, errorCallback); // fileEntry.file
-		                             }, errorCallback);     // dataDirectory.getFile
-		                          }, errorCallback);         // fileSystem.root.getDirectory
-		                   }, errorCallback);             // window.requestFileSystem
-		               }
-		        } catch(e5) {
-		               errorCallback(e5);
-		        }
-		};
-	
-		this.deleteFile = function(fileName, successCallback, myErrorCallback) {
-		      
-		    // check if fileName is set
-		    if (!fileName || (fileName) && (fileName.length === 0)) {
-		    	  trackError("deleteFileError: no fileName given");
-		    	  return false;
-		    }
-			
-		    // check for successCallback is a function
-		    if (typeof successCallback !== "function") {
-		             trackError("deleteFileError: successCallback is not a function");
-		        return false;
-		    }
-		      
-		      // check for errorCallback is a function (optional)
-			  var errorCallback;
-		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
-		         errorCallback = function(evt) {
-		               trackError("deleteFileError");
-		         };
-		      } else {
-		    	  errorCallback = myErrorCallback;
-		      }
-		    
-		    // check if LocalFileSystem is defined
-		    if (typeof window.requestFileSystem === "undefined") {
-		             trackError("deleteFileError: no LocalFileSystem available");
-		             successCallback("");
-		        return true;
-		    }
-		
-		      try {
-		             var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
-		          // open filesystem
-		             if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-		                    navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
-		                           window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
-		                                 
-		                           // get dataDirectory from filesystem (create if not exists)
-		                           fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		                                               
-		                                  // get fileEntry from filesystem
-		                                  dataDirectory.getFile(fileName, null, function(fileEntry) {
-		                                        
-		                                        // remove fileEntry
-		                                	  	try {
-		                                	  		fileEntry.remove(successCallback, errorCallback);
-		                                	  	} catch(e6) {}
-		                                        
-		                                  }, errorCallback);     // dataDirectory.getFile
-		                               }, errorCallback);         // fileSystem.root.getDirectory
-		                        }, errorCallback);             // window.requestFileSystem
-		                    }, function(e) {
-		                             trackError('Error while requesting Quota');
-		                         DigiWebApp.ApplicationController.nativeAlertDialogView({
-		                             title: M.I18N.l('error')
-		                           , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
-		                         });                                                          
-		                    });
-		             } else {
-		                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-		             
-		                    // get dataDirectory from filesystem (create if not exists)
-		                    fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-		                                        
-		                           // get fileEntry from filesystem
-		                           dataDirectory.getFile(fileName, null, function(fileEntry) {
-		                                 
-		                                 // remove fileEntry
-	                               	  	try {
-	                            	  		fileEntry.remove(successCallback, errorCallback);
-	                            	  	} catch(e7) {}
-		                                 
-		                           }, errorCallback);     // dataDirectory.getFile
-		                        }, errorCallback);         // fileSystem.root.getDirectory
-		                 }, errorCallback);             // window.requestFileSystem
-		             }
-		      } catch(e8) {
-		             errorCallback(e8);
-		      }
-		};
-		
-		this.listDataDirectory = function(successCallback, myErrorCallback) {
-			
-			// check for errorCallback is a function (optional)
-			  var errorCallback;
-		      if (!myErrorCallback || (typeof myErrorCallback !== "function")) {
-		         errorCallback = function(evt) {
-		               trackError("deleteFileError");
-		         };
-		      } else {
-		    	  errorCallback = myErrorCallback;
-		      }
-			  
-			// check for successCallback is a function
-			if (typeof successCallback !== "function") {
-				trackError("listDataDirectoryError: successCallback is not a function");
-				return false;
-			}
-	
-	        // check if LocalFileSystem is defined
-	        if (typeof window.requestFileSystem === "undefined") {
-	               trackError("listDataDirectoryError: no LocalFileSystem available");
-	               successCallback("");
-	          return true;
-	      }
-	        
-	        try {
-	            var myQuota = DigiWebApp.ApplicationController.CONSTApplicationQuota;
-	            // open filesystem
-	               if (typeof(navigator.webkitPersistentStorage) !== "undefined") {
-	                      navigator.webkitPersistentStorage.requestQuota(myQuota, function(grantedBytes) {
-	                          window.requestFileSystem(PERSISTENT, grantedBytes, function(fileSystem) {
-	                      
-	                             // get dataDirectory from filesystem (create if not exists)
-	                             fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-	                            	 
-//	                            	 var toArray = function(list) {
-//	                            		 return Array.prototype.slice.call(list || [], 0);
-//	                            	 };
-
-	                            	 var myDirReader = dataDirectory.createReader();
-	                            	 //var entries = [];
-	                            	 var readEntries = function() {
-	                            		 myDirReader.readEntries (function(results) {
-//	                            			 if (!results.length) {
-	                            				 // alle Verzeichniseinträge geladen
-	                            				 var result = [];
-//	                            				 _.each(entries.sort(), function(fileEntry) {
-	                                		     _.each(results, function(fileEntry) {
-	                                		    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(fileEntry.fullPath);
-	                                		    	 var myArr = fileEntry.fullPath.split("/");
-	                            					 result.push(myArr[myArr.length - 1]);
-	                            				 });
-	                                		     //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("listDirectory result", result);
-	                            				 successCallback(result);
-//	                            			 } else {
-//	                            				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("results", results);
-//	                            				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("entries", entries);
-//	                            				 entries = entries.concat(toArray(results));
-//	                            				 readEntries();
-//	                            			 }
-	                            		 }, function(err){trackError("error in readEntries:" + err);});
-	                            	  };
-
-	                            	  readEntries(); // Start reading dirs.
-	                                                 
-	                             }, errorCallback);         // fileSystem.root.getDirectory
-	                          }, errorCallback);             // window.requestFileSystem
-	                      }, function(e) {
-	                           trackError('Error while requesting Quota: ' + e);
-	                           DigiWebApp.ApplicationController.nativeAlertDialogView({
-	                               title: M.I18N.l('error')
-	                             , message: M.I18N.l('errorWhileRequestingQuota') + ": " + err
-	                           });                                                          
-	                      });
-	                      
-	               } else {
-	
-	                   window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-	                             
-	                      // get dataDirectory from filesystem (create if not exists)
-	                      fileSystem.root.getDirectory("DIGIWebAppData", {create: true, exclusive: false}, function(dataDirectory) {
-	                    	  
-//                         	 var toArray = function(list) {
-//                         		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in toArray");
-//                        		 return Array.prototype.slice.call(list || [], 0);
-//                        	 }
-
-                         	 //var i = 0;
-                        	 var myDirReader = dataDirectory.createReader();
-                        	 //var entries = [];
-                        	 var readEntries = function() {
-                        		 myDirReader.readEntries (function(results) {
-//                        			 if (!results.length) {
-                        				 // alle Verzeichniseinträge geladen
-                        				 var result = [];
-//                        				 _.each(entries.sort(), function(fileEntry) {
-                            		     _.each(results, function(fileEntry) {
-                            		    	 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(fileEntry.fullPath);
-                            		    	 var myArr = fileEntry.fullPath.split("/");
-                        					 result.push(myArr[myArr.length - 1]);
-                        				 });
-                            		     ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("listDirectory result", result);
-                        				 successCallback(result);
-//                        			 } else {
-//                        				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("results", results);
-//                        				 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("entries", entries);
-//                        				 entries = entries.concat(toArray(results));
-//                        				 i++;
-//                        				 if (i < 10) {
-//                        					 readEntries();
-//                        				 } else {
-//                        					 //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(entries);
-//                            			 }
-//                        			 }
-                        		 }, function(err){trackError("error in readEntries: " + err);});
-                        	  };
-
-                        	  readEntries(); // Start reading dirs.
-
-	                      }, errorCallback);         // fileSystem.root.getDirectory
-	                   }, errorCallback);             // window.requestFileSystem
-	               }
-	        } catch(e9) {
-	               errorCallback(e9);
-	        }
-		};
-	}
-//	, directoryServiceAppObj: null
-	, listDirectory: function(callback) {
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
-//	    this.directoryServiceAppObj = myServiceApp;
-	    myServiceApp.listDataDirectory(callback);
-	}
-	
-	, deleteFile: function(fileName, callback) {
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication({}, callback);
-	    myServiceApp.deleteFile(fileName, callback, callback);
-	}
-	
-	, knockknock: function(successCallback, errorCallback, timeout) {
-		////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in knockknock");
-	    var knockknockData = { "GET": { "buchungen": [] , "queryParameter": null } };
-	    var callback = function(data) {
-			   if (this.available) {
-				   successCallback(data);
-			   } else {
-				   console.log("this.available = " + this.available);
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(knockknockData, callback, timeout);
-	    myServiceApp.send();
-	}
-	
-	, getBookings: function(ids, successCallback, errorCallback, timeout, engeKopplungOverride) {
-		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in getBookings");
-	    var payloadData = { "GET": { "buchungen": [] , "queryParameter": {"ids": ids} } };
-	    var callback = function(data) {
-			   if (this.available) {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("getBookings Success");
-				   successCallback(data);
-			   } else {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("getBookings Error");
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
-	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
-	    myServiceApp.send();
-	}
-
-	, deleteFilesInServiceApp: function(fileNames, successCallback, errorCallback, timeout, engeKopplungOverride) {
-		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in deleteFilesInServiceApp");
-	    var payloadData = { "DELETEFILES": { "files": [] , "queryParameter": {"fileNames": fileNames} } };
-	    var callback = function(data) {
-			   if (this.available) {
-				   ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteFilesInServiceApp Success");
-				   successCallback(data);
-			   } else {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-				   ////if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteFilesInServiceApp Error");
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
-	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
-	    myServiceApp.send();
-	}
-	
-	, pollBookings: function(ids, successCallback, errorCallback, timeout) {
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in pollBookings");
-		var internalErrorCallback = function() {				   
-			//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-			errorCallback();
-		};
-
-		var internalSuccessCallback = function(data) {
-			try {
-				//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings Success");
-				var datensaetze = [];
-				_.each(JSON.parse(data).GET.buchungen, function(buchung) {
-					if (buchung.status === "OK") {
-						datensaetze.push(buchung.datensatz);
-					}
-				});
-				//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings Success mit " + datensaetze.length + " Datensätzen");
-				successCallback(datensaetze);
-			} catch(e10) {
-				trackError(e10);
-				errorCallback(e10.message);
-			}
-		};
-		this.getBookings(ids, internalSuccessCallback, internalErrorCallback, timeout, true);
-	}
-	
-	, putBookings: function(bookings, successCallback, errorCallback, timeout) {
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in putBookings");
-		var payloadData = { "PUT": { "buchungen": [] } };
-	    _.each(bookings, function(booking) {
-	    	payloadData.PUT.buchungen.push({"datensatz": booking, "status": "WAIT"});
-	    });
-	    var callback = function(data) {
-			   if (this.available) {
-				   successCallback(data);
-			   } else {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
-	    myServiceApp.send();
-	}
-	
-	, postBookings: function(bookings, successCallback, errorCallback, timeout) {
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in postBookings");
-		var payloadData = { "POST": { "buchungen": [] } };
-	    _.each(bookings, function(booking) {
-	    	payloadData.POST.buchungen.push({ "datensatz": booking, "status": "WAIT" });
-	    });
-	    var callback = function(data) {
-			   if (this.available) {
-				   successCallback(data);
-			   } else {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
-	    myServiceApp.send();
-	}
-
-	, deleteBookings: function(ids, successCallback, errorCallback, timeout) {
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in deleteBookings");
-	    var payloadData = { "DELETE": { "buchungen": [] , "queryParameter": {"ids": ids} } };
-	    var callback = function(data) {
-			   if (this.available) {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteBookings Success");
-				   successCallback(data);
-			   } else {
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("this.available = " + this.available);
-				   //if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("deleteBookings Error");
-				   errorCallback();
-			   }
-	    };
-	    var myServiceApp = new DigiWebApp.ServiceAppController.ServiceAppCommunication(payloadData, callback, timeout);
-	    myServiceApp.engeKopplung = (typeof(engeKopplungOverride) !== "undefined" && engeKopplungOverride === true);
-	    myServiceApp.send();
-	}
-
-	, refreshWAITBookings: function(successCallback, errorCallback, fileNamesToDelete, doEngeKopplung) {
-		var that = this;
-
-		//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ServiceAppKommunikation'));
-		//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("in refreshWAITBookings");
-		var bookings = DigiWebApp.Booking.find();
-		var bookingIdsRefresh = [];
-		_.each(bookings, function(booking){
-			if (typeof(booking.get("ServiceApp_Status")) == "undefined" || booking.get("ServiceApp_Status") === "WAIT") {
-				bookingIdsRefresh.push(booking.m_id);
-			}
-		});
-		var iDsOnWAITgefunden = [];
-		if (bookingIdsRefresh.length > 0) {
-			//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("bookingIdsRefresh: " + JSON.stringify(bookingIdsRefresh));
-			that.getBookings(bookingIdsRefresh, function(data){
-				if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
-//					that.deleteFilesInServiceApp(fileNamesToDelete, function(data2){
-//					}, function(){
-//					});
-				}
-				try {
-					//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("data: ", data);
-					var recievedBookings = JSON.parse(data).GET.buchungen;
-					_.each(recievedBookings, function(rBooking) {
-						var datensatz = rBooking.datensatz;
-						var updateModelBooking = function(modelBooking, datensatzObj) {
-							if (DigiWebApp.SettingsController.getSetting("ServiceApp_ermittleGeokoordinate")) {
-								var datensatz = datensatzObj.record;
-								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("veraebeite datensatz ", datensatz);
-								if (typeof(datensatz.latitude) !== "undefined") { modelBooking.set("latitude", datensatz.latitude); }
-								if (typeof(datensatz.latitude_bis) !== "undefined") { modelBooking.set("latitude_bis", datensatz.latitude_bis); }
-								if (typeof(datensatz.longitude) !== "undefined") { modelBooking.set("longitude", datensatz.longitude); }
-								if (typeof(datensatz.longitude_bis) !== "undefined") { modelBooking.set("longitude_bis", datensatz.longitude_bis); }
-								if (typeof(datensatz.ermittlungsverfahren_bis) !== "undefined") { modelBooking.set("ermittlungsverfahrenBis", datensatz.ermittlungsverfahren_bis); }
-								if (typeof(datensatz.ermittlungsverfahren) !== "undefined") { modelBooking.set("ermittlungsverfahrenVon", datensatz.ermittlungsverfahren); }
-								if (typeof(datensatz.genauigkeit_bis) !== "undefined") { modelBooking.set("genauigkeitBis", datensatz.genauigkeit_bis); }
-								if (typeof(datensatz.genauigkeit) !== "undefined") { modelBooking.set("genauigkeitVon", datensatz.genauigkeit); }
-								if (typeof(datensatz.gps_zeitstempel_bis) !== "undefined") { modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempel_bis); }
-								if (typeof(datensatz.gps_zeitstempel) !== "undefined") { modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempel); }
-								if (typeof(datensatz.status) !== "undefined") { modelBooking.set("ServiceApp_Status", datensatz.status); }
-								modelBooking.save();
-								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("refreshWAITBookings: datensatz " + datensatzObj.m_id + " gespeichert");
-							}
-						};
-						var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatz.m_id;});
-						modelBooking.set("ServiceApp_Status", rBooking.status);
-						modelBooking.save();
-						switch(rBooking.status) {
-							case "WAIT":
-								updateModelBooking(modelBooking, datensatz);
-								iDsOnWAITgefunden.push(datensatz.m_id);
-								break;
-							case "OK":
-								updateModelBooking(modelBooking, datensatz);
-								break;
-							case "SENT":
-								// move to SentBookings
-								if (DigiWebApp.SettingsController.getSetting("ServiceApp_datenUebertragen")) {
-									var mySentBooking = DigiWebApp.BookingController.sentBooking(modelBooking);
-									if (mySentBooking != null) {
-										mySentBooking.save();
-									}
-									modelBooking.del();
-								}
-								break;
-							case "DELETE":
-								modelBooking.del();
-								break;
-							default:
-								errorCallback("refreshWAITBookings: Unbekannter Status");
-						}
-					});
-					DigiWebApp.ApplicationController.DigiLoaderView.hide();
-					if (iDsOnWAITgefunden.length > 0 && typeof(successCallback) === "function" && doEngeKopplung) {
-						//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("pollBookings (enge Kopplung) mit", iDsOnWAITgefunden);
-						var checkForOK = function(datensaetze) {
-							//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log(datensaetze.length + " Datensätze empfangen");
-							_.each(datensaetze, function(datensatzObj) {
-								//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("speichere gepollten Datensatz " + datensatzObj.m_id);
-								try {
-									var modelBooking = _.find(DigiWebApp.Booking.find(), function(b) { return b.m_id === datensatzObj.m_id; } );
-									var datensatz = datensatzObj.record;
-									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("modelBooking: ", modelBooking);
-									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz: ", datensatz);
-									modelBooking.set("latitude", datensatz.latitude);
-									modelBooking.set("latitude_bis", datensatz.latitude_bis);
-									modelBooking.set("longitude", datensatz.longitude);
-									modelBooking.set("longitude_bis", datensatz.longitude_bis);
-									modelBooking.set("ermittlungsverfahrenBis", datensatz.ermittlungsverfahren_bis);
-									modelBooking.set("ermittlungsverfahrenVon", datensatz.ermittlungsverfahren);
-									modelBooking.set("genauigkeitBis", datensatz.genauigkeit_bis);
-									modelBooking.set("genauigkeitVon", datensatz.genauigkeit);
-									modelBooking.set("gps_zeitstempelBis", datensatz.gps_zeitstempel_bis);
-									modelBooking.set("gps_zeitstempelVon", datensatz.gps_zeitstempel);
-									modelBooking.set("ServiceApp_Status", datensatz.status);
-									modelBooking.save();
-									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz " + datensatzObj.m_id + " gespeichert");
-								} catch(exNotFound) {
-									//if (DigiWebApp.SettingsController.getSetting("debug"))  console.log("datensatz " + datensatzObj.m_id + " nicht gefunden");
-								}
-							});
-							successCallback();
-						};
-						that.pollBookings(iDsOnWAITgefunden, checkForOK, successCallback, DigiWebApp.SettingsController.getSetting('GPSTimeOut'));
-					} else {
-						if (typeof(successCallback) === "function") successCallback();	
-					}
-				} catch(e11) {
-					DigiWebApp.ApplicationController.DigiLoaderView.hide();
-					errorCallback("ERROR in refreshWAITBookings: " + e11.message);
-				}
-			}, function(){
-				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-				if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
-//					that.deleteFilesInServiceApp(fileNamesToDelete, function(data){
-//					}, function(){
-//					});
-				}
-				errorCallback("refreshWAITBookings: ServiceApp hat nicht geantwortet!");
-			});
-		} else {
-			// es gibt keine Buchungen zu aktialisieren
-			if (fileNamesToDelete !== [] && fileNamesToDelete !== null && typeof(fileNamesToDelete) !== "undefined") {
-//				that.deleteFilesInServiceApp(fileNamesToDelete, function(data){
-//				}, function(){
-//				});
-			}
-			if (typeof(successCallback) === "function") successCallback();
-		}
-	}
-	
 });
 
 // ==========================================================================
@@ -30945,925 +30945,6 @@ DigiWebApp.BautagebuchBautagesberichteListePage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchWetterPage
-// ==========================================================================
-
-DigiWebApp.BautagebuchWetterPage = M.PageView.design({
-
-      events: {
-		  pagebeforeshow: {
-            action: function(m_id, event) {
-				// lade eine evtl. zuvor gespeicherte Wetterauswahl aus dem Bautagesbericht
-				DigiWebApp.BautagebuchBautagesberichtDetailsController.set('wetterBackup', JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautagesberichtDetailsController.get('wetter'))));
-			}
-        }
-        , pagehide: {
-            action: function(m_id, event) {
-        		clearAllIntervals();
-        	}
-        }
-    }
-	
-    , cssClass: 'bautagebuchWetterPage'
-
-    , childViews: 'header content'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-                    	clearAllIntervals();
-                    	DigiWebApp.BautagebuchBautagesberichtDetailsController.set('wetter', JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautagesberichtDetailsController.wetterBackup)));
-                    	this.backToBautagebuchBautagesberichtDetailsPageTransition();
-                    }
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchWetter')
-            , anchorLocation: M.CENTER
-        })
-        , delButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchDelete')
-            , icon: 'delete'
-            , anchorLocation: M.RIGHT
-            , events: {
-                tap: {
-                    //  target: Controller
-                    //, action: 'deleteItem'
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-
-    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView wechselhaftCheckbox speichernButton'
-        	  
-        , cssClass: 'content'
-        	
-        , spacer1: M.LabelView.design({
-        	value: '&nbsp;'
-        })
-    	
-        , wechselhaftCheckbox: M.SelectionListView.design({
-	          selectionMode: M.MULTIPLE_SELECTION
-            , contentBinding: {
-                  target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-                , property: 'wetter.wechselhaftItem'
-            }
-		    , events: {
-		    		change: {
-        				  target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-						, action: function(itemValues, items) {
-				  			this.wetter.wechselhaft = (itemValues.length === 1);
-				  			this.wetter.wechselhaftItem.isSelected = (itemValues.length === 1);
-						}
-		    		}
-			}
-      	})
-          
-		, temperaturView: M.ContainerView.design({
-			  childViews: 'myLabel myGrid'
-	    	, cssClass: 'temperaturView'
-		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText marginBottom5px'
-	        	, value: M.I18N.l('BautagebuchTemperatur')
-	        })
-			, myGrid: M.GridView.design({
-				  childViews: 'minusButton plusButton TextValue'
-			    , layout: M.THREE_COLUMNS
-			    , minusButton: M.ButtonView.design({
-  		                value: "-"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.temperatur === -50) {
-//				    					return;
-//				    				}
-//				    				myWetter.temperatur = myWetter.temperatur - 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.temperatur === -50) {
-						    					return;
-						    				}
-						    				myWetter.temperatur = myWetter.temperatur - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			              }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.temperatur === -50) {
-						    					return;
-						    				}
-						    				myWetter.temperatur = myWetter.temperatur - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-			              			}  
-			              }
-		              }
-			    })
-			    , plusButton: M.ButtonView.design({
-		                value: "+"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.temperatur === 50) {
-//				    					return;
-//				    				}
-//				    				myWetter.temperatur = myWetter.temperatur + 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.temperatur === 50) {
-						    					return;
-						    				}
-						    				myWetter.temperatur = myWetter.temperatur + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.temperatur === 50) {
-						    					return;
-						    				}
-						    				myWetter.temperatur = myWetter.temperatur + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText centerText bold'
-			    	, computedValue: {
-				          contentBinding: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.temperatur'
-				        }
-				        , contentBindingReverse: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.temperatur'
-					    }
-			    		, value: 10
-				        , operation: function(v) {
-			    			return v + "°C";
-				        }
-				    }
-			    })
-			})
-		})
-
-		, luftfeuchteView: M.ContainerView.design({
-			  childViews: 'myLabel myGrid'
-	    	, cssClass: 'luftfeuchteView'
-		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText marginBottom5px'
-	        	, value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
-	        })
-			, myGrid: M.GridView.design({
-				  childViews: 'minusButton plusButton TextValue'
-			    , layout: M.THREE_COLUMNS
-			    , minusButton: M.ButtonView.design({
-  		                value: "-"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.luftfeuchtigkeit === 0) {
-//				    					return;
-//				    				}
-//				    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 10;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.luftfeuchtigkeit === 0) {
-						    					return;
-						    				}
-						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.luftfeuchtigkeit === 0) {
-						    					return;
-						    				}
-						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-
-		              }
-			    })
-			    , plusButton: M.ButtonView.design({
-		                value: "+"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.luftfeuchtigkeit === 100) {
-//				    					return;
-//				    				}
-//				    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 10;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.luftfeuchtigkeit === 100) {
-						    					return;
-						    				}
-						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.luftfeuchtigkeit === 100) {
-						    					return;
-						    				}
-						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText centerText bold'
-			    	, computedValue: {
-				          contentBinding: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.luftfeuchtigkeit'
-				        }
-			    		, value: 0
-				        , operation: function(v) {
-			    			return v + "%";
-				        }
-				    }
-			    })
-			})
-		})
-
-		, bewoelkungView: M.ContainerView.design({
-			  childViews: 'myLabel myGrid'
-	    	, cssClass: 'bewoelkungView'
-		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText marginBottom5px'
-	        	, value: M.I18N.l('BautagebuchBewoelkung')
-	        })
-			, myGrid: M.GridView.design({
-				  childViews: 'minusButton plusButton TextValue'
-			    , layout: M.THREE_COLUMNS
-			    , minusButton: M.ButtonView.design({
-  		                value: "-"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.bewoelkung === 0) {
-//				    					return;
-//				    				}
-//				    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.bewoelkung === 0) {
-						    					return;
-						    				}
-						    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.bewoelkung === 0) {
-						    					return;
-						    				}
-						    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , plusButton: M.ButtonView.design({
-		                value: "+"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.bewoelkung === 3) {
-//				    					return;
-//				    				}
-//				    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.bewoelkung === 3) {
-						    					return;
-						    				}
-						    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.bewoelkung === 3) {
-						    					return;
-						    				}
-						    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText centerText bold'
-			    	, computedValue: {
-				          contentBinding: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.bewoelkung'
-				        }
-			    		, value: 0
-				        , operation: function(v) {
-				    		switch(v) {
-				    			case 0:
-				    				return M.I18N.l('BautagebuchBewoelkungKlar');
-					    		case 1:
-				    				return M.I18N.l('BautagebuchBewoelkungMaessig');
-					    		case 2:
-				    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
-					    		case 3:
-				    				return M.I18N.l('BautagebuchBewoelkungNeblig');
-					    		default:
-					    			return "";
-				    		}
-				        }
-				    }
-			    })
-			})
-		})
-
-		, niederschlagView: M.ContainerView.design({
-			  childViews: 'myLabel myGrid'
-	    	, cssClass: 'niederschlagView'
-		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText marginBottom5px'
-	        	, value: M.I18N.l('BautagebuchNiederschlag')
-	        })
-			, myGrid: M.GridView.design({
-				  childViews: 'minusButton plusButton TextValue'
-			    , layout: M.THREE_COLUMNS
-			    , minusButton: M.ButtonView.design({
-  		                value: "-"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.niederschlag === 0) {
-//				    					return;
-//				    				}
-//				    				myWetter.niederschlag = myWetter.niederschlag - 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-			            	  			if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.niederschlag === 0) {
-						    					return;
-						    				}
-						    				myWetter.niederschlag = myWetter.niederschlag - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.niederschlag === 0) {
-						    					return;
-						    				}
-						    				myWetter.niederschlag = myWetter.niederschlag - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , plusButton: M.ButtonView.design({
-		                value: "+"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.niederschlag === 5) {
-//				    					return;
-//				    				}
-//				    				myWetter.niederschlag = myWetter.niederschlag + 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-	            	  					if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.niederschlag === 5) {
-						    					return;
-						    				}
-						    				myWetter.niederschlag = myWetter.niederschlag + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-			            	  			if (DigiWebApp.BautagebuchWetterPage.eventLoopInAction && DigiWebApp.BautagebuchWetterPage.eventLoopInAction && DigiWebApp.BautagebuchWetterPage.eventLoopInAction != event.type) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.niederschlag === 5) {
-						    					return;
-						    				}
-						    				myWetter.niederschlag = myWetter.niederschlag + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText centerText bold'
-			    	, computedValue: {
-				          contentBinding: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.niederschlag'
-				        }
-			    		, value: 0
-				        , operation: function(v) {
-				    		switch(v) {
-				    			case 0:
-				    				return M.I18N.l('BautagebuchNiederschlagKein');
-					    		case 1:
-				    				return M.I18N.l('BautagebuchNiederschlagNiesel');
-					    		case 2:
-				    				return M.I18N.l('BautagebuchNiederschlagRegen');
-					    		case 3:
-				    				return M.I18N.l('BautagebuchNiederschlagGraupel');
-					    		case 4:
-				    				return M.I18N.l('BautagebuchNiederschlagSchnee');
-					    		case 5:
-				    				return M.I18N.l('BautagebuchNiederschlagHagel');
-					    		default:
-					    		    return "";
-				    		}
-				        }
-				    }
-			    })
-			})
-		})
-
-		, windView: M.ContainerView.design({
-			  childViews: 'myLabel myGrid'
-	    	, cssClass: 'windView'
-		    , myLabel: M.LabelView.design({
-		    	  cssClass: 'whiteText marginBottom5px'
-	        	, value: M.I18N.l('BautagebuchWind')
-	        })
-			, myGrid: M.GridView.design({
-				  childViews: 'minusButton plusButton TextValue'
-			    , layout: M.THREE_COLUMNS
-			    , minusButton: M.ButtonView.design({
-  		                value: "-"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.wind === 0) {
-//				    					return;
-//				    				}
-//				    				myWetter.wind = myWetter.wind - 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-	            	  					if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.wind === 0) {
-						    					return;
-						    				}
-						    				myWetter.wind = myWetter.wind - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.wind === 0) {
-						    					return;
-						    				}
-						    				myWetter.wind = myWetter.wind - 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , plusButton: M.ButtonView.design({
-		                value: "+"
-		              , events: {
-		                  tap: {
-				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
-//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-//				    				if (myWetter.wind === 3) {
-//				    					return;
-//				    				}
-//				    				myWetter.wind = myWetter.wind + 1;
-//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-				    			}
-		                  }
-			              , mousedown: {
-					    			action: function(m_id, event) {
-	            	  					if (typeof(device) != "undefined" || onMobile) return;
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.wind === 4) {
-						    					return;
-						    				}
-						    				myWetter.wind = myWetter.wind + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , mouseup: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-			              , touchstart: {
-					    			action: function(m_id, event) {
-
-			            	  			var addFunc = function() {
-						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
-						    				if (myWetter.wind === 4) {
-						    					return;
-						    				}
-						    				myWetter.wind = myWetter.wind + 1;
-						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
-			            	  			}
-			            	  			clearAllIntervals();
-
-			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
-			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
-					    			}
-			                }
-			              , touchend: {
-					    			action: function(m_id, event) {
-			            	  			clearAllIntervals();
-
-			              			}  
-			              }
-		              }
-			    })
-			    , TextValue: M.LabelView.design({
-			    	  cssClass: 'whiteText centerText bold'
-			    	, computedValue: {
-				          contentBinding: {
-				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-				            , property: 'wetter.wind'
-				        }
-			    		, value: 0
-				        , operation: function(v) {
-				    		switch(v) {
-				    			case 0:
-				    				return M.I18N.l('BautagebuchWindStill');
-					    		case 1:
-				    				return M.I18N.l('BautagebuchWindMaessig');
-					    		case 2:
-				    				return M.I18N.l('BautagebuchWindBoeig');
-					    		case 3:
-				    				return M.I18N.l('BautagebuchWindStuermisch');
-					    		case 4:
-				    				return M.I18N.l('BautagebuchWindOrkan');
-					    		default:
-					    		    return "";
-				    		}
-				        }
-				    }
-			    })
-			})
-		})
-
-        , speichernButton: M.GridView.design({
-              childViews: 'button icon'
-            , layout: {
-                  cssClass: 'digiButton'
-                , columns: {
-                      0: 'button'
-                    , 1: 'icon'
-                }
-            }
-            , button: M.ButtonView.design({
-                  value: M.I18N.l('save')
-                , cssClass: 'digiButton green_background'
-                , anchorLocation: M.RIGHT
-                , events: {
-                    tap: {
-						action: function(m_id, event) {
-								clearAllTimeouts();
-								DigiWebApp.BautagebuchBautagesberichtDetailsController.save(DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition);
-						}
-                    }
-                }
-            })
-            , icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
-        })
-        
-//		, speichernButton: M.ButtonView.design({
-//	          value: M.I18N.l('save')
-//	        , cssClass: 'marginTop25'
-//	        //, anchorLocation: M.CENTER
-//	        , events: {
-//		            tap: {
-//		                //  target: DigiWebApp.NavigationController
-//		                //, action: 'backToBautagebuchBautagesberichtDetailsPageTransition'
-//						action: function(m_id, event) {
-//								clearAllTimeouts();
-//								DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition();
-//						}
-//		            }
-//	          }
-//	    })
-	    
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: BautagebuchZeitenDetailsPage
 // ==========================================================================
 
@@ -32944,6 +32025,925 @@ DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
 
 });
 
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchWetterPage
+// ==========================================================================
+
+DigiWebApp.BautagebuchWetterPage = M.PageView.design({
+
+      events: {
+		  pagebeforeshow: {
+            action: function(m_id, event) {
+				// lade eine evtl. zuvor gespeicherte Wetterauswahl aus dem Bautagesbericht
+				DigiWebApp.BautagebuchBautagesberichtDetailsController.set('wetterBackup', JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautagesberichtDetailsController.get('wetter'))));
+			}
+        }
+        , pagehide: {
+            action: function(m_id, event) {
+        		clearAllIntervals();
+        	}
+        }
+    }
+	
+    , cssClass: 'bautagebuchWetterPage'
+
+    , childViews: 'header content'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+                    	clearAllIntervals();
+                    	DigiWebApp.BautagebuchBautagesberichtDetailsController.set('wetter', JSON.parse(JSON.stringify(DigiWebApp.BautagebuchBautagesberichtDetailsController.wetterBackup)));
+                    	this.backToBautagebuchBautagesberichtDetailsPageTransition();
+                    }
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchWetter')
+            , anchorLocation: M.CENTER
+        })
+        , delButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchDelete')
+            , icon: 'delete'
+            , anchorLocation: M.RIGHT
+            , events: {
+                tap: {
+                    //  target: Controller
+                    //, action: 'deleteItem'
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+
+    	  childViews: 'temperaturView luftfeuchteView bewoelkungView niederschlagView windView wechselhaftCheckbox speichernButton'
+        	  
+        , cssClass: 'content'
+        	
+        , spacer1: M.LabelView.design({
+        	value: '&nbsp;'
+        })
+    	
+        , wechselhaftCheckbox: M.SelectionListView.design({
+	          selectionMode: M.MULTIPLE_SELECTION
+            , contentBinding: {
+                  target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+                , property: 'wetter.wechselhaftItem'
+            }
+		    , events: {
+		    		change: {
+        				  target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+						, action: function(itemValues, items) {
+				  			this.wetter.wechselhaft = (itemValues.length === 1);
+				  			this.wetter.wechselhaftItem.isSelected = (itemValues.length === 1);
+						}
+		    		}
+			}
+      	})
+          
+		, temperaturView: M.ContainerView.design({
+			  childViews: 'myLabel myGrid'
+	    	, cssClass: 'temperaturView'
+		    , myLabel: M.LabelView.design({
+		    	  cssClass: 'whiteText marginBottom5px'
+	        	, value: M.I18N.l('BautagebuchTemperatur')
+	        })
+			, myGrid: M.GridView.design({
+				  childViews: 'minusButton plusButton TextValue'
+			    , layout: M.THREE_COLUMNS
+			    , minusButton: M.ButtonView.design({
+  		                value: "-"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.temperatur === -50) {
+//				    					return;
+//				    				}
+//				    				myWetter.temperatur = myWetter.temperatur - 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.temperatur === -50) {
+						    					return;
+						    				}
+						    				myWetter.temperatur = myWetter.temperatur - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			              }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.temperatur === -50) {
+						    					return;
+						    				}
+						    				myWetter.temperatur = myWetter.temperatur - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+			              			}  
+			              }
+		              }
+			    })
+			    , plusButton: M.ButtonView.design({
+		                value: "+"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.temperatur === 50) {
+//				    					return;
+//				    				}
+//				    				myWetter.temperatur = myWetter.temperatur + 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.temperatur === 50) {
+						    					return;
+						    				}
+						    				myWetter.temperatur = myWetter.temperatur + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.temperatur === 50) {
+						    					return;
+						    				}
+						    				myWetter.temperatur = myWetter.temperatur + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText centerText bold'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.temperatur'
+				        }
+				        , contentBindingReverse: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.temperatur'
+					    }
+			    		, value: 10
+				        , operation: function(v) {
+			    			return v + "°C";
+				        }
+				    }
+			    })
+			})
+		})
+
+		, luftfeuchteView: M.ContainerView.design({
+			  childViews: 'myLabel myGrid'
+	    	, cssClass: 'luftfeuchteView'
+		    , myLabel: M.LabelView.design({
+		    	  cssClass: 'whiteText marginBottom5px'
+	        	, value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
+	        })
+			, myGrid: M.GridView.design({
+				  childViews: 'minusButton plusButton TextValue'
+			    , layout: M.THREE_COLUMNS
+			    , minusButton: M.ButtonView.design({
+  		                value: "-"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.luftfeuchtigkeit === 0) {
+//				    					return;
+//				    				}
+//				    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 10;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.luftfeuchtigkeit === 0) {
+						    					return;
+						    				}
+						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.luftfeuchtigkeit === 0) {
+						    					return;
+						    				}
+						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+
+		              }
+			    })
+			    , plusButton: M.ButtonView.design({
+		                value: "+"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.luftfeuchtigkeit === 100) {
+//				    					return;
+//				    				}
+//				    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 10;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.luftfeuchtigkeit === 100) {
+						    					return;
+						    				}
+						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.luftfeuchtigkeit === 100) {
+						    					return;
+						    				}
+						    				myWetter.luftfeuchtigkeit = myWetter.luftfeuchtigkeit + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText centerText bold'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.luftfeuchtigkeit'
+				        }
+			    		, value: 0
+				        , operation: function(v) {
+			    			return v + "%";
+				        }
+				    }
+			    })
+			})
+		})
+
+		, bewoelkungView: M.ContainerView.design({
+			  childViews: 'myLabel myGrid'
+	    	, cssClass: 'bewoelkungView'
+		    , myLabel: M.LabelView.design({
+		    	  cssClass: 'whiteText marginBottom5px'
+	        	, value: M.I18N.l('BautagebuchBewoelkung')
+	        })
+			, myGrid: M.GridView.design({
+				  childViews: 'minusButton plusButton TextValue'
+			    , layout: M.THREE_COLUMNS
+			    , minusButton: M.ButtonView.design({
+  		                value: "-"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.bewoelkung === 0) {
+//				    					return;
+//				    				}
+//				    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.bewoelkung === 0) {
+						    					return;
+						    				}
+						    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.bewoelkung === 0) {
+						    					return;
+						    				}
+						    				myWetter.bewoelkung = myWetter.bewoelkung - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , plusButton: M.ButtonView.design({
+		                value: "+"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.bewoelkung === 3) {
+//				    					return;
+//				    				}
+//				    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.bewoelkung === 3) {
+						    					return;
+						    				}
+						    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.bewoelkung === 3) {
+						    					return;
+						    				}
+						    				myWetter.bewoelkung = myWetter.bewoelkung + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText centerText bold'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.bewoelkung'
+				        }
+			    		, value: 0
+				        , operation: function(v) {
+				    		switch(v) {
+				    			case 0:
+				    				return M.I18N.l('BautagebuchBewoelkungKlar');
+					    		case 1:
+				    				return M.I18N.l('BautagebuchBewoelkungMaessig');
+					    		case 2:
+				    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
+					    		case 3:
+				    				return M.I18N.l('BautagebuchBewoelkungNeblig');
+					    		default:
+					    			return "";
+				    		}
+				        }
+				    }
+			    })
+			})
+		})
+
+		, niederschlagView: M.ContainerView.design({
+			  childViews: 'myLabel myGrid'
+	    	, cssClass: 'niederschlagView'
+		    , myLabel: M.LabelView.design({
+		    	  cssClass: 'whiteText marginBottom5px'
+	        	, value: M.I18N.l('BautagebuchNiederschlag')
+	        })
+			, myGrid: M.GridView.design({
+				  childViews: 'minusButton plusButton TextValue'
+			    , layout: M.THREE_COLUMNS
+			    , minusButton: M.ButtonView.design({
+  		                value: "-"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.niederschlag === 0) {
+//				    					return;
+//				    				}
+//				    				myWetter.niederschlag = myWetter.niederschlag - 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+			            	  			if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.niederschlag === 0) {
+						    					return;
+						    				}
+						    				myWetter.niederschlag = myWetter.niederschlag - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.niederschlag === 0) {
+						    					return;
+						    				}
+						    				myWetter.niederschlag = myWetter.niederschlag - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , plusButton: M.ButtonView.design({
+		                value: "+"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.niederschlag === 5) {
+//				    					return;
+//				    				}
+//				    				myWetter.niederschlag = myWetter.niederschlag + 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+	            	  					if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.niederschlag === 5) {
+						    					return;
+						    				}
+						    				myWetter.niederschlag = myWetter.niederschlag + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+			            	  			if (DigiWebApp.BautagebuchWetterPage.eventLoopInAction && DigiWebApp.BautagebuchWetterPage.eventLoopInAction && DigiWebApp.BautagebuchWetterPage.eventLoopInAction != event.type) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.niederschlag === 5) {
+						    					return;
+						    				}
+						    				myWetter.niederschlag = myWetter.niederschlag + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText centerText bold'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.niederschlag'
+				        }
+			    		, value: 0
+				        , operation: function(v) {
+				    		switch(v) {
+				    			case 0:
+				    				return M.I18N.l('BautagebuchNiederschlagKein');
+					    		case 1:
+				    				return M.I18N.l('BautagebuchNiederschlagNiesel');
+					    		case 2:
+				    				return M.I18N.l('BautagebuchNiederschlagRegen');
+					    		case 3:
+				    				return M.I18N.l('BautagebuchNiederschlagGraupel');
+					    		case 4:
+				    				return M.I18N.l('BautagebuchNiederschlagSchnee');
+					    		case 5:
+				    				return M.I18N.l('BautagebuchNiederschlagHagel');
+					    		default:
+					    		    return "";
+				    		}
+				        }
+				    }
+			    })
+			})
+		})
+
+		, windView: M.ContainerView.design({
+			  childViews: 'myLabel myGrid'
+	    	, cssClass: 'windView'
+		    , myLabel: M.LabelView.design({
+		    	  cssClass: 'whiteText marginBottom5px'
+	        	, value: M.I18N.l('BautagebuchWind')
+	        })
+			, myGrid: M.GridView.design({
+				  childViews: 'minusButton plusButton TextValue'
+			    , layout: M.THREE_COLUMNS
+			    , minusButton: M.ButtonView.design({
+  		                value: "-"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.wind === 0) {
+//				    					return;
+//				    				}
+//				    				myWetter.wind = myWetter.wind - 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+	            	  					if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.wind === 0) {
+						    					return;
+						    				}
+						    				myWetter.wind = myWetter.wind - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.wind === 0) {
+						    					return;
+						    				}
+						    				myWetter.wind = myWetter.wind - 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , plusButton: M.ButtonView.design({
+		                value: "+"
+		              , events: {
+		                  tap: {
+				    			action: function(m_id, event) {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} 
+//				    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+//				    				if (myWetter.wind === 3) {
+//				    					return;
+//				    				}
+//				    				myWetter.wind = myWetter.wind + 1;
+//				    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+				    			}
+		                  }
+			              , mousedown: {
+					    			action: function(m_id, event) {
+	            	  					if (typeof(device) != "undefined" || onMobile) return;
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.wind === 4) {
+						    					return;
+						    				}
+						    				myWetter.wind = myWetter.wind + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , mouseup: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+			              , touchstart: {
+					    			action: function(m_id, event) {
+
+			            	  			var addFunc = function() {
+						    				var myWetter = DigiWebApp.BautagebuchBautagesberichtDetailsController.wetter;
+						    				if (myWetter.wind === 4) {
+						    					return;
+						    				}
+						    				myWetter.wind = myWetter.wind + 1;
+						    				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("wetter", myWetter);
+			            	  			}
+			            	  			clearAllIntervals();
+
+			            	  			DigiWebApp.BautagebuchMainController.buttonPressInterval_Var = setInterval(addFunc, DigiWebApp.BautagebuchMainController.buttonPressInterval);
+			            	  			addFunc(); event.stopPropagation(); event.preventDefault();
+					    			}
+			                }
+			              , touchend: {
+					    			action: function(m_id, event) {
+			            	  			clearAllIntervals();
+
+			              			}  
+			              }
+		              }
+			    })
+			    , TextValue: M.LabelView.design({
+			    	  cssClass: 'whiteText centerText bold'
+			    	, computedValue: {
+				          contentBinding: {
+				              target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+				            , property: 'wetter.wind'
+				        }
+			    		, value: 0
+				        , operation: function(v) {
+				    		switch(v) {
+				    			case 0:
+				    				return M.I18N.l('BautagebuchWindStill');
+					    		case 1:
+				    				return M.I18N.l('BautagebuchWindMaessig');
+					    		case 2:
+				    				return M.I18N.l('BautagebuchWindBoeig');
+					    		case 3:
+				    				return M.I18N.l('BautagebuchWindStuermisch');
+					    		case 4:
+				    				return M.I18N.l('BautagebuchWindOrkan');
+					    		default:
+					    		    return "";
+				    		}
+				        }
+				    }
+			    })
+			})
+		})
+
+        , speichernButton: M.GridView.design({
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'digiButton'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('save')
+                , cssClass: 'digiButton green_background'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+						action: function(m_id, event) {
+								clearAllTimeouts();
+								DigiWebApp.BautagebuchBautagesberichtDetailsController.save(DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition);
+						}
+                    }
+                }
+            })
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        })
+        
+//		, speichernButton: M.ButtonView.design({
+//	          value: M.I18N.l('save')
+//	        , cssClass: 'marginTop25'
+//	        //, anchorLocation: M.CENTER
+//	        , events: {
+//		            tap: {
+//		                //  target: DigiWebApp.NavigationController
+//		                //, action: 'backToBautagebuchBautagesberichtDetailsPageTransition'
+//						action: function(m_id, event) {
+//								clearAllTimeouts();
+//								DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition();
+//						}
+//		            }
+//	          }
+//	    })
+	    
+    })
+
+});
 
 
 // ==========================================================================
@@ -37736,7 +37736,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6009'
+              value: 'Build: 6010'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -41973,7 +41973,7 @@ function writeToLog(myWriteContent, mySuccessCallback, myErrorCallback) {
 			    	fileSystem.root.getDirectory("DIGIWebAppLogs", {create: true, exclusive: false}, function(dataDirectory) {
 			
 				    	// get fileEntry from filesystem (create if not exists)
-				    	dataDirectory.getFile(fileName, {create: true, exclusive: true}, function(fileEntry) {
+				    	dataDirectory.getFile(fileName, {create: true, exclusive: false}, function(fileEntry) {
 			
 				    		fileEntry.createWriter(function(writer) {
 				    				
@@ -42014,7 +42014,7 @@ function writeToLog(myWriteContent, mySuccessCallback, myErrorCallback) {
 		    	fileSystem.root.getDirectory("DIGIWebAppLogs", {create: true, exclusive: false}, function(dataDirectory) {
 		
 			    	// get fileEntry from filesystem (create if not exists)
-			    	dataDirectory.getFile(fileName, {create: true, exclusive: true}, function(fileEntry) {
+			    	dataDirectory.getFile(fileName, {create: true, exclusive: false}, function(fileEntry) {
 		
 			    		fileEntry.createWriter(function(writer) {
 			    				
