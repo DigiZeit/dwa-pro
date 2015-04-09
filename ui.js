@@ -4018,127 +4018,6 @@ M.FormView = M.View.extend(
 // ==========================================================================
 
 /**
- * @class
- *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
- * @extends M.View
- */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImageView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
-
-    /**
-     * Renders an image view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The image view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
  * A constant value for a two column layout of a grid view.
  *
  * @type String
@@ -4290,6 +4169,127 @@ M.GridView = M.View.extend(
         if(this.layout) {
             var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
             return html;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
     }
 
@@ -8680,6 +8680,202 @@ M.SliderView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitItemView',
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // ...
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitToolbarView = M.View.extend(
+/** @scope M.SplitToolbarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitToolbarView',
+
+    showSelectedItemInMainHeader: YES,
+
+    showMenuButtonInPortraitMode: YES,
+
+    popover: null,
+
+    splitview: null,
+
+    /**
+     * Triggers render() on all children.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+
+        if(this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+
+            var currentToolbar = 0;
+            for(var i in childViews) { // toolbar1, toolbar 2
+                
+                var toolbar = this[childViews[i]]; //zugriff wie 
+                
+                if(toolbar && toolbar.type === 'M.ToolbarView') {
+
+                    toolbar.parentView = this;
+                    if(currentToolbar === 0) {
+
+
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
+
+
+
+                    } else if(currentToolbar === 1) {
+                        //toolbar2
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
+
+                        /* check if this is a simple toolbar so we can add the menu button */
+                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
+                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
+                            toolbar.childViews = 'menuButton label';
+
+
+
+                            var buttonLabel = this[childViews[0]].value;
+                            toolbar.menuButton = M.ButtonView.design({
+                                value: buttonLabel,
+                                icon: 'arrow-d',
+                                anchorLocation: M.LEFT,
+                                internalEvents: {
+                                    tap: {
+                                        target: this,
+                                        action: function() {
+                                           if(!this.popover) {
+                                                var content;
+                                                if(this.splitview.contentBinding) {
+                                                    content = this.splitview.value;
+                                                } else if(this.splitview.childViews) {
+                                                    var childViews = this.splitview.getChildViewsAsArray();
+                                                    content = [];
+                                                    for(var i = 0; i < childViews.length; i++) {
+                                                        content.push(this.splitview[childViews[i]]);
+                                                    }
+                                                }
+                                                var items = [];
+                                                for(var i in content) {
+                                                    items.push(content[i]);
+                                                }
+                                                this.popover = M.PopoverView.design({
+                                                    items: items,
+                                                    splitview: this.splitview
+                                                });
+                                                this.popover.show();
+                                            } else {
+                                                this.popover.renderUpdate();
+                                                this.popover.toggle();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            toolbar.label = M.LabelView.design({
+                                value: toolbar.value,
+                                anchorLocation: M.CENTER
+                            });
+
+                            toolbar.value = '';
+                        }
+                    } else {
+                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
+                        return;
+                    }
+                    this.html += toolbar.render();
+                    currentToolbar++;
+                } else {
+                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
+                }
+            }
+            return this.html;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      16.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -9116,202 +9312,6 @@ M.SplitView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
-
-    /**
-     * Triggers render() on all children.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
