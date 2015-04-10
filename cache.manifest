@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6047 beta, Timestamp:1428678938567
+#Application:DigiWebApp, Version:1.8.3.6048 beta, Timestamp:1428679221181
 
 
 # Explicitly cached entries
@@ -21,11 +21,11 @@ barcodescanner.js
 childbrowser.js
 cordova.js
 jstz.js
+Math.uuid.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
-Math.uuid.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_DIGI-WebApp.png
@@ -142,14 +142,14 @@ full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
+core.js
 theme/jquery.mobile-1.3.0.min.css
-theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
+theme/images/ajax-loader.gif
 theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
-core.js
 DigiWebApp_App.js
 
 
