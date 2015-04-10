@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6042 beta, Timestamp:1428676345434
+#Application:DigiWebApp, Version:1.8.3.6043 beta, Timestamp:1428676443077
 
 
 # Explicitly cached entries
@@ -9,17 +9,17 @@ en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
-underscore-min.js
 jquery-1.9.1.js
 theme/tmp.css
+underscore-min.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
 bootstrap.js
 jquery_mobile.js
+jquery.xml2json_1.3.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-jquery.xml2json_1.3.js
 jstz.js
 digi_list.js
 digi_list_item.js
@@ -84,7 +84,6 @@ theme/images/640x960_90_SCHOLPP.png
 theme/images/720x1280_90_DIGI-WebApp.png
 theme/images/720x1280_90_DIGI-WebApp_mitLogo.png
 theme/images/720x960_90_DIGI-WebApp_mitLogo.png
-theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/800x1280_90_DIGI-WebApp.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/800x480_90_DIGI-WebApp_mitLogo.png
@@ -96,17 +95,18 @@ theme/images/ajax-loader.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
 theme/images/arrow_white.png
+theme/images/768x1024_90_DIGI-WebApp_mitLogo.png
 theme/images/ic_launcher_hdpi.png
+theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_xxhdpi.png
 theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
-theme/images/icon_ios_120.png
 theme/images/icon_ios_144.png
 theme/images/icon_ios_152.png
-theme/images/ic_launcher_ldpi.png
+theme/images/icon_ios_120.png
 theme/images/icon_ios_57.png
 theme/images/icon_ios_72.png
 theme/images/icon_ios_76.png
