@@ -5714,6 +5714,8 @@ DigiWebApp.Settings = M.Model.create({
     
     , overrideApplicationQuota: M.Model.attr('String') 
 
+    , logWriterInterval: M.Model.attr('Integer') 
+
 }, M.DataProviderLocalStorage);
 
 // ==========================================================================
@@ -9464,9 +9466,11 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 				if (typeof(navigator) != "undefined" && typeof(navigator.app) != "undefined" && typeof(navigator.app.exitApp) != "undefined") {
 		    		if (autoExit) {
 		    			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('autoExitApp'));
-		    			window.setTimeout(navigator.app.exitApp, 2000);
+		    			//window.setTimeout(navigator.app.exitApp, 2000);
+		    			window.setTimeout(flushLogQueueAndExit, 2000);
 		    		} else {
-		    			navigator.app.exitApp();
+		    			//navigator.app.exitApp();
+		    			flushLogQueueAndExit();
 		    		}
 				}
 	    	}
@@ -21255,7 +21259,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6036
+    , softwareVersion: 6037
 
 
     /**
@@ -24253,6 +24257,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
         , mengeneingabeMitTelKeyboard: false
         , scrId: 8367
         , overrideApplicationQuota: '-1'
+        , logWriterInterval: 500
     }
 
     , defaultsettings: null
@@ -24520,6 +24525,13 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	            }
             } catch (e) {}
 
+            var logWriterInterval = DigiWebApp.SettingsController.defaultsettings.get("logWriterInterval");
+            try {
+	            if (typeof(record.record.logWriterInterval) !== "undefined") {
+	            	logWriterInterval = record.get('logWriterInterval');
+	            }
+            } catch (e) {}
+
             if (onIOS || onAndroid23) {
     			try{$('[id=' + DigiWebApp.SettingsPage.content.GPSBackgroundService.id  + ']').each(function() { $(this).hide(); });}catch(e){}
     			try{$('[id=' + DigiWebApp.SettingsPage.content.BookingReminderHoursGrid.id  + ']').each(function() { $(this).hide(); });}catch(e){}
@@ -24719,6 +24731,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
 	           , mengeneingabeMitTelKeyboard: mengeneingabeMitTelKeyboard
 	           , scrId: scrId
 	           , overrideApplicationQuota: overrideApplicationQuota
+	           , logWriterInterval: logWriterInterval
                
             };
         /* default values */
@@ -24865,6 +24878,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                , mengeneingabeMitTelKeyboard: DigiWebApp.SettingsController.defaultsettings.get("mengeneingabeMitTelKeyboard")
                , scrId: DigiWebApp.SettingsController.defaultsettings.get("scrId")
                , overrideApplicationQuota: DigiWebApp.SettingsController.defaultsettings.get("overrideApplicationQuota")
+               , logWriterInterval: DigiWebApp.SettingsController.defaultsettings.get("logWriterInterval")
                
             };
             
@@ -25107,6 +25121,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
     	var mengeneingabeMitTelKeyboard     = DigiWebApp.SettingsController.getSetting('mengeneingabeMitTelKeyboard');
     	var scrId                           = DigiWebApp.SettingsController.getSetting('scrId');
     	var overrideApplicationQuota        = DigiWebApp.SettingsController.getSetting('overrideApplicationQuota');
+    	var logWriterInterval               = DigiWebApp.SettingsController.getSetting('logWriterInterval');
     	
         if (company) {
             if(!numberRegex.test(company)) {
@@ -25236,6 +25251,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                                     record.set('mengeneingabeMitTelKeyboard', mengeneingabeMitTelKeyboard);
                                                     record.set('scrId', scrId);
                                                     record.set('overrideApplicationQuota');
+                                                    record.set('logWriterInterval');
                                                     
                                                     /* now save */
                                                     //alert("saveSettings (if(record) == true)");
@@ -25331,6 +25347,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                     record.set('mengeneingabeMitTelKeyboard', mengeneingabeMitTelKeyboard);
                                     record.set('scrId', scrId);
                                     record.set('overrideApplicationQuota');
+                                    record.set('logWriterInterval');
 
                                     /* now save */
                                     //alert("saveSettings (if(record) == false)");
@@ -25400,6 +25417,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mengeneingabeMitTelKeyboard', mengeneingabeMitTelKeyboard);
                                 record.set('scrId', scrId);
                                 record.set('overrideApplicationQuota');
+                                record.set('logWriterInterval');
 
                                 /* now save */
                                 //alert("saveSettings (isNew)");
@@ -25469,6 +25487,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 record.set('mengeneingabeMitTelKeyboard', mengeneingabeMitTelKeyboard);
                                 record.set('scrId', scrId);
                                 record.set('overrideApplicationQuota');
+                                record.set('logWriterInterval');
 
                                 /* now save */
                                 //alert("saveSettings (not isNew)");
@@ -25540,6 +25559,7 @@ DigiWebApp.SettingsController = M.Controller.extend({
                                 , mengeneingabeMitTelKeyboard: mengeneingabeMitTelKeyboard
                                 , scrId: scrId
                                 , overrideApplicationQuota: overrideApplicationQuota
+                                , logWriterInterval: logWriterInterval
 
                           });
 
@@ -37444,6 +37464,120 @@ DigiWebApp.DashboardPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: HandOrderPage
+// ==========================================================================
+
+m_require('app/views/TabBar.js');
+
+DigiWebApp.HandOrderPage = M.PageView.design({
+
+    //  childViews: 'header content tabBar'
+      childViews: 'header content'
+
+    , cssClass: 'handApplicationPage'
+
+    , events: {
+		pageshow: {
+			action: function() {
+				$('#' + DigiWebApp.HandOrderPage.content.orderName.id)[0].focus();
+			}
+	    }
+ 	}
+
+	, header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('handApplications')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'orderName grid'
+        , orderName: M.TextFieldView.design({
+              label: M.I18N.l('orderName')
+            , numberOfChars: 50
+   	        , events: {
+        		keyup: {
+	                /* executed in scope of DOMWindow because no target defined */
+	            	action: function(selectedValue, selectedItem) {
+						var myValue = M.ViewManager.getView('handOrderPage', 'orderName').getValue();
+						if (myValue.length <= 16) {
+							DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
+						} else {
+							if (!DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
+								M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
+					            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					                title: M.I18N.l('handOrderTooLong')
+					              , message: M.I18N.l('handOrderTooLongMsg')
+					            });
+							} else {
+								if (myValue.length <= 50) {
+									DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
+								} else {
+									M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
+						            DigiWebApp.ApplicationController.nativeAlertDialogView({
+						                title: M.I18N.l('handOrderTooLong')
+						              , message: M.I18N.l('handOrderTooLongDTC6Msg')
+						            });
+								}
+							}
+						}
+	            	}
+	            }
+	    	}
+        })
+        , grid: M.GridView.design({
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'digiButton hack'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('assume')
+                , cssClass: 'digiButton'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+                          target: DigiWebApp.HandOrderController
+                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
+                    }
+                }
+            })
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        })
+
+    })
+
+    , tabBar: DigiWebApp.TabBar
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: InfoPage
 // ==========================================================================
 
@@ -37652,7 +37786,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6036'
+              value: 'Build: 6037'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -37817,120 +37951,6 @@ DigiWebApp.InfoPage = M.PageView.design({
                 }
             }
             , cssClass: 'infoLabel marginBottom25 unselectable'
-        })
-
-    })
-
-    , tabBar: DigiWebApp.TabBar
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: HandOrderPage
-// ==========================================================================
-
-m_require('app/views/TabBar.js');
-
-DigiWebApp.HandOrderPage = M.PageView.design({
-
-    //  childViews: 'header content tabBar'
-      childViews: 'header content'
-
-    , cssClass: 'handApplicationPage'
-
-    , events: {
-		pageshow: {
-			action: function() {
-				$('#' + DigiWebApp.HandOrderPage.content.orderName.id)[0].focus();
-			}
-	    }
- 	}
-
-	, header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('handApplications')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'orderName grid'
-        , orderName: M.TextFieldView.design({
-              label: M.I18N.l('orderName')
-            , numberOfChars: 50
-   	        , events: {
-        		keyup: {
-	                /* executed in scope of DOMWindow because no target defined */
-	            	action: function(selectedValue, selectedItem) {
-						var myValue = M.ViewManager.getView('handOrderPage', 'orderName').getValue();
-						if (myValue.length <= 16) {
-							DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
-						} else {
-							if (!DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
-								M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
-					            DigiWebApp.ApplicationController.nativeAlertDialogView({
-					                title: M.I18N.l('handOrderTooLong')
-					              , message: M.I18N.l('handOrderTooLongMsg')
-					            });
-							} else {
-								if (myValue.length <= 50) {
-									DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
-								} else {
-									M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
-						            DigiWebApp.ApplicationController.nativeAlertDialogView({
-						                title: M.I18N.l('handOrderTooLong')
-						              , message: M.I18N.l('handOrderTooLongDTC6Msg')
-						            });
-								}
-							}
-						}
-	            	}
-	            }
-	    	}
-        })
-        , grid: M.GridView.design({
-              childViews: 'button icon'
-            , layout: {
-                  cssClass: 'digiButton hack'
-                , columns: {
-                      0: 'button'
-                    , 1: 'icon'
-                }
-            }
-            , button: M.ButtonView.design({
-                  value: M.I18N.l('assume')
-                , cssClass: 'digiButton'
-                , anchorLocation: M.RIGHT
-                , events: {
-                    tap: {
-                          target: DigiWebApp.HandOrderController
-                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
-                    }
-                }
-            })
-            , icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
         })
 
     })
@@ -41956,20 +41976,48 @@ M.Application.useTransitions = NO;
 var DigiWebApp = DigiWebApp || {app: null};
 
 var logQueue = [];
-var queueIntervalId = null;
+var logQueueIntervalId = null;
+var logQueueInterval = 500;
+function initLogQueueInterval() {
+    for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        var regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'Settings_').exec(k);
+        if (regexResult) {
+            var record = JSON.parse(localStorage.getItem(k));
+            if (record && record.logWriterInterval) logQueueInterval = parseIntRadixTen(record.logWriterInterval);
+        }
+    }
+    queueIntervalId = window.setInterval(queuedLogWriter, logQueueInterval);
+}
+function flushLogQueueAndExit() {
+	// Intervall deaktivieren
+	try{queueIntervalId = window.clearInterval(queueIntervalId);}catch(e){}
+	if (logQueue.length > 0) {
+		var myWriteContent = logQueue.shift();
+		writeToLogFromQueue(myWriteContent,  function() {
+			flushLogQueueAndExit();
+		});
+	} else {
+		// alles geschrieben: exitApp
+		if (typeof(navigator) != "undefined" && typeof(navigator.app) != "undefined" && typeof(navigator.app.exitApp) != "undefined") {
+			navigator.app.exitApp();
+		}
+	}
+}
 function queuedLogWriter() {
 	if (logQueue.length > 0) {
-		// intervall pausieren bis geschrieben wurde
+		// Intervall aussetzen bis alles geschrieben wurde
 		queueIntervalId = window.clearInterval(queueIntervalId);
 		var myWriteContent = logQueue.shift();
 		writeToLogFromQueue(myWriteContent,  function() {
-			// intervall fortsetzen
-			queueIntervalId = window.setInterval(queuedLogWriter, 500);
-			//queuedLogWriter();
+			queuedLogWriter();
 		});
+	} else {
+		// Intervall fortsetzen
+		initLogQueueInterval();
 	}
 }
-queueIntervalId = window.setInterval(queuedLogWriter, 500);
+initLogQueueInterval();
 
 function writeToLog(myWriteContent, mySuccessCallback, myErrorCallback) {
 	
@@ -41985,28 +42033,28 @@ function writeToLog(myWriteContent, mySuccessCallback, myErrorCallback) {
 	+ writeContent + "\n";
 	
 	logQueue.push({"content": writeContent, "timestamp": now});
-	//if (!queueIntervalId) queueIntervalId = window.setInterval(queuedLogWriter, 500);
 	
 	if (typeof(mySuccessCallback) == "function") mySuccessCallback();
+
 }
 
 function writeToLogFromQueue(writeContentObj, mySuccessCallback, myErrorCallback) {	
 		
+	var successCallback;
+	if (typeof(mySuccessCallback) !== "function") {
+		successCallback = function(){};
+	} else {
+		successCallback = mySuccessCallback;
+	}
+	var errorCallback;
+	if (typeof(myErrorCallback) !== "function") {
+		errorCallback = successCallback; // falls kein errorHandler übergeben wurde mit successHandler fortfahren
+	} else {
+		errorCallback = myErrorCallback;
+	}
+	
 	try {
 
-		var successCallback;
-		if (typeof(mySuccessCallback) !== "function") {
-			successCallback = function(){};
-		} else {
-			successCallback = mySuccessCallback;
-		}
-		var errorCallback;
-		if (typeof(myErrorCallback) !== "function") {
-			errorCallback = successCallback; // falls kein errorHandler übergeben wurde mit successHandler fortfahren
-		} else {
-			errorCallback = myErrorCallback;
-		}
-		
 		var writeContent = writeContentObj.content;
 		var now = writeContentObj.timestamp;
 		
@@ -42016,7 +42064,8 @@ function writeToLogFromQueue(writeContentObj, mySuccessCallback, myErrorCallback
 			
 		// check if LocalFileSystem is defined
 		if (typeof(window.requestFileSystem) == "undefined" && typeof(navigator.webkitPersistentStorage) == "undefined") {
-			successCallback("");
+			// ohne filesystem kein logging möglich: logging-anfragen ohne Fehler ignorieren
+			successCallback("no filesystem available");
 	        return true;
 	    }
 
@@ -42092,7 +42141,11 @@ function writeToLogFromQueue(writeContentObj, mySuccessCallback, myErrorCallback
 		    }, errorCallback);             // window.requestFileSystem
 		}
 	} catch(e2) {
-		errorCallback(e2);
+		if (typeof(errorCallback) != "function") {
+			alert("Die Protokollierung ist defekt! Bitte starten Sie die App neu und informieren DIGI-ZEITERFASSUNG GmbH!")
+		} else {
+			errorCallback(e2);
+		}
 	}
 
 }
