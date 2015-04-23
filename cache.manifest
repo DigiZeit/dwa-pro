@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6105 beta, Timestamp:1429808751302
+#Application:DigiWebApp, Version:1.8.3.6106 beta, Timestamp:1429810252401
 
 
 # Explicitly cached entries
@@ -10,13 +10,13 @@ es_es.js
 fr_fr.js
 nl_nl.js
 underscore-min.js
-jquery-1.9.1.js
 d8-0.1.3.min.js
 d8-0.4.0.min.js
 theme/tmp.css
 bootstrap.js
-jquery_mobile.js
+jquery-1.9.1.js
 jquery.xml2json_1.3.js
+jquery_mobile.js
 barcodescanner.js
 childbrowser.js
 cordova.js
@@ -33,8 +33,8 @@ theme/images/1024x1024_90_SCHOLPP.png
 theme/images/1024x2048_90_DIGI-WebApp.png
 theme/images/1024x768_90_DIGI-WebApp_mitLogo.png
 theme/images/1080x1920_90_DIGI-WebApp.png
-theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1080x1920_90_DIGI-WebApp_mitLogo.png
+theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1536x2048_90_DIGI-WebApp.png
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/1920x1080_90_DIGI-WebApp_mitLogo.png
@@ -72,10 +72,10 @@ theme/images/48x48_plain_note_delete.png
 theme/images/48x48_plain_note_view.png
 theme/images/48x48_plain_pda_write.png
 theme/images/48x48_plain_refresh.png
-theme/images/48x48_plain_shelf.png
 theme/images/48x48_plain_text_code.png
 theme/images/48x48_plain_wrench.png
 theme/images/5000x5000_90_DIGI-WebApp.png
+theme/images/48x48_plain_shelf.png
 theme/images/5000x5000_90_SCHOLPP.png
 theme/images/640x1136_90_DIGI-WebApp_mitLogo.png
 theme/images/640x960_90_DIGI-WebApp.png
@@ -98,8 +98,8 @@ theme/images/arrow_grey.png
 theme/images/arrow_white.png
 theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_ldpi.png
-theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_mdpi.png
+theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_xxhdpi.png
 theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
@@ -130,7 +130,6 @@ pen.psd
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
-theme/journal.svg
 theme/journal.ttf
 theme/journal.woff
 theme/jquery.signaturepad.css
@@ -142,13 +141,14 @@ full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
+theme/journal.svg
 core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
+theme/images/ajax-loader.png
 theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
-theme/images/ajax-loader.png
 theme/images/icons-36-white.png
 DigiWebApp_App.js
 
