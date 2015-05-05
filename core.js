@@ -5354,6 +5354,9 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
              a[0] = '{';
              var value = a.join('');*/
             var value = JSON.stringify(obj.model.record);
+        	if ((typeof logSave != "undefined") && logSave) {
+        		writeToLog("saving '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "': " + value);
+        	}
             localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
             return YES;
         } catch (e) {
@@ -5375,7 +5378,9 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
     del:function (obj) {
         try {
             if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
-            	writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
+            	if ((typeof logDelete != "undefined") && logDelete) {
+            		writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
+            	}
                 localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
                 obj.model.recordManager.remove(obj.model.m_id);
                 return YES;
