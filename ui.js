@@ -505,493 +505,6 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for horizontal alignment.
- *
- * @type String
- */
-M.HORIZONTAL = 'horizontal';
-
-/**
- * A constant value for vertical alignment.
- *
- * @type String
- */
-M.VERTICAL = 'vertical';
-
-
-/**
- * @class
- *
- * A button group is a vertically or / and horizontally aligned group of buttons. There
- * are basically three different types of a button group:
- *
- * - horizontally aligned buttons
- *     1 - 2 - 3
- *
- * - vertically aligned buttons
- *     1
- *     |
- *     2
- *     |
- *     3
- *
- * - horizontally and vertically aligned buttons
- *     1 - 2
- *     |   |
- *     3 - 4
- * 
- * @extends M.View
- */
-M.ButtonGroupView = M.View.extend(
-/** @scope M.ButtonGroupView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ButtonGroupView',
-
-    /**
-     * This property determines whether to render the button group horizontally
-     * or vertically. Default: horizontal.
-     *
-     * Possible values are:
-     * - M.HORIZONTAL: horizontal
-     * - M.VERTICAL: vertical
-     *
-     * @type String
-     */
-    direction: M.HORIZONTAL,
-
-    /**
-     * Determines whether to display the button group view 'inset' or at full width.
-     *
-     * @type Boolean
-     */
-    isInset: YES,
-
-    /**
-     * Determines whether to display the button group compact, i.e. without top/bottom
-     * margin. This property only is relevant in combination with multiple lines of
-     * buttons (c.p.: buttonsPerLine property).
-     *
-     * @type Boolean
-     */
-    isCompact: YES,
-
-    /**
-     * This property, if set, defines how many buttons are rendered per line. If there
-     * are more buttons defined that fitting into one line, the following buttons are
-     * rendered into a new line. Make sure, the number of your buttons is divisible by
-     * the number of buttons per line, since only full lines are displayed. So if you
-     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
-     * visible.
-     *
-     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
-     * be as follows:
-     *
-     *     1 -- 2
-     *     3 -- 4
-     *
-     * @type Number
-     */
-    buttonsPerLine: null,
-
-    /**
-     * This property is used to internally store the number of lines that are necessary
-     * to render all buttons according to the buttonsPerLine property.
-     *
-     * @private
-     * @type Number
-     */
-    numberOfLines: null,
-
-    /**
-     * This property refers to the currently rendered line, if there is more than one.
-     *
-     * @private
-     * @type Number
-     */
-    currentLine: null,
-
-    /**
-     * This property contains an array of html ids referring to the several lines of grouped
-     * buttons, if there is more than one at all.
-     *
-     * @private
-     * @type Array
-     */
-    lines: null,
-
-    /**
-     * This property contains a reference to the currently selected button.
-     *
-     * @private
-     * @type Object
-     */
-    activeButton: null,
-
-    /**
-     * This property determines whether the buttons of this button group are selectable or not. If
-     * set to YES, a click on one of the buttons will set this button as the currently active button
-     * and automatically change its styling to visualize its selection.
-     *
-     * @type Boolean
-     */
-    isSelectable: YES,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Renders a button group as a div container and calls the renderChildViews
-     * method to render the included buttons.
-     *
-     * @private
-     * @returns {String} The button group view's html representation.
-     */
-    render: function() {
-        /* check if multiple lines are necessary before rendering */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
-                var numberOfButtons = 0;
-                for(var i in childViews) {
-                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                        numberOfButtons = numberOfButtons + 1;
-                    }
-                }
-                if(this.buttonsPerLine < numberOfButtons) {
-                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
-                }
-            }
-        }
-        this.html = '';
-        /* if there are multiple lines, render multiple horizontally aligned button groups */
-        if(this.numberOfLines) {
-            /* set the direction to horizontally, no matter what it was set to before */
-            this.direction = M.HORIZONTAL;
-
-            /* this is a wrapper for the multiple button groups.
-               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
-            this.html += '<div id="' + this.id + '"';
-            this.html += this.style();
-            this.html += '>';
-
-            /* create a button group for every line */
-            this.lines = [];
-            for(var i = 0; i < this.numberOfLines; i++) {
-                this.currentLine = i + 1;
-                /* store current line in lines property for use in renderChildViews() */
-                this.lines.push(this.id + '_' + i);
-
-                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
-
-                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
-                if(!this.isInset || this.isCompact) {
-                    if(i == 0) {
-                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
-                    } else if(i > 0 && i < this.numberOfLines - 1) {
-                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
-                    } else if(i < this.numberOfLines) {
-                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
-                    }
-                }
-
-                this.html += '>';
-
-                /* render the buttons for the current line */
-                this.renderChildViews();
-
-                this.html += '</div>';
-            }
-            this.html += '</div>';
-        } else {
-            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
-
-            this.renderChildViews();
-
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonGroupView.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var currentButtonIndex = 0;
-
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    currentButtonIndex = currentButtonIndex + 1;
-
-                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
-
-                        var button = this[childViews[i]];
-                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
-                        button.html = '';
-
-                        button.parentView = this;
-                        button.internalEvents = {
-                            tap: {
-                                target: this,
-                                action: 'buttonSelected'
-                            }
-                        }
-
-                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
-                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
-                           the right of the button group */
-                        if(this.direction === M.HORIZONTAL) {
-                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
-                        }
-
-                        /* set the button's _name property */
-                        this[childViews[i]]._name = childViews[i];
-
-                        /* finally render the button and add it to the button groups html */
-                        this.html += this[childViews[i]].render();
-                    }
-                } else {
-                    M.Logger.log('childview of button group is no button.', M.WARN);
-                }
-            }
-        }
-    },
-
-    /**
-     * This method themes the button group and activates one of the included buttons
-     * if its isActive property is set.
-     *
-     * @private
-     */
-    theme: function() {
-        /* if there are multiple lines of buttons, it's getting heavy */
-        if(this.numberOfLines) {
-            
-            /* iterate through all lines */
-            for(var line in this.lines) {
-                line = parseIntRadixTen(line);
-
-                /* style the current line */
-                $('#' + this.lines[line]).controlgroup();
-                var childViews = this.getChildViewsAsArray();
-                var currentButtonIndex = 0;
-                
-                /* if isCompact, iterate through all buttons */
-                if(this.isCompact) {
-                    for(var i in childViews) {
-                        i = parseIntRadixTen(i);
-                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                            currentButtonIndex = currentButtonIndex + 1;
-                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
-                            var button = this[childViews[i]];
-
-                            /* if the button belongs to the current line adjust its styling according to its position,
-                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
-                            if(line === currentLine) {
-
-                                /* first line */
-                                if(line === 0 && this.numberOfLines > 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tl');
-                                        }
-                                    /* last button */
-                                    } else if(currentButtonIndex === this.buttonsPerLine) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        if(this.isInset) {
-                                            $('#' + button.id).addClass('ui-corner-tr');
-                                        }
-                                    }
-                                /* last line */
-                                } else if(line === this.numberOfLines - 1) {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                        $('#' + button.id).addClass('ui-corner-bl');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                        $('#' + button.id).addClass('ui-corner-br');
-                                    }
-                                /* all other lines */
-                                } else {
-                                    /* first button */
-                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
-                                        $('#' + button.id).removeClass('ui-corner-left');
-                                    /* last button */
-                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
-                                        $('#' + button.id).removeClass('ui-corner-right');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        /* if there is only on row, simply style that button group */
-        } else {
-            $('#' + this.id).controlgroup();
-        }
-
-        /* iterate through all buttons and activate on of them, according to the button's isActive property */
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
-                    var button = this[childViews[i]];
-                    if(button.isActive) {
-                        this.setActiveButton(button.id);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
-     * This method returns the currently selected button of this button group. If no
-     * button is selected, null is returned.
-     *
-     * @returns {M.ButtonView} The currently active button of this button group.
-     */
-    getActiveButton: function() {
-        return this.activeButton;  
-    },
-
-    /**
-     * This method activates one button within the button group.
-     *
-     * @param {M.ButtonView, String} button The button to be set active or its id.
-     */
-    setActiveButton: function(button) {
-        if(this.isSelectable) {
-            if(this.activeButton) {
-                this.activeButton.removeCssClass('ui-btn-active');
-                this.activeButton.isActive = NO;
-            }
-
-            var obj = this[button];
-            if(!obj){
-                obj = M.ViewManager.getViewById(button);
-            }
-            if(!obj) {
-                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
-                    obj = button;
-                }
-            }
-            if(obj) {
-                obj.addCssClass('ui-btn-active');
-                obj.isActive = YES;
-                this.activeButton = obj;
-            }
-        }
-    },
-
-    /**
-     * This method activates one button within the button group at the given index.
-     *
-     * @param {Number} index The index of the button to be set active.
-     */
-    setActiveButtonAtIndex: function(index) {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            var button = this[childViews[index]];
-            if(button && button.type === 'M.ButtonView') {
-                this.setActiveButton(button);
-            }
-        }
-    },
-
-    /**
-     * This method is called everytime a button is activated / clicked.
-     *
-     * @private
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    buttonSelected: function(id, event, nextEvent) {
-        /* if selected button is disabled, do nothing */
-        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
-            return;
-        }
-
-        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
-            if(this.isSelectable) {
-                if(this.activeButton) {
-                    this.activeButton.removeCssClass('ui-btn-active');
-                    this.activeButton.isActive = NO;
-                }
-
-                var button = M.ViewManager.getViewById(id);
-                if(!button) {
-                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
-                        button = id;
-                    }
-                }
-                if(button) {
-                    button.addCssClass('ui-btn-active');
-                    button.isActive = YES;
-                    this.activeButton = button;
-                }
-            }
-
-            /* trigger change event for the button group */
-            $('#' + this.id).trigger('change');
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the button group.
-     *
-     * @private
-     * @returns {String} The button group's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.numberOfLines && !this.isInset) {
-            html += ' class="ui-listview';
-        }
-        if(this.cssClass) {
-            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      28.10.11
@@ -1710,6 +1223,493 @@ a++;this.maxScrollY%this.wrapperH&&(this.pagesY[this.pagesY.length]=this.maxScro
 if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a="next"==a?this.currPageY+1:"prev"==a?this.currPageY-1:a,b=0>b?0:b>this.pagesX.length-1?this.pagesX.length-1:b,a=0>a?0:a>this.pagesY.length-1?this.pagesY.length-1:a,this.currPageX=b,this.currPageY=a,b=this.pagesX[b],a=this.pagesY[a];else if(b*=-this.wrapperW,a*=-this.wrapperH,b<this.maxScrollX&&(b=this.maxScrollX),a<this.maxScrollY)a=this.maxScrollY;this.scrollTo(b,a,c)},disable:function(){this.stop();this._resetPos(0);
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for horizontal alignment.
+ *
+ * @type String
+ */
+M.HORIZONTAL = 'horizontal';
+
+/**
+ * A constant value for vertical alignment.
+ *
+ * @type String
+ */
+M.VERTICAL = 'vertical';
+
+
+/**
+ * @class
+ *
+ * A button group is a vertically or / and horizontally aligned group of buttons. There
+ * are basically three different types of a button group:
+ *
+ * - horizontally aligned buttons
+ *     1 - 2 - 3
+ *
+ * - vertically aligned buttons
+ *     1
+ *     |
+ *     2
+ *     |
+ *     3
+ *
+ * - horizontally and vertically aligned buttons
+ *     1 - 2
+ *     |   |
+ *     3 - 4
+ * 
+ * @extends M.View
+ */
+M.ButtonGroupView = M.View.extend(
+/** @scope M.ButtonGroupView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ButtonGroupView',
+
+    /**
+     * This property determines whether to render the button group horizontally
+     * or vertically. Default: horizontal.
+     *
+     * Possible values are:
+     * - M.HORIZONTAL: horizontal
+     * - M.VERTICAL: vertical
+     *
+     * @type String
+     */
+    direction: M.HORIZONTAL,
+
+    /**
+     * Determines whether to display the button group view 'inset' or at full width.
+     *
+     * @type Boolean
+     */
+    isInset: YES,
+
+    /**
+     * Determines whether to display the button group compact, i.e. without top/bottom
+     * margin. This property only is relevant in combination with multiple lines of
+     * buttons (c.p.: buttonsPerLine property).
+     *
+     * @type Boolean
+     */
+    isCompact: YES,
+
+    /**
+     * This property, if set, defines how many buttons are rendered per line. If there
+     * are more buttons defined that fitting into one line, the following buttons are
+     * rendered into a new line. Make sure, the number of your buttons is divisible by
+     * the number of buttons per line, since only full lines are displayed. So if you
+     * for example specify 5 buttons and 2 buttons per line, the fifth button won't be
+     * visible.
+     *
+     * If e.g. 4 buttons are specified and this property is set to 2, the rendering will
+     * be as follows:
+     *
+     *     1 -- 2
+     *     3 -- 4
+     *
+     * @type Number
+     */
+    buttonsPerLine: null,
+
+    /**
+     * This property is used to internally store the number of lines that are necessary
+     * to render all buttons according to the buttonsPerLine property.
+     *
+     * @private
+     * @type Number
+     */
+    numberOfLines: null,
+
+    /**
+     * This property refers to the currently rendered line, if there is more than one.
+     *
+     * @private
+     * @type Number
+     */
+    currentLine: null,
+
+    /**
+     * This property contains an array of html ids referring to the several lines of grouped
+     * buttons, if there is more than one at all.
+     *
+     * @private
+     * @type Array
+     */
+    lines: null,
+
+    /**
+     * This property contains a reference to the currently selected button.
+     *
+     * @private
+     * @type Object
+     */
+    activeButton: null,
+
+    /**
+     * This property determines whether the buttons of this button group are selectable or not. If
+     * set to YES, a click on one of the buttons will set this button as the currently active button
+     * and automatically change its styling to visualize its selection.
+     *
+     * @type Boolean
+     */
+    isSelectable: YES,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * Renders a button group as a div container and calls the renderChildViews
+     * method to render the included buttons.
+     *
+     * @private
+     * @returns {String} The button group view's html representation.
+     */
+    render: function() {
+        /* check if multiple lines are necessary before rendering */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            if(this.buttonsPerLine && this.buttonsPerLine < childViews.length) {
+                var numberOfButtons = 0;
+                for(var i in childViews) {
+                    if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                        numberOfButtons = numberOfButtons + 1;
+                    }
+                }
+                if(this.buttonsPerLine < numberOfButtons) {
+                    this.numberOfLines = M.Math.round(numberOfButtons / this.buttonsPerLine, M.FLOOR);
+                }
+            }
+        }
+        this.html = '';
+        /* if there are multiple lines, render multiple horizontally aligned button groups */
+        if(this.numberOfLines) {
+            /* set the direction to horizontally, no matter what it was set to before */
+            this.direction = M.HORIZONTAL;
+
+            /* this is a wrapper for the multiple button groups.
+               if it is not inset, assign css class 'ui-listview' for clearing the padding of the surrounding element */
+            this.html += '<div id="' + this.id + '"';
+            this.html += this.style();
+            this.html += '>';
+
+            /* create a button group for every line */
+            this.lines = [];
+            for(var i = 0; i < this.numberOfLines; i++) {
+                this.currentLine = i + 1;
+                /* store current line in lines property for use in renderChildViews() */
+                this.lines.push(this.id + '_' + i);
+
+                this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '_' + i + '" data-type="' + this.direction + '"';
+
+                /* if isCompact, assign specific margin, depending on line number (first, last, other) */
+                if(!this.isInset || this.isCompact) {
+                    if(i == 0) {
+                        this.html += this.isInset ? ' style="margin-bottom:0px"' : ' style="margin:0px"';
+                    } else if(i > 0 && i < this.numberOfLines - 1) {
+                        this.html += this.isInset ? ' style="margin:0px 0px 0px 0px"' : ' style="margin:0px"';
+                    } else if(i < this.numberOfLines) {
+                        this.html += this.isInset ? ' style="margin-top:0px"' : ' style="margin:0px"';
+                    }
+                }
+
+                this.html += '>';
+
+                /* render the buttons for the current line */
+                this.renderChildViews();
+
+                this.html += '</div>';
+            }
+            this.html += '</div>';
+        } else {
+            this.html += '<div data-role="controlgroup" href="#" id="' + this.id + '" data-type="' + this.direction + '"' + this.style() + '>';
+
+            this.renderChildViews();
+
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children of type M.ButtonGroupView.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var currentButtonIndex = 0;
+
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    currentButtonIndex = currentButtonIndex + 1;
+
+                    if(!this.numberOfLines || M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) === this.currentLine) {
+
+                        var button = this[childViews[i]];
+                        /* reset buttons html, to make sure it doesn't get rendered twice if this is multi button group */
+                        button.html = '';
+
+                        button.parentView = this;
+                        button.internalEvents = {
+                            tap: {
+                                target: this,
+                                action: 'buttonSelected'
+                            }
+                        }
+
+                        /* if the buttons are horizontally aligned, compute their width depending on the number of buttons
+                           and set the right margin to '-2px' since the jQuery mobile default would cause an ugly gap to
+                           the right of the button group */
+                        if(this.direction === M.HORIZONTAL) {
+                            button.cssStyle = 'margin-right:-2px;width:' + 100 / (this.numberOfLines ? this.buttonsPerLine : childViews.length) + '%';
+                        }
+
+                        /* set the button's _name property */
+                        this[childViews[i]]._name = childViews[i];
+
+                        /* finally render the button and add it to the button groups html */
+                        this.html += this[childViews[i]].render();
+                    }
+                } else {
+                    M.Logger.log('childview of button group is no button.', M.WARN);
+                }
+            }
+        }
+    },
+
+    /**
+     * This method themes the button group and activates one of the included buttons
+     * if its isActive property is set.
+     *
+     * @private
+     */
+    theme: function() {
+        /* if there are multiple lines of buttons, it's getting heavy */
+        if(this.numberOfLines) {
+            
+            /* iterate through all lines */
+            for(var line in this.lines) {
+                line = parseIntRadixTen(line);
+
+                /* style the current line */
+                $('#' + this.lines[line]).controlgroup();
+                var childViews = this.getChildViewsAsArray();
+                var currentButtonIndex = 0;
+                
+                /* if isCompact, iterate through all buttons */
+                if(this.isCompact) {
+                    for(var i in childViews) {
+                        i = parseIntRadixTen(i);
+                        if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                            currentButtonIndex = currentButtonIndex + 1;
+                            var currentLine = M.Math.round(currentButtonIndex / this.buttonsPerLine, M.CEIL) - 1;
+                            var button = this[childViews[i]];
+
+                            /* if the button belongs to the current line adjust its styling according to its position,
+                               e.g. the first button in the first row gets the css class 'ui-corner-tl' (top left). */
+                            if(line === currentLine) {
+
+                                /* first line */
+                                if(line === 0 && this.numberOfLines > 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tl');
+                                        }
+                                    /* last button */
+                                    } else if(currentButtonIndex === this.buttonsPerLine) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        if(this.isInset) {
+                                            $('#' + button.id).addClass('ui-corner-tr');
+                                        }
+                                    }
+                                /* last line */
+                                } else if(line === this.numberOfLines - 1) {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                        $('#' + button.id).addClass('ui-corner-bl');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                        $('#' + button.id).addClass('ui-corner-br');
+                                    }
+                                /* all other lines */
+                                } else {
+                                    /* first button */
+                                    if(currentButtonIndex === (currentLine * this.buttonsPerLine) + 1) {
+                                        $('#' + button.id).removeClass('ui-corner-left');
+                                    /* last button */
+                                    } else if(currentButtonIndex === ((currentLine + 1) * this.buttonsPerLine)) {
+                                        $('#' + button.id).removeClass('ui-corner-right');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        /* if there is only on row, simply style that button group */
+        } else {
+            $('#' + this.id).controlgroup();
+        }
+
+        /* iterate through all buttons and activate on of them, according to the button's isActive property */
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]] && this[childViews[i]].type === 'M.ButtonView') {
+                    var button = this[childViews[i]];
+                    if(button.isActive) {
+                        this.setActiveButton(button.id);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * This method returns the currently selected button of this button group. If no
+     * button is selected, null is returned.
+     *
+     * @returns {M.ButtonView} The currently active button of this button group.
+     */
+    getActiveButton: function() {
+        return this.activeButton;  
+    },
+
+    /**
+     * This method activates one button within the button group.
+     *
+     * @param {M.ButtonView, String} button The button to be set active or its id.
+     */
+    setActiveButton: function(button) {
+        if(this.isSelectable) {
+            if(this.activeButton) {
+                this.activeButton.removeCssClass('ui-btn-active');
+                this.activeButton.isActive = NO;
+            }
+
+            var obj = this[button];
+            if(!obj){
+                obj = M.ViewManager.getViewById(button);
+            }
+            if(!obj) {
+                if(button && typeof(button) === 'object' && button.type === 'M.ButtonView') {
+                    obj = button;
+                }
+            }
+            if(obj) {
+                obj.addCssClass('ui-btn-active');
+                obj.isActive = YES;
+                this.activeButton = obj;
+            }
+        }
+    },
+
+    /**
+     * This method activates one button within the button group at the given index.
+     *
+     * @param {Number} index The index of the button to be set active.
+     */
+    setActiveButtonAtIndex: function(index) {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            var button = this[childViews[index]];
+            if(button && button.type === 'M.ButtonView') {
+                this.setActiveButton(button);
+            }
+        }
+    },
+
+    /**
+     * This method is called everytime a button is activated / clicked.
+     *
+     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
+     */
+    buttonSelected: function(id, event, nextEvent) {
+        /* if selected button is disabled, do nothing */
+        if(M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).type === 'M.ButtonView' && !M.ViewManager.getViewById(id).isEnabled) {
+            return;
+        }
+
+        if(!(this.activeButton && this.activeButton === M.ViewManager.getViewById(id))) {
+            if(this.isSelectable) {
+                if(this.activeButton) {
+                    this.activeButton.removeCssClass('ui-btn-active');
+                    this.activeButton.isActive = NO;
+                }
+
+                var button = M.ViewManager.getViewById(id);
+                if(!button) {
+                    if(id && typeof(id) === 'object' && id.type === 'M.ButtonView') {
+                        button = id;
+                    }
+                }
+                if(button) {
+                    button.addCssClass('ui-btn-active');
+                    button.isActive = YES;
+                    this.activeButton = button;
+                }
+            }
+
+            /* trigger change event for the button group */
+            $('#' + this.id).trigger('change');
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the button group.
+     *
+     * @private
+     * @returns {String} The button group's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.numberOfLines && !this.isInset) {
+            html += ' class="ui-listview';
+        }
+        if(this.cssClass) {
+            html += html !== '' ? ' ' + this.cssClass : ' class="' + this.cssClass;
+        }
+        html += '"';
+        return html;
+    }
+
+});
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7526,694 +7526,6 @@ M.ListView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitView = M.View.extend(
-/** @scope M.SplitView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitView',
-
-    menu: null,
-
-    content: null,
-
-    isInitialized: NO,
-
-    selectedItem: null,
-
-    orientation: null,
-
-    headerheight: null,
-
-    footerheight: null,
-
-    itemheight: null,
-
-    contentLoaded: NO,
-
-    scrollviewsInitialized: NO,
-
-    hasMenuScrollview: NO,
-
-    shouldHaveScrollview: YES,
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if (this.childViews || this.contentBinding) {
-            var childViews = this.getChildViewsAsArray();
-            if (childViews.length > 0 || this.contentBinding) {
-                this.menu = M.ScrollView.design({
-                    childViews: 'menu',
-                    menu: M.ListView.design({})
-                });
-                this.menu.parentView = this;
-                this.menu.menu.parentView = this.menu;
-                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
-                this.html += this.menu.render();
-
-                this.content = M.ScrollView.design({});
-                this.content.parentView = this;
-                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
-                this.html += this.content.render();
-
-                return this.html;
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var content = null;
-
-        if (this.contentBinding) {
-            content = this.value;
-        } else if (this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            content = [];
-            for (var i = 0; i < childViews.length; i++) {
-                content.push(this[childViews[i]]);
-            }
-        }
-
-        if (content) {
-            if (content.length > 0) {
-
-                /* reset menu list before filling it up again */
-                this.menu.menu.removeAllItems();
-
-                var entryItem = null;
-                var currentItem = 0;
-                for (var i in content) {
-                    if (content[i] && content[i].type === 'M.SplitItemView') {
-                        /* add item to list */
-                        var item = M.ListItemView.design({
-                            childViews: 'label',
-                            parentView: this.menu.menu,
-                            splitViewItem: content[i],
-                            label: M.LabelView.design({
-                                value: content[i].value
-                            }),
-                            events: {
-                                tap: {
-                                    target: this,
-                                    action: 'listItemSelected'
-                                }
-                            }
-                        });
-                        this.menu.menu.addItem(item.render());
-
-                        /* register events for item */
-                        item.registerEvents();
-
-                        /* save id of the current item if it is either the first item or isActive is set */
-                        if (currentItem === 0 || content[i].isActive) {
-                            entryItem = item.id;
-                        }
-
-                        /* increase item counter */
-                        currentItem++;
-                    } else {
-                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
-                    }
-                }
-
-                /* theme the list */
-                this.menu.menu.themeUpdate();
-
-                /* now set the active list item */
-                this.menu.menu.setActiveListItem(entryItem);
-
-                /* finally show the active list item's content */
-                this.listItemSelected(entryItem);
-            } else {
-                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
-            }
-        }
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        this.renderUpdate();
-
-        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
-        if (!this.contentLoaded) {
-            var that = this;
-            $(document).bind('DOMContentLoaded', function() {
-                that.initializeVar();
-            });
-        }
-    },
-
-    themeUpdate: function() {
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-
-        /* landscape mode */
-        if (M.Environment.getWidth() > M.Environment.getHeight()) {
-            this.orientation = 'landscape';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseIntRadixTen($('#' + this.menu.id).css('border-right-width'))) + 'px');
-            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('#' + this.menu.id).css('border-right-width')) + 'px');
-
-            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
-            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-        /* portrait mode */
-        } else {
-            this.orientation = 'portrait';
-            $('html').addClass(this.orientation);
-
-            $('#' + this.content.id).css('width', width - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
-            $('#' + this.content.id).css('left', '0px');
-
-            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
-        }
-
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* set the min height of the page based on if there's a footer or not */
-        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
-            $('#' + page.id).css('min-height', height + 'px');
-        } else {
-            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
-        }
-
-        /* set the height of the menu based on header/footer */
-        if ($('#' + page.id + ' .ui-footer').length === 0) {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
-        } else {
-            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
-        }
-
-        /* initialize the scrolling stuff (if not done yet) */
-        if (!this.scrollviewsInitialized) {
-            $('#' + this.content.id).scrollview({
-                direction: 'y'
-            });
-
-            /* check whether scrolling is required or not for the menu */
-            if (this.orientation === 'landscape') {
-                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
-                var itemCount = $('#' + this.menu.menu.id).find('li').length;
-
-                if (this.itemheight !== 0) {
-                    var menuHeight = M.Environment.getHeight();
-                    var itemListHeight = itemCount * this.itemheight;
-                    if (menuHeight < itemListHeight) {
-                        $('#' + this.menu.menu.id).scrollview({
-                            direction: 'y'
-                        });
-                        this.hasMenuScrollview = YES;
-                    } else {
-                        this.shouldHaveScrollview = NO;
-                    }
-                }
-                this.scrollviewsInitialized = YES;
-            }
-
-        }
-    },
-
-    /**
-     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
-     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
-     */
-    initializeVar: function() {
-        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
-        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
-        this.contentLoaded = YES;
-        this.themeUpdate();
-    },
-
-    registerEvents: function() {
-        /* register for orientation change events of the current page */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        M.EventDispatcher.registerEvent(
-            'orientationdidchange',
-            page.id,
-            {
-                target: this,
-                action:  function() {
-                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
-                    var that = this;
-                    window.setTimeout(function() {
-                        that.orientationDidChange();
-                    }, 100);
-                }
-            },
-            ['orientationdidchange'],
-            null,
-            NO,
-            YES
-        );
-    },
-
-    listItemSelected: function(id) {
-        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
-
-        if (!contentView) {
-            return;
-        }
-
-        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-        if (!this.isInitialized) {
-            if (contentView.html) {
-                $('#' + this.content.id).html(contentView.html);
-            } else {
-                $('#' + this.content.id).html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            this.isInitialized = YES;
-        } else {
-            if (contentView.html) {
-                $('#' + this.content.id + ' div:first').html(contentView.html);
-            } else {
-                $('#' + this.content.id + ' div:first').html(contentView.render());
-                contentView.theme();
-                contentView.registerEvents();
-            }
-            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-        }
-
-        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-        var that = this;
-        if (page) {
-            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
-                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
-                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
-                    $('#' + toolbar.id + ' h1').html(toolbar.value);
-
-                    /* now link the menu with the toolbar if not yet done */
-                    if (!toolbar.parentView.splitview) {
-                        toolbar.parentView.splitview = that;
-                    }
-                }
-            });
-
-            /* add special css class if there is no footer */
-            if ($('#' + page.id + ' .ui-footer').length === 0) {
-                page.addCssClass('tmp-splitview-no-footer');
-            }
-
-            /* add special css class if there is no header */
-            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
-                page.addCssClass('tmp-splitview-no-header');
-            }
-        }
-    },
-
-    orientationDidChange: function() {
-        var orientation = M.Environment.getOrientation();
-        var that = this;
-        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
-
-        /* portrait */
-        if (M.Environment.getHeight() > M.Environment.getWidth()) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        /* landscape */
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-
-            /* hide the popover */
-            var toolbar;
-            if (page) {
-                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
-                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
-                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
-                        toolbar.parentView.popover.hide();
-                    }
-                });
-            }
-
-            /* update the menu */
-            var id;
-            $('#' + this.menu.id).find('li').each(function() {
-                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
-                    id = $(this).attr('id');
-                }
-            });
-
-            /* activate the current item */
-            if (id) {
-                this.menu.menu.setActiveListItem(id);
-            }
-
-            /* set the selected item */
-            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
-
-            /* scroll the menu so we def. see the selected item */
-            this.scrollListToRightPosition(id);
-        }
-
-        /* scroll content to top */
-        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
-
-        /* call theme update */
-        this.themeUpdate();
-    },
-
-    scrollListToRightPosition: function(id) {
-        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + id).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
-        var middle = menuHeight / 2;
-        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < middle) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - middle);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < middle) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - middle);
-            }
-        }
-
-        /* if there already is a scroll view, just scroll */
-        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
-            $('#' + this.menu.menu.id).scrollview({
-                direction: 'y'
-            });
-        }
-        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      30.11.2010
@@ -9112,6 +8424,694 @@ M.SelectionListView = M.View.extend(
         }
 
         this.setSelection(value);
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.11.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
+ *
+ * @extends M.View
+ */
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SliderView',
+
+    /**
+     * This property contains the slider's value.
+     */
+    value: 0,
+
+    /**
+     * This property contains the slider's initial value.
+     *
+     * @private
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
+        return this.html;
+    },
+
+    /**
+     * This method registers the change event to internally re-set the value of the
+     * slider.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the slider.
+     *
+     * @private
+     * @returns {String} The slider's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitView = M.View.extend(
+/** @scope M.SplitView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitView',
+
+    menu: null,
+
+    content: null,
+
+    isInitialized: NO,
+
+    selectedItem: null,
+
+    orientation: null,
+
+    headerheight: null,
+
+    footerheight: null,
+
+    itemheight: null,
+
+    contentLoaded: NO,
+
+    scrollviewsInitialized: NO,
+
+    hasMenuScrollview: NO,
+
+    shouldHaveScrollview: YES,
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if (this.childViews || this.contentBinding) {
+            var childViews = this.getChildViewsAsArray();
+            if (childViews.length > 0 || this.contentBinding) {
+                this.menu = M.ScrollView.design({
+                    childViews: 'menu',
+                    menu: M.ListView.design({})
+                });
+                this.menu.parentView = this;
+                this.menu.menu.parentView = this.menu;
+                this.menu.cssClass = this.menu.cssClass ? this.menu.cssClass + ' tmp-splitview-menu' : 'tmp-splitview-menu';
+                this.html += this.menu.render();
+
+                this.content = M.ScrollView.design({});
+                this.content.parentView = this;
+                this.content.cssClass = this.content.cssClass ? this.content.cssClass + ' tmp-splitview-content' : 'tmp-splitview-content';
+                this.html += this.content.render();
+
+                return this.html;
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var content = null;
+
+        if (this.contentBinding) {
+            content = this.value;
+        } else if (this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            content = [];
+            for (var i = 0; i < childViews.length; i++) {
+                content.push(this[childViews[i]]);
+            }
+        }
+
+        if (content) {
+            if (content.length > 0) {
+
+                /* reset menu list before filling it up again */
+                this.menu.menu.removeAllItems();
+
+                var entryItem = null;
+                var currentItem = 0;
+                for (var i in content) {
+                    if (content[i] && content[i].type === 'M.SplitItemView') {
+                        /* add item to list */
+                        var item = M.ListItemView.design({
+                            childViews: 'label',
+                            parentView: this.menu.menu,
+                            splitViewItem: content[i],
+                            label: M.LabelView.design({
+                                value: content[i].value
+                            }),
+                            events: {
+                                tap: {
+                                    target: this,
+                                    action: 'listItemSelected'
+                                }
+                            }
+                        });
+                        this.menu.menu.addItem(item.render());
+
+                        /* register events for item */
+                        item.registerEvents();
+
+                        /* save id of the current item if it is either the first item or isActive is set */
+                        if (currentItem === 0 || content[i].isActive) {
+                            entryItem = item.id;
+                        }
+
+                        /* increase item counter */
+                        currentItem++;
+                    } else {
+                        M.Logger.log('Invalid child view passed! The child views of M.SplitView need to be of type M.ListView.', M.ERROR);
+                    }
+                }
+
+                /* theme the list */
+                this.menu.menu.themeUpdate();
+
+                /* now set the active list item */
+                this.menu.menu.setActiveListItem(entryItem);
+
+                /* finally show the active list item's content */
+                this.listItemSelected(entryItem);
+            } else {
+                M.Logger.log('You need to provide at least one child view for M.SplitView of the type M.SplitItemView.', M.ERROR);
+            }
+        }
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        this.renderUpdate();
+
+        /* register for DOMContentLoaded event to initialize the split view once its in DOM */
+        if (!this.contentLoaded) {
+            var that = this;
+            $(document).bind('DOMContentLoaded', function() {
+                that.initializeVar();
+            });
+        }
+    },
+
+    themeUpdate: function() {
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+
+        /* landscape mode */
+        if (M.Environment.getWidth() > M.Environment.getHeight()) {
+            this.orientation = 'landscape';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.menu.id).css('width', Math.ceil(width * 0.3) - 2 * (parseIntRadixTen($('#' + this.menu.id).css('border-right-width'))) + 'px');
+            $('#' + this.content.id).css('width', Math.floor(width * 0.7) - 2 * (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('#' + this.menu.id).css('border-right-width')) + 'px');
+
+            $('.tmp-splitview-menu-toolbar').css('width', Math.ceil(width * 0.3) + (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) - parseIntRadixTen($('.tmp-splitview-menu-toolbar').css('border-right-width')) + 'px');
+            $('.tmp-splitview-content-toolbar').css('width', Math.floor(width * 0.7) - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+        /* portrait mode */
+        } else {
+            this.orientation = 'portrait';
+            $('html').addClass(this.orientation);
+
+            $('#' + this.content.id).css('width', width - (parseIntRadixTen($('#' + this.content.id).css('padding-right')) + parseIntRadixTen($('#' + this.content.id).css('padding-left'))) + 'px');
+            $('#' + this.content.id).css('left', '0px');
+
+            $('.tmp-splitview-content-toolbar').css('width', width + 'px');
+        }
+
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* set the min height of the page based on if there's a footer or not */
+        if ($('#' + page.id).hasClass('tmp-splitview-no-footer')) {
+            $('#' + page.id).css('min-height', height + 'px');
+        } else {
+            $('#' + page.id).css('min-height', height - this.footerheight + 'px !important');
+        }
+
+        /* set the height of the menu based on header/footer */
+        if ($('#' + page.id + ' .ui-footer').length === 0) {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight);
+        } else {
+            $('#' + this.menu.menu.id).css('height', M.Environment.getHeight() - this.headerheight - this.footerheight);
+        }
+
+        /* initialize the scrolling stuff (if not done yet) */
+        if (!this.scrollviewsInitialized) {
+            $('#' + this.content.id).scrollview({
+                direction: 'y'
+            });
+
+            /* check whether scrolling is required or not for the menu */
+            if (this.orientation === 'landscape') {
+                this.itemheight = $('#' + this.menu.menu.id).find('li:first').outerHeight();
+                var itemCount = $('#' + this.menu.menu.id).find('li').length;
+
+                if (this.itemheight !== 0) {
+                    var menuHeight = M.Environment.getHeight();
+                    var itemListHeight = itemCount * this.itemheight;
+                    if (menuHeight < itemListHeight) {
+                        $('#' + this.menu.menu.id).scrollview({
+                            direction: 'y'
+                        });
+                        this.hasMenuScrollview = YES;
+                    } else {
+                        this.shouldHaveScrollview = NO;
+                    }
+                }
+                this.scrollviewsInitialized = YES;
+            }
+
+        }
+    },
+
+    /**
+     * Called when Dom Content Loaded event arrived, to calculate height of header and footer
+     * and set the contentLoaded, call theme update, in order to check out if a scrollview for menu is needed
+     */
+    initializeVar: function() {
+        this.headerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-header').height();
+        this.footerheight = $('#' + M.ViewManager.getCurrentPage().id + ' .ui-footer').height();
+        this.contentLoaded = YES;
+        this.themeUpdate();
+    },
+
+    registerEvents: function() {
+        /* register for orientation change events of the current page */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        M.EventDispatcher.registerEvent(
+            'orientationdidchange',
+            page.id,
+            {
+                target: this,
+                action:  function() {
+                    /* trigger re-theming with a little delay to make sure, the orientation change did finish */
+                    var that = this;
+                    window.setTimeout(function() {
+                        that.orientationDidChange();
+                    }, 100);
+                }
+            },
+            ['orientationdidchange'],
+            null,
+            NO,
+            YES
+        );
+    },
+
+    listItemSelected: function(id) {
+        var contentView = M.ViewManager.getViewById(id) && M.ViewManager.getViewById(id).splitViewItem ? M.ViewManager.getViewById(id).splitViewItem.view : null;
+
+        if (!contentView) {
+            return;
+        }
+
+        this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+        if (!this.isInitialized) {
+            if (contentView.html) {
+                $('#' + this.content.id).html(contentView.html);
+            } else {
+                $('#' + this.content.id).html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            this.isInitialized = YES;
+        } else {
+            if (contentView.html) {
+                $('#' + this.content.id + ' div:first').html(contentView.html);
+            } else {
+                $('#' + this.content.id + ' div:first').html(contentView.render());
+                contentView.theme();
+                contentView.registerEvents();
+            }
+            $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+        }
+
+        /* check if there is a split toolbar view on the page and update its label to show the value of the selected item */
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+        var that = this;
+        if (page) {
+            $('#' + page.id + ' .tmp-splitview-content-toolbar').each(function() {
+                var toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                if (toolbar.parentView && toolbar.parentView.showSelectedItemInMainHeader) {
+                    toolbar.value = M.ViewManager.getViewById(id).splitViewItem.value;
+                    $('#' + toolbar.id + ' h1').html(toolbar.value);
+
+                    /* now link the menu with the toolbar if not yet done */
+                    if (!toolbar.parentView.splitview) {
+                        toolbar.parentView.splitview = that;
+                    }
+                }
+            });
+
+            /* add special css class if there is no footer */
+            if ($('#' + page.id + ' .ui-footer').length === 0) {
+                page.addCssClass('tmp-splitview-no-footer');
+            }
+
+            /* add special css class if there is no header */
+            if ($('#' + page.id + ' .tmp-splitview-content-toolbar').length === 0) {
+                page.addCssClass('tmp-splitview-no-header');
+            }
+        }
+    },
+
+    orientationDidChange: function() {
+        var orientation = M.Environment.getOrientation();
+        var that = this;
+        var page = M.ViewManager.getCurrentPage() || M.ViewManager.getPage(M.Application.entryPage);
+
+        /* portrait */
+        if (M.Environment.getHeight() > M.Environment.getWidth()) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        /* landscape */
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+
+            /* hide the popover */
+            var toolbar;
+            if (page) {
+                $('#' + page.id + ' .tmp-splitview-menu-toolbar').each(function() {
+                    toolbar = M.ViewManager.getViewById($(this).attr('id'));
+                    if (toolbar && toolbar.parentView && toolbar.parentView.popover) {
+                        toolbar.parentView.popover.hide();
+                    }
+                });
+            }
+
+            /* update the menu */
+            var id;
+            $('#' + this.menu.id).find('li').each(function() {
+                if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.selectedItem.id) {
+                    id = $(this).attr('id');
+                }
+            });
+
+            /* activate the current item */
+            if (id) {
+                this.menu.menu.setActiveListItem(id);
+            }
+
+            /* set the selected item */
+            this.selectedItem = M.ViewManager.getViewById(id).splitViewItem;
+
+            /* scroll the menu so we def. see the selected item */
+            this.scrollListToRightPosition(id);
+        }
+
+        /* scroll content to top */
+        $('#' + this.content.id).scrollview('scrollTo', 0, 0);
+
+        /* call theme update */
+        this.themeUpdate();
+    },
+
+    scrollListToRightPosition: function(id) {
+        var itemHeight = $('#' + this.menu.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + id).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() - this.headerheight - this.footerheight;
+        var middle = menuHeight / 2;
+        var distanceToListEnd = $('#' + this.menu.menu.id).find('li').length * itemHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < middle) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - middle);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < middle) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - middle);
+            }
+        }
+
+        /* if there already is a scroll view, just scroll */
+        if (!this.hasMenuScrollview && this.shouldHaveScrollview) {
+            $('#' + this.menu.menu.id).scrollview({
+                direction: 'y'
+            });
+        }
+        $('#' + this.menu.menu.id).scrollview('scrollTo', 0, yScroll);
     }
 
 });
