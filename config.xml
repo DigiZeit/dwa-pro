@@ -3,8 +3,8 @@
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	xmlns:android = "http://schemas.android.com/apk/res/android"
 	id		    = "com.digi.webapppro"
-	versionCode = "6125"
-	version 	= "1.8.3.6125">
+	versionCode = "6126"
+	version 	= "1.8.3.6126">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -101,7 +101,7 @@ which PhoneGap requires. -->
 <!-- <gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.5.0" /> -->
 
 <gap:config-file platform="ios" parent="CFBundleShortVersionString"> 
-	<string>6125</string> 
+	<string>6126</string> 
 </gap:config-file>
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <false/>
