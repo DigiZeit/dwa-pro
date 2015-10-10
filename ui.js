@@ -1713,110 +1713,6 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      01.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A container view renders a simple div container that can be used to display
- * any html valid content, e.g. by third party frameworks.
- *
- * @extends M.View
- */
-M.ContainerView = M.View.extend(
-/** @scope M.ContainerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ContainerView',
-
-    /**
-     * The name of the container. During the rendering, this property gets assigned to the name
-     * property of the container's html representation. This can be used to manually access the
-     * text field's DOM representation later on.
-     *
-     * @type String
-     */
-     name: null,
-
-     /**
-     * The label proeprty defines a text that is shown above or next to the container as a 'title'
-     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a simple div container and applies css classes if specified.
-     *
-     * @private
-     * @returns {String} The container view's html representation.
-     */
-    render: function() {
-		this.html = '';
-	    if(this.label) {
-	        this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-	        if(this.hasAsteriskOnLabel) {
-	            if(this.cssClassForAsterisk) {
-	                this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-	            } else {
-	                this.html += '<span>*</span></label>';
-	            }
-	        } else {
-	            this.html += '</label>';
-	        }
-	    }
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the container view.
-     *
-     * @private
-     * @returns {String} The container's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      10.04.12
@@ -2403,6 +2299,110 @@ M.DashboardView = M.View.extend(
         var html = '';
         if(this.cssClass) {
             html += ' class="tmp-dashboard ' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      01.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A container view renders a simple div container that can be used to display
+ * any html valid content, e.g. by third party frameworks.
+ *
+ * @extends M.View
+ */
+M.ContainerView = M.View.extend(
+/** @scope M.ContainerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ContainerView',
+
+    /**
+     * The name of the container. During the rendering, this property gets assigned to the name
+     * property of the container's html representation. This can be used to manually access the
+     * text field's DOM representation later on.
+     *
+     * @type String
+     */
+     name: null,
+
+     /**
+     * The label proeprty defines a text that is shown above or next to the container as a 'title'
+     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this textfield.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a simple div container and applies css classes if specified.
+     *
+     * @private
+     * @returns {String} The container view's html representation.
+     */
+    render: function() {
+		this.html = '';
+	    if(this.label) {
+	        this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
+	        if(this.hasAsteriskOnLabel) {
+	            if(this.cssClassForAsterisk) {
+	                this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+	            } else {
+	                this.html += '<span>*</span></label>';
+	            }
+	        } else {
+	            this.html += '</label>';
+	        }
+	    }
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the container view.
+     *
+     * @private
+     * @returns {String} The container's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
         }
         return html;
     }
@@ -5773,6 +5773,342 @@ M.MovableLabelView = M.LabelView.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      15.08.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This ...
+ *
+ * @extends M.View
+ */
+M.PopoverView = M.View.extend(
+/** @scope M.PopoverView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PopoverView',
+
+    menu: null,
+
+    scrollview: null,
+
+    hasPopScrollview: NO,
+
+    selectedItemInPopover: null,
+
+    render: function() {
+        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
+
+        /* render a toolbar as the popover's header */
+        var toolbar = M.ToolbarView.design({
+            value: 'Menu',
+            cssClass: 'tmp-popover-header'
+        });
+        this.html += toolbar.render();
+
+        this.menu = M.ListView.design({});
+
+        /* render a scrollview as the content container */
+        this.scrollview = M.ScrollView.design({
+            cssClass: 'tmp-popover-content',
+            childViews: 'list',
+            list: this.menu
+        });
+        this.html += this.scrollview.render();
+
+        /* add the border (with the arrow at the top) */
+        this.html += '<div class="tmp-popover-arrow"></div>';
+
+        this.html += '</div>';
+
+        /* push to DOM */
+        $('body').append(this.html);
+
+        /* now render items */
+        this.selectedItemInPopover = null;
+        for (var i in this.items) {
+            var item = M.ListItemView.design({
+                childViews: 'label',
+                parentView: this.splitview.menu.menu,
+                splitViewItem: this.items[i],
+                label: M.LabelView.design({
+                    value: this.items[i].value
+                }),
+                events: {
+                    tap: {
+                        target: this,
+                        action: 'itemSelected'
+                    }
+                }
+            });
+            this.scrollview.list.addItem(item.render());
+
+            /* check if this item has to be selected afterwards */
+            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
+                this.selectedItemInPopover = item.id;
+            }
+
+            /* register events for item */
+            item.registerEvents();
+        }
+
+        /* now set the active list item */
+        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
+
+        /* finally show the active list item's content */
+        this.splitview.listItemSelected(this.selectedItemInPopover);
+    },
+
+    renderUpdate: function() {
+        /* get id of selected item */
+        var id;
+        var that = this;
+        $('#' + this.menu.id).find('li').each(function() {
+            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
+                id = $(this).attr('id');
+            }
+        });
+        /* activate item */
+        if (id) {
+            this.menu.setActiveListItem(id);
+            this.selectedItemInPopover = id;
+        }
+    },
+
+    show: function() {
+        this.render();
+        this.theme();
+        this.toggle();
+    },
+
+    hide: function() {
+        $('#' + this.id).hide();
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+        var size = M.Environment.getSize();
+        var width = size[0];
+        var height = size[1];
+        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
+    },
+
+
+    /**
+     * This method calculates the popup's height, checks if a scrollview is required and,
+     * if neccessary, scrollt the list to make the selected item visible.
+     */
+    resizePopup: function() {
+        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
+        var itemCount = $('#' + this.menu.id).find('li').length;
+        var popoverSize = M.Environment.getHeight() * 0.7;
+        var itemListHeight = itemCount * itemHeight;
+        if (popoverSize < itemListHeight) {
+            $('#' + this.menu.id).css('height', popoverSize);
+            // Add a scrollview to List
+            $('#' + this.menu.id).scrollview({
+                direction: 'y'
+            });
+            this.hasPopScrollview = YES;
+        }
+        else {
+            $('#' + this.menu.id).css('height', itemListHeight);
+        }
+        //Scrolling to right position is only needed when the popover has a scrollview
+        if (this.hasPopScrollview) {
+            this.scrollListToRightPosition();
+        }
+    },
+
+    toggle: function() {
+        $('#' + this.id).toggle();
+        this.resizePopup();
+    },
+
+    itemSelected: function(id, event, nextEvent) {
+        this.toggle();
+        this.splitview.listItemSelected(id);
+    },
+
+    scrollListToRightPosition: function() {
+        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
+        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
+        var menuHeight = M.Environment.getHeight() * 0.7;
+        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
+        var center = menuHeight / 2;
+        var distanceToListEnd = completeItemListHeight - y;
+        var yScroll = 0;
+
+        /* if y coordinate of item is greater than menu height, we need to scroll down */
+        if (y > menuHeight) {
+            if (distanceToListEnd < center) {
+                yScroll = -(y - menuHeight + distanceToListEnd);
+            } else {
+                yScroll = -(y - center);
+            }
+            /* if y coordinate of item is less than menu height, we need to scroll up */
+        } else if (y < menuHeight) {
+            if (y < center) {
+                yScroll = 0;
+            } else {
+                yScroll = -(y - center);
+            }
+        }
+        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
+    }
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -6114,342 +6450,6 @@ M.PageView = M.View.extend(
     }
     
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      15.08.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This ...
- *
- * @extends M.View
- */
-M.PopoverView = M.View.extend(
-/** @scope M.PopoverView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PopoverView',
-
-    menu: null,
-
-    scrollview: null,
-
-    hasPopScrollview: NO,
-
-    selectedItemInPopover: null,
-
-    render: function() {
-        this.html = '<div data-role="page" id="' + this.id + '" class="tmp-popover">';
-
-        /* render a toolbar as the popover's header */
-        var toolbar = M.ToolbarView.design({
-            value: 'Menu',
-            cssClass: 'tmp-popover-header'
-        });
-        this.html += toolbar.render();
-
-        this.menu = M.ListView.design({});
-
-        /* render a scrollview as the content container */
-        this.scrollview = M.ScrollView.design({
-            cssClass: 'tmp-popover-content',
-            childViews: 'list',
-            list: this.menu
-        });
-        this.html += this.scrollview.render();
-
-        /* add the border (with the arrow at the top) */
-        this.html += '<div class="tmp-popover-arrow"></div>';
-
-        this.html += '</div>';
-
-        /* push to DOM */
-        $('body').append(this.html);
-
-        /* now render items */
-        this.selectedItemInPopover = null;
-        for (var i in this.items) {
-            var item = M.ListItemView.design({
-                childViews: 'label',
-                parentView: this.splitview.menu.menu,
-                splitViewItem: this.items[i],
-                label: M.LabelView.design({
-                    value: this.items[i].value
-                }),
-                events: {
-                    tap: {
-                        target: this,
-                        action: 'itemSelected'
-                    }
-                }
-            });
-            this.scrollview.list.addItem(item.render());
-
-            /* check if this item has to be selected afterwards */
-            if (item.splitViewItem.id === this.splitview.selectedItem.id) {
-                this.selectedItemInPopover = item.id;
-            }
-
-            /* register events for item */
-            item.registerEvents();
-        }
-
-        /* now set the active list item */
-        this.splitview.menu.menu.setActiveListItem(this.selectedItemInPopover);
-
-        /* finally show the active list item's content */
-        this.splitview.listItemSelected(this.selectedItemInPopover);
-    },
-
-    renderUpdate: function() {
-        /* get id of selected item */
-        var id;
-        var that = this;
-        $('#' + this.menu.id).find('li').each(function() {
-            if (M.ViewManager.getViewById($(this).attr('id')).splitViewItem.id === that.splitview.selectedItem.id) {
-                id = $(this).attr('id');
-            }
-        });
-        /* activate item */
-        if (id) {
-            this.menu.setActiveListItem(id);
-            this.selectedItemInPopover = id;
-        }
-    },
-
-    show: function() {
-        this.render();
-        this.theme();
-        this.toggle();
-    },
-
-    hide: function() {
-        $('#' + this.id).hide();
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-        var size = M.Environment.getSize();
-        var width = size[0];
-        var height = size[1];
-        $('#' + this.id).css('width', Math.floor(width * 0.4) + 'px');
-    },
-
-
-    /**
-     * This method calculates the popup's height, checks if a scrollview is required and,
-     * if neccessary, scrollt the list to make the selected item visible.
-     */
-    resizePopup: function() {
-        var itemHeight = ($('#' + this.menu.id).find('li:first')).outerHeight();
-        var itemCount = $('#' + this.menu.id).find('li').length;
-        var popoverSize = M.Environment.getHeight() * 0.7;
-        var itemListHeight = itemCount * itemHeight;
-        if (popoverSize < itemListHeight) {
-            $('#' + this.menu.id).css('height', popoverSize);
-            // Add a scrollview to List
-            $('#' + this.menu.id).scrollview({
-                direction: 'y'
-            });
-            this.hasPopScrollview = YES;
-        }
-        else {
-            $('#' + this.menu.id).css('height', itemListHeight);
-        }
-        //Scrolling to right position is only needed when the popover has a scrollview
-        if (this.hasPopScrollview) {
-            this.scrollListToRightPosition();
-        }
-    },
-
-    toggle: function() {
-        $('#' + this.id).toggle();
-        this.resizePopup();
-    },
-
-    itemSelected: function(id, event, nextEvent) {
-        this.toggle();
-        this.splitview.listItemSelected(id);
-    },
-
-    scrollListToRightPosition: function() {
-        var itemHeight = $('#' + this.menu.id + ' li:first-child').outerHeight();
-        var y = ($('#' + this.selectedItemInPopover).index() + 1) * itemHeight;
-        var menuHeight = M.Environment.getHeight() * 0.7;
-        var completeItemListHeight = $('#' + this.menu.id).find('li').length * itemHeight;
-        var center = menuHeight / 2;
-        var distanceToListEnd = completeItemListHeight - y;
-        var yScroll = 0;
-
-        /* if y coordinate of item is greater than menu height, we need to scroll down */
-        if (y > menuHeight) {
-            if (distanceToListEnd < center) {
-                yScroll = -(y - menuHeight + distanceToListEnd);
-            } else {
-                yScroll = -(y - center);
-            }
-            /* if y coordinate of item is less than menu height, we need to scroll up */
-        } else if (y < menuHeight) {
-            if (y < center) {
-                yScroll = 0;
-            } else {
-                yScroll = -(y - center);
-            }
-        }
-        $('#' + this.menu.id).scrollview('scrollTo', 0, yScroll);
-    }
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -9602,248 +9602,6 @@ M.TabBarItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
- *
- * @extends M.View
- */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TableView',
-
-    /**
-     * Determines whether to remove all content rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeContentRowsOnUpdate: YES,
-
-    /**
-     * Determines whether to remove the header rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeHeaderRowOnUpdate: NO,
-
-    /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the table.
-     *
-     * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
-     */
-    theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
-    },
-
-    /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
-        }
-
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
-        }
-    },
-
-    /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
-     */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
-        }
-    },
-
-    /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
-     */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -10460,6 +10218,248 @@ M.TextFieldView = M.View.extend(
         if(this.label){
             $('label[for="' + this.id + '"]').html(txt);
         }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
     }
 
 });
