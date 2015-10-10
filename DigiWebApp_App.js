@@ -2565,6 +2565,131 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchMitarbeiter
+// 
+// zu bestücken mittels WebService
+// ==========================================================================
+
+DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMitarbeiter'
+
+    , id: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , webAppId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , webAppPin: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , projektleiterId: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , vollername: function() {
+        return this.get("vorname") + " " + this.get("nachname");
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: BautagebuchNotiz
 // ==========================================================================
 
@@ -2687,131 +2812,6 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 	        	var loadedItem = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
 	        	if (loadedItem && ( (bautagesberichtId && loadedItem.get("bautagesberichtId") === bautagesberichtId) || (typeof(bautagesberichtId) === "undefined") )) {
 		            records.push(loadedItem);
-	        	}
-	        });
-	    }
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: BautagebuchMitarbeiter
-// 
-// zu bestücken mittels WebService
-// ==========================================================================
-
-DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchMitarbeiter'
-
-    , id: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , vorname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , nachname: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , webAppId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , webAppPin: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , projektleiterId: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , vollername: function() {
-        return this.get("vorname") + " " + this.get("nachname");
-    }
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
-    }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
 	        	}
 	        });
 	    }
@@ -3831,6 +3831,88 @@ DigiWebApp.Booking = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: Employee
+// ==========================================================================
+
+DigiWebApp.Employee = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'Employee'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , kolonnenId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isSelected: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e2) {
+        	trackError(e2);
+        }
+
+        var records = [];
+
+        if (keys) {
+            _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+            });
+        }
+        return records;
+    }
+
+    , saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Features
 // ==========================================================================
 
@@ -4467,88 +4549,6 @@ DigiWebApp.MediaFile = M.Model.create({
 		} catch(e5) {
 			errorCallback(e5);
 		}
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: Employee
-// ==========================================================================
-
-DigiWebApp.Employee = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'Employee'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , kolonnenId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isSelected: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-    , findSorted: function() {
-        var that = this;
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e2) {
-        	trackError(e2);
-        }
-
-        var records = [];
-
-        if (keys) {
-            _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-            });
-        }
-        return records;
-    }
-
-    , saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
 	}
 
 }, M.DataProviderLocalStorage);
@@ -7396,7 +7396,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	
 	, realDeviceReadyHandler: function() {
 		
-		//if (inDebug() && staticDebugging) alert(onIOS + ", realDeviceReadyHandler " + "ApplicationController:987");
+		if (inDebug() && staticDebugging) alert(onIOS + ", realDeviceReadyHandler " + "ApplicationController:991");
     	writeToLog("DIGI-WebApp deviceReady " + new Date().toString());
 
 //		try {
@@ -22020,7 +22020,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6429
+    , softwareVersion: 6430
 
 
     /**
@@ -27400,115 +27400,6 @@ DigiWebApp.ZeitbuchungenController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: ActivityListTemplateView
-// ==========================================================================
-
-DigiWebApp.ActivityListTemplateView = M.ListItemView.design({
-
-      isSelectable: NO
-
-    , childViews: 'label'
-    	
-    , cssClass: 'activityListEntry'
-
-    , events: {
-        tap: {
-            target: DigiWebApp.ActivityListController,
-            action: 'itemSelected'
-        }
-    }
-
-    , icon: M.ImageView.design({
-    	cssClass: 'unselectable'
-        , computedValue: {
-            valuePattern: '<%= icon %>'
-            , operation: function(v) {
-                return 'theme/images/' + v;
-            }
-        }
-    })
-
-    , label: M.LabelView.design({
-    	cssClass: 'unselectable'
-        , valuePattern: '<%= label %>'
-    })
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: ActivityListPage
-// ==========================================================================
-
-m_require('app/views/ActivityListTemplateView.js');
-
-DigiWebApp.ActivityListPage = M.PageView.design({
-
-    childViews: 'header content'
-
-    , cssClass: 'activityListPage unselectable'
-
-    , events: {
-		  pagebeforeshow: {
-            //target: DigiWebApp.DashboardController,
-            //action: 'init'
-			action: function() {
-			}
-        }
-        , pageshow: {
-        	action: function() {
-        	}
-        }
-    }
-    
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , title: M.LabelView.design({
-              value: M.I18N.l('activity')
-            , anchorLocation: M.CENTER
-        })
-        , backButton: M.ButtonView.design({
-            value: M.I18N.l('back')
-          , icon: 'arrow-l'
-          , anchorLocation: M.LEFT
-          , events: {
-              tap: {
-                  //  target: DigiWebApp.NavigationController
-                  //, action: 'backToBautagebuchZeitenListePageTransition'
-      			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e8){} 
-      				history.back();
-      			}
-              }
-          }
-      })
-    })
-
-    , content: M.ScrollView.design({
-
-        childViews: 'list'
-
-        , list: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.ActivityListController,
-                property: 'items'
-            }
-            , listItemTemplateView: DigiWebApp.ActivityListTemplateView
-        })
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: AnwesenheitslisteTemplateView
 // ==========================================================================
 
@@ -29085,6 +28976,115 @@ DigiWebApp.BautagebuchBautagesberichtDetailsPage = M.PageView.design({
 //            })
 //        })
 
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: ActivityListTemplateView
+// ==========================================================================
+
+DigiWebApp.ActivityListTemplateView = M.ListItemView.design({
+
+      isSelectable: NO
+
+    , childViews: 'label'
+    	
+    , cssClass: 'activityListEntry'
+
+    , events: {
+        tap: {
+            target: DigiWebApp.ActivityListController,
+            action: 'itemSelected'
+        }
+    }
+
+    , icon: M.ImageView.design({
+    	cssClass: 'unselectable'
+        , computedValue: {
+            valuePattern: '<%= icon %>'
+            , operation: function(v) {
+                return 'theme/images/' + v;
+            }
+        }
+    })
+
+    , label: M.LabelView.design({
+    	cssClass: 'unselectable'
+        , valuePattern: '<%= label %>'
+    })
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: ActivityListPage
+// ==========================================================================
+
+m_require('app/views/ActivityListTemplateView.js');
+
+DigiWebApp.ActivityListPage = M.PageView.design({
+
+    childViews: 'header content'
+
+    , cssClass: 'activityListPage unselectable'
+
+    , events: {
+		  pagebeforeshow: {
+            //target: DigiWebApp.DashboardController,
+            //action: 'init'
+			action: function() {
+			}
+        }
+        , pageshow: {
+        	action: function() {
+        	}
+        }
+    }
+    
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , title: M.LabelView.design({
+              value: M.I18N.l('activity')
+            , anchorLocation: M.CENTER
+        })
+        , backButton: M.ButtonView.design({
+            value: M.I18N.l('back')
+          , icon: 'arrow-l'
+          , anchorLocation: M.LEFT
+          , events: {
+              tap: {
+                  //  target: DigiWebApp.NavigationController
+                  //, action: 'backToBautagebuchZeitenListePageTransition'
+      			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e8){} 
+      				history.back();
+      			}
+              }
+          }
+      })
+    })
+
+    , content: M.ScrollView.design({
+
+        childViews: 'list'
+
+        , list: M.ListView.design({
+            contentBinding: {
+                target: DigiWebApp.ActivityListController,
+                property: 'items'
+            }
+            , listItemTemplateView: DigiWebApp.ActivityListTemplateView
+        })
     })
 
 });
@@ -32892,6 +32892,1094 @@ DigiWebApp.BautagebuchWetterPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: BautagebuchZeitenTemplateView
+// ==========================================================================
+
+DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'positionName handOrderName activityName spacer von bis dauer latitude longitude latitude_bis longitude_bis mitarbeiterIds'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+			    var view = M.ViewManager.getViewById(id);
+			    var view_modelId = view.modelId;
+			    _.each(DigiWebApp.BautagebuchZeitenListeController.items, function(selectedItem) {
+					if (selectedItem.m_id === view_modelId) {
+						DigiWebApp.BautagebuchZeitenDetailsController.load(selectedItem);
+					}
+				});
+			    DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
+			}
+        }
+	}
+	
+	, spacer: M.LabelView.design({
+	    value: ''
+	})
+
+	, mitarbeiterIds: M.LabelView.design({
+	      cssClass: 'small unselectable'
+		, computedValue: {
+		      valuePattern: '<%= mitarbeiterIds %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							var outString = "";
+							// v ist eine (json-striginfied) Liste mit (DTC-)mitarbeiterIds
+							var vAsArray = JSON.parse(v);
+							var mitarbeiterList = DigiWebApp.BautagebuchMitarbeiter.findSorted();
+							_.each(mitarbeiterList, function(el){
+								if (vAsArray.indexOf(el.get("id")) !== -1) {
+									if (outString !== "") {
+										outString += ", ";
+									}
+									outString += "<nobr>" + el.vollername() + "</nobr>";
+								}
+							});
+							return outString;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
+	, positionName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= positionName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, handOrderName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= handOrderName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+
+	, activityName: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= activityName %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null) {
+							return ", " + v + ":";
+						} else {
+							return ":";
+						}
+		        }
+		}
+	})
+
+	, von: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+		, isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= von %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null && (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
+							return v;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+	
+	, bis: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= bis %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null && (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
+							return " - " + v;
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
+	, dauer: M.LabelView.design({
+	      cssClass: 'normal unselectable'
+	    , isInline: YES
+		, computedValue: {
+		      valuePattern: '<%= dauer %>'
+		    , operation: function(v) {
+						if (v !== "" && v !== null && (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
+							return M.I18N.l('bookingDuration') + ": " + v + " h";
+						} else {
+							return "";
+						}
+		        }
+		}
+	})
+
+	, latitude: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= latitude %>'
+          , operation: function(v) {
+              if(v > 0) {
+              	var str = new Number(v);
+             		return M.I18N.l('latitude') + ' Von: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('latitude') + ' Von: ' + M.I18N.l('GPSnotactive');
+              	return '';
+              }
+          }
+      }
+  })
+
+  , longitude: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= longitude %>'
+          , operation: function(v) {
+              if (v > 0) { 
+              	var str = new Number(v);
+             		return M.I18N.l('longitude') + ' Von: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('longitude') + ' Von: ' + M.I18N.l('GPSnotactive');
+                  return '';
+              }
+          }
+      }
+  })
+
+	, latitude_bis: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= latitude_bis %>'
+          , operation: function(v) {
+              if(v > 0) {
+              	var str = new Number(v);
+             		return M.I18N.l('latitude') + ' Bis: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('latitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
+              	return '';
+              }
+          }
+      }
+  })
+
+  , longitude_bis: M.LabelView.design({
+        cssClass: 'location unselectable'
+      , computedValue: {
+            valuePattern: '<%= longitude_bis %>'
+          , operation: function(v) {
+              if (v > 0) { 
+              	var str = new Number(v);
+             		return M.I18N.l('longitude') + ' Bis: ' + str.toFixed(6);
+              } else {
+                  //return M.I18N.l('longitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
+                  return '';
+              }
+          }
+      }
+  })
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchZusammenfassungMitarbeiterSummeTemplateView
+// ==========================================================================
+
+DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemView.design({
+
+      isSelectable: NO
+
+    //, childViews: 'grid'
+	, childViews: 'positionName handOrderName vonbisdauer endOfLine activity mitarbeiterId'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+				var view = M.ViewManager.getViewById(id);
+			    //console.log(view);
+			    var view_mitarbeiterId = view.mitarbeiterId.value;
+			    //console.log(view_mitarbeiterId);
+//			    _.each(DigiWebApp.BautagebuchZusammenfassungController.ZeitbuchungenPerMitarbeiterList, function(maItem) {
+//			        _.each(maItem.items, function(selectedItem) {
+//						if (selectedItem.mitarbeiterId === view_mitarbeiterId ) {
+//							//DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
+//							console.log(selectedItem.mitarbeiterId);
+//						}
+//					});
+//				});
+			    //DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
+			    
+			    if (M.ViewManager.getCurrentPage() === DigiWebApp.BautagebuchZeitenListePage) {
+			    	// ZeitenListePage
+				    var view_modelId = view.value.modelId;
+				    _.each(DigiWebApp.BautagebuchZeitenListeController.items, function(selectedItem) {
+						if (selectedItem.m_id === view_modelId) {
+							DigiWebApp.BautagebuchZeitenDetailsController.load(selectedItem);
+						}
+					});
+				    DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
+			    } else {
+			    	// Zusammenfassung
+				    DigiWebApp.BautagebuchZeitenListeController.neu(view_mitarbeiterId);			    	
+			    }
+			}
+        }
+    }
+
+	, mitarbeiterId: M.LabelView.design({
+	    cssClass: 'hiddenLabel'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= mitarbeiterId %>'
+	      , operation: function(v) {
+				return v;
+	      }
+	  }
+	})
+
+	, endOfLine: M.LabelView.design({
+		value: ''
+	})
+
+	, positionName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= positionName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, handOrderName: M.LabelView.design({
+	    cssClass: 'normal unselectable'
+  	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= handOrderName %>'
+	      , operation: function(v) {
+					if (v !== "" && v !== null) {
+						return v;
+					} else {
+						return "";
+					}
+	          }
+	  }
+	})
+	
+	, activity: M.LabelView.design({
+		    cssClass: 'normal unselectable normalLabel'
+	  	  , isInline: YES
+		  , computedValue: {
+		        valuePattern: '<%= activityName %>'
+		      , operation: function(v) {
+//					return ", " + v;
+					return v;
+		      }
+		  }
+	})
+		
+
+	, vonbisdauer: M.LabelView.design({
+	    cssClass: 'normal unselectable normalLabel right'
+	  , isInline: YES
+	  , computedValue: {
+	        valuePattern: '<%= vonbisdauer %>'
+	      , operation: function(v) {
+					return ": " + v;
+	      }
+	  }
+	})
+			
+//	, grid: M.GridView.design({
+//		
+//		  layout: M.TWO_COLUMNS
+//		, childViews: 'name summe'
+//			
+//		, name: M.LabelView.design({
+//		    cssClass: 'normal unselectable bigLabel'
+//		  , computedValue: {
+//		        valuePattern: '<%= id %>'
+//		      , operation: function(v) {
+//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
+//				    		if (typeof myMitarbeiter !== "undefined") {
+//				    			return myMitarbeiter.vollername();
+//				        	} else {
+//				        		return v;
+//				        	}
+//	          }
+//		  }
+//		})
+//		
+//		, summe: M.LabelView.design({
+//		    cssClass: 'normal unselectable bigLabel'
+//		  , computedValue: {
+//		        valuePattern: '<%= id %>'
+//		      , operation: function(v) {
+//							return v;
+//	          }
+//		  }
+//		})
+//	})
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchZeitenListePage
+// ==========================================================================
+
+m_require('app/views/BautagebuchZusammenfassungMitarbeiterSummeTemplateView');
+m_require('app/views/BautagebuchZeitenTemplateView');
+
+DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
+
+    events: {
+		pagebeforeshow: {
+              target: DigiWebApp.BautagebuchZeitenListeController
+            , action: 'init'
+        }
+    }
+
+	, controller: DigiWebApp.BautagebuchZeitenListeController
+	, navigationController: DigiWebApp.NavigationController
+	
+    , childViews: 'header content'
+
+    , cssClass: 'bautagebuchListePage unselectable'
+
+    , header: M.ToolbarView.design({
+        childViews: 'backButton title newButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautagesberichtDetailsPageTransition();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchZeiten')
+            , anchorLocation: M.CENTER
+        })
+        , newButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchAdd')
+            , icon: 'new'
+            , anchorLocation: M.RIGHT
+            , cssClass: 'green_background'
+            , events: {
+                tap: {
+        			action: function() {
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
+        				DigiWebApp.BautagebuchZeitenListeController.neu();
+					}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'leistungsnachweisList'
+        , list: M.ListView.design({
+              contentBinding: {
+                  target: DigiWebApp.BautagebuchZeitenListeController
+                , property: 'items'
+            }
+            , listItemTemplateView: DigiWebApp.BautagebuchZeitenTemplateView
+        })
+        , leistungsnachweisList: M.ContainerView.design({
+	    	  	  childViews: 'list'
+	    	  	, cssClass: 'marginBottom20 leistungsnachweisList'
+	    	  	, doNotOverlapAtTop: YES
+	    	  	, doNotOverlapAtBottom: YES
+		        , list: M.ListView.design({
+		        	  cssClass: ''
+		        	, isDividedList: YES
+		            , contentBinding: {
+		                  target: DigiWebApp.BautagebuchZusammenfassungController
+		                , property: 'ZeitbuchungenPerMitarbeiterList'
+		            }
+		            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
+		        })
+	      })
+    })
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: BautagebuchZusammenfassungPage
+// ==========================================================================
+
+m_require('app/views/BautagebuchZusammenfassungMitarbeiterSummeTemplateView');
+m_require('app/views/BautagebuchMaterialienTemplateView');
+m_require('app/views/BautagebuchNotizenZusammenfassungTemplateView');
+m_require('app/views/BautagebuchMedienTemplateView');
+
+DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
+
+    events: {
+		pagebeforeshow: {
+            //  target: DigiWebApp.BautagebuchZusammenfassungController
+            //, action: 'init'
+			action: function() {
+				DigiWebApp.BautagebuchZusammenfassungController.init(YES);
+				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("marginBottom20");
+				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("detailsGrid");
+				DigiWebApp.BautagebuchMaterialienListeController.init(YES);
+				DigiWebApp.BautagebuchNotizenListeController.init(YES);
+				DigiWebApp.BautagebuchMedienListeController.init(YES);
+				if (parseBool(DigiWebApp.BautagebuchZusammenfassungController.item.get("abgeschlossen"))) {
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).show();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).hide();
+				} else {
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
+					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).hide();
+					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).show();
+				}
+				$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).addClass("zeitenAendernButton");
+        		// Feature 405 (Unterschrift)
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).show();
+					// init canvas
+					var sigPadOptions = {
+							    bgColour : '#aaa'
+							  , lineTop: 300
+							  , drawOnly : true
+							};
+					if (DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI === null) {
+						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad2').signaturePad(sigPadOptions);
+					}
+        		} else {
+        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).hide();
+        		}
+        		// Feature 405 (Unterschrift)
+        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
+        			// load signature
+        			if (DigiWebApp.BautagebuchZusammenfassungController.item.hasFileName() === YES) {
+	        			DigiWebApp.BautagebuchZusammenfassungController.item.readFromFile(function(fileContent){
+	        				if (fileContent && (fileContent !== "")) {
+	       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
+	        				}
+	        			}, function() {
+	        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
+	        			});
+        			} else {
+        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
+        			}
+        		}
+
+
+			}
+        }
+    }
+
+	, signaturePadAPI: null
+
+    , childViews: 'header content'
+
+    , cssClass: 'bautagebuchListePage unselectable'
+
+    , header: M.ToolbarView.design({
+        childViews: 'backButton title'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                    //  target: DigiWebApp.NavigationController
+                    //, action: 'backToBautagebuchBautagesberichtDetailsPageTransition'
+        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('BautagebuchZusammenfassung')
+            , anchorLocation: M.CENTER
+        })
+        , delButton: M.ButtonView.design({
+              value: M.I18N.l('BautagebuchDelete')
+            , icon: 'delete'
+            , anchorLocation: M.RIGHT
+            , cssClass: 'red_background'
+            , events: {
+                tap: {
+                      //target: DigiWebApp.BautagebuchBautagesberichtDetailsController
+                    //, action: 'delete'
+        			action: function() {
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
+        				DigiWebApp.BautagebuchBautagesberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
+        			}
+                }
+            }
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'container grid transferGrid loeschenButton'
+        	  
+	    , container: M.ContainerView.design({
+    	    	childViews: 'detailsGrid leistungsnachweisList materialienList notizenList medienList signature spacer'
+    	      , cssClass: 'bautagebuchZusammenfassungScrollView'
+    	    	  
+    	      , spacer: M.LabelView.design({
+    	    	    value: '&nbsp;'
+    	          , cssClass: 'invisible'
+    	      })
+    	      
+    	      , detailsGrid: M.GridView.design({
+        		  childViews: 'details wetter'
+        		, cssClass: 'marginBottom20 detailsGrid'
+        		, layout: M.TWO_COLUMNS
+        		, details: M.ContainerView.design({
+        				  childViews: 'auftrag datum spacer1 projektleiter spacer2 startUhrzeit'
+          				, spacer1: M.LabelView.design({
+        					value: "&nbsp;"
+        				})
+        				, spacer2: M.LabelView.design({
+        					value: "&nbsp;"
+        				})
+  		    			, auftrag: M.LabelView.design({
+  						      value: ''
+  						    , cssClass: 'bigLabel bold underline'
+  						    , isInline: YES
+  						    , computedValue: {
+  						          contentBinding: {
+  						              target: DigiWebApp.BautagebuchZusammenfassungController
+  						            , property: 'auftragsName'
+  						        }
+  						        , value: ''
+  						        , operation: function(v) {
+  						            return v + ": ";
+  						        }
+  						    }
+  		    			})
+              			, datum: M.LabelView.design({
+        				      value: ''
+        				    , cssClass: 'bigLabel bold underline'
+  						    , isInline: YES
+        				    , contentBinding: {
+        				          target: DigiWebApp.BautagebuchZusammenfassungController
+        				        , property: 'datum'
+        				    }
+              			})
+	        			, projektleiter: M.LabelView.design({
+	    				      value: ''
+	    				    , cssClass: 'bigLabel'
+						    , computedValue: {
+						          contentBinding: {
+						              target: DigiWebApp.BautagebuchZusammenfassungController
+						            , property: 'projektleiterId'
+						        }
+						        , value: ''
+						        , operation: function(v) {
+						        	// projekleiterName nachladen
+					        		var myProjektleiter = _.find(DigiWebApp.BautagebuchProjektleiter.find(), function(a) { return (parseIntRadixTen(a.get("id")) === v);});
+					        		//DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
+					        		if (typeof myProjektleiter !== "undefined") {
+					        			return M.I18N.l('BautagebuchProjektleiter') + ": " + myProjektleiter.vollername();
+						        	} else {
+						        		return "";
+						        	}
+						        }
+						    }
+	        			})
+						, startUhrzeit: M.LabelView.design({
+						      value: ''
+						    , cssClass: 'bigLabel'
+						    , computedValue: {
+						          contentBinding: {
+						              target: DigiWebApp.BautagebuchZusammenfassungController
+						            , property: 'startUhrzeit'
+						        }
+						        , value: ''
+						        , operation: function(v) {
+						            return M.I18N.l('BautagebuchStartingFrom') + " " + v + " " + M.I18N.l('oclock');
+						        }
+						    }
+						})
+        	    })
+        	    , wetter: M.ContainerView.design({
+        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
+        				, cssClass: 'wetterBlock'
+              			, temperatur: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchTemperatur')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.temperatur'
+							        }
+							        , value: ''
+							        , operation: function(v) {
+							            return v + "°C";
+							        }
+							    }
+
+                			})
+              			})
+              			, luftfeuchte: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.luftfeuchtigkeit'
+							        }
+							        , value: ''
+							        , operation: function(v) {
+							            return v + "%";
+							        }
+							    }
+
+                			})
+              			})
+              			, bewoelkung: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchBewoelkung')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.bewoelkung'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchBewoelkungKlar');
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchBewoelkungMaessig');
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchBewoelkungNeblig');
+		    					    		default:
+		    					    		  return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+              			, niederschlag: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchNiederschlag')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.niederschlag'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchNiederschlagKein');
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchNiederschlagNiesel');
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchNiederschlagRegen');
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchNiederschlagGraupel');
+		    					    		case 4:
+		    				    				return M.I18N.l('BautagebuchNiederschlagSchnee');
+		    					    		case 5:
+		    				    				return M.I18N.l('BautagebuchNiederschlagHagel');
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+              			, wind: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchWind')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.wind'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case 0:
+		    				    				return M.I18N.l('BautagebuchWindStill');
+		    					    		case 1:
+		    				    				return M.I18N.l('BautagebuchWindMaessig');
+		    					    		case 2:
+		    				    				return M.I18N.l('BautagebuchWindBoeig');
+		    					    		case 3:
+		    				    				return M.I18N.l('BautagebuchWindStuermisch');
+		    					    		case 4:
+		    				    				return M.I18N.l('BautagebuchWindOrkan');
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+              			, wechselhaft: M.GridView.design({
+              				  layout: M.TWO_COLUMNS
+              				, childViews: 'myLabel myValue'
+              				, myLabel: M.LabelView.design({
+              					value: M.I18N.l('BautagebuchWechselhaft')
+              				})
+                  			, myValue: M.LabelView.design({
+	          				      value: ''
+	          				    , cssClass: 'right'
+							    , computedValue: {
+							          contentBinding: {
+							              target: DigiWebApp.BautagebuchZusammenfassungController
+							            , property: 'wetter.wechselhaft'
+							        }
+		    			    		, value: 0
+		    				        , operation: function(v) {
+		    				    		switch(v) {
+		    				    			case false:
+		    				    				return M.I18N.l('no');
+		    					    		case true:
+		    				    				return M.I18N.l('yes');
+		    					    		default:
+		    					    		    return "";
+		    				    		}
+		    				        }
+							    }
+
+                			})
+              			})
+
+        	    	})
+    	      })
+    	      
+    	      , leistungsnachweisList: M.ContainerView.design({
+      	    	  	  childViews: 'myLabel zeitenAendernButton list'
+      	    	  	, cssClass: 'marginBottom20 leistungsnachweisList'
+      	    	  	, doNotOverlapAtTop: YES
+      	    	  	, doNotOverlapAtBottom: YES
+      	    	  	, myLabel: M.LabelView.design({
+    	    	  		  cssClass: 'bigLabel bold'
+    	    	  		, isInline: YES
+    	    	  		, value: M.I18N.l('BautagebuchLeistungsnachweis') + ":"
+    	    	  	})
+      	    	  	, zeitenAendernButton: M.ButtonView.design({
+	      	              value: M.I18N.l('BautagebuchZeitenAendern')
+	      	            , anchorLocation: M.RIGHT
+    	    	  		, isInline: YES
+    	    	  		//, cssClass: 'zeitenAendernButton'
+	      	            , events: {
+	      	                tap: {
+	      	                      target: DigiWebApp.NavigationController
+	      	                    , action: 'backToBautagebuchZeitenListePageTransition'
+	      	                }
+	      	            }
+	      	        })
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop25important'
+	    	        	, isDividedList: YES
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
+	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
+	    	        })
+    	      })
+
+    	      , materialienList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 materialienList'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchMaterialien') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchMaterialienListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
+	    	        })
+    	      })
+
+    	      , notizenList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 notizenList'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchNotizen') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchNotizenListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchNotizenZusammenfassungTemplateView
+	    	        })
+		      })
+		      
+    	      , medienList: M.ContainerView.design({
+	  	    	  	  childViews: 'myLabel list'
+	  	    	  	, cssClass: 'marginBottom20 medienList borderBottom'
+	  	    	  	, doNotOverlapAtTop: YES
+	  	    	  	, doNotOverlapAtBottom: YES
+	  	    	  	, myLabel: M.LabelView.design({
+	  	    	  		  cssClass: 'bigLabel bold'
+	  	    	  		, value: M.I18N.l('BautagebuchMedien') + ":"
+	  	    	  	})
+	    	        , list: M.ListView.design({
+	    	        	  cssClass: 'marginTop20'
+	    	            , contentBinding: {
+	    	                  target: DigiWebApp.BautagebuchMedienListeController
+	    	                , property: 'items'
+	    	            }
+	    	            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
+	    	        })
+		      })
+		      
+	          , signature: M.ContainerView.design({
+		        	
+		        	  childViews: 'signatureform'
+		        		  
+		            , cssClass: 'signaturecanvas2 marginTop20 marginBottom20'
+
+		        	, signatureform: M.FormView.design({
+		            	
+		            	  childViews: 'signaturecanvas'
+		            	
+		            	, signaturecanvas: M.CanvasView.design({
+
+		            		  label: M.I18N.l('signature') + ":"
+
+		            		, canvasWidth: 550
+		                    , canvasHeight: 320
+		                	
+		                    , render: function() {
+		                    	if (this.label) {
+		                    		this.html += '<label for="' + this.id + '" class="signaturecanvaslabel">' + this.label + '</label>';
+		                    	}
+		    					this.html += '  <div id="' + this.id + '_container" class="sig sigWrapper2">';
+		        				this.html += '    <canvas id="' + this.id + '_canvas" class="pad" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" style="border-color: #000; border: 1px solid #ccc;"></canvas>';
+		        				this.html += '    <input id="' + this.id + '" type="hidden" name="output" class="output">';
+		        				this.html += '  </div>';
+		                    	return this.html;
+		                	}
+		    	        })
+		                	
+		                , render: function() {
+		            		this.html += '<form method="post" action="" class="sigPad2">';
+		                	this.renderChildViews();
+		    				this.html += '</form>';
+		                	return this.html;
+		            	}
+		            })
+		      })
+
+
+	    })
+	
+	    , grid: M.GridView.design({
+		        childViews: 'button icon'
+		      , layout: {
+		            cssClass: 'digiButton marginTop20'
+		          , columns: {
+		                0: 'button'
+		              , 1: 'icon'
+		          }
+		      }
+		      , button: M.ButtonView.design({
+		            value: M.I18N.l('BautagebuchBautagesberichtAbschliessen')
+		          , cssClass: 'digiButton green_background'
+		          , anchorLocation: M.RIGHT
+		          , events: {
+		              tap: {
+			                //  target: DigiWebApp.BautagebuchZusammenfassungController
+			                //, action: 'finish'
+			    			action: function() {
+			    				//var that = this;
+		    	  				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+			    				DigiWebApp.BautagebuchZusammenfassungController.finish(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
+			    				DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchZusammenfassungController.item);
+								DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
+				    		}
+		              }
+		          }
+		      })
+		      , icon: M.ImageView.design({
+		          value: 'theme/images/icon_bookTime.png'
+		      })
+		})
+		  
+	    , transferGrid: M.GridView.design({
+	        childViews: 'button icon'
+	      , layout: {
+	            cssClass: 'digiButton marginTop20'
+	          , columns: {
+	                0: 'button'
+	              , 1: 'icon'
+	          }
+	      }
+	      , button: M.ButtonView.design({
+	            value: M.I18N.l('BautagebuchUebertragen')
+	          , cssClass: 'digiButton'
+	          , anchorLocation: M.RIGHT
+	          , events: {
+	              tap: {
+		                //  target: DigiWebApp.BautagebuchZusammenfassungController
+		                //, action: 'finish'
+		    			action: function() {
+	    	  				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+		    		    	var that = DigiWebApp.BautagebuchZusammenfassungController;
+		    		    	var startTransfer = NO;
+		    		    	if (that.lastTimestampDatatransfer !== null) {
+		    		    		var timestampNow = D8.now().getTimestamp();
+		    		    		if (timestampNow - that.lastTimestampDatatransfer > parseIntRadixTen(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
+		    		    			startTransfer = YES;
+		    		    		} else {
+		    		    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
+		    		    		}
+		    		    	}
+		    		    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
+		    		    		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
+			    				DigiWebApp.BautagebuchDatenuebertragungController.senden(
+			    						DigiWebApp.BautagebuchZusammenfassungController.item
+			    					    , function(msg) {
+			    							//console.log("successHandler");
+			    							DigiWebApp.BautagebuchZusammenfassungController.set("item", null);
+			    							DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition();
+			    						}
+			    						, function(xhr,err) {
+			    							//console.log("errorHandler");
+			    							trackError(err);
+			    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    				                title: M.I18N.l('BautagebuchUebertragungsfehler')
+			    				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
+			    				            });
+			    						}
+			    				);
+		    		    	}
+			    		}
+	              }
+	          }
+	      })
+	      , icon: M.ImageView.design({
+	          value: 'theme/images/icon_bookTime.png'
+	      })
+	  })
+	  
+      , loeschenButton: M.ButtonView.design({
+          value: M.I18N.l('BautagebuchDelete')
+        , cssClass: 'red_background'
+        , events: {
+            tap: {
+	                target: DigiWebApp.BautagebuchBautagesberichtDetailsController,
+	                action: function() {
+        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+        				this.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
+
+        			}
+            }
+        }
+    })
+	
+	})
+	
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: BautagebuchZeitenDetailsPage
 // ==========================================================================
 
@@ -33768,785 +34856,6 @@ DigiWebApp.BautagebuchZeitenDetailsPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: BautagebuchZusammenfassungMitarbeiterSummeTemplateView
-// ==========================================================================
-
-DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView = M.ListItemView.design({
-
-      isSelectable: NO
-
-    //, childViews: 'grid'
-	, childViews: 'positionName handOrderName vonbisdauer endOfLine activity mitarbeiterId'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-				var view = M.ViewManager.getViewById(id);
-			    //console.log(view);
-			    var view_mitarbeiterId = view.mitarbeiterId.value;
-			    //console.log(view_mitarbeiterId);
-//			    _.each(DigiWebApp.BautagebuchZusammenfassungController.ZeitbuchungenPerMitarbeiterList, function(maItem) {
-//			        _.each(maItem.items, function(selectedItem) {
-//						if (selectedItem.mitarbeiterId === view_mitarbeiterId ) {
-//							//DigiWebApp.BautagebuchMaterialienDetailsController.load(selectedItem);
-//							console.log(selectedItem.mitarbeiterId);
-//						}
-//					});
-//				});
-			    //DigiWebApp.NavigationController.toBautagebuchMaterialienDetailsPageTransition();
-			    
-			    if (M.ViewManager.getCurrentPage() === DigiWebApp.BautagebuchZeitenListePage) {
-			    	// ZeitenListePage
-				    var view_modelId = view.value.modelId;
-				    _.each(DigiWebApp.BautagebuchZeitenListeController.items, function(selectedItem) {
-						if (selectedItem.m_id === view_modelId) {
-							DigiWebApp.BautagebuchZeitenDetailsController.load(selectedItem);
-						}
-					});
-				    DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
-			    } else {
-			    	// Zusammenfassung
-				    DigiWebApp.BautagebuchZeitenListeController.neu(view_mitarbeiterId);			    	
-			    }
-			}
-        }
-    }
-
-	, mitarbeiterId: M.LabelView.design({
-	    cssClass: 'hiddenLabel'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= mitarbeiterId %>'
-	      , operation: function(v) {
-				return v;
-	      }
-	  }
-	})
-
-	, endOfLine: M.LabelView.design({
-		value: ''
-	})
-
-	, positionName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= positionName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, handOrderName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= handOrderName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, activity: M.LabelView.design({
-		    cssClass: 'normal unselectable normalLabel'
-	  	  , isInline: YES
-		  , computedValue: {
-		        valuePattern: '<%= activityName %>'
-		      , operation: function(v) {
-//					return ", " + v;
-					return v;
-		      }
-		  }
-	})
-		
-
-	, vonbisdauer: M.LabelView.design({
-	    cssClass: 'normal unselectable normalLabel right'
-	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= vonbisdauer %>'
-	      , operation: function(v) {
-					return ": " + v;
-	      }
-	  }
-	})
-			
-//	, grid: M.GridView.design({
-//		
-//		  layout: M.TWO_COLUMNS
-//		, childViews: 'name summe'
-//			
-//		, name: M.LabelView.design({
-//		    cssClass: 'normal unselectable bigLabel'
-//		  , computedValue: {
-//		        valuePattern: '<%= id %>'
-//		      , operation: function(v) {
-//				    		var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
-//				    		if (typeof myMitarbeiter !== "undefined") {
-//				    			return myMitarbeiter.vollername();
-//				        	} else {
-//				        		return v;
-//				        	}
-//	          }
-//		  }
-//		})
-//		
-//		, summe: M.LabelView.design({
-//		    cssClass: 'normal unselectable bigLabel'
-//		  , computedValue: {
-//		        valuePattern: '<%= id %>'
-//		      , operation: function(v) {
-//							return v;
-//	          }
-//		  }
-//		})
-//	})
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: BautagebuchZusammenfassungPage
-// ==========================================================================
-
-m_require('app/views/BautagebuchZusammenfassungMitarbeiterSummeTemplateView');
-m_require('app/views/BautagebuchMaterialienTemplateView');
-m_require('app/views/BautagebuchNotizenZusammenfassungTemplateView');
-m_require('app/views/BautagebuchMedienTemplateView');
-
-DigiWebApp.BautagebuchZusammenfassungPage = M.PageView.design({
-
-    events: {
-		pagebeforeshow: {
-            //  target: DigiWebApp.BautagebuchZusammenfassungController
-            //, action: 'init'
-			action: function() {
-				DigiWebApp.BautagebuchZusammenfassungController.init(YES);
-				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("marginBottom20");
-				$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.container.detailsGrid.id).addClass("detailsGrid");
-				DigiWebApp.BautagebuchMaterialienListeController.init(YES);
-				DigiWebApp.BautagebuchNotizenListeController.init(YES);
-				DigiWebApp.BautagebuchMedienListeController.init(YES);
-				if (parseBool(DigiWebApp.BautagebuchZusammenfassungController.item.get("abgeschlossen"))) {
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).hide();
-					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).show();
-					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).hide();
-				} else {
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.grid.id).show();
-					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.header.delButton.id).show();
-					$("#" + DigiWebApp.BautagebuchZusammenfassungPage.content.transferGrid.id).hide();
-					$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).show();
-				}
-				$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.leistungsnachweisList.zeitenAendernButton.id).addClass("zeitenAendernButton");
-        		// Feature 405 (Unterschrift)
-        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
-        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).show();
-					// init canvas
-					var sigPadOptions = {
-							    bgColour : '#aaa'
-							  , lineTop: 300
-							  , drawOnly : true
-							};
-					if (DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI === null) {
-						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI = $('.sigPad2').signaturePad(sigPadOptions);
-					}
-        		} else {
-        			$('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.id).hide();
-        		}
-        		// Feature 405 (Unterschrift)
-        		if ((DigiWebApp.SettingsController.featureAvailable('405')) && (typeof window.requestFileSystem !== "undefined")) {
-        			// load signature
-        			if (DigiWebApp.BautagebuchZusammenfassungController.item.hasFileName() === YES) {
-	        			DigiWebApp.BautagebuchZusammenfassungController.item.readFromFile(function(fileContent){
-	        				if (fileContent && (fileContent !== "")) {
-	       						DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.regenerate(fileContent);
-	        				}
-	        			}, function() {
-	        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
-	        			});
-        			} else {
-        				DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.clearCanvas();
-        			}
-        		}
-
-
-			}
-        }
-    }
-
-	, signaturePadAPI: null
-
-    , childViews: 'header content'
-
-    , cssClass: 'bautagebuchListePage unselectable'
-
-    , header: M.ToolbarView.design({
-        childViews: 'backButton title'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                    //  target: DigiWebApp.NavigationController
-                    //, action: 'backToBautagebuchBautagesberichtDetailsPageTransition'
-        			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} history.back();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchZusammenfassung')
-            , anchorLocation: M.CENTER
-        })
-        , delButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchDelete')
-            , icon: 'delete'
-            , anchorLocation: M.RIGHT
-            , cssClass: 'red_background'
-            , events: {
-                tap: {
-                      //target: DigiWebApp.BautagebuchBautagesberichtDetailsController
-                    //, action: 'delete'
-        			action: function() {
-        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
-        				DigiWebApp.BautagebuchBautagesberichtDetailsController.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
-        			}
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'container grid transferGrid loeschenButton'
-        	  
-	    , container: M.ContainerView.design({
-    	    	childViews: 'detailsGrid leistungsnachweisList materialienList notizenList medienList signature spacer'
-    	      , cssClass: 'bautagebuchZusammenfassungScrollView'
-    	    	  
-    	      , spacer: M.LabelView.design({
-    	    	    value: '&nbsp;'
-    	          , cssClass: 'invisible'
-    	      })
-    	      
-    	      , detailsGrid: M.GridView.design({
-        		  childViews: 'details wetter'
-        		, cssClass: 'marginBottom20 detailsGrid'
-        		, layout: M.TWO_COLUMNS
-        		, details: M.ContainerView.design({
-        				  childViews: 'auftrag datum spacer1 projektleiter spacer2 startUhrzeit'
-          				, spacer1: M.LabelView.design({
-        					value: "&nbsp;"
-        				})
-        				, spacer2: M.LabelView.design({
-        					value: "&nbsp;"
-        				})
-  		    			, auftrag: M.LabelView.design({
-  						      value: ''
-  						    , cssClass: 'bigLabel bold underline'
-  						    , isInline: YES
-  						    , computedValue: {
-  						          contentBinding: {
-  						              target: DigiWebApp.BautagebuchZusammenfassungController
-  						            , property: 'auftragsName'
-  						        }
-  						        , value: ''
-  						        , operation: function(v) {
-  						            return v + ": ";
-  						        }
-  						    }
-  		    			})
-              			, datum: M.LabelView.design({
-        				      value: ''
-        				    , cssClass: 'bigLabel bold underline'
-  						    , isInline: YES
-        				    , contentBinding: {
-        				          target: DigiWebApp.BautagebuchZusammenfassungController
-        				        , property: 'datum'
-        				    }
-              			})
-	        			, projektleiter: M.LabelView.design({
-	    				      value: ''
-	    				    , cssClass: 'bigLabel'
-						    , computedValue: {
-						          contentBinding: {
-						              target: DigiWebApp.BautagebuchZusammenfassungController
-						            , property: 'projektleiterId'
-						        }
-						        , value: ''
-						        , operation: function(v) {
-						        	// projekleiterName nachladen
-					        		var myProjektleiter = _.find(DigiWebApp.BautagebuchProjektleiter.find(), function(a) { return (parseIntRadixTen(a.get("id")) === v);});
-					        		//DigiWebApp.BautagebuchProjektleiter.find({query:{identifier: 'id', operator: '=', value: v}})[0];
-					        		if (typeof myProjektleiter !== "undefined") {
-					        			return M.I18N.l('BautagebuchProjektleiter') + ": " + myProjektleiter.vollername();
-						        	} else {
-						        		return "";
-						        	}
-						        }
-						    }
-	        			})
-						, startUhrzeit: M.LabelView.design({
-						      value: ''
-						    , cssClass: 'bigLabel'
-						    , computedValue: {
-						          contentBinding: {
-						              target: DigiWebApp.BautagebuchZusammenfassungController
-						            , property: 'startUhrzeit'
-						        }
-						        , value: ''
-						        , operation: function(v) {
-						            return M.I18N.l('BautagebuchStartingFrom') + " " + v + " " + M.I18N.l('oclock');
-						        }
-						    }
-						})
-        	    })
-        	    , wetter: M.ContainerView.design({
-        				  childViews: 'temperatur luftfeuchte bewoelkung niederschlag wind wechselhaft'
-        				, cssClass: 'wetterBlock'
-              			, temperatur: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchTemperatur')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.temperatur'
-							        }
-							        , value: ''
-							        , operation: function(v) {
-							            return v + "°C";
-							        }
-							    }
-
-                			})
-              			})
-              			, luftfeuchte: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchLuftfeuchtigkeit')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.luftfeuchtigkeit'
-							        }
-							        , value: ''
-							        , operation: function(v) {
-							            return v + "%";
-							        }
-							    }
-
-                			})
-              			})
-              			, bewoelkung: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchBewoelkung')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.bewoelkung'
-							        }
-		    			    		, value: 0
-		    				        , operation: function(v) {
-		    				    		switch(v) {
-		    				    			case 0:
-		    				    				return M.I18N.l('BautagebuchBewoelkungKlar');
-		    					    		case 1:
-		    				    				return M.I18N.l('BautagebuchBewoelkungMaessig');
-		    					    		case 2:
-		    				    				return M.I18N.l('BautagebuchBewoelkungBedeckt');
-		    					    		case 3:
-		    				    				return M.I18N.l('BautagebuchBewoelkungNeblig');
-		    					    		default:
-		    					    		  return "";
-		    				    		}
-		    				        }
-							    }
-
-                			})
-              			})
-              			, niederschlag: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchNiederschlag')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.niederschlag'
-							        }
-		    			    		, value: 0
-		    				        , operation: function(v) {
-		    				    		switch(v) {
-		    				    			case 0:
-		    				    				return M.I18N.l('BautagebuchNiederschlagKein');
-		    					    		case 1:
-		    				    				return M.I18N.l('BautagebuchNiederschlagNiesel');
-		    					    		case 2:
-		    				    				return M.I18N.l('BautagebuchNiederschlagRegen');
-		    					    		case 3:
-		    				    				return M.I18N.l('BautagebuchNiederschlagGraupel');
-		    					    		case 4:
-		    				    				return M.I18N.l('BautagebuchNiederschlagSchnee');
-		    					    		case 5:
-		    				    				return M.I18N.l('BautagebuchNiederschlagHagel');
-		    					    		default:
-		    					    		    return "";
-		    				    		}
-		    				        }
-							    }
-
-                			})
-              			})
-              			, wind: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchWind')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.wind'
-							        }
-		    			    		, value: 0
-		    				        , operation: function(v) {
-		    				    		switch(v) {
-		    				    			case 0:
-		    				    				return M.I18N.l('BautagebuchWindStill');
-		    					    		case 1:
-		    				    				return M.I18N.l('BautagebuchWindMaessig');
-		    					    		case 2:
-		    				    				return M.I18N.l('BautagebuchWindBoeig');
-		    					    		case 3:
-		    				    				return M.I18N.l('BautagebuchWindStuermisch');
-		    					    		case 4:
-		    				    				return M.I18N.l('BautagebuchWindOrkan');
-		    					    		default:
-		    					    		    return "";
-		    				    		}
-		    				        }
-							    }
-
-                			})
-              			})
-              			, wechselhaft: M.GridView.design({
-              				  layout: M.TWO_COLUMNS
-              				, childViews: 'myLabel myValue'
-              				, myLabel: M.LabelView.design({
-              					value: M.I18N.l('BautagebuchWechselhaft')
-              				})
-                  			, myValue: M.LabelView.design({
-	          				      value: ''
-	          				    , cssClass: 'right'
-							    , computedValue: {
-							          contentBinding: {
-							              target: DigiWebApp.BautagebuchZusammenfassungController
-							            , property: 'wetter.wechselhaft'
-							        }
-		    			    		, value: 0
-		    				        , operation: function(v) {
-		    				    		switch(v) {
-		    				    			case false:
-		    				    				return M.I18N.l('no');
-		    					    		case true:
-		    				    				return M.I18N.l('yes');
-		    					    		default:
-		    					    		    return "";
-		    				    		}
-		    				        }
-							    }
-
-                			})
-              			})
-
-        	    	})
-    	      })
-    	      
-    	      , leistungsnachweisList: M.ContainerView.design({
-      	    	  	  childViews: 'myLabel zeitenAendernButton list'
-      	    	  	, cssClass: 'marginBottom20 leistungsnachweisList'
-      	    	  	, doNotOverlapAtTop: YES
-      	    	  	, doNotOverlapAtBottom: YES
-      	    	  	, myLabel: M.LabelView.design({
-    	    	  		  cssClass: 'bigLabel bold'
-    	    	  		, isInline: YES
-    	    	  		, value: M.I18N.l('BautagebuchLeistungsnachweis') + ":"
-    	    	  	})
-      	    	  	, zeitenAendernButton: M.ButtonView.design({
-	      	              value: M.I18N.l('BautagebuchZeitenAendern')
-	      	            , anchorLocation: M.RIGHT
-    	    	  		, isInline: YES
-    	    	  		//, cssClass: 'zeitenAendernButton'
-	      	            , events: {
-	      	                tap: {
-	      	                      target: DigiWebApp.NavigationController
-	      	                    , action: 'backToBautagebuchZeitenListePageTransition'
-	      	                }
-	      	            }
-	      	        })
-	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop25important'
-	    	        	, isDividedList: YES
-	    	            , contentBinding: {
-	    	                  target: DigiWebApp.BautagebuchZusammenfassungController
-	    	                , property: 'ZeitbuchungenPerMitarbeiterList'
-	    	            }
-	    	            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
-	    	        })
-    	      })
-
-    	      , materialienList: M.ContainerView.design({
-	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 materialienList'
-	  	    	  	, doNotOverlapAtTop: YES
-	  	    	  	, doNotOverlapAtBottom: YES
-	  	    	  	, myLabel: M.LabelView.design({
-	  	    	  		  cssClass: 'bigLabel bold'
-	  	    	  		, value: M.I18N.l('BautagebuchMaterialien') + ":"
-	  	    	  	})
-	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop20'
-	    	            , contentBinding: {
-	    	                  target: DigiWebApp.BautagebuchMaterialienListeController
-	    	                , property: 'items'
-	    	            }
-	    	            , listItemTemplateView: DigiWebApp.BautagebuchMaterialienTemplateView
-	    	        })
-    	      })
-
-    	      , notizenList: M.ContainerView.design({
-	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 notizenList'
-	  	    	  	, doNotOverlapAtTop: YES
-	  	    	  	, doNotOverlapAtBottom: YES
-	  	    	  	, myLabel: M.LabelView.design({
-	  	    	  		  cssClass: 'bigLabel bold'
-	  	    	  		, value: M.I18N.l('BautagebuchNotizen') + ":"
-	  	    	  	})
-	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop20'
-	    	            , contentBinding: {
-	    	                  target: DigiWebApp.BautagebuchNotizenListeController
-	    	                , property: 'items'
-	    	            }
-	    	            , listItemTemplateView: DigiWebApp.BautagebuchNotizenZusammenfassungTemplateView
-	    	        })
-		      })
-		      
-    	      , medienList: M.ContainerView.design({
-	  	    	  	  childViews: 'myLabel list'
-	  	    	  	, cssClass: 'marginBottom20 medienList borderBottom'
-	  	    	  	, doNotOverlapAtTop: YES
-	  	    	  	, doNotOverlapAtBottom: YES
-	  	    	  	, myLabel: M.LabelView.design({
-	  	    	  		  cssClass: 'bigLabel bold'
-	  	    	  		, value: M.I18N.l('BautagebuchMedien') + ":"
-	  	    	  	})
-	    	        , list: M.ListView.design({
-	    	        	  cssClass: 'marginTop20'
-	    	            , contentBinding: {
-	    	                  target: DigiWebApp.BautagebuchMedienListeController
-	    	                , property: 'items'
-	    	            }
-	    	            , listItemTemplateView: DigiWebApp.BautagebuchMedienTemplateView
-	    	        })
-		      })
-		      
-	          , signature: M.ContainerView.design({
-		        	
-		        	  childViews: 'signatureform'
-		        		  
-		            , cssClass: 'signaturecanvas2 marginTop20 marginBottom20'
-
-		        	, signatureform: M.FormView.design({
-		            	
-		            	  childViews: 'signaturecanvas'
-		            	
-		            	, signaturecanvas: M.CanvasView.design({
-
-		            		  label: M.I18N.l('signature') + ":"
-
-		            		, canvasWidth: 550
-		                    , canvasHeight: 320
-		                	
-		                    , render: function() {
-		                    	if (this.label) {
-		                    		this.html += '<label for="' + this.id + '" class="signaturecanvaslabel">' + this.label + '</label>';
-		                    	}
-		    					this.html += '  <div id="' + this.id + '_container" class="sig sigWrapper2">';
-		        				this.html += '    <canvas id="' + this.id + '_canvas" class="pad" width="' + this.canvasWidth + 'px" height="' + this.canvasHeight + 'px" style="border-color: #000; border: 1px solid #ccc;"></canvas>';
-		        				this.html += '    <input id="' + this.id + '" type="hidden" name="output" class="output">';
-		        				this.html += '  </div>';
-		                    	return this.html;
-		                	}
-		    	        })
-		                	
-		                , render: function() {
-		            		this.html += '<form method="post" action="" class="sigPad2">';
-		                	this.renderChildViews();
-		    				this.html += '</form>';
-		                	return this.html;
-		            	}
-		            })
-		      })
-
-
-	    })
-	
-	    , grid: M.GridView.design({
-		        childViews: 'button icon'
-		      , layout: {
-		            cssClass: 'digiButton marginTop20'
-		          , columns: {
-		                0: 'button'
-		              , 1: 'icon'
-		          }
-		      }
-		      , button: M.ButtonView.design({
-		            value: M.I18N.l('BautagebuchBautagesberichtAbschliessen')
-		          , cssClass: 'digiButton green_background'
-		          , anchorLocation: M.RIGHT
-		          , events: {
-		              tap: {
-			                //  target: DigiWebApp.BautagebuchZusammenfassungController
-			                //, action: 'finish'
-			    			action: function() {
-			    				//var that = this;
-		    	  				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-			    				DigiWebApp.BautagebuchZusammenfassungController.finish(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
-			    				DigiWebApp.BautagebuchZusammenfassungController.load(DigiWebApp.BautagebuchZusammenfassungController.item);
-								DigiWebApp.NavigationController.toBautagebuchZusammenfassungPageTransition();
-				    		}
-		              }
-		          }
-		      })
-		      , icon: M.ImageView.design({
-		          value: 'theme/images/icon_bookTime.png'
-		      })
-		})
-		  
-	    , transferGrid: M.GridView.design({
-	        childViews: 'button icon'
-	      , layout: {
-	            cssClass: 'digiButton marginTop20'
-	          , columns: {
-	                0: 'button'
-	              , 1: 'icon'
-	          }
-	      }
-	      , button: M.ButtonView.design({
-	            value: M.I18N.l('BautagebuchUebertragen')
-	          , cssClass: 'digiButton'
-	          , anchorLocation: M.RIGHT
-	          , events: {
-	              tap: {
-		                //  target: DigiWebApp.BautagebuchZusammenfassungController
-		                //, action: 'finish'
-		    			action: function() {
-	    	  				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-		    		    	var that = DigiWebApp.BautagebuchZusammenfassungController;
-		    		    	var startTransfer = NO;
-		    		    	if (that.lastTimestampDatatransfer !== null) {
-		    		    		var timestampNow = D8.now().getTimestamp();
-		    		    		if (timestampNow - that.lastTimestampDatatransfer > parseIntRadixTen(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
-		    		    			startTransfer = YES;
-		    		    		} else {
-		    		    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
-		    		    		}
-		    		    	}
-		    		    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
-		    		    		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
-			    				DigiWebApp.BautagebuchDatenuebertragungController.senden(
-			    						DigiWebApp.BautagebuchZusammenfassungController.item
-			    					    , function(msg) {
-			    							//console.log("successHandler");
-			    							DigiWebApp.BautagebuchZusammenfassungController.set("item", null);
-			    							DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition();
-			    						}
-			    						, function(xhr,err) {
-			    							//console.log("errorHandler");
-			    							trackError(err);
-			    				            DigiWebApp.ApplicationController.nativeAlertDialogView({
-			    				                title: M.I18N.l('BautagebuchUebertragungsfehler')
-			    				              , message: M.I18N.l('BautagebuchUebertragungsfehlerMsg')
-			    				            });
-			    						}
-			    				);
-		    		    	}
-			    		}
-	              }
-	          }
-	      })
-	      , icon: M.ImageView.design({
-	          value: 'theme/images/icon_bookTime.png'
-	      })
-	  })
-	  
-      , loeschenButton: M.ButtonView.design({
-          value: M.I18N.l('BautagebuchDelete')
-        , cssClass: 'red_background'
-        , events: {
-            tap: {
-	                target: DigiWebApp.BautagebuchBautagesberichtDetailsController,
-	                action: function() {
-        				try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-        				this.deleteBautagesbericht(DigiWebApp.NavigationController.backToBautagebuchBautagesberichteListePageTransition);
-
-        			}
-            }
-        }
-    })
-	
-	})
-	
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: BautagebuchZusammenfassungMitarbeiterZeitenTemplateView
 // ==========================================================================
 
@@ -34632,315 +34941,6 @@ DigiWebApp.BautagebuchZusammenfassungMitarbeiterZeitenTemplateView = M.ListItemV
 //	})
 });
 
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: BautagebuchZeitenTemplateView
-// ==========================================================================
-
-DigiWebApp.BautagebuchZeitenTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'positionName handOrderName activityName spacer von bis dauer latitude longitude latitude_bis longitude_bis mitarbeiterIds'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-			    var view = M.ViewManager.getViewById(id);
-			    var view_modelId = view.modelId;
-			    _.each(DigiWebApp.BautagebuchZeitenListeController.items, function(selectedItem) {
-					if (selectedItem.m_id === view_modelId) {
-						DigiWebApp.BautagebuchZeitenDetailsController.load(selectedItem);
-					}
-				});
-			    DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
-			}
-        }
-	}
-	
-	, spacer: M.LabelView.design({
-	    value: ''
-	})
-
-	, mitarbeiterIds: M.LabelView.design({
-	      cssClass: 'small unselectable'
-		, computedValue: {
-		      valuePattern: '<%= mitarbeiterIds %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null) {
-							var outString = "";
-							// v ist eine (json-striginfied) Liste mit (DTC-)mitarbeiterIds
-							var vAsArray = JSON.parse(v);
-							var mitarbeiterList = DigiWebApp.BautagebuchMitarbeiter.findSorted();
-							_.each(mitarbeiterList, function(el){
-								if (vAsArray.indexOf(el.get("id")) !== -1) {
-									if (outString !== "") {
-										outString += ", ";
-									}
-									outString += "<nobr>" + el.vollername() + "</nobr>";
-								}
-							});
-							return outString;
-						} else {
-							return "";
-						}
-		        }
-		}
-	})
-
-	, positionName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= positionName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-	
-	, handOrderName: M.LabelView.design({
-	    cssClass: 'normal unselectable'
-  	  , isInline: YES
-	  , computedValue: {
-	        valuePattern: '<%= handOrderName %>'
-	      , operation: function(v) {
-					if (v !== "" && v !== null) {
-						return v;
-					} else {
-						return "";
-					}
-	          }
-	  }
-	})
-
-	, activityName: M.LabelView.design({
-	      cssClass: 'normal unselectable'
-	    , isInline: YES
-		, computedValue: {
-		      valuePattern: '<%= activityName %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null) {
-							return ", " + v + ":";
-						} else {
-							return ":";
-						}
-		        }
-		}
-	})
-
-	, von: M.LabelView.design({
-	      cssClass: 'normal unselectable'
-		, isInline: YES
-		, computedValue: {
-		      valuePattern: '<%= von %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null && (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
-							return v;
-						} else {
-							return "";
-						}
-		        }
-		}
-	})
-	
-	, bis: M.LabelView.design({
-	      cssClass: 'normal unselectable'
-	    , isInline: YES
-		, computedValue: {
-		      valuePattern: '<%= bis %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null && (!DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
-							return " - " + v;
-						} else {
-							return "";
-						}
-		        }
-		}
-	})
-
-	, dauer: M.LabelView.design({
-	      cssClass: 'normal unselectable'
-	    , isInline: YES
-		, computedValue: {
-		      valuePattern: '<%= dauer %>'
-		    , operation: function(v) {
-						if (v !== "" && v !== null && (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) ) {
-							return M.I18N.l('bookingDuration') + ": " + v + " h";
-						} else {
-							return "";
-						}
-		        }
-		}
-	})
-
-	, latitude: M.LabelView.design({
-        cssClass: 'location unselectable'
-      , computedValue: {
-            valuePattern: '<%= latitude %>'
-          , operation: function(v) {
-              if(v > 0) {
-              	var str = new Number(v);
-             		return M.I18N.l('latitude') + ' Von: ' + str.toFixed(6);
-              } else {
-                  //return M.I18N.l('latitude') + ' Von: ' + M.I18N.l('GPSnotactive');
-              	return '';
-              }
-          }
-      }
-  })
-
-  , longitude: M.LabelView.design({
-        cssClass: 'location unselectable'
-      , computedValue: {
-            valuePattern: '<%= longitude %>'
-          , operation: function(v) {
-              if (v > 0) { 
-              	var str = new Number(v);
-             		return M.I18N.l('longitude') + ' Von: ' + str.toFixed(6);
-              } else {
-                  //return M.I18N.l('longitude') + ' Von: ' + M.I18N.l('GPSnotactive');
-                  return '';
-              }
-          }
-      }
-  })
-
-	, latitude_bis: M.LabelView.design({
-        cssClass: 'location unselectable'
-      , computedValue: {
-            valuePattern: '<%= latitude_bis %>'
-          , operation: function(v) {
-              if(v > 0) {
-              	var str = new Number(v);
-             		return M.I18N.l('latitude') + ' Bis: ' + str.toFixed(6);
-              } else {
-                  //return M.I18N.l('latitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
-              	return '';
-              }
-          }
-      }
-  })
-
-  , longitude_bis: M.LabelView.design({
-        cssClass: 'location unselectable'
-      , computedValue: {
-            valuePattern: '<%= longitude_bis %>'
-          , operation: function(v) {
-              if (v > 0) { 
-              	var str = new Number(v);
-             		return M.I18N.l('longitude') + ' Bis: ' + str.toFixed(6);
-              } else {
-                  //return M.I18N.l('longitude') + ' Bis: ' + M.I18N.l('GPSnotactive');
-                  return '';
-              }
-          }
-      }
-  })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: BautagebuchZeitenListePage
-// ==========================================================================
-
-m_require('app/views/BautagebuchZusammenfassungMitarbeiterSummeTemplateView');
-m_require('app/views/BautagebuchZeitenTemplateView');
-
-DigiWebApp.BautagebuchZeitenListePage = M.PageView.design({
-
-    events: {
-		pagebeforeshow: {
-              target: DigiWebApp.BautagebuchZeitenListeController
-            , action: 'init'
-        }
-    }
-
-	, controller: DigiWebApp.BautagebuchZeitenListeController
-	, navigationController: DigiWebApp.NavigationController
-	
-    , childViews: 'header content'
-
-    , cssClass: 'bautagebuchListePage unselectable'
-
-    , header: M.ToolbarView.design({
-        childViews: 'backButton title newButton'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToBautagebuchBautagesberichtDetailsPageTransition();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('BautagebuchZeiten')
-            , anchorLocation: M.CENTER
-        })
-        , newButton: M.ButtonView.design({
-              value: M.I18N.l('BautagebuchAdd')
-            , icon: 'new'
-            , anchorLocation: M.RIGHT
-            , cssClass: 'green_background'
-            , events: {
-                tap: {
-        			action: function() {
-        				try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} 
-        				DigiWebApp.BautagebuchZeitenListeController.neu();
-					}
-                }
-            }
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'leistungsnachweisList'
-        , list: M.ListView.design({
-              contentBinding: {
-                  target: DigiWebApp.BautagebuchZeitenListeController
-                , property: 'items'
-            }
-            , listItemTemplateView: DigiWebApp.BautagebuchZeitenTemplateView
-        })
-        , leistungsnachweisList: M.ContainerView.design({
-	    	  	  childViews: 'list'
-	    	  	, cssClass: 'marginBottom20 leistungsnachweisList'
-	    	  	, doNotOverlapAtTop: YES
-	    	  	, doNotOverlapAtBottom: YES
-		        , list: M.ListView.design({
-		        	  cssClass: ''
-		        	, isDividedList: YES
-		            , contentBinding: {
-		                  target: DigiWebApp.BautagebuchZusammenfassungController
-		                , property: 'ZeitbuchungenPerMitarbeiterList'
-		            }
-		            , listItemTemplateView: DigiWebApp.BautagebuchZusammenfassungMitarbeiterSummeTemplateView
-		        })
-	      })
-    })
-
-});
 
 
 // ==========================================================================
@@ -38472,6 +38472,120 @@ DigiWebApp.DashboardPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: HandOrderPage
+// ==========================================================================
+
+m_require('app/views/TabBar.js');
+
+DigiWebApp.HandOrderPage = M.PageView.design({
+
+    //  childViews: 'header content tabBar'
+      childViews: 'header content'
+
+    , cssClass: 'handApplicationPage'
+
+    , events: {
+		pageshow: {
+			action: function() {
+				$('#' + DigiWebApp.HandOrderPage.content.orderName.id)[0].focus();
+			}
+	    }
+ 	}
+
+	, header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('handApplications')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'orderName grid'
+        , orderName: M.TextFieldView.design({
+              label: M.I18N.l('orderName')
+            , numberOfChars: 50
+   	        , events: {
+        		keyup: {
+	                /* executed in scope of DOMWindow because no target defined */
+	            	action: function(selectedValue, selectedItem) {
+						var myValue = M.ViewManager.getView('handOrderPage', 'orderName').getValue();
+						if (myValue.length <= 16) {
+							DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
+						} else {
+							if (!DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
+								M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
+					            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					                title: M.I18N.l('handOrderTooLong')
+					              , message: M.I18N.l('handOrderTooLongMsg')
+					            });
+							} else {
+								if (myValue.length <= 50) {
+									DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
+								} else {
+									M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
+						            DigiWebApp.ApplicationController.nativeAlertDialogView({
+						                title: M.I18N.l('handOrderTooLong')
+						              , message: M.I18N.l('handOrderTooLongDTC6Msg')
+						            });
+								}
+							}
+						}
+	            	}
+	            }
+	    	}
+        })
+        , grid: M.GridView.design({
+              childViews: 'button icon'
+            , layout: {
+                  cssClass: 'digiButton hack'
+                , columns: {
+                      0: 'button'
+                    , 1: 'icon'
+                }
+            }
+            , button: M.ButtonView.design({
+                  value: M.I18N.l('assume')
+                , cssClass: 'digiButton'
+                , anchorLocation: M.RIGHT
+                , events: {
+                    tap: {
+                          target: DigiWebApp.HandOrderController
+                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
+                    }
+                }
+            })
+            , icon: M.ImageView.design({
+                value: 'theme/images/icon_bookTime.png'
+            })
+        })
+
+    })
+
+    , tabBar: DigiWebApp.TabBar
+
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: InfoPage
 // ==========================================================================
 
@@ -38695,7 +38809,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6429'
+              value: 'Build: 6430'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -38919,120 +39033,6 @@ DigiWebApp.InfoPage = M.PageView.design({
 	            }
 	        }
         })
-    })
-
-    , tabBar: DigiWebApp.TabBar
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: HandOrderPage
-// ==========================================================================
-
-m_require('app/views/TabBar.js');
-
-DigiWebApp.HandOrderPage = M.PageView.design({
-
-    //  childViews: 'header content tabBar'
-      childViews: 'header content'
-
-    , cssClass: 'handApplicationPage'
-
-    , events: {
-		pageshow: {
-			action: function() {
-				$('#' + DigiWebApp.HandOrderPage.content.orderName.id)[0].focus();
-			}
-	    }
- 	}
-
-	, header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                    , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('handApplications')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'orderName grid'
-        , orderName: M.TextFieldView.design({
-              label: M.I18N.l('orderName')
-            , numberOfChars: 50
-   	        , events: {
-        		keyup: {
-	                /* executed in scope of DOMWindow because no target defined */
-	            	action: function(selectedValue, selectedItem) {
-						var myValue = M.ViewManager.getView('handOrderPage', 'orderName').getValue();
-						if (myValue.length <= 16) {
-							DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
-						} else {
-							if (!DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
-								M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
-					            DigiWebApp.ApplicationController.nativeAlertDialogView({
-					                title: M.I18N.l('handOrderTooLong')
-					              , message: M.I18N.l('handOrderTooLongMsg')
-					            });
-							} else {
-								if (myValue.length <= 50) {
-									DigiWebApp.HandOrderController.set("orderNameToSave", M.ViewManager.getView('handOrderPage', 'orderName').getValue());
-								} else {
-									M.ViewManager.getView('handOrderPage', 'orderName').setValue(DigiWebApp.HandOrderController.orderNameToSave);
-						            DigiWebApp.ApplicationController.nativeAlertDialogView({
-						                title: M.I18N.l('handOrderTooLong')
-						              , message: M.I18N.l('handOrderTooLongDTC6Msg')
-						            });
-								}
-							}
-						}
-	            	}
-	            }
-	    	}
-        })
-        , grid: M.GridView.design({
-              childViews: 'button icon'
-            , layout: {
-                  cssClass: 'digiButton hack'
-                , columns: {
-                      0: 'button'
-                    , 1: 'icon'
-                }
-            }
-            , button: M.ButtonView.design({
-                  value: M.I18N.l('assume')
-                , cssClass: 'digiButton'
-                , anchorLocation: M.RIGHT
-                , events: {
-                    tap: {
-                          target: DigiWebApp.HandOrderController
-                        , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){} this.save();}
-                    }
-                }
-            })
-            , icon: M.ImageView.design({
-                value: 'theme/images/icon_bookTime.png'
-            })
-        })
-
     })
 
     , tabBar: DigiWebApp.TabBar
