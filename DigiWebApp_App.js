@@ -6273,55 +6273,6 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: ActivityListController
-// ==========================================================================
-
-DigiWebApp.ActivityListController = M.Controller.extend({
-
-	  items: null
-	
-	, itemsToUse: null
-	  
-	, comboBoxToUpdate: null
-	
-	, latestId: null
-	
-	, init: function(isFirstLoad) {
-		var that = this;
-		//that.set('items', that.itemsToUse);
-		that.items = [];
-		_.each(that.itemsToUse, function(el){
-			if (el.label != M.I18N.l('selectSomething')) {
-				that.items.push(el);
-			}
-		});
-		that.set('items', that.items);
-	}
-
-	, itemSelected: function(id, m_id) {
-
-		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
-		var that = this;
-	    if (this.latestId) {
-	        $('#' + this.latestId).removeClass('selected');
-	    }
-	    $('#' + id).addClass('selected');
-	    
-	    this.latestId = id;
-	
-	    var selectedItem = that.items[m_id];
-	    this.comboBoxToUpdate.setSelection(selectedItem.value);
-	    DigiWebApp.BautagebuchZeitenDetailsPage.content.activityComboBox.events.change.action();
-	    history.back();
-	}
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: AnwesenheitslisteController
 // ==========================================================================
 //var-checked
@@ -6972,6 +6923,8 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			    if (inDebug() && staticDebugging) alert(navigator.platform + ", realregSecEv " + " device undefined --> setTimeout and register deviceready");
 	        	// register deviceready-event and wait for it to fire
         		// or start deviceready-handler after a timeout of 10 seconds (we are not on a mobile device)
+			    var startTimeout = parseIntRadixTen(DigiWebApp.SettingsController.getSetting('startTimeout'));
+			    if (onMobile) startTimeout = DigiWebApp.SettingsController.defaultsettings_object.startTimeout;
         		DigiWebApp.ApplicationController.timeoutdeviceready_var = setTimeout("DigiWebApp.ApplicationController.timeoutdevicereadyhandler()", DigiWebApp.SettingsController.getSetting('startTimeout'));
         		//document.addEventListener("deviceready", DigiWebApp.ApplicationController.devicereadyhandler, false);
         		$(document).bind('deviceready', DigiWebApp.ApplicationController.devicereadyhandler);
@@ -9888,6 +9841,55 @@ DigiWebApp.ApplicationController = M.Controller.extend({
     		$('#' + id).parent().parent().parent()[0].firstChild.textContent = textValue;
     	}
     }
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: ActivityListController
+// ==========================================================================
+
+DigiWebApp.ActivityListController = M.Controller.extend({
+
+	  items: null
+	
+	, itemsToUse: null
+	  
+	, comboBoxToUpdate: null
+	
+	, latestId: null
+	
+	, init: function(isFirstLoad) {
+		var that = this;
+		//that.set('items', that.itemsToUse);
+		that.items = [];
+		_.each(that.itemsToUse, function(el){
+			if (el.label != M.I18N.l('selectSomething')) {
+				that.items.push(el);
+			}
+		});
+		that.set('items', that.items);
+	}
+
+	, itemSelected: function(id, m_id) {
+
+		try{DigiWebApp.ApplicationController.vibrate();}catch(e2){}
+		var that = this;
+	    if (this.latestId) {
+	        $('#' + this.latestId).removeClass('selected');
+	    }
+	    $('#' + id).addClass('selected');
+	    
+	    this.latestId = id;
+	
+	    var selectedItem = that.items[m_id];
+	    this.comboBoxToUpdate.setSelection(selectedItem.value);
+	    DigiWebApp.BautagebuchZeitenDetailsPage.content.activityComboBox.events.change.action();
+	    history.back();
+	}
+
 });
 
 // ==========================================================================
@@ -22308,7 +22310,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6469
+    , softwareVersion: 6470
 
 
     /**
@@ -39055,7 +39057,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6469'
+              value: 'Build: 6470'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
