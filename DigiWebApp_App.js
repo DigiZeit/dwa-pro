@@ -19564,7 +19564,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         };
     	var errorFunc = function(xhr, err) {
         	// asking primary-gateway failed --> ask gateway-pool
-    		that.DatabaseServer = that.GatewayPool;
+            that.setDatabaseServer(that.GatewayPool);
         	var secondErrorFunc = function(xhr, err) {
             	// asking the gateway-pool also failed!
         		DigiWebApp.ApplicationController.DigiLoaderView.hide();
@@ -19584,7 +19584,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         };
         
     	// ask primary-gateway (or localhost if not on device)
-        that.DatabaseServer = myGatewayServer;
+        that.setDatabaseServer(myGatewayServer);
         var receiveObj = {
         		  webservice: 'allgemein/empfangeUrl'
         		, loaderText: M.I18N.l('empfangeUrlLoader')
@@ -22300,7 +22300,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6461
+    , softwareVersion: 6462
 
 
     /**
@@ -39036,7 +39036,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6461'
+              value: 'Build: 6462'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
