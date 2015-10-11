@@ -9898,185 +9898,6 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: AudioController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.AudioController = M.Controller.extend({
-
-	/*
-	 * http://docs.phonegap.com/en/1.0.0/phonegap_media_media.md.html
-	 */
-	
-      myAudioObject: {}
-    , myTimeStamp: null
-    , myFilename: null
-    , myState: null
-
-    /*
-    * Sample function
-    * To handle the first load of a page.
-    */
-    , init: function(isFirstLoad) {
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('init');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-		if (isFirstLoad) {
-            /* do something here, when page is loaded the first time. */
-        }
-        /* do something, for any other load. */
-
-		// rewire audioIcon for record
-    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.recordAudio } };
-    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
-    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.recordAudio } };
-		//DigiWebApp.AudioPage.content.audioIcon.events = { tap: { target: DigiWebApp.AudioController, action: 'recordAudio' } };
-    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-    	//DigiWebApp.AudioPage.content.audioIcon.value = 'file:///android_asset/www/theme/images/icon_record.png';
-    	//DigiWebApp.AudioPage.content.audioIcon.renderUpdate();
-    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_record.png';
-
-    	
-        this.myTimeStamp = M.Date.create(new Date()).format('yymmddHHMMss');
-        this.myFilename = 'DIGI-WebApp-recording-' + this.myTimeStamp + '.wav';
-        this.myState = null;
-    	
-        DigiWebApp.AudioController.myAudioObject = new Media(this.myFilename, this.onSuccess, this.onError, this.mediaStatus, this.mediaPosition);
-        if (DigiWebApp.SettingsController.globalDebugMode) console.log(this.myFilename);
-        if (DigiWebApp.SettingsController.globalDebugMode) console.log(DigiWebApp.AudioController.myAudioObject);
-    	
-    }
-
-    , mediaStatus: function(status) {
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('mediaStatus: ' + status);
-    }
-    
-    , mediaPosition: function(position) {
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('mediaPosition: ' + position);
-    }
-    
-    , onSuccess: function() {
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('onSuccess');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-		switch(this.myState) {
-			case 'play':
-				
-				// rewire audioIcon for stopPlayback
-				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopPlayback } };
-				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
-				
-				break;
-				
-			case 'record':
-				
-				// rewire audioIcon for stopRecord
-		    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopRecord } };
-		    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-		    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
-
-		    	// rewire digi-button to setup a new recording
-		    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
-		    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
-
-		    	break;
-		    	
-			case 'stop':
-				
-				// rewire audioIcon for playbackAudio
-				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
-				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
-				
-				break;
-				
-			default:
-
-				// rewire audioIcon for playbackAudio
-				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
-				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
-
-				break;
-		}
-    }
-    
-    , onError: function(error) {
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('onError');
-    	console.log('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
-    	console.log('Filename: ' + this.myFilename);
-    	
-    	// rewire audioIcon for playbackAudio
-    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
-    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
-
-    	// rewire digi-button to setup a new recording
-    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
-    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
-    }
-    
-    , recordAudio: function() {
-    	this.myState = 'record';
-    	DigiWebApp.AudioController.myAudioObject.startRecord();
-
-		// rewire audioIcon for stopRecord
-    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopRecord } };
-    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
-
-    	// rewire digi-button to setup a new recording
-    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
-    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
-
-		if (DigiWebApp.SettingsController.globalDebugMode) console.log('recordAudio');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-    }
-   
-    , stopRecord: function() {
-    	this.myState = 'stop';
-    	DigiWebApp.AudioController.myAudioObject.stopRecord();
-
-    	// rewire audioIcon for playbackAudio
-    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
-    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
-
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('stopRecord');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-    }
-        
-    , playbackAudio: function() {
-    	this.myState = 'play';
-    	DigiWebApp.AudioController.myAudioObject.play();
-
-		// rewire audioIcon for stopPlayback
-		DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopPlayback } };
-		DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-		document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
-
-		if (DigiWebApp.SettingsController.globalDebugMode) console.log('playbackAudio');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-    }
-    
-    , stopPlayback: function() {
-    	this.myState = 'stop';
-    	DigiWebApp.AudioController.myAudioObject.stop();
-    	
-		// rewire audioIcon for playbackAudio
-    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
-    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
-    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
-
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('stopPlayback');
-    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
-    }
-    
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: BautagebuchBautagesberichtDetailsController
 // ==========================================================================
 // manuell var-checked
@@ -10339,6 +10160,185 @@ DigiWebApp.BautagebuchBautagesberichtDetailsController = M.Controller.extend({
   			$('#'+DigiWebApp.BautagebuchBautagesberichtDetailsPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchBautagesberichtDetailsController.startUhrzeit.split(":")[1]).padLeft(2,"0");
   		}
 	}
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: AudioController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.AudioController = M.Controller.extend({
+
+	/*
+	 * http://docs.phonegap.com/en/1.0.0/phonegap_media_media.md.html
+	 */
+	
+      myAudioObject: {}
+    , myTimeStamp: null
+    , myFilename: null
+    , myState: null
+
+    /*
+    * Sample function
+    * To handle the first load of a page.
+    */
+    , init: function(isFirstLoad) {
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('init');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+		if (isFirstLoad) {
+            /* do something here, when page is loaded the first time. */
+        }
+        /* do something, for any other load. */
+
+		// rewire audioIcon for record
+    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.recordAudio } };
+    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
+    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.recordAudio } };
+		//DigiWebApp.AudioPage.content.audioIcon.events = { tap: { target: DigiWebApp.AudioController, action: 'recordAudio' } };
+    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+    	//DigiWebApp.AudioPage.content.audioIcon.value = 'file:///android_asset/www/theme/images/icon_record.png';
+    	//DigiWebApp.AudioPage.content.audioIcon.renderUpdate();
+    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_record.png';
+
+    	
+        this.myTimeStamp = M.Date.create(new Date()).format('yymmddHHMMss');
+        this.myFilename = 'DIGI-WebApp-recording-' + this.myTimeStamp + '.wav';
+        this.myState = null;
+    	
+        DigiWebApp.AudioController.myAudioObject = new Media(this.myFilename, this.onSuccess, this.onError, this.mediaStatus, this.mediaPosition);
+        if (DigiWebApp.SettingsController.globalDebugMode) console.log(this.myFilename);
+        if (DigiWebApp.SettingsController.globalDebugMode) console.log(DigiWebApp.AudioController.myAudioObject);
+    	
+    }
+
+    , mediaStatus: function(status) {
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('mediaStatus: ' + status);
+    }
+    
+    , mediaPosition: function(position) {
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('mediaPosition: ' + position);
+    }
+    
+    , onSuccess: function() {
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('onSuccess');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+		switch(this.myState) {
+			case 'play':
+				
+				// rewire audioIcon for stopPlayback
+				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopPlayback } };
+				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
+				
+				break;
+				
+			case 'record':
+				
+				// rewire audioIcon for stopRecord
+		    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopRecord } };
+		    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+		    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
+
+		    	// rewire digi-button to setup a new recording
+		    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
+		    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
+
+		    	break;
+		    	
+			case 'stop':
+				
+				// rewire audioIcon for playbackAudio
+				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
+				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
+				
+				break;
+				
+			default:
+
+				// rewire audioIcon for playbackAudio
+				DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
+				DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+				document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
+
+				break;
+		}
+    }
+    
+    , onError: function(error) {
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('onError');
+    	console.log('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
+    	console.log('Filename: ' + this.myFilename);
+    	
+    	// rewire audioIcon for playbackAudio
+    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
+    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
+
+    	// rewire digi-button to setup a new recording
+    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
+    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
+    }
+    
+    , recordAudio: function() {
+    	this.myState = 'record';
+    	DigiWebApp.AudioController.myAudioObject.startRecord();
+
+		// rewire audioIcon for stopRecord
+    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopRecord } };
+    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
+
+    	// rewire digi-button to setup a new recording
+    	DigiWebApp.AudioPage.content.grid.button.events = { tap: { action: DigiWebApp.AudioController.init } };
+    	DigiWebApp.AudioPage.content.grid.button.registerEvents();
+
+		if (DigiWebApp.SettingsController.globalDebugMode) console.log('recordAudio');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+    }
+   
+    , stopRecord: function() {
+    	this.myState = 'stop';
+    	DigiWebApp.AudioController.myAudioObject.stopRecord();
+
+    	// rewire audioIcon for playbackAudio
+    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
+    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
+
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('stopRecord');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+    }
+        
+    , playbackAudio: function() {
+    	this.myState = 'play';
+    	DigiWebApp.AudioController.myAudioObject.play();
+
+		// rewire audioIcon for stopPlayback
+		DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.stopPlayback } };
+		DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+		document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_stop.png';
+
+		if (DigiWebApp.SettingsController.globalDebugMode) console.log('playbackAudio');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+    }
+    
+    , stopPlayback: function() {
+    	this.myState = 'stop';
+    	DigiWebApp.AudioController.myAudioObject.stop();
+    	
+		// rewire audioIcon for playbackAudio
+    	DigiWebApp.AudioPage.content.audioIcon.events = { tap: { action: DigiWebApp.AudioController.playbackAudio } };
+    	DigiWebApp.AudioPage.content.audioIcon.registerEvents();
+    	document.getElementById(DigiWebApp.AudioPage.content.audioIcon.id).src = 'theme/images/icon_playbackAudio.png';
+
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('stopPlayback');
+    	if (DigiWebApp.SettingsController.globalDebugMode) console.log('this.myState = ' + this.myState);
+    }
+    
 });
 
 // ==========================================================================
@@ -19283,6 +19283,11 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 
 	  consoleLogOutput: YES
 
+	, GatewayServer: 'primary.digi-gateway.de'
+	, GatewayPool: 'pool.digi-gateway.de'
+	, TestServer: "vespasian.digi-zeitserver.de"
+	, DatabaseServer: null
+	, DatabaseServerTimestamp: null
 	, AuthentifizierenCode: null
 	
 	, sendData: function(sendObj) {
@@ -19363,27 +19368,45 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
     }
 
 	, recieveData: function(recieveObj) {
+		var that = this;
 		if (!recieveObj) {
 			writeToLog("Daten konnten nicht empfangen werden! Falsche Übergabe an recieveData.");
 			return;
 		}
-		if (!DigiWebApp.RequestController.DatabaseServer || (DigiWebApp.RequestController.DatabaseServerTimestamp && (DigiWebApp.RequestController.DatabaseServerTimestamp - new Date().getTime() > 60000))) {
-		  	DigiWebApp.RequestController.getDatabaseServer(function(obj) {
-		  		DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(recieveObj);
-		  	}, null);
+		if (!that.DatabaseServer 
+		|| ( that.DatabaseServerTimestamp && (that.DatabaseServerTimestamp - new Date().getTime() > 60000))) 
+		{
+			that.empfangeUrl(function(obj) {
+		  		that.recieveDataWithServer(recieveObj);
+		  	});
 		} else {
-			DigiWebApp.JSONDatenuebertragungController.recieveDataWithServer(recieveObj);
+			that.recieveDataWithServer(recieveObj);
 		}
 	}
 
 	, recieveDataWithServer: function(recieveObj) {
 		var that = this;
-		// ToDo: check for AuthentifizierenCode
-		return that.recieveDataWithServerAuthenticated(recieveObj);
+		if (!recieveObj) {
+			writeToLog("Daten konnten nicht empfangen werden! Falsche Übergabe an recieveData.");
+			return;
+		}
+		if (!that.AuthentifizierenCode 
+		|| parseIntRadixTen(that.AuthentifizierenCode) <> 1) 
+		{
+			that.authentifizieren(function(obj) {
+				that.recieveDataWithServerAuthenticated(recieveObj);
+		  	});
+		} else {
+			that.recieveDataWithServerAuthenticated(recieveObj);
+		}
 	}
 	
 	, recieveDataWithServerAuthenticated: function(recieveObj) {
-		
+		var that = this;
+		if (!recieveObj) {
+			writeToLog("Daten konnten nicht empfangen werden! Falsche Übergabe an recieveData.");
+			return;
+		}
 		var webservice = recieveObj['webservice']
 		var loaderText = recieveObj['loaderText']
 		var successCallback = recieveObj['successCallback']
@@ -19404,7 +19427,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 		
 		if (webservice == 'allgemein/empfangeUrl') {
 			if(databaseServer == null || databaseServer == '')
-				databaseServer = DigiWebApp.RequestController.GatewayServer;
+				databaseServer = that.GatewayServer;
 		}
 			
 		var myURL = 'http://' + databaseServer + '/WebAppServices/' + webservice + '?modus=' + myModus + '&firmenId=' + DigiWebApp.SettingsController.getSetting('company') + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password') + '&geraeteId=' + myGeraeteId + '&geraeteTyp=' + myGeraeteTyp + '&softwareVersion=' + DigiWebApp.RequestController.softwareVersion + '&requestTimestamp=' + M.Date.now().date.valueOf();
@@ -19433,6 +19456,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
             , onError: function(xhr, err) {// error callback
 				DigiWebApp.ApplicationController.DigiLoaderView.hide();
                 DigiWebApp.RequestController.DatabaseServer = null;
+                that.DatabaseServer = null;
                 //console.error(err);
                 //console.error(xhr);
                 writeToLog('## recieveDataWithServer ' + err);
@@ -19446,17 +19470,35 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 		}).send();
 	}
 	
+	, setDatabaseServer: function(server) {
+		var that = this;
+		that.DatabaseServer = server;
+		DigiWebApp.RequestController.DatabaseServer = that.DatabaseServer;
+	}
+	
+	, setGatewayServer: function(server) {
+		var that = this;
+		that.GatewayServer = server;
+		DigiWebApp.RequestController.GatewayServer = that.GatewayServer;
+	}
+	
+	, setDatabaseServerTimestamp: function(timestamp) {
+		var that = this;
+		that.DatabaseServerTimestamp = timestamp;
+		DigiWebApp.RequestController.DatabaseServerTimestamp = that.DatabaseServerTimestamp;
+	}
+
 	, empfangeUrl: function(callback, sendObj) {
 		var that = this;
     	
 		if (typeof(callback) != "function") callback = function(){};
 		
-		DigiWebApp.RequestController.DatabaseServer = "";
-    	var myGatewayServer = DigiWebApp.RequestController.GatewayServer;
+    	var myGatewayServer = that.GatewayServer;
 
     	if (inDebug()) {
-			DigiWebApp.RequestController.DatabaseServer = "vespasian.digi-zeitserver.de";
-			myGatewayServer = DigiWebApp.RequestController.DatabaseServer;
+    		that.setDatabaseServer(that.TestServer);
+			that.DatabaseServer = that.TestServer;
+			myGatewayServer = that.DatabaseServer;
 		}
     	    	
     	if (typeof(device) === "undefined") {
@@ -19468,14 +19510,14 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 			DigiWebApp.ApplicationController.DigiLoaderView.hide();
 	    	if (data !== null) {
 	    		var objEmpfangeUrl = data.empfangeUrl;
-	    		DigiWebApp.RequestController.DatabaseServer = objEmpfangeUrl.url;
+	    		that.setDatabaseServer(objEmpfangeUrl.url);
 	    	} else {
 	    		console.log("FALLBACK: empty DatabaseServer --> falling back to GatewayServer"); 
-	    		DigiWebApp.RequestController.DatabaseServer = DigiWebApp.RequestController.GatewayServer;
+	    		that.setDatabaseServer(that.GatewayServer);
 	    	}
-	    	DigiWebApp.RequestController.DatabaseServerTimestamp = new Date().getTime();
+	    	that.setDatabaseServerTimestamp(new Date().getTime());
 	    	if (typeof(device) === "undefined") {
-	    		if ((location.host !== DigiWebApp.RequestController.DatabaseServer)) {
+	    		if ((location.host !== that.DatabaseServer)) {
 		        		DigiWebApp.ApplicationController.nativeConfirmDialogView({
 			            	  title: M.I18N.l('wrongServer')
 		    		        , message: M.I18N.l('wrongServerMessage')
@@ -19485,39 +19527,37 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 		                		  confirm: {
 		                    		  target: this
 		                    		, action: function() {
-								    			location.href = 'http://' + DigiWebApp.RequestController.DatabaseServer + location.pathname;
-		                    				}
+							    			location.href = 'http://' + that.DatabaseServer + location.pathname;
+	                    				}
 		                			}
 		                		, cancel: {
 		                    		  target: this
 		                    		, action: function() {
-	                        					DigiWebApp.ApplicationController.deleteAllData(); 
-				    							if (typeof(navigator.app) !== "undefined") {
-													if (typeof(location.origin) !== "undefined") {
-														navigator.app.loadUrl(location.origin + location.pathname);					
-													} else {
-														navigator.app.loadUrl(location.protocol + '//' + location.pathname);
-													}
-				    							} else {
-				    								window.location.reload();
-				    							}
-		                    				}
+                    					DigiWebApp.ApplicationController.deleteAllData(); 
+		    							if (typeof(navigator.app) !== "undefined") {
+											if (typeof(location.origin) !== "undefined") {
+												navigator.app.loadUrl(location.origin + location.pathname);					
+											} else {
+												navigator.app.loadUrl(location.protocol + '//' + location.pathname);
+											}
+		    							} else {
+		    								window.location.reload();
+		    							}
+		                    		}
 		                		}
 		            		}
 		        		});
         		        
 	    		} else {
-	    			//console.log(myFunc);
 					callback(sendObj);
 	    		}
 	    	} else {
-    			//console.log(myFunc);
 	    		callback(sendObj);
 			}
         };
     	var errorFunc = function(xhr, err) {
         	// asking primary-gateway failed --> ask gateway-pool
-            DigiWebApp.RequestController.DatabaseServer = DigiWebApp.RequestController.GatewayPool;
+    		that.DatabaseServer = that.GatewayPool;
         	var secondErrorFunc = function(xhr, err) {
             	// asking the gateway-pool also failed!
         		DigiWebApp.ApplicationController.DigiLoaderView.hide();
@@ -19533,11 +19573,11 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         		, geraeteIdOverride: false
         		, modus: '0' 
         	};
-        	that.recieveDataWithServer(secondReceiveObj);
+        	that.recieveDataWithServerAuthenticated(secondReceiveObj);
         };
         
     	// ask primary-gateway (or localhost if not on device)
-        DigiWebApp.RequestController.DatabaseServer = myGatewayServer;
+        that.DatabaseServer = myGatewayServer;
         var receiveObj = {
         		  webservice: 'allgemein/empfangeUrl'
         		, loaderText: M.I18N.l('empfangeUrlLoader')
@@ -19547,17 +19587,92 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         		, geraeteIdOverride: false
         };
 		if (inDebug() && staticDebugging) alert(navigator.platform + ", JSONDatenuebertragungController.empfangeUrl " + "vor recieveDataWithServer (primary)");
-		that.recieveDataWithServer(receiveObj);
+		that.recieveDataWithServerAuthenticated(receiveObj);
 	}
 	
-	, authentifizieren: function(sendObj) {
+	, authentifizieren: function(callback, sendObj) {
 		var that = this;
+		if (typeof(callback) != "function") callback = function(){};
+		var evalCode = function(code) {
+				switch(code) {
+	            case '1':
+	        		var timestampNow = D8.now().getTimestamp();
+	        		if (DigiWebApp.ApplicationController.timestampMitarbeiterZuletztGeladen === null 
+	        		|| (timestampNow - DigiWebApp.ApplicationController.timestampMitarbeiterZuletztGeladen > 60000)) {
+	            		writeToLog("aktualisiere Mitarbeiter des Benutzers nach authenticate", function(){
+		            		var maRecieveObj = {
+		          				  webservice: "mitarbeiter"
+		          				, loaderText: M.I18N.l('BautagebuchLadeMitarbeiter')
+		          				, successCallback: function(data){
+			        	    		if (data && data.mitarbeiter && data.mitarbeiter.length > 0) {
+			        	    			DigiWebApp.SettingsController.setSetting("mitarbeiterVorname", data.mitarbeiter[0].vorname);
+			        	    			DigiWebApp.SettingsController.setSetting("mitarbeiterNachname", data.mitarbeiter[0].nachname);
+			        	    			DigiWebApp.SettingsController.setSetting("mitarbeiterId", data.mitarbeiter[0].mitarbeiterId);
+			        	    		}
+			        	    		DigiWebApp.ApplicationController.timestampMitarbeiterZuletztGeladen = D8.now().getTimestamp();
+			        	    		callback(sendObj);        		
+			        	    	}
+		          				, errorCallback: function(error) {
+		            	    		DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		                			// Fehlermeldung
+		                			DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                                title: M.I18N.l('offlineWorkNotPossible')
+		                              , message: M.I18N.l('offlineWorkNotPossibleMsg')
+		                			});
+		            	    	}
+		          				, additionalQueryParameter: "getAll=true&webAppId=" + DigiWebApp.SettingsController.getSetting("workerId")
+		          				//, timeout: 
+		          				, geraeteIdOverride: true
+		          				//, modus: 
+		            		};
+		            		DigiWebApp.JSONDatenuebertragungController.recieveData(maRecieveObj);
+	            		});
+	        		} else {
+	    	    		callback(sendObj);        		
+	        		}
+	
+	                DigiWebApp.ApplicationController.enforceChefToolOnly();
+	        		break;
+	            
+	            case '2':
+	                //M.DialogView.alert({
+	                DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                      title: M.I18N.l('authenticationError2')
+	                    , message: M.I18N.l('authenticationErrorMsg2')
+	                });
+	                DigiWebApp.NavigationController.toSettingsPage(YES);
+	                break;
+	
+	            case '3':
+	                //M.DialogView.alert({
+	                DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                      title: M.I18N.l('authenticationError3')
+	                    , message: M.I18N.l('authenticationErrorMsg3')
+	                });
+	                DigiWebApp.NavigationController.toSettingsPage(YES);
+	                break;
+	
+	            default:
+	                //M.DialogView.alert({
+	                DigiWebApp.ApplicationController.nativeAlertDialogView({
+	                      title: M.I18N.l('authenticationError')
+	                    , message: code
+	                });
+	                DigiWebApp.NavigationController.toSettingsPage(YES);
+	                break;
+	        }
+		}
+		
     	var successFunc = function(data, msg, xhr) {
 			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			alert(data);
-        };
+	    	if (data !== null) {
+	    		var objAuthentifizieren = data.authentifizieren;
+	    		evalCode(objAuthentifizieren.code);
+	    	}
+	    };
         var errorFunc = function(xhr, err) {
 			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+    		evalCode(err);
         };
         
         var receiveObj = {
@@ -19569,7 +19684,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
         		, geraeteIdOverride: false
         };
 		if (inDebug() && staticDebugging) alert(navigator.platform + ", JSONDatenuebertragungController.empfangeUrl " + "vor recieveData ");
-		that.recieveData(receiveObj);
+		that.recieveDataWithServerAuthenticated(receiveObj);
 	}
 
 	, sendeZeitdaten: function(mybuchungen, mysuccessCallback, myerrorCallback, myisClosingDay, mydoSync) {
@@ -22165,7 +22280,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6458
+    , softwareVersion: 6459
 
 
     /**
@@ -36968,68 +37083,6 @@ DigiWebApp.OrderInfoTemplateView = M.ListItemView.design({
 
 m_require('app/views/OrderInfoTemplateView');
 
-DigiWebApp.OrderDetailsPage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-    events: {
-		pageshow: {
-            target: DigiWebApp.OrderDetailsController,
-            action: 'init'
-        }
-    }
-
-    , childViews: 'header spacer list'
-
-    , cssClass: 'orderInfoPage'
-
-    , header: M.ToolbarView.design({
-        childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-            value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                    target: DigiWebApp.NavigationController,
-                    action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToZeitbuchungDetailsPageTransition();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-            value: M.I18N.l('orderInfo')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-	, spacer: M.LabelView.design({
-	      value: ' '
-        , cssClass: 'marginBottom12' 
-	})
-
-    , list: M.ListView.design({
-          contentBinding: {
-              target: DigiWebApp.OrderDetailsController
-            , property: 'positionForDetails'
-        }
-        , listItemTemplateView: DigiWebApp.OrderInfoTemplateView
-    })
-    
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: OrderInfoPage
-// ==========================================================================
-
-m_require('app/views/OrderInfoTemplateView');
-
 DigiWebApp.OrderInfoPage = M.PageView.design({
 
     /* Use the 'events' property to bind events like 'pageshow' */
@@ -37164,6 +37217,68 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
           contentBinding: {
               target: DigiWebApp.OrderInfoController
             , property: 'items'
+        }
+        , listItemTemplateView: DigiWebApp.OrderInfoTemplateView
+    })
+    
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: OrderInfoPage
+// ==========================================================================
+
+m_require('app/views/OrderInfoTemplateView');
+
+DigiWebApp.OrderDetailsPage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+    events: {
+		pageshow: {
+            target: DigiWebApp.OrderDetailsController,
+            action: 'init'
+        }
+    }
+
+    , childViews: 'header spacer list'
+
+    , cssClass: 'orderInfoPage'
+
+    , header: M.ToolbarView.design({
+        childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+            value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                    target: DigiWebApp.NavigationController,
+                    action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToZeitbuchungDetailsPageTransition();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+            value: M.I18N.l('orderInfo')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+	, spacer: M.LabelView.design({
+	      value: ' '
+        , cssClass: 'marginBottom12' 
+	})
+
+    , list: M.ListView.design({
+          contentBinding: {
+              target: DigiWebApp.OrderDetailsController
+            , property: 'positionForDetails'
         }
         , listItemTemplateView: DigiWebApp.OrderInfoTemplateView
     })
@@ -38901,7 +39016,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6458'
+              value: 'Build: 6459'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
