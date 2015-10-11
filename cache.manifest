@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6457 beta, Timestamp:1444567973393
+#Application:DigiWebApp, Version:1.8.3.6458 beta, Timestamp:1444568449300
 
 
 # Explicitly cached entries
@@ -20,11 +20,11 @@ jquery.xml2json_1.3.js
 barcodescanner.js
 childbrowser.js
 cordova.js
-jstz.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
+jstz.js
 Math.uuid.js
 pen.cur
 theme/style.css
@@ -63,10 +63,10 @@ theme/images/Icon.png
 theme/images/ajax-loader.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
-theme/images/ic_launcher_hdpi.png
-theme/images/ic_launcher_ldpi.png
 theme/images/arrow_white.png
+theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_mdpi.png
+theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_xxhdpi.png
 theme/images/icon-winphone.png
