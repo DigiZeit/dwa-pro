@@ -8878,7 +8878,8 @@ DigiWebApp.ApplicationController = M.Controller.extend({
     // Bugfix: 3265 XML-WebService -> RESTful
     // DatenTransferHttpSoap11Endpoint -> konfigurationen
     , getFeaturesFromRemote: function() {
-    	this.setCallbackStatus('features', 'remote', NO);
+    	var that = this;
+    	that.setCallbackStatus('features', 'remote', NO);
     	var successFunc = function(data, msg, xhr) {
     		DigiWebApp.ApplicationController.getFeaturesFromRemoteSuccessRestful(data, msg, xhr);
 			var ChefToolOnly = (DigiWebApp.SettingsController.featureAvailable('409'));
@@ -22369,7 +22370,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6480
+    , softwareVersion: 6481
 
 
     /**
@@ -39120,7 +39121,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6480'
+              value: 'Build: 6481'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
