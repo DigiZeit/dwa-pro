@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6484 beta, Timestamp:1444601922282
+#Application:DigiWebApp, Version:1.8.3.6485 beta, Timestamp:1444602452934
 
 
 # Explicitly cached entries
@@ -53,9 +53,9 @@ theme/images/48x48_plain_pda_write.png
 theme/images/48x48_plain_refresh.png
 theme/images/48x48_plain_shelf.png
 theme/images/48x48_plain_text_code.png
+theme/images/48x48_plain_wrench.png
 theme/images/5000x5000_90_SCHOLPP.png
 theme/images/640x960_90_SCHOLPP.png
-theme/images/48x48_plain_wrench.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/DigiLogo2013_DSO.png
 theme/images/DigiLogo2013_scholpp.png
@@ -63,8 +63,8 @@ theme/images/Icon.png
 theme/images/ajax-loader.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
-theme/images/ic_launcher_hdpi.png
 theme/images/arrow_white.png
+theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
