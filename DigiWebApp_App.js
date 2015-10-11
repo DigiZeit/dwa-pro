@@ -19938,6 +19938,7 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 	}
 
 	, sendeKonfiguration: function(mysuccessCallback, myerrorCallback) {
+		var that = this;
 		
     	writeToLog("sendeKonfiguration");
 
@@ -22374,7 +22375,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6477
+    , softwareVersion: 6478
 
 
     /**
@@ -39125,7 +39126,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6477'
+              value: 'Build: 6478'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
