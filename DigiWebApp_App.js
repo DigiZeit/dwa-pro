@@ -5752,6 +5752,109 @@ DigiWebApp.Settings = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: SpesenAuswahlOption
+// ==========================================================================
+
+DigiWebApp.SpesenAuswahlOption = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'SpesenAuswahlOption'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , beschreibung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Sonderbuchung
 // ==========================================================================
 
@@ -5868,109 +5971,6 @@ DigiWebApp.Sonderbuchung = M.Model.create({
 	    return true;
 	}
 	
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: SpesenAuswahlOption
-// ==========================================================================
-
-DigiWebApp.SpesenAuswahlOption = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'SpesenAuswahlOption'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , beschreibung: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
-    }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-	        });
-	    }
-	    return records;
-	}
 
 }, M.DataProviderLocalStorage);
 
@@ -22346,7 +22346,7 @@ DigiWebApp.RequestController = M.Controller.extend({
      */
     , errorCallback: {}
     
-    , softwareVersion: 6490
+    , softwareVersion: 6491
 
 
     /**
@@ -27216,6 +27216,124 @@ DigiWebApp.TerminlisteController = M.Controller.extend({
 
 });
 
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: ZeitbuchungenController
+// ==========================================================================
+
+DigiWebApp.ZeitbuchungenController = M.Controller.extend({
+
+	  items: null
+	 
+	, itemForDetails: null
+		
+	, datum: null
+	
+	, mitarbeiterID: null
+	
+	, mitarbeiterNameVorname: null
+	
+	, backFunction: DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition
+	
+	, init: function(isFirstLoad) {
+		DigiWebApp.VorZurueckTabBar.setActiveTab(DigiWebApp.VorZurueckTabBar.tabItemDayToShow);
+		if (DigiWebApp.SettingsController.featureAvailable('408')) {
+			$('#' + DigiWebApp.ZeitbuchungenPage.tabBar.id).show();
+		} else {
+			$('#' + DigiWebApp.ZeitbuchungenPage.tabBar.id).hide();
+		}
+		var that = DigiWebApp.ZeitbuchungenController;
+		if(that.items === null) {
+			DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.ZeitbuchungenController.initWithServer, isFirstLoad);
+		} else {
+			DigiWebApp.ZeitbuchungenController.initWithServer(isFirstLoad);
+		}
+	}
+
+    , initWithServer: function(isFirstLoad) {
+		var that = DigiWebApp.ZeitbuchungenController;
+		if(that.items === null) {
+			//console.log("Zeitbuchungen: showing Loader");		
+			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ZeitbuchungenLaden'));
+
+			//console.log("Zeitbuchungen: find --> request");		
+			DigiWebApp.Zeitbuchungen.find({
+	              urlParams: {
+					  datum: DigiWebApp.ZeitbuchungenController.datum
+					, mitarbeiterID: DigiWebApp.ZeitbuchungenController.mitarbeiterID
+				}
+	            , callbacks: {
+	                  success: {
+	                    action: function(records) {
+							//console.log(records);
+	            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	            			try {
+		                        if ((!records) || (records && records.length === 0) || (records && records.length === 1 && (typeof(records[0].get('mitarbeiterId')) === "undefined" || records[0].get('mitarbeiterId') == null))) {
+		                        	DigiWebApp.ZeitbuchungenController.set('items', []);
+		                        } else {
+		                        	DigiWebApp.ZeitbuchungenController.set('items', records);
+		                        }
+	            			} catch(e2) {
+	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	            		              title: M.I18N.l('error')
+	            		            , message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden')
+	            		            , callbacks: {
+	            		                confirm: {
+	            		                    target: this,
+	            		                    action: function () {
+	            		        				//DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition();
+	            		        				//history.back();
+	            		        				this.backFunction();
+	            		                    }
+	            		                }
+	            		            }
+	            		        });
+	            			}
+	                    }
+	                }
+	                , error: {
+	                    action: function(request, error) {
+	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                		//console.log("Zeitbuchungen: error request failed");		
+	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	        		              title: M.I18N.l('error')
+	        		            , message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden')
+	        		            , callbacks: {
+	        		                confirm: {
+	        		                      target: this
+	        		                    , action: function () {
+		        							//DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition();
+					        				//history.back();
+					        				this.backFunction();
+	        		                    }
+	        		                }
+	        		            }
+	        		        });
+	                    }
+	                }
+	            }
+	        });    	
+        }
+
+		if (DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname !== null) { 
+			//DigiWebApp.ZeitbuchungenPage.header.title.set("value", M.I18N.l('Zeitbuchungen') + ": " + DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname);
+			var wochentag = "";
+			try {
+				wochentag = M.I18N.l(D8.create(DigiWebApp.ZeitbuchungenController.datum).format("dddd")).substring(0,2) + ', ';
+			} catch(e2) {
+				wochentag = "";
+			}
+			DigiWebApp.ZeitbuchungenPage.header.title.set("value", DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname + '<br />' + wochentag + DigiWebApp.ZeitbuchungenController.datum);
+			DigiWebApp.ZeitbuchungenPage.header.title.renderUpdate();
+		}
+		
+    }
+
+});
+
 //// ==========================================================================
 //// The M-Project - Mobile HTML5 Application Framework
 //// Generated with: Espresso 
@@ -27564,124 +27682,6 @@ DigiWebApp.TerminlisteController = M.Controller.extend({
 //	}
 //	
 //});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: ZeitbuchungenController
-// ==========================================================================
-
-DigiWebApp.ZeitbuchungenController = M.Controller.extend({
-
-	  items: null
-	 
-	, itemForDetails: null
-		
-	, datum: null
-	
-	, mitarbeiterID: null
-	
-	, mitarbeiterNameVorname: null
-	
-	, backFunction: DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition
-	
-	, init: function(isFirstLoad) {
-		DigiWebApp.VorZurueckTabBar.setActiveTab(DigiWebApp.VorZurueckTabBar.tabItemDayToShow);
-		if (DigiWebApp.SettingsController.featureAvailable('408')) {
-			$('#' + DigiWebApp.ZeitbuchungenPage.tabBar.id).show();
-		} else {
-			$('#' + DigiWebApp.ZeitbuchungenPage.tabBar.id).hide();
-		}
-		var that = DigiWebApp.ZeitbuchungenController;
-		if(that.items === null) {
-			DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.ZeitbuchungenController.initWithServer, isFirstLoad);
-		} else {
-			DigiWebApp.ZeitbuchungenController.initWithServer(isFirstLoad);
-		}
-	}
-
-    , initWithServer: function(isFirstLoad) {
-		var that = DigiWebApp.ZeitbuchungenController;
-		if(that.items === null) {
-			//console.log("Zeitbuchungen: showing Loader");		
-			DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('ZeitbuchungenLaden'));
-
-			//console.log("Zeitbuchungen: find --> request");		
-			DigiWebApp.Zeitbuchungen.find({
-	              urlParams: {
-					  datum: DigiWebApp.ZeitbuchungenController.datum
-					, mitarbeiterID: DigiWebApp.ZeitbuchungenController.mitarbeiterID
-				}
-	            , callbacks: {
-	                  success: {
-	                    action: function(records) {
-							//console.log(records);
-	            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	            			try {
-		                        if ((!records) || (records && records.length === 0) || (records && records.length === 1 && (typeof(records[0].get('mitarbeiterId')) === "undefined" || records[0].get('mitarbeiterId') == null))) {
-		                        	DigiWebApp.ZeitbuchungenController.set('items', []);
-		                        } else {
-		                        	DigiWebApp.ZeitbuchungenController.set('items', records);
-		                        }
-	            			} catch(e2) {
-	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	            		              title: M.I18N.l('error')
-	            		            , message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden')
-	            		            , callbacks: {
-	            		                confirm: {
-	            		                    target: this,
-	            		                    action: function () {
-	            		        				//DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition();
-	            		        				//history.back();
-	            		        				this.backFunction();
-	            		                    }
-	            		                }
-	            		            }
-	            		        });
-	            			}
-	                    }
-	                }
-	                , error: {
-	                    action: function(request, error) {
-	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                		//console.log("Zeitbuchungen: error request failed");		
-	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	        		              title: M.I18N.l('error')
-	        		            , message: M.I18N.l('ZeitbuchungenKonntenNichtGeladenWerden')
-	        		            , callbacks: {
-	        		                confirm: {
-	        		                      target: this
-	        		                    , action: function () {
-		        							//DigiWebApp.NavigationController.backToAnwesenheitslistePageTransition();
-					        				//history.back();
-					        				this.backFunction();
-	        		                    }
-	        		                }
-	        		            }
-	        		        });
-	                    }
-	                }
-	            }
-	        });    	
-        }
-
-		if (DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname !== null) { 
-			//DigiWebApp.ZeitbuchungenPage.header.title.set("value", M.I18N.l('Zeitbuchungen') + ": " + DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname);
-			var wochentag = "";
-			try {
-				wochentag = M.I18N.l(D8.create(DigiWebApp.ZeitbuchungenController.datum).format("dddd")).substring(0,2) + ', ';
-			} catch(e2) {
-				wochentag = "";
-			}
-			DigiWebApp.ZeitbuchungenPage.header.title.set("value", DigiWebApp.ZeitbuchungenController.mitarbeiterNameVorname + '<br />' + wochentag + DigiWebApp.ZeitbuchungenController.datum);
-			DigiWebApp.ZeitbuchungenPage.header.title.renderUpdate();
-		}
-		
-    }
-
-});
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -39097,7 +39097,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6490'
+              value: 'Build: 6491'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
