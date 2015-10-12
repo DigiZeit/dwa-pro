@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6504 beta, Timestamp:1444617046439
+#Application:DigiWebApp, Version:1.8.3.6505 beta, Timestamp:1444617272961
 
 
 # Explicitly cached entries
@@ -9,8 +9,8 @@ en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-underscore-min.js
 jquery-1.9.1.js
+underscore-min.js
 d8-0.1.3.min.js
 d8-0.4.0.min.js
 theme/tmp.css
@@ -59,10 +59,10 @@ theme/images/640x960_90_SCHOLPP.png
 theme/images/800x1280_90_SCHOLPP.png
 theme/images/DigiLogo2013_DSO.png
 theme/images/DigiLogo2013_scholpp.png
-theme/images/Icon.png
 theme/images/ajax-loader.png
 theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
+theme/images/Icon.png
 theme/images/arrow_white.png
 theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_ldpi.png
@@ -124,7 +124,6 @@ full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
-core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
@@ -132,6 +131,7 @@ theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
+core.js
 DigiWebApp_App.js
 
 
