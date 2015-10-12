@@ -8982,6 +8982,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 			writeToLog("restarting app with url " + newUrl);
 			navigator.app.loadUrl(newUrl);
 		} else {
+			try{window.location.reload();}catch(e){}
 			alert(M.I18N.l('bitteManuellNeuStarten'));
 			flushLogQueueAndExit();
 		}
@@ -21463,7 +21464,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6507
+      softwareVersion: 6508
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -37099,7 +37100,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6507'
+              value: 'Build: 6508'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
