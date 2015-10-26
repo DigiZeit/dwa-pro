@@ -5113,6 +5113,220 @@ DigiWebApp.Position = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: SentBooking
+// ==========================================================================
+
+DigiWebApp.SentBooking = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'SentBooking'
+
+    , fileName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fileType: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , orderName: M.Model.attr('String',{
+        isRequired: NO
+    })
+
+    , timezoneOffset: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timezone: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timeStampStart: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , timeStampEnd: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
+
+    })
+
+    , startTimeString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , endeTimeString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , startDateString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , endeDateString: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude_bis: M.Model.attr('String', {
+        isRequired:NO
+    })
+
+    , longitude_bis: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gpsLaengeVon: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsBreiteVon: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsLaengeBis: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , gpsBreiteBis: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+
+    , handOrderName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , handOrderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , positionName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , activityName: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , isCurrent: M.Model.attr('Boolean', {
+        isRequired: NO
+    })
+
+    , spesenAuswahl: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , uebernachtungAuswahl: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , gefahreneKilometer: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , employees: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , mitarbeiterId: M.Model.attr('String', {
+    	// runtime only (für das senden)
+        isRequired: NO
+    })
+    
+    , remark: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , istFeierabend: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , istKolonnenbuchung: M.Model.attr('Boolean', {
+    	isRequired: NO
+    })
+    
+    , genauigkeitVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenVon: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , genauigkeitBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , gps_zeitstempelBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ermittlungsverfahrenBis: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , ServiceApp_Status: M.Model.attr('String', {
+    	isRequired: NO
+    })
+
+    , closeBooking: function() {
+        this.set('timeStampEnd', +new Date());
+    }
+
+    , setRemark: function(v) {
+        this.set('remark', v);
+    }
+
+    , setAsCurrent: function() {
+        this.set('isCurrent', YES);
+    }
+
+    , removeAsCurrent: function() {
+        this.set('isCurrent', NO);
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: SentBookingArchived
 // ==========================================================================
 
@@ -5339,220 +5553,6 @@ DigiWebApp.SentBookingArchived = M.Model.create({
     		}
         });
 	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: SentBooking
-// ==========================================================================
-
-DigiWebApp.SentBooking = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'SentBooking'
-
-    , fileName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fileType: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , orderName: M.Model.attr('String',{
-        isRequired: NO
-    })
-
-    , timezoneOffset: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timezone: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timeStampStart: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , timeStampEnd: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , date: M.Model.attr('String', { // is aggregated by the two timestamp values above
-
-    })
-
-    , startTimeString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , endeTimeString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , startDateString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , endeDateString: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude_bis: M.Model.attr('String', {
-        isRequired:NO
-    })
-
-    , longitude_bis: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , gpsLaengeVon: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsBreiteVon: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsLaengeBis: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , gpsBreiteBis: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-
-    , handOrderName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , handOrderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , activityName: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , isCurrent: M.Model.attr('Boolean', {
-        isRequired: NO
-    })
-
-    , spesenAuswahl: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , uebernachtungAuswahl: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , gefahreneKilometer: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , employees: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , mitarbeiterId: M.Model.attr('String', {
-    	// runtime only (für das senden)
-        isRequired: NO
-    })
-    
-    , remark: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , istFeierabend: M.Model.attr('Boolean', {
-    	isRequired: NO
-    })
-    
-    , istKolonnenbuchung: M.Model.attr('Boolean', {
-    	isRequired: NO
-    })
-    
-    , genauigkeitVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , gps_zeitstempelVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ermittlungsverfahrenVon: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , genauigkeitBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , gps_zeitstempelBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ermittlungsverfahrenBis: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , ServiceApp_Status: M.Model.attr('String', {
-    	isRequired: NO
-    })
-
-    , closeBooking: function() {
-        this.set('timeStampEnd', +new Date());
-    }
-
-    , setRemark: function(v) {
-        this.set('remark', v);
-    }
-
-    , setAsCurrent: function() {
-        this.set('isCurrent', YES);
-    }
-
-    , removeAsCurrent: function() {
-        this.set('isCurrent', NO);
-    }
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
 
 }, M.DataProviderLocalStorage);
 
@@ -10568,185 +10568,6 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: BautagebuchEinstellungenController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
-
-	  settings: {
-		// Vorgabewerte (werden zur Laufzeit überschrieben)
-		  startUhrzeit: "08:00"
-		, inStundenBuchen: NO
-		, inStundenBuchenItem: [{
-	        value: 'inStundenBuchen'
-	      , label: M.I18N.l('BautagebuchInStundenBuchen')
-	      , isSelected: NO
-		}]
-		, falscheZeitenIgnorieren: NO
-		, falscheZeitenIgnorierenItem: [{
-	        value: 'falscheZeitenIgnorieren'
-	      , label: M.I18N.l('falscheZeitenIgnorieren')
-	      , isSelected: NO
-		}]
-		, positionVorselektieren: NO
-		, positionVorselektierenItem: [{
-	        value: 'positionVorselektieren'
-	      , label: M.I18N.l('positionVorselektieren')
-	      , isSelected: NO
-		}]
-		, alleMitarbeiterVorselektiert: NO
-		, alleMitarbeiterVorselektiertItem: [{
-	        value: 'alleMitarbeiterVorselektiert'
-	      , label: M.I18N.l('alleMitarbeiterVorselektiert')
-	      , isSelected: NO
-		}]
-		, minutenSchritte: 5
-		, minutenSchritteItem: [
-    	          {
-    		        value: '1'
-    		      , label: '1'
-    		      , isSelected: NO
-    			}
-      	        , {
-    		        value: '5'
-    		      , label: '5'
-    		      , isSelected: YES
-    			}
-    	        , {
-    		        value: '10'
-    		      , label: '10'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '15'
-    		      , label: '15'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '20'
-    		      , label: '20'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '30'
-    		      , label: '30'
-    		      , isSelected: NO
-    			}
-        ]
-	}
-
-	, init: function(isFirstLoad) {
-		var that = this;
-		that.load();
-	}
-
-	, lastPage: null
-	
-	, load: function() {
-		var that = this;
-
-		// set defaults for content-binding
-		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
-		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
-		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
-		that.set("settings.falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
-		that.set("settings.falscheZeitenIgnorierenItem", that.settings.falscheZeitenIgnorierenItem);
-		that.set("settings.positionVorselektieren", that.settings.positionVorselektieren);
-		that.set("settings.positionVorselektierenItem", that.settings.positionVorselektierenItem);
-		that.set("settings.alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
-		that.set("settings.alleMitarbeiterVorselektiertItem", that.settings.alleMitarbeiterVorselektiertItem);
-		that.set("settings.minutenSchritte", that.settings.minutenSchritte);
-		that.set("settings.minutenSchritteItem", that.settings.minutenSchritteItem);
-		
-		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
-			// erstelle Record mit Vorgabewerten
-			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
-				  startUhrzeit: that.settings.startUhrzeit
-				, inStundenBuchen: that.settings.inStundenBuchen
-				, falscheZeitenIgnorieren: that.settings.falscheZeitenIgnorieren
-				, positionVorselektieren: that.settings.positionVorselektieren
-				, minutenSchritte: that.settings.minutenSchritte
-				, alleMitarbeiterVorselektiert: that.settings.alleMitarbeiterVorselektiert
-			});
-			rec.save();
-		} else {
-			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-			that.set("settings.startUhrzeit", rec.get("startUhrzeit"));
-			if (typeof(rec.get("inStundenBuchen")) !== "undefined") {
-				that.set("settings.inStundenBuchen", rec.get("inStundenBuchen"));
-				that.set("settings.inStundenBuchenItem", [{
-			        value: 'inStundenBuchen'
-			      , label: M.I18N.l('BautagebuchInStundenBuchen')
-			      , isSelected: rec.get("inStundenBuchen")
-				}]);
-			}
-			if (typeof(rec.get("falscheZeitenIgnorieren")) !== "undefined") {
-				that.set("settings.falscheZeitenIgnorieren", rec.get("falscheZeitenIgnorieren"));
-				that.set("settings.falscheZeitenIgnorierenItem", [{
-			        value: 'falscheZeitenIgnorieren'
-			      , label: M.I18N.l('falscheZeitenIgnorieren')
-			      , isSelected: rec.get("falscheZeitenIgnorieren")
-				}]);
-			}
-			if (typeof(rec.get("positionVorselektieren")) !== "undefined") {
-				that.set("settings.positionVorselektieren", rec.get("positionVorselektieren"));
-				that.set("settings.positionVorselektierenItem", [{
-			        value: 'positionVorselektieren'
-			      , label: M.I18N.l('positionVorselektieren')
-			      , isSelected: rec.get("positionVorselektieren")
-				}]);
-			}
-			if (typeof(rec.get("alleMitarbeiterVorselektiert")) !== "undefined") {
-				that.set("settings.alleMitarbeiterVorselektiert", rec.get("alleMitarbeiterVorselektiert"));
-				that.set("settings.alleMitarbeiterVorselektiertItem", [{
-			        value: 'alleMitarbeiterVorselektiert'
-			      , label: M.I18N.l('alleMitarbeiterVorselektiert')
-			      , isSelected: rec.get("alleMitarbeiterVorselektiert")
-				}]);
-			}
-			if (typeof(rec.get("minutenSchritte")) !== "undefined") {
-				that.set("settings.minutenSchritte", rec.get("minutenSchritte"));
-				var myItems = _.map(that.settings.minutenSchritteItem, function(n) {
-					n.isSelected = NO;
-					if (parseIntRadixTen(n.value) == parseIntRadixTen(rec.get("minutenSchritte"))) {
-						n.isSelected = YES;
-					}
-					return n;
-				});
-				that.set("settings.minutenSchritteItem", myItems);
-			}
-		}
-	}
-	
-	, save: function() {
-		var that = this;
-		
-		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-		rec.set("startUhrzeit", that.settings.startUhrzeit);
-		rec.set("inStundenBuchen", that.settings.inStundenBuchen);
-		rec.set("falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
-		rec.set("positionVorselektieren", that.settings.positionVorselektieren);
-		rec.set("alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
-		rec.set("minutenSchritte", that.settings.minutenSchritte);
-		rec.save();
-		
-		//M.ViewManager.setCurrentPage(that.lastPage)
-	}
-
-	, setStartUhrzeit: function() {
-  		if (DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit) {
-  			$('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[0],10).padLeft(2,"0");
-  			$('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[1],10).padLeft(2,"0");
-  		}
-	}
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: BautagebuchMainController
 // ==========================================================================
 // manuell var-checked
@@ -10968,6 +10789,185 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
         	trackError(e);
         }
                 
+	}
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: BautagebuchEinstellungenController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
+
+	  settings: {
+		// Vorgabewerte (werden zur Laufzeit überschrieben)
+		  startUhrzeit: "08:00"
+		, inStundenBuchen: NO
+		, inStundenBuchenItem: [{
+	        value: 'inStundenBuchen'
+	      , label: M.I18N.l('BautagebuchInStundenBuchen')
+	      , isSelected: NO
+		}]
+		, falscheZeitenIgnorieren: NO
+		, falscheZeitenIgnorierenItem: [{
+	        value: 'falscheZeitenIgnorieren'
+	      , label: M.I18N.l('falscheZeitenIgnorieren')
+	      , isSelected: NO
+		}]
+		, positionVorselektieren: NO
+		, positionVorselektierenItem: [{
+	        value: 'positionVorselektieren'
+	      , label: M.I18N.l('positionVorselektieren')
+	      , isSelected: NO
+		}]
+		, alleMitarbeiterVorselektiert: NO
+		, alleMitarbeiterVorselektiertItem: [{
+	        value: 'alleMitarbeiterVorselektiert'
+	      , label: M.I18N.l('alleMitarbeiterVorselektiert')
+	      , isSelected: NO
+		}]
+		, minutenSchritte: 5
+		, minutenSchritteItem: [
+    	          {
+    		        value: '1'
+    		      , label: '1'
+    		      , isSelected: NO
+    			}
+      	        , {
+    		        value: '5'
+    		      , label: '5'
+    		      , isSelected: YES
+    			}
+    	        , {
+    		        value: '10'
+    		      , label: '10'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '15'
+    		      , label: '15'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '20'
+    		      , label: '20'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '30'
+    		      , label: '30'
+    		      , isSelected: NO
+    			}
+        ]
+	}
+
+	, init: function(isFirstLoad) {
+		var that = this;
+		that.load();
+	}
+
+	, lastPage: null
+	
+	, load: function() {
+		var that = this;
+
+		// set defaults for content-binding
+		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
+		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
+		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
+		that.set("settings.falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
+		that.set("settings.falscheZeitenIgnorierenItem", that.settings.falscheZeitenIgnorierenItem);
+		that.set("settings.positionVorselektieren", that.settings.positionVorselektieren);
+		that.set("settings.positionVorselektierenItem", that.settings.positionVorselektierenItem);
+		that.set("settings.alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
+		that.set("settings.alleMitarbeiterVorselektiertItem", that.settings.alleMitarbeiterVorselektiertItem);
+		that.set("settings.minutenSchritte", that.settings.minutenSchritte);
+		that.set("settings.minutenSchritteItem", that.settings.minutenSchritteItem);
+		
+		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
+			// erstelle Record mit Vorgabewerten
+			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
+				  startUhrzeit: that.settings.startUhrzeit
+				, inStundenBuchen: that.settings.inStundenBuchen
+				, falscheZeitenIgnorieren: that.settings.falscheZeitenIgnorieren
+				, positionVorselektieren: that.settings.positionVorselektieren
+				, minutenSchritte: that.settings.minutenSchritte
+				, alleMitarbeiterVorselektiert: that.settings.alleMitarbeiterVorselektiert
+			});
+			rec.save();
+		} else {
+			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+			that.set("settings.startUhrzeit", rec.get("startUhrzeit"));
+			if (typeof(rec.get("inStundenBuchen")) !== "undefined") {
+				that.set("settings.inStundenBuchen", rec.get("inStundenBuchen"));
+				that.set("settings.inStundenBuchenItem", [{
+			        value: 'inStundenBuchen'
+			      , label: M.I18N.l('BautagebuchInStundenBuchen')
+			      , isSelected: rec.get("inStundenBuchen")
+				}]);
+			}
+			if (typeof(rec.get("falscheZeitenIgnorieren")) !== "undefined") {
+				that.set("settings.falscheZeitenIgnorieren", rec.get("falscheZeitenIgnorieren"));
+				that.set("settings.falscheZeitenIgnorierenItem", [{
+			        value: 'falscheZeitenIgnorieren'
+			      , label: M.I18N.l('falscheZeitenIgnorieren')
+			      , isSelected: rec.get("falscheZeitenIgnorieren")
+				}]);
+			}
+			if (typeof(rec.get("positionVorselektieren")) !== "undefined") {
+				that.set("settings.positionVorselektieren", rec.get("positionVorselektieren"));
+				that.set("settings.positionVorselektierenItem", [{
+			        value: 'positionVorselektieren'
+			      , label: M.I18N.l('positionVorselektieren')
+			      , isSelected: rec.get("positionVorselektieren")
+				}]);
+			}
+			if (typeof(rec.get("alleMitarbeiterVorselektiert")) !== "undefined") {
+				that.set("settings.alleMitarbeiterVorselektiert", rec.get("alleMitarbeiterVorselektiert"));
+				that.set("settings.alleMitarbeiterVorselektiertItem", [{
+			        value: 'alleMitarbeiterVorselektiert'
+			      , label: M.I18N.l('alleMitarbeiterVorselektiert')
+			      , isSelected: rec.get("alleMitarbeiterVorselektiert")
+				}]);
+			}
+			if (typeof(rec.get("minutenSchritte")) !== "undefined") {
+				that.set("settings.minutenSchritte", rec.get("minutenSchritte"));
+				var myItems = _.map(that.settings.minutenSchritteItem, function(n) {
+					n.isSelected = NO;
+					if (parseIntRadixTen(n.value) == parseIntRadixTen(rec.get("minutenSchritte"))) {
+						n.isSelected = YES;
+					}
+					return n;
+				});
+				that.set("settings.minutenSchritteItem", myItems);
+			}
+		}
+	}
+	
+	, save: function() {
+		var that = this;
+		
+		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+		rec.set("startUhrzeit", that.settings.startUhrzeit);
+		rec.set("inStundenBuchen", that.settings.inStundenBuchen);
+		rec.set("falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
+		rec.set("positionVorselektieren", that.settings.positionVorselektieren);
+		rec.set("alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
+		rec.set("minutenSchritte", that.settings.minutenSchritte);
+		rec.save();
+		
+		//M.ViewManager.setCurrentPage(that.lastPage)
+	}
+
+	, setStartUhrzeit: function() {
+  		if (DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit) {
+  			$('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[0],10).padLeft(2,"0");
+  			$('#'+DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[1],10).padLeft(2,"0");
+  		}
 	}
 
 });
@@ -21501,7 +21501,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6523
+      softwareVersion: 6524
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -35728,6 +35728,163 @@ DigiWebApp.SplashViewPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// View: StudieChecklisteTemplateView
+// ==========================================================================
+
+DigiWebApp.StudieChecklisteTemplateView = M.DigiListItemView.design({
+
+      isSelectable: NO
+
+    , childViews: 'comboBoxView'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+
+			}
+        }
+    }
+
+	, label: M.LabelView.design({
+          cssClass: 'unselectable'
+        , computedValue: {
+              valuePattern: '<%= label %>'
+            //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
+            , operation: function(v) {
+				return v;
+            }
+        }
+    })
+
+	, comboBox: M.LabelView.design({
+          cssClass: 'unselectable'
+        , computedValue: {
+              valuePattern: '<%= comboBox %>'
+            //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
+            , operation: function(v) {
+				if (v && typeof(v) === "object" && v.length > 0) {
+					// comboBoxView befüllen und anzeigen
+					DigiWebApp.StudieChecklisteController.set("t1", $(this));
+					DigiWebApp.StudieChecklisteController.set("t2", this);
+				} else {
+					// comboBoxView verstecken
+					console.log(this);
+				}
+				return '';
+            }
+        }
+    })
+
+    , comboBoxView: M.DigiSelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , initialText: M.I18N.l('noData')
+            , applyTheme: NO
+            , computedValue: {
+		        valuePattern: '<%= comboBox %>'
+		      //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
+		      , operation: function(v) {
+//					if (v && typeof(v) === "object" && v.length > 0) {
+//						// comboBoxView befüllen und anzeigen
+//						DigiWebApp.StudieChecklisteController.set("t1", $(this));
+//						DigiWebApp.StudieChecklisteController.set("t2", this);
+//					} else {
+//						// comboBoxView verstecken
+//						console.log(this);
+//					}
+    				console.log(v);
+					return v;
+		      }
+		  }
+
+//            , contentBinding: {
+//			        target: DigiWebApp.StudieChecklisteController
+//			      , property: 'listData'
+//			  }
+//			  , events: {
+//			      change: {
+//			            target: DigiWebApp.StudieChecklisteController
+//			          , action: function() {
+//			              //this.setPositions();
+//			          }
+//			      }
+//			      , tap: {
+//						action: function() {
+//			      		try{DigiWebApp.ApplicationController.vibrate();}catch(e){}
+//						}
+//			      }
+//			  }
+    })
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: StudieChecklistePage
+// ==========================================================================
+
+m_require('app/views/StudieChecklisteTemplateView');
+
+DigiWebApp.StudieChecklistePage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		pagebeforeshow: {
+            target: DigiWebApp.StudieChecklisteController,
+            action: 'init'
+        }
+    }
+
+    , childViews: 'header content'
+
+    , cssClass: 'studieChecklistePage'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                      , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('settings')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'list'
+        
+              , list: M.DigiListView.design({
+                  contentBinding: {
+                      target: DigiWebApp.StudieChecklisteController
+                    , property: 'listData'
+                }
+                , listItemTemplateView: DigiWebApp.StudieChecklisteTemplateView
+            })
+    })
+    
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // View: TabBar
 // ==========================================================================
 
@@ -36925,7 +37082,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6523'
+              value: 'Build: 6524'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -37601,163 +37758,6 @@ DigiWebApp.SettingsPage = M.PageView.design({
     	
     , tabBar: DigiWebApp.TabBar
 
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: StudieChecklisteTemplateView
-// ==========================================================================
-
-DigiWebApp.StudieChecklisteTemplateView = M.DigiListItemView.design({
-
-      isSelectable: NO
-
-    , childViews: 'comboBoxView'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-
-			}
-        }
-    }
-
-	, label: M.LabelView.design({
-          cssClass: 'unselectable'
-        , computedValue: {
-              valuePattern: '<%= label %>'
-            //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
-            , operation: function(v) {
-				return v;
-            }
-        }
-    })
-
-	, comboBox: M.LabelView.design({
-          cssClass: 'unselectable'
-        , computedValue: {
-              valuePattern: '<%= comboBox %>'
-            //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
-            , operation: function(v) {
-				if (v && typeof(v) === "object" && v.length > 0) {
-					// comboBoxView befüllen und anzeigen
-					DigiWebApp.StudieChecklisteController.set("t1", $(this));
-					DigiWebApp.StudieChecklisteController.set("t2", this);
-				} else {
-					// comboBoxView verstecken
-					console.log(this);
-				}
-				return '';
-            }
-        }
-    })
-
-    , comboBoxView: M.DigiSelectionListView.design({
-              selectionMode: M.SINGLE_SELECTION_DIALOG
-            , initialText: M.I18N.l('noData')
-            , applyTheme: NO
-            , computedValue: {
-		        valuePattern: '<%= comboBox %>'
-		      //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
-		      , operation: function(v) {
-//					if (v && typeof(v) === "object" && v.length > 0) {
-//						// comboBoxView befüllen und anzeigen
-//						DigiWebApp.StudieChecklisteController.set("t1", $(this));
-//						DigiWebApp.StudieChecklisteController.set("t2", this);
-//					} else {
-//						// comboBoxView verstecken
-//						console.log(this);
-//					}
-    				console.log(v);
-					return v;
-		      }
-		  }
-
-//            , contentBinding: {
-//			        target: DigiWebApp.StudieChecklisteController
-//			      , property: 'listData'
-//			  }
-//			  , events: {
-//			      change: {
-//			            target: DigiWebApp.StudieChecklisteController
-//			          , action: function() {
-//			              //this.setPositions();
-//			          }
-//			      }
-//			      , tap: {
-//						action: function() {
-//			      		try{DigiWebApp.ApplicationController.vibrate();}catch(e){}
-//						}
-//			      }
-//			  }
-    })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: StudieChecklistePage
-// ==========================================================================
-
-m_require('app/views/StudieChecklisteTemplateView');
-
-DigiWebApp.StudieChecklistePage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		pagebeforeshow: {
-            target: DigiWebApp.StudieChecklisteController,
-            action: 'init'
-        }
-    }
-
-    , childViews: 'header content'
-
-    , cssClass: 'studieChecklistePage'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                      , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('settings')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'list'
-        
-              , list: M.DigiListView.design({
-                  contentBinding: {
-                      target: DigiWebApp.StudieChecklisteController
-                    , property: 'listData'
-                }
-                , listItemTemplateView: DigiWebApp.StudieChecklisteTemplateView
-            })
-    })
-    
 });
 
 
