@@ -1,27 +1,27 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.3.6535, Timestamp:1446215530890
+#Application:DigiWebApp, Version:1.8.3.6536 beta, Timestamp:1446218628361
 
 
 # Explicitly cached entries
 CACHE:
+underscore-min.js
+theme/tmp.css
+jquery-1.9.1.js
+bootstrap.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
+jquery_mobile.js
+jquery.xml2json_1.3.js
+barcodescanner.js
+childbrowser.js
+cordova.js
+jstz.js
+Math.uuid.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-jquery-1.9.1.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
-underscore-min.js
-jquery_mobile.js
-bootstrap.js
-barcodescanner.js
-childbrowser.js
-cordova.js
-jquery.xml2json_1.3.js
-jstz.js
-Math.uuid.js
-theme/tmp.css
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
@@ -70,8 +70,8 @@ theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_xxhdpi.png
 theme/images/icon-winphone.png
-theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
+theme/images/icon_bookTime.png
 theme/images/icon_ios_120.png
 theme/images/icon_ios_144.png
 theme/images/icon_ios_152.png
@@ -100,6 +100,7 @@ theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
+ui.js
 CHANGELOG.md
 Gruntfile.coffee
 LICENSE.txt
@@ -108,14 +109,14 @@ jquery.signaturepad.js
 jquery.signaturepad.min.js
 package.json
 pen.psd
-flashcanvas.swf
 flashcanvas.js
+flashcanvas.swf
 theme/journal.eot
 theme/journal.svg
 theme/journal.ttf
 theme/journal.woff
-json2.min.js
 theme/jquery.signaturepad.css
+json2.min.js
 pen.cur
 accept-multiple-signatures.html
 accept-signature.html
@@ -126,11 +127,10 @@ sample-signature-output.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
-theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
-ui.js
+theme/images/icons-18-black.png
 core.js
 DigiWebApp_App.js
 
