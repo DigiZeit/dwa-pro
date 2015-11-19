@@ -5029,16 +5029,16 @@ DigiWebApp.Order = M.Model.create({
 	    return true;
 	}
     
-    , hasElements: function() {
+    , hasPositions: function() {
 		var childOrders = DigiWebApp.Order.getByVaterId(this.get('id'));
 		var childHandOrders = DigiWebApp.HandOrder.getByVaterId(this.get('id'));
 		var childPositions = DigiWebApp.Position.getByVaterId(this.get('id'));
-    	var hasElements = (childOrders.concat(childHandOrders.concat(childPositions)).length > 0);
-    	if (!hasElements) return false;
+    	var hasPositions = (childHandOrders.concat(childPositions).length > 0);
+    	if (!hasPositions) return false;
     	_.each(childOrders, function(child){
-    		if (child.hasElements()) hasElements = true;
+    		if (child.hasPositions()) hasPositions = true;
     	});
-    	return hasElements;
+    	return hasPositions;
     }
 
 }, M.DataProviderLocalStorage);
@@ -22111,7 +22111,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6621
+      softwareVersion: 6622
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -25662,6 +25662,38 @@ DigiWebApp.SettingsController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: StudieChecklisteController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.StudieChecklisteController = M.Controller.extend({
+	
+	  listData: null
+
+	, t1: null
+	, t2: null
+
+	, comboBoxData: null
+			
+	, init: function(isFirstLoad) {
+        if (isFirstLoad) {
+            /* do something here, when page is loaded the first time. */
+        }
+        
+        this.set("listData", [
+                              {label: "Test 1", comboBox: [{label: "eintrag 1", value: "1"},{label: "eintrag 2", value: "2"}]}
+                              , {label: "Test 2", comboBox: [{label: "eintrag 3", value: "3"},{label: "eintrag 4", value: "4"}]}
+                              , {label: "Test 3", comboBox: [{label: "eintrag 5", value: "5"},{label: "eintrag 6", value: "6"}]}
+                     	]);	
+
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: TerminlisteController
 // ==========================================================================
 
@@ -25858,38 +25890,6 @@ DigiWebApp.TerminlisteController = M.Controller.extend({
 		
 		that.set("items", itemsToShow);
 	}
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: StudieChecklisteController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.StudieChecklisteController = M.Controller.extend({
-	
-	  listData: null
-
-	, t1: null
-	, t2: null
-
-	, comboBoxData: null
-			
-	, init: function(isFirstLoad) {
-        if (isFirstLoad) {
-            /* do something here, when page is loaded the first time. */
-        }
-        
-        this.set("listData", [
-                              {label: "Test 1", comboBox: [{label: "eintrag 1", value: "1"},{label: "eintrag 2", value: "2"}]}
-                              , {label: "Test 2", comboBox: [{label: "eintrag 3", value: "3"},{label: "eintrag 4", value: "4"}]}
-                              , {label: "Test 3", comboBox: [{label: "eintrag 5", value: "5"},{label: "eintrag 6", value: "6"}]}
-                     	]);	
-
-    }
 
 });
 
@@ -37978,7 +37978,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6621'
+              value: 'Build: 6622'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
