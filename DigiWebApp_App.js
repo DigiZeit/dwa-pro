@@ -22109,7 +22109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6630
+      softwareVersion: 6631
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -22867,12 +22867,20 @@ DigiWebApp.SelectionController = M.Controller.extend({
         var positions = DigiWebApp.Position.findSorted();
 
         var i = 0;
+        var selectedId = i;
+        if (typeof(positionId) != "undefined") selectedId = positionId;
         positions = _.map(positions, function(pos) {
         	if (pos) {
-	            if(parseIntRadixTen(pos.get('orderId')) === parseIntRadixTen(orderId)) {
+	            if(parseIntRadixTen(pos.get('orderId')) == parseIntRadixTen(orderId)) {
 	                var obj = { label: pos.get('name'), value: pos.get('id') };
-	                if(i === 0) {
-	                    obj.isSelected = YES;
+	                if (typeof(positionId) != "undefined") {
+		                if (parseIntRadixTen(pos.get("id")) == parseIntRadixTen(selectedId)) {
+		                    obj.isSelected = YES;
+		                }
+	                } else {
+		                if (i === 0) {
+		                    obj.isSelected = YES;
+		                }
 	                }
 	                i += 1;
 	                return obj;
@@ -23098,9 +23106,18 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	}
     }
 
+    , isOrderSelected: function() {
+    	var that = this;
+    	var orderObj = that.getSelectedOrderItem(YES);
+        if (orderObj && orderObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+
     , isPositionSelected: function() {
     	var that = this;
-        // implemented adjustment to M.SeletionListView to return null if no item is available
     	var posObj = that.getSelectedPositionItem(YES);
         if (posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
             return YES;
@@ -23251,6 +23268,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
     , setSelectedPosition: function(pos) {
     	var that = this;
+    	if (typeof(pos) != "object") return;
+    	var orderId = pos.get("orderId");
+    	that.setOrders(orderId);
+    	that.setPositions(pos.get("id"));
     }
     
     , getSelectedActivity: function() {
@@ -36797,17 +36818,6 @@ DigiWebApp.BookingPage = M.PageView.design({
 				// Freischaltung 429 "mehrstufige Auftragsauswahl"
         		DigiWebApp.BookingPage.doHideShowOrderCombobox(true);
         		DigiWebApp.BookingPage.doHideShowPositionCombobox(true);
-//				if (DigiWebApp.SettingsController.featureAvailable("429")) {
-//					try { $('#' + DigiWebApp.BookingPage.content.order.id + "_container").hide(); } catch (e) {trackError(e);}
-//					try { $('#' + DigiWebApp.BookingPage.content.position.id + "_container").hide(); } catch (e) {trackError(e);}
-//        			$('#' + DigiWebApp.BookingPage.content.orderButton.id).show(); 			
-//        			$('label[for="' + DigiWebApp.BookingPage.content.orderButton.id + '"]').show(); 			
-//				} else {
-//					try { $('#' + DigiWebApp.BookingPage.content.order.id + "_container").show(); } catch (e) {trackError(e);}
-//					try { $('#' + DigiWebApp.BookingPage.content.position.id + "_container").show(); } catch (e) {trackError(e);}
-//        			$('#' + DigiWebApp.BookingPage.content.orderButton.id).hide(); 			
-//        			$('label[for="' + DigiWebApp.BookingPage.content.orderButton.id + '"]').hide(); 			
-//				}
 			}
 		}
         , pageshow: {
@@ -36885,7 +36895,7 @@ DigiWebApp.BookingPage = M.PageView.design({
 								  NO 
 								, function(obj){
 									//DigiWebApp.BookingPage.content.orderButton.setValue(obj.get("name"));
-									  DigiWebApp.SelectionController.setSelectedPosition(obj);
+									DigiWebApp.SelectionController.setSelectedPosition(obj);
 									DigiWebApp.NavigationController.backToBookTimePagePOP();
 								}
 								, function(){
@@ -38021,7 +38031,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6630'
+              value: 'Build: 6631'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
