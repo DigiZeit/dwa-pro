@@ -22109,7 +22109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6634
+      softwareVersion: 6635
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -23101,6 +23101,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     		M.ViewManager.getView(that.getPageToUse(), 'order').resetSelection();
     		M.ViewManager.getView(that.getPageToUse(), 'position').resetSelection();
     		M.ViewManager.getView(that.getPageToUse(), 'activity').resetSelection();
+    		M.ViewManager.getView('bookingPage', 'orderButton').setValue(M.I18N.l('selectSomething'));
     	} catch(e4) { 
     		//trackError(e4);
     	}
@@ -38025,7 +38026,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6634'
+              value: 'Build: 6635'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
