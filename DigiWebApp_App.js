@@ -8044,9 +8044,15 @@ DigiWebApp.ApplicationController = M.Controller.extend({
      *
      * Otherwise it displays an alert dialog showing that offline work is not possible
      */
-    , proceedWithLocalData: function(fromwhere) {
+    , proceedWithLocalData: function(fromwhere, exceptionMessage) {
 
 		var that = DigiWebApp.ApplicationController;
+		
+		// TODO: Exception vom Zeitserver auswerten
+		var reason = "";
+		if (typeof(exceptionMessage) == "string" && exceptionMessage.length > 0) {
+			reason = ": " + exceptionMessage;
+		}
 
 		that.enforceChefToolOnly();
     	var ChefToolOnly = (DigiWebApp.SettingsController.featureAvailable('409'));    	
@@ -8075,7 +8081,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 	        if (DigiWebApp.SettingsController.globalDebugMode) {
 	            DigiWebApp.ApplicationController.nativeAlertDialogView({
 	                  title: M.I18N.l('offlineWork')
-	                , message: fromwhere
+	                , message: fromwhere + reason
 	            });
 	        }
 	        
@@ -15598,11 +15604,14 @@ DigiWebApp.BookingController = M.Controller.extend({
         		  }
         		  , function() {
                       DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	              		// die Buchung(en) konnte(n) nicht gesendet werden
-	                    DigiWebApp.ApplicationController.nativeAlertDialogView({
-	                        title: M.I18N.l('sendDataFail'),
-	                        message: M.I18N.l('sendDataFailMsg')
-	                    });
+                        // Bugfix: Fehlermeldung nicht zeigen, wenn danach kein Stammdatenabgleich gemacht werden soll
+                      	if (doSync) {
+		              		// die Buchung(en) konnte(n) nicht gesendet werden
+		                    DigiWebApp.ApplicationController.nativeAlertDialogView({
+		                        title: M.I18N.l('sendDataFail'),
+		                        message: M.I18N.l('sendDataFailMsg')
+		                    });
+                      	}
 	              }
         		  , isClosingDay
         		  , doSync
@@ -22100,7 +22109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6629
+      softwareVersion: 6630
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -23214,7 +23223,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
     , getSelectedOrderItem: function(returnObject) {
     	var that = this;
-        return M.ViewManager.getView(that.pageToUse(), 'order').getSelection(returnObject);
+        return M.ViewManager.getView(that.getPageToUse(), 'order').getSelection(returnObject);
     }
     , setSelectedOrder: function(order) {
     	var that = this;
@@ -23238,7 +23247,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
     , getSelectedPositionItem: function(returnObject) {
     	var that = this;
-        return M.ViewManager.getView(that.pageToUse(), 'position').getSelection(returnObject);
+        return M.ViewManager.getView(that.getPageToUse(), 'position').getSelection(returnObject);
     }
     , setSelectedPosition: function(pos) {
     	var that = this;
@@ -23259,7 +23268,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
     , getSelectedActivityItem: function(returnObject) {
     	var that = this;
-        return M.ViewManager.getView(that.pageToUse(), 'activity').getSelection(returnObject);
+        return M.ViewManager.getView(that.getPageToUse(), 'activity').getSelection(returnObject);
     }
     , setSelectedActivity: function(pos) {
     	
@@ -38012,7 +38021,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6629'
+              value: 'Build: 6630'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
