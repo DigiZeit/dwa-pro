@@ -22109,7 +22109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6638
+      softwareVersion: 6639
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -22414,6 +22414,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
         // set selection arrays to start content binding process
         this.set('positions', positionArray);
+        this.setSelectedPosition(this.getSelectedPosition());
         this.setActivities(YES);
         
         /**
@@ -22705,6 +22706,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
         // set selection arrays to start content binding process
         this.set('positions', positionArray);
+        this.setSelectedPosition(this.getSelectedPosition());
         this.setActivities(YES);
 
         /**
@@ -22897,6 +22899,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 		M.ViewManager.getView(that.getPageToUse(), 'position').resetSelection();
 
         this.set('positions', positions);
+        this.setSelectedPosition(this.getSelectedPosition());
         this.setActivities(YES, activityId);
 
         this.saveSelection();
@@ -23077,6 +23080,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
         // set selection arrays to start content binding process
         this.set('orders', orderArray);
         this.set('positions', positionArray);
+        this.setSelectedPosition(this.getSelectedPosition());
         this.set('activities', activityArray);
         try {
         	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
@@ -23264,7 +23268,10 @@ DigiWebApp.SelectionController = M.Controller.extend({
     }
     , setSelectedPosition: function(pos) {
     	var that = this;
-    	if (typeof(pos) != "object") return;
+    	if (typeof(pos) != "object") {
+    		M.ViewManager.getView('bookingPage', 'orderButton').setValue(M.I18N.l('selectSomething'));
+    		return;
+    	}
     	that.setOrders(pos.get("orderId"), pos.get("id"));
     	M.ViewManager.getView('bookingPage', 'orderButton').setValue(pos.get("name"));
     }
@@ -38027,7 +38034,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6638'
+              value: 'Build: 6639'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
