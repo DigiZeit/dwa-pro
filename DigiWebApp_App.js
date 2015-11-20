@@ -22109,7 +22109,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6635
+      softwareVersion: 6636
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -36948,6 +36948,7 @@ DigiWebApp.BookingPage = M.PageView.design({
                 change: {
                       target: DigiWebApp.SelectionController
                     , action: function() {
+                		M.ViewManager.getView('bookingPage', 'orderButton').setValue(this.getSelectedPositionItem());
                         this.setActivities(YES);
                     }
                 }
@@ -38026,7 +38027,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6635'
+              value: 'Build: 6636'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
