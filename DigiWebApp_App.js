@@ -22051,21 +22051,25 @@ DigiWebApp.OrderListController = M.Controller.extend({
 		if (startInFolderId) {
 			// rebuild parentStack
 			var done = false;
+			var parentStack = [];
 			while (!done) {
 				var arr = _.filter(DigiWebApp.Order.find(), function(o){ 
 					return parseIntRadixTen(o.get("id")) == parseIntRadixTen(startInFolderId);
 				});
-				if (arr && arr.length> 0) {
+				if (arr && arr.length > 0) {
 					var parentArr = _.filter(DigiWebApp.Order.find(), function(o){ 
 						return parseIntRadixTen(o.get("id")) == parseInRadixTen(arr[0].get("vaterId"));
 					});
 					if (parentArr && parentArr.length > 0) {
-						that.parentStack.push(parentArr[0]);
+						parentStack.push(parentArr[0]);
 						startInFolderId = parentArr[0].get("id");
+					} else {
+						done = true;
 					}
 				} else {
 					done = true;
 				}
+				if (done) that.set('parentStack', parentStack.reverse());
 			}
 		}
 		that.reloadItems(null);
@@ -22125,7 +22129,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6651
+      softwareVersion: 6652
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -36936,7 +36940,7 @@ DigiWebApp.BookingPage = M.PageView.design({
 								, function(){
 									DigiWebApp.NavigationController.backToBookTimePagePOP();
 								}
-								, this.getSelectedOrderitem()
+								, this.getSelectedOrderItem()
 						)
 						DigiWebApp.NavigationController.toOrderListPage();
 					}
@@ -38068,7 +38072,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6651'
+              value: 'Build: 6652'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
