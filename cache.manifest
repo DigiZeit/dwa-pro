@@ -1,30 +1,30 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.4.6676 beta, Timestamp:1448280217515
+#Application:DigiWebApp, Version:1.8.4.6677 beta, Timestamp:1448280760124
 
 
 # Explicitly cached entries
 CACHE:
 jquery-1.9.1.js
 underscore-min.js
-bootstrap.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
-theme/tmp.css
-jquery_mobile.js
-jquery.xml2json_1.3.js
-digi_list.js
-digi_list_item.js
-digi_selection_list.js
-digi_selection_list_item.js
 de_de.js
 en_us.js
 es_es.js
-nl_nl.js
 fr_fr.js
+nl_nl.js
+theme/tmp.css
+bootstrap.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
+jquery.xml2json_1.3.js
+jquery_mobile.js
 jstz.js
 barcodescanner.js
 childbrowser.js
 cordova.js
+Math.uuid.js
+ui.js
+jquery_mobile_plugins.js
+theme/jquery_mobile_plugins.css
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_SCHOLPP.png
@@ -98,13 +98,14 @@ theme/images/splash_mdpi_320x470_DSO.9.png
 theme/images/splash_winphone_480x800_DSO.jpg
 theme/images/splash_xhdpi_720x960_DSO.9.png
 theme/images/splash_xxhdpi_1080x1920_DSO.9.png
-theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
+theme/images/tabSprite.png
 theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
-jquery_mobile_plugins.js
-theme/jquery_mobile_plugins.css
-Math.uuid.js
+digi_list.js
+digi_selection_list.js
+digi_selection_list_item.js
+digi_list_item.js
 CHANGELOG.md
 Gruntfile.coffee
 LICENSE.txt
@@ -124,12 +125,10 @@ json2.min.js
 pen.cur
 accept-multiple-signatures.html
 accept-signature.html
-regenerate-signature.html
 full-window.html
+regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
-ui.js
-core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
@@ -137,6 +136,7 @@ theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
+core.js
 DigiWebApp_App.js
 
 
