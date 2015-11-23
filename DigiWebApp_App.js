@@ -22185,7 +22185,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6667
+      softwareVersion: 6668
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -22956,6 +22956,9 @@ DigiWebApp.SelectionController = M.Controller.extend({
 
     , initSelection: function() {
        var that = this;
+       
+       return that.setOrders(0,0,0);
+       
        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted()); // we need to check handOrders also
        var positions = DigiWebApp.Position.findSorted();
        var activities = DigiWebApp.SelectionController.getActivities();
@@ -38000,7 +38003,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6667'
+              value: 'Build: 6668'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
