@@ -22185,7 +22185,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6668
+      softwareVersion: 6669
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -38003,7 +38003,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6668'
+              value: 'Build: 6669'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
