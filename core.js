@@ -1,4 +1,53 @@
 
+(function( $ ){
+    //return the height of an element with the its margin whether it's visible or not
+    $.fn.outerMarginHeight = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var height = this.outerHeight();
+        height += parseIntRadixTen(this.css('margin-bottom'));
+        height += parseIntRadixTen(this.css('margin-top'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return height;
+
+    };
+    //return the width of an element with the its margin whether it's visible or not
+    $.fn.outerMarginWidth = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var width = this.outerWidth();
+        width += parseIntRadixTen(this.css('margin-left'));
+        width += parseIntRadixTen(this.css('margin-right'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return width;
+
+    };
+
+})( jQuery );
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1942,6 +1991,94 @@ M.Location = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -2091,94 +2228,6 @@ M.Math = M.Object.extend(
         return nearestNumber;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -4666,6 +4715,94 @@ M.Error = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The observable knows all observers, mainly views, and pushes updates if necessary.
+ *
+ * @extends M.Object
+ */
+M.Observable = M.Object.extend(
+/** @scope M.Observable.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Observable',
+
+    /**
+     * List that contains pairs of an observer with an observable. An observer is tightened to one
+     * observable, but one observable can have multiple observers.
+     *
+     * @type Array|Object
+     */
+    bindingList: null,
+
+    /**
+     * Attach an observer to an observable.
+     *
+     * @param {String} observer The observer.
+     * @param {String} observable The observable.
+     */
+    attach: function(observer, observable) {
+        if(!this.bindingList) {
+            this.bindingList = [];
+        }
+        this.bindingList.push({
+            observer: observer,
+            observable: observable
+        });
+    },
+
+    /**
+     * Detach an observer from an observable.
+     *
+     * @param {String} observer The observer.
+     */
+    detach: function(observer) {
+        /* grep is a jQuery function that finds
+         * elements in an array that satisfy a certain criteria.
+         * It works on a copy so we have to assign the "cleaned"
+         * array to our bindingList.
+         */
+        this.bindingList = _.filter(this.bindingList, function(value, index) {
+                return value.observable !== observer;
+        });
+    },
+
+    /**
+     * Notify all observers that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property that changed.
+     */
+    notifyObservers: function(key) {
+        _.each(this.bindingList, function(entry){
+            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
+                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
+                    entry.observer.valueDidChange();
+                }else{
+                    entry.observer.contentDidChange();
+                }
+            }
+        });
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      28.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5174,94 +5311,6 @@ M.Model = M.Object.extend(
     setReference: function(result, that, prop, callback) {
         that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
         callback();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The observable knows all observers, mainly views, and pushes updates if necessary.
- *
- * @extends M.Object
- */
-M.Observable = M.Object.extend(
-/** @scope M.Observable.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Observable',
-
-    /**
-     * List that contains pairs of an observer with an observable. An observer is tightened to one
-     * observable, but one observable can have multiple observers.
-     *
-     * @type Array|Object
-     */
-    bindingList: null,
-
-    /**
-     * Attach an observer to an observable.
-     *
-     * @param {String} observer The observer.
-     * @param {String} observable The observable.
-     */
-    attach: function(observer, observable) {
-        if(!this.bindingList) {
-            this.bindingList = [];
-        }
-        this.bindingList.push({
-            observer: observer,
-            observable: observable
-        });
-    },
-
-    /**
-     * Detach an observer from an observable.
-     *
-     * @param {String} observer The observer.
-     */
-    detach: function(observer) {
-        /* grep is a jQuery function that finds
-         * elements in an array that satisfy a certain criteria.
-         * It works on a copy so we have to assign the "cleaned"
-         * array to our bindingList.
-         */
-        this.bindingList = _.filter(this.bindingList, function(value, index) {
-                return value.observable !== observer;
-        });
-    },
-
-    /**
-     * Notify all observers that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property that changed.
-     */
-    notifyObservers: function(key) {
-        _.each(this.bindingList, function(entry){
-            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
-                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
-                    entry.observer.valueDidChange();
-                }else{
-                    entry.observer.contentDidChange();
-                }
-            }
-        });
     }
 
 });
@@ -5809,98 +5858,6 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
- *
- * @extends M.Validator
- */
-M.DateValidator = M.Validator.extend(
-/** @scope M.DateValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DateValidator',
-
-    /**
-     * A RegEx describing a US date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * A RegEx describing a german date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
-        if(obj.isView) {
-            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is not a valid date.',
-                        viewId: obj.id,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-            }
-            return YES;
-        } else {
-            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                        modelId: obj.modelId,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                return NO;
-            }
-            return YES;
-        }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -6192,6 +6149,74 @@ M.PhoneValidator = M.Validator.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value represents a valid URL.
+ *
+ * @extends M.Validator
+ */
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.UrlValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid web URL
+     */
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+
+    /**
+     * Validation method. Executes url regex pattern to string.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+        
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
+            code: M.ERR_VALIDATION_URL,
+            errObj: {
+                msg: obj.value + ' is not a valid url.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6267,8 +6292,8 @@ M.PresenceValidator = M.Validator.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
+// Creator:   Dominik
+// Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -6279,57 +6304,218 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates if value represents a valid URL.
+ * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
  *
  * @extends M.Validator
  */
-M.UrlValidator = M.Validator.extend(
-/** @scope M.UrlValidator.prototype */ {
+M.DateValidator = M.Validator.extend(
+/** @scope M.DateValidator.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.UrlValidator',
+    type: 'M.DateValidator',
 
     /**
-     * @type {RegExp} The regular expression for a valid web URL
+     * A RegEx describing a US date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
      */
-    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
 
     /**
-     * Validation method. Executes url regex pattern to string.
+     * A RegEx describing a german date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
+     */
+    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
+
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
      *
      * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
      * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
      */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
+    validate: function(obj, key) {
+        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
+        if(obj.isView) {
+            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is not a valid date.',
+                        viewId: obj.id,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+            }
+            return YES;
+        } else {
+            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                        modelId: obj.modelId,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                return NO;
+            }
             return YES;
         }
-        
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
-            code: M.ERR_VALIDATION_URL,
-            errObj: {
-                msg: obj.value + ' is not a valid url.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-        return NO;
     }
-    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/* Available transitions for page changes */
+M.TRANSITION = {};
+M.TRANSITION.NONE = 'none';
+M.TRANSITION.SLIDE = 'slide';
+M.TRANSITION.SLIDEUP = 'slideup';
+M.TRANSITION.SLIDEDOWN = 'slidedown';
+M.TRANSITION.POP = 'pop';
+M.TRANSITION.FADE = 'fade';
+M.TRANSITION.FLIP = 'flip';
+
+m_require('core/foundation/observable.js');
+
+/**
+ * @class
+ *
+ * The root class for every controller.
+ *
+ * Controllers, respectively their properties, are observables. Views can observe them.
+ *
+ * @extends M.Object
+ */
+M.Controller = M.Object.extend(
+/** @scope M.Controller.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Controller',
+
+    /**
+     * Makes the controller's properties observable.
+     */
+    observable: null,
+
+    /**
+     * Switch the active tab in the application. This includes both activating this tab
+     * visually and switching the page.
+     *
+     * @param {M.TabBarItemView} tab The tab to be activated.
+     */
+    switchToTab: function(tab,back) {
+		if (!back) back = NO;
+        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
+            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
+            return;
+        }
+        var currentTab = tab.parentView.activeTab;
+        var newPage = M.ViewManager.getPage(tab.page);
+
+        /* store the active tab in tab bar view */
+        tab.parentView.setActiveTab(tab);
+
+        if(tab === currentTab) {
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage !== newPage) {
+                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
+            }
+        } else {
+            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
+        }
+    },
+
+    /**
+     * Switch the active page in the application.
+     *
+     * @param {Object|String} page The page to be displayed or its name.
+     * @param {String} transition The transition that should be used. Default: horizontal slide
+     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
+     * @param {Boolean} updateHistory Update the browser history. Default: YES
+     */
+    switchToPage: function(page, transition, isBack, updateHistory) {
+        var timeStart = M.Date.now();
+        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
+
+        if(page) {
+            transition = transition ? transition : M.TRANSITION.SLIDE;
+            isBack = isBack !== undefined ? isBack : NO;
+            updateHistory = updateHistory !== undefined ? updateHistory : YES;
+
+            /* Now do the page change by using a jquery mobile method and pass the properties */
+            if(page.type === 'M.PageView') {
+                $.mobile.changePage($('#' + page.id), {
+                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
+                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
+                    changeHash: updateHistory,
+                    showLoadMsg: NO
+                });
+            }
+
+            /* Save the current page in the view manager */
+            M.ViewManager.setCurrentPage(page);
+        } else {
+            M.Logger.log('Page "' + page + '" not found', M.ERR);
+        }
+    },
+
+    /**
+     * This method initializes the notification of all observers, that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property to be changed.
+     * @param {Object|String} value The value to be set.
+     */
+    set: function(key, value) {
+        var keyPath = key.split('.');
+
+        if(keyPath.length === 1) {
+            this[key] = value;
+        } else {
+            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
+            for(var i = 1; i < keyPath.length - 1; i++) {
+                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
+            }
+
+            t[keyPath[keyPath.length - 1]] = value;
+        }
+
+        if(!this.observable) {
+            return;
+        }
+
+        this.observable.notifyObservers(key);
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7262,143 +7448,6 @@ M.View = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      27.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/* Available transitions for page changes */
-M.TRANSITION = {};
-M.TRANSITION.NONE = 'none';
-M.TRANSITION.SLIDE = 'slide';
-M.TRANSITION.SLIDEUP = 'slideup';
-M.TRANSITION.SLIDEDOWN = 'slidedown';
-M.TRANSITION.POP = 'pop';
-M.TRANSITION.FADE = 'fade';
-M.TRANSITION.FLIP = 'flip';
-
-m_require('core/foundation/observable.js');
-
-/**
- * @class
- *
- * The root class for every controller.
- *
- * Controllers, respectively their properties, are observables. Views can observe them.
- *
- * @extends M.Object
- */
-M.Controller = M.Object.extend(
-/** @scope M.Controller.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Controller',
-
-    /**
-     * Makes the controller's properties observable.
-     */
-    observable: null,
-
-    /**
-     * Switch the active tab in the application. This includes both activating this tab
-     * visually and switching the page.
-     *
-     * @param {M.TabBarItemView} tab The tab to be activated.
-     */
-    switchToTab: function(tab,back) {
-		if (!back) back = NO;
-        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
-            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
-            return;
-        }
-        var currentTab = tab.parentView.activeTab;
-        var newPage = M.ViewManager.getPage(tab.page);
-
-        /* store the active tab in tab bar view */
-        tab.parentView.setActiveTab(tab);
-
-        if(tab === currentTab) {
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage !== newPage) {
-                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
-            }
-        } else {
-            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
-        }
-    },
-
-    /**
-     * Switch the active page in the application.
-     *
-     * @param {Object|String} page The page to be displayed or its name.
-     * @param {String} transition The transition that should be used. Default: horizontal slide
-     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
-     * @param {Boolean} updateHistory Update the browser history. Default: YES
-     */
-    switchToPage: function(page, transition, isBack, updateHistory) {
-        var timeStart = M.Date.now();
-        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
-
-        if(page) {
-            transition = transition ? transition : M.TRANSITION.SLIDE;
-            isBack = isBack !== undefined ? isBack : NO;
-            updateHistory = updateHistory !== undefined ? updateHistory : YES;
-
-            /* Now do the page change by using a jquery mobile method and pass the properties */
-            if(page.type === 'M.PageView') {
-                $.mobile.changePage($('#' + page.id), {
-                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
-                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
-                    changeHash: updateHistory,
-                    showLoadMsg: NO
-                });
-            }
-
-            /* Save the current page in the view manager */
-            M.ViewManager.setCurrentPage(page);
-        } else {
-            M.Logger.log('Page "' + page + '" not found', M.ERR);
-        }
-    },
-
-    /**
-     * This method initializes the notification of all observers, that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property to be changed.
-     * @param {Object|String} value The value to be set.
-     */
-    set: function(key, value) {
-        var keyPath = key.split('.');
-
-        if(keyPath.length === 1) {
-            this[key] = value;
-        } else {
-            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
-            for(var i = 1; i < keyPath.length - 1; i++) {
-                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
-            }
-
-            t[keyPath[keyPath.length - 1]] = value;
-        }
-
-        if(!this.observable) {
-            return;
-        }
-
-        this.observable.notifyObservers(key);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -7788,52 +7837,3 @@ M.Application = M.Object.extend(
     }
 
 });
-(function( $ ){
-    //return the height of an element with the its margin whether it's visible or not
-    $.fn.outerMarginHeight = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var height = this.outerHeight();
-        height += parseIntRadixTen(this.css('margin-bottom'));
-        height += parseIntRadixTen(this.css('margin-top'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return height;
-
-    };
-    //return the width of an element with the its margin whether it's visible or not
-    $.fn.outerMarginWidth = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var width = this.outerWidth();
-        width += parseIntRadixTen(this.css('margin-left'));
-        width += parseIntRadixTen(this.css('margin-right'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return width;
-
-    };
-
-})( jQuery );
