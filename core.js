@@ -1,4 +1,53 @@
 
+(function( $ ){
+    //return the height of an element with the its margin whether it's visible or not
+    $.fn.outerMarginHeight = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var height = this.outerHeight();
+        height += parseIntRadixTen(this.css('margin-bottom'));
+        height += parseIntRadixTen(this.css('margin-top'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return height;
+
+    };
+    //return the width of an element with the its margin whether it's visible or not
+    $.fn.outerMarginWidth = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var width = this.outerWidth();
+        width += parseIntRadixTen(this.css('margin-left'));
+        width += parseIntRadixTen(this.css('margin-right'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return width;
+
+    };
+
+})( jQuery );
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -217,328 +266,6 @@ M.Object =
     }
 
 };
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
- * First M.Request.init needs to be called, then send.
- *
- * @extends M.Object
- */
-M.Request = M.Object.extend(
-/** @scope M.Request.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Request',
-
-    /**
-     * The HTTP method to use.
-     *
-     * Defaults to GET.
-     *
-     * @type String
-     */
-    method: 'GET',
-
-    /**
-     * The URL this request is sent to.
-     *
-     * @type String
-     */
-    url: null,
-
-    /**
-     * Sends the request asynchronously instead of blocking the browser.
-     * You should almost always make requests asynchronous. You can change this
-     * options with the async() helper option (or simply set it directly).
-     *
-     * Defaults to YES.
-     *
-     * @type Boolean
-     */
-    isAsync: YES,
-
-
-    /**
-     * Processes the request and response as JSON if possible.
-     *
-     * Defaults to NO.
-     *
-     * @type Boolean
-     */
-    isJSON: NO,
-
-    /**
-     * Optional timeout value of the request in milliseconds.
-     *
-     * @type Number
-     */
-    timeout: null,
-
-    /**
-     * If set, contains the request's callbacks in sub objects. There are three
-     * possible callbacks that can be used:
-     *
-     *   - beforeSend
-     *   - success
-     *   - error
-     *
-     * A callback object consists of at least an action but can also specify a
-     * target object that determines the scope for that action. If a target is
-     * specified, the action can either  be a string (the name if a method within
-     * the specified scope) or a function. If there is no target specified, the
-     * action must be a function. So a success callback could e.g. look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: 'successCallback'
-     *     }
-     *   }
-     *
-     * Or it could look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: function() {
-     *         // do something...
-     *       }
-     *     }
-     *   }
-     *
-     * Depending on the type of callback, there are different parameters, that
-     * are automatically passed to the callback:
-     *
-     *   - beforeSend(request)
-     *   - success(data, msg, request)
-     *   - error(request, msg)
-     *
-     * For further information about that, take a look at the internal callbacks
-     * of M.Request:
-     *
-     *   - internalBeforeSend
-     *   - internalOnSuccess
-     *   - internalOnError
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This property can be used to specify whether or not to cache the request.
-     * Setting this to YES will set the 'Cache-Control' property of the request
-     * header to 'no-cache'.
-     *
-     * @Boolean
-     */
-    sendNoCacheHeader: YES,
-
-    /**
-     * This property can be used to specify whether or not to send a timestamp
-     * along with the request in order to make every request unique. Since some
-     * browsers (e.g. Android) automatically cache identical requests, setting
-     * this property to YES will add an additional parameter to the request,
-     * containing the current timestamp.
-     *
-     * So if you have any trouble with caching of requests, try setting this to
-     * YES. But note, that it might also cause trouble on the server-side if they
-     * do not expect this additional parameter.
-     *
-     * @Boolean
-     */
-    sendTimestamp: NO,
-
-    /**
-     * The data body of the request.
-     *
-     * @type String, Object
-     */
-    data: null,
-
-    /**
-     * Holds the jQuery request object
-     *
-     * @type Object
-     */
-    request: null,
-
-    /**
-     * Initializes a request. Sets the parameter of this request object with the passed values.
-     *
-     * @param {Object} obj The parameter object. Includes:
-     * * method: the http method to use, e.g. 'POST'
-     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
-     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
-     * * isJSON: defines whether to process request and response as JSON
-     * * timout: defines timeout in milliseconds
-     * * data: the data to be transmitted
-     * * beforeSend: callback that is called before request is sent
-     * * onError: callback that is called when an error occured
-     * * onSuccess: callback that is called when request was successful
-     */
-    init: function(obj){
-        obj = obj ? obj : {};
-        return this.extend({
-            method: obj['method'] ? obj['method'] : this.method,
-            url: obj['url'] ? obj['url'] : this.url,
-            isAsync: (obj['isAsync'] !== undefined && obj['isAsync'] !== null) ? obj['isAsync'] : this.isAsync,
-            isJSON: (obj['isJSON'] !== undefined && obj['isJSON'] !== null) ? obj['isJSON'] : this.isJSON,
-            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
-            data: obj['data'] ? obj['data'] : this.data,
-            callbacks: obj['callbacks'],
-            sendNoCacheHeader: obj['sendNoCacheHeader'],
-            sendTimestamp: obj['sendTimestamp'],
-            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
-            onError: obj['onError'] ? obj['onError'] : this.onError,
-            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
-        });
-    },
-
-    /**
-     * A pre-callback that is called right before the request is sent.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    beforeSend: function(request){},
-
-    /**
-     * The callback to be called if the request failed.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    onError: function(request, msg){},
-
-    /**
-     * The callback to be called if the request succeeded.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    onSuccess: function(data, msg, request){},
-
-    /**
-     * This method is an internal callback that is called right before a
-     * request is send.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalBeforeSend: function(request){
-        if(this.sendNoCacheHeader) {
-            request.setRequestHeader('Cache-Control', 'no-cache');
-        }
-
-        if(!this.callbacks && this.beforeSend) {
-            this.beforeSend(request);
-        }
-
-        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
-            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if a request
-     * failed.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    internalOnError: function(request, msg){
-        if(!this.callbacks && this.onError) {
-            this.onError(request, msg);
-        }
-
-        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
-            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if the request
-     * succeeded.
-     *
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalOnSuccess: function(data, msg, request){
-        if(!this.callbacks && this.onSuccess) {
-            this.onSuccess(data, msg, request);
-        }
-
-        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
-        }
-    },
-
-    /**
-     * Sends an Ajax request by using jQuery's $.ajax().
-     * Needs init first!
-     */
-    send: function(){
-        this.request = $.ajax({
-            type: this.method,
-            url: this.url,
-            async: this.isAsync,
-            dataType: this.isJSON ? 'json' : 'text',
-            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
-            timeout: this.timeout,
-            data: this.data ? this.data : '',
-            context: this,
-            beforeSend: this.internalBeforeSend,
-            success: this.internalOnSuccess,
-            error: this.internalOnError,
-            cache: !this.sendTimestamp,
-            xhrFields: { withCredentials: true }
-        });
-    },
-
-    /**
-     * Aborts this request. Delegate to jQuery
-     *
-     * @return Boolean Indicating whether request exists and is aborted or not
-     */
-    abort: function() {
-        if(this.request) {
-            this.request.abort();
-            return YES;
-        }
-        return NO;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -2230,6 +1957,441 @@ M.UniqueId = M.Object.extend({
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
+ * First M.Request.init needs to be called, then send.
+ *
+ * @extends M.Object
+ */
+M.Request = M.Object.extend(
+/** @scope M.Request.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Request',
+
+    /**
+     * The HTTP method to use.
+     *
+     * Defaults to GET.
+     *
+     * @type String
+     */
+    method: 'GET',
+
+    /**
+     * The URL this request is sent to.
+     *
+     * @type String
+     */
+    url: null,
+
+    /**
+     * Sends the request asynchronously instead of blocking the browser.
+     * You should almost always make requests asynchronous. You can change this
+     * options with the async() helper option (or simply set it directly).
+     *
+     * Defaults to YES.
+     *
+     * @type Boolean
+     */
+    isAsync: YES,
+
+
+    /**
+     * Processes the request and response as JSON if possible.
+     *
+     * Defaults to NO.
+     *
+     * @type Boolean
+     */
+    isJSON: NO,
+
+    /**
+     * Optional timeout value of the request in milliseconds.
+     *
+     * @type Number
+     */
+    timeout: null,
+
+    /**
+     * If set, contains the request's callbacks in sub objects. There are three
+     * possible callbacks that can be used:
+     *
+     *   - beforeSend
+     *   - success
+     *   - error
+     *
+     * A callback object consists of at least an action but can also specify a
+     * target object that determines the scope for that action. If a target is
+     * specified, the action can either  be a string (the name if a method within
+     * the specified scope) or a function. If there is no target specified, the
+     * action must be a function. So a success callback could e.g. look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: 'successCallback'
+     *     }
+     *   }
+     *
+     * Or it could look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: function() {
+     *         // do something...
+     *       }
+     *     }
+     *   }
+     *
+     * Depending on the type of callback, there are different parameters, that
+     * are automatically passed to the callback:
+     *
+     *   - beforeSend(request)
+     *   - success(data, msg, request)
+     *   - error(request, msg)
+     *
+     * For further information about that, take a look at the internal callbacks
+     * of M.Request:
+     *
+     *   - internalBeforeSend
+     *   - internalOnSuccess
+     *   - internalOnError
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * This property can be used to specify whether or not to cache the request.
+     * Setting this to YES will set the 'Cache-Control' property of the request
+     * header to 'no-cache'.
+     *
+     * @Boolean
+     */
+    sendNoCacheHeader: YES,
+
+    /**
+     * This property can be used to specify whether or not to send a timestamp
+     * along with the request in order to make every request unique. Since some
+     * browsers (e.g. Android) automatically cache identical requests, setting
+     * this property to YES will add an additional parameter to the request,
+     * containing the current timestamp.
+     *
+     * So if you have any trouble with caching of requests, try setting this to
+     * YES. But note, that it might also cause trouble on the server-side if they
+     * do not expect this additional parameter.
+     *
+     * @Boolean
+     */
+    sendTimestamp: NO,
+
+    /**
+     * The data body of the request.
+     *
+     * @type String, Object
+     */
+    data: null,
+
+    /**
+     * Holds the jQuery request object
+     *
+     * @type Object
+     */
+    request: null,
+
+    /**
+     * Initializes a request. Sets the parameter of this request object with the passed values.
+     *
+     * @param {Object} obj The parameter object. Includes:
+     * * method: the http method to use, e.g. 'POST'
+     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
+     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
+     * * isJSON: defines whether to process request and response as JSON
+     * * timout: defines timeout in milliseconds
+     * * data: the data to be transmitted
+     * * beforeSend: callback that is called before request is sent
+     * * onError: callback that is called when an error occured
+     * * onSuccess: callback that is called when request was successful
+     */
+    init: function(obj){
+        obj = obj ? obj : {};
+        return this.extend({
+            method: obj['method'] ? obj['method'] : this.method,
+            url: obj['url'] ? obj['url'] : this.url,
+            isAsync: (obj['isAsync'] !== undefined && obj['isAsync'] !== null) ? obj['isAsync'] : this.isAsync,
+            isJSON: (obj['isJSON'] !== undefined && obj['isJSON'] !== null) ? obj['isJSON'] : this.isJSON,
+            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
+            data: obj['data'] ? obj['data'] : this.data,
+            callbacks: obj['callbacks'],
+            sendNoCacheHeader: obj['sendNoCacheHeader'],
+            sendTimestamp: obj['sendTimestamp'],
+            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
+            onError: obj['onError'] ? obj['onError'] : this.onError,
+            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
+        });
+    },
+
+    /**
+     * A pre-callback that is called right before the request is sent.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    beforeSend: function(request){},
+
+    /**
+     * The callback to be called if the request failed.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
+     */
+    onError: function(request, msg){},
+
+    /**
+     * The callback to be called if the request succeeded.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    onSuccess: function(data, msg, request){},
+
+    /**
+     * This method is an internal callback that is called right before a
+     * request is send.
+     *
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    internalBeforeSend: function(request){
+        if(this.sendNoCacheHeader) {
+            request.setRequestHeader('Cache-Control', 'no-cache');
+        }
+
+        if(!this.callbacks && this.beforeSend) {
+            this.beforeSend(request);
+        }
+
+        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
+            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
+        }
+    },
+
+    /**
+     * This method is an internal callback that is called if a request
+     * failed.
+     *
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
+     */
+    internalOnError: function(request, msg){
+        if(!this.callbacks && this.onError) {
+            this.onError(request, msg);
+        }
+
+        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
+            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
+        }
+    },
+
+    /**
+     * This method is an internal callback that is called if the request
+     * succeeded.
+     *
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    internalOnSuccess: function(data, msg, request){
+        if(!this.callbacks && this.onSuccess) {
+            this.onSuccess(data, msg, request);
+        }
+
+        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
+        }
+    },
+
+    /**
+     * Sends an Ajax request by using jQuery's $.ajax().
+     * Needs init first!
+     */
+    send: function(){
+        this.request = $.ajax({
+            type: this.method,
+            url: this.url,
+            async: this.isAsync,
+            dataType: this.isJSON ? 'json' : 'text',
+            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
+            timeout: this.timeout,
+            data: this.data ? this.data : '',
+            context: this,
+            beforeSend: this.internalBeforeSend,
+            success: this.internalOnSuccess,
+            error: this.internalOnError,
+            cache: !this.sendTimestamp,
+            xhrFields: { withCredentials: true }
+        });
+    },
+
+    /**
+     * Aborts this request. Delegate to jQuery
+     *
+     * @return Boolean Indicating whether request exists and is aborted or not
+     */
+    abort: function() {
+        if(this.request) {
+            this.request.abort();
+            return YES;
+        }
+        return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      11.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
+ * normally don't call this object respectively its methods directly, but let M.Cypher handle
+ * this.
+ *
+ * @extends M.Object
+ */
+M.Base64 = M.Object.extend(
+/** @scope M.Base64.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Base64',
+
+    /**
+     * The key string for the base 64 decoding and encoding.
+     *
+     * @type String
+     */
+    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
+
+    /**
+     * This method encodes a given input string, using the base64 encoding.
+     *
+     * @param {String} input The string to be encoded.
+     * @returns {String} The base64 encoded string.
+     */
+    encode: function(input) {
+        var output = '';
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = M.Cypher.utf8_encode(input);
+
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if(isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if(isNaN(chr3)) {
+                enc4 = 64;
+            }
+
+            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
+        }
+
+        return output;
+    },
+
+    /**
+     * This method decodes a given input string, using the base64 decoding.
+     *
+     * @param {String} input The string to be decoded.
+     * @returns {String} The base64 decoded string.
+     */
+    decode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        while (i < input.length) {
+            enc1 = this.keyString.indexOf(input.charAt(i++));
+            enc2 = this.keyString.indexOf(input.charAt(i++));
+            enc3 = this.keyString.indexOf(input.charAt(i++));
+            enc4 = this.keyString.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if(enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            
+            if(enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+
+        return M.Cypher.utf8_decode(output);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      11.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -2424,578 +2586,6 @@ M.SHA256 = M.Object.extend(
                     hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
         }
         return str;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      11.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
- * normally don't call this object respectively its methods directly, but let M.Cypher handle
- * this.
- *
- * @extends M.Object
- */
-M.Base64 = M.Object.extend(
-/** @scope M.Base64.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Base64',
-
-    /**
-     * The key string for the base 64 decoding and encoding.
-     *
-     * @type String
-     */
-    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
-
-    /**
-     * This method encodes a given input string, using the base64 encoding.
-     *
-     * @param {String} input The string to be encoded.
-     * @returns {String} The base64 encoded string.
-     */
-    encode: function(input) {
-        var output = '';
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = M.Cypher.utf8_encode(input);
-
-        while (i < input.length) {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if(isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if(isNaN(chr3)) {
-                enc4 = 64;
-            }
-
-            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
-        }
-
-        return output;
-    },
-
-    /**
-     * This method decodes a given input string, using the base64 decoding.
-     *
-     * @param {String} input The string to be decoded.
-     * @returns {String} The base64 decoded string.
-     */
-    decode: function(input) {
-        var output = "";
-        var chr1, chr2, chr3;
-        var enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        while (i < input.length) {
-            enc1 = this.keyString.indexOf(input.charAt(i++));
-            enc2 = this.keyString.indexOf(input.charAt(i++));
-            enc3 = this.keyString.indexOf(input.charAt(i++));
-            enc4 = this.keyString.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if(enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            
-            if(enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-        }
-
-        return M.Cypher.utf8_decode(output);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/request.js');
-
-/**
- * A constant value for logging level: info.
- *
- * @type Number
- */
-M.INFO = 0;
-
-/**
- * A constant value for logging level: debug.
- *
- * @type Number
- */
-M.DEBUG = 1;
-
-/**
- * A constant value for logging level: warning.
- *
- * @type Number
- */
-M.WARN = 2;
-
-/**
- * A constant value for logging level: error.
- *
- * @type Number
- */
-M.ERR = 3;
-
-/**
- * @class
- *
- * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
- * based on a given logging level.
- *
- * @extends M.Object
- */
-M.Logger = M.Object.extend(
-/** @scope M.Logger.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Logger',
-
-    /**
-     *
-     *  for internal use
-     *  if the espresso call fails - don't try it again
-     *
-     * @type Boolean
-      */
-    _remoteAccess: YES,
-
-    /**
-     * This method is used to log anything out of an application based on the given logging level.
-     * Possible values for the logging level are:
-     *
-     * - debug:   M.DEBUG
-     * - error:   M.ERROR
-     * - warning: M.WARN
-     * - info: M.INFO
-     *
-     * @param {String} msg The logging message.
-     * @param {Number} level The logging level.
-     */
-    log: function(msg, level) {
-        level = level || M.DEBUG;
-
-        /* are we in production mode, then do not throw any logs */
-        if(M.Application.getConfig('debugMode') === false) {
-            return;
-        }
-
-        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
-        if (typeof console === 'undefined') {
-            window.console = {} ;
-            console.log = console.info = console.warn = trackError = function(){};
-        }
-
-        switch (level) {
-            case M.DEBUG:
-                this.debug(msg);
-                break;
-            case M.ERR:
-                this.error(msg);
-                break;
-            case M.WARN:
-                this.warn(msg);
-                break;
-            case M.INFO:
-                this.info(msg);
-                break;
-            default:
-                this.debug(msg);
-                break;
-        }
-    },
-
-    /**
-     * This method is used to log a message on logging level debug.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    debug: function(msg) {
-        console.debug(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level error.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    error: function(msg) {
-        trackError(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level warning.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    warn: function(msg) {
-        console.warn(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level info.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    info: function(msg) {
-        console.info(msg);
-    },
-
-    /**
-     * tries to connect to espresso and prints a debug message in the espresso console
-     * @param msg the message send to espresso
-     */
-    remote: function(msg){
-        var that = this;
-        try{
-            if(that._remoteAccess){
-                var m = JSON.stringify(msg);
-                $.ajax({
-                    url: "/__espresso_debug_console__",
-                    data: m,
-                    type: 'POST'
-                }).done(function(){
-                    that._remoteAccess = YES;
-                }).fail(function(){
-                    that._remoteAccess = NO;
-                });
-            }
-        }catch(e){
-            M.Logger.error(e);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-m_require('core/utility/environment.js');
-
-/**
- * @class
- *
- * Object for dispatching all incoming events.
- *
- * @extends M.Object
- */
-M.EventDispatcher = M.Object.extend(
-/** @scope M.EventDispatcher.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EventDispatcher',
-
-    /**
-     * Saves the latest on click event to make sure that there are no multiple events
-     * fired for one click.
-     *
-     * @type {Object}
-     */
-    lastEvent: {},
-
-    /**
-     * This method is used to register events and link them to a corresponding action.
-     * 
-     * @param {String|Object} eventSource The view's id or a DOM object.
-     * @param {Object} events The events to be registered for the given view or DOM object.
-     */
-    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
-        if(!events || typeof(events) !== 'object') {
-            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
-            return;
-        }
-
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-
-        _.each(events, function(handler, type) {
-            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
-        });
-    },
-
-    /**
-     * This method is used to register a certain event for a certain view or DOM object
-     * and link them to a corresponding action.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     * @param {Object} handler The handler for the event.
-     * @param {Object} recommendedEvents The recommended events for this event source.
-     * @param {Object} sourceType The type of the event source.
-     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
-     */
-    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall, skipUnbinding) {
-        if(!isInternalCall) {
-            if(!handler || typeof(handler) !== 'object') {
-                M.Logger.log('No event passed!', M.WARN);
-                return;
-            }
-
-            eventSource = this.getEventSource(eventSource);
-            if(!this.checkEventSource(eventSource)) {
-                return;
-            }
-        }
-
-        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
-            if(sourceType && typeof(sourceType) === 'string') {
-                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
-            } else {
-                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
-            }
-        }
-
-        if(!this.checkHandler(handler, type)) {
-            return;
-        }
-
-        /* switch enter event to keyup with keycode 13 */
-        if(type === 'enter') {
-            eventSource.bind('keyup', function(event) {
-                if(event.which === 13) {
-                    $(this).trigger('enter');
-                }
-            });
-        }
-
-        var that = this;
-        var view = M.ViewManager.getViewById(eventSource.attr('id'));
-        eventSource.bind(type, function(event) {
-            /* discard false twice-fired events in some special cases */
-            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
-                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
-                    return;
-                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
-                    return;
-                }
-            }
-
-            /* no propagation (except some specials) */
-            var killEvent = YES;
-            if(eventSource.attr('id')) {
-                var view = M.ViewManager.getViewById(eventSource.attr('id'));
-                if(view.type === 'M.SearchBarView') {
-                    killEvent = NO;
-                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
-                    killEvent = NO;
-                } else if(view.hyperlinkTarget && view.hyperlinkType) {
-                    killEvent = NO;
-                } else if(type === 'pageshow') {
-                    killEvent = NO;
-                }
-            }
-            if(killEvent) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            /* store event in lastEvent property for capturing false twice-fired events */
-            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
-                that.lastEvent[type] = {
-                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
-                    date: +new Date(),
-                    x: event.clientX,
-                    y: event.clientY
-                }
-            }
-
-            /* event logger, uncomment for development mode */
-            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
-
-            if(handler.nextEvent) {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
-            } else {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-            }
-        });
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvents: function(eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind();
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvent: function(type, eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind(type);
-    },
-
-    /**
-     * This method is used to explicitly call an event handler. We mainly use this for
-     * combining internal and external events.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {Object} event The original DOM event.
-     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
-     * @param {Array} parameters The (additional) parameters for the handler call.
-     */
-    callHandler: function(handler, event, passEvent, parameters) {
-        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
-            return;
-        }
-
-        if(!passEvent) {
-            this.bindToCaller(handler.target, handler.action, parameters)();
-        } else {
-            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-        }
-    },
-
-    /**
-     * This method is used to check the handler. It tests if target and action are
-     * specified correctly.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {String} type The type of the event.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkHandler: function(handler, type) {
-        if(typeof(handler.action) === 'string') {
-            if(handler.target) {
-                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
-                    handler.action = handler.target[handler.action];
-                    return YES;
-                } else {
-                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
-                    return NO;
-                }
-            } else {
-                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
-                return NO;
-            }
-        } else if(typeof(handler.action) !== 'function') {
-            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
-            return NO;
-        }
-
-        return YES;
-    },
-
-    /**
-     * This method is used to get the event source as a DOM object.
-     *
-     * @param {Object|String} eventSource The event source.
-     * @return {Object} The event source as dom object.
-     */
-    getEventSource: function(eventSource) {
-        if(typeof(eventSource) === 'string') {
-            eventSource = $('#' + eventSource + ':first');
-        } else {
-            eventSource = $(eventSource);
-        }
-        
-        return eventSource;
-    },
-
-    /**
-     * This method is used to check the event source. It tests if it is correctly
-     * specified.
-     *
-     * @param {Object} eventSource The event source.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkEventSource: function(eventSource) {
-        if(!eventSource) {
-            M.Logger.log('The event source is invalid!', M.WARN);
-            return NO;
-        }
-        
-        return YES;
-    },
-
-    dispatchOrientationChangeEvent: function(id, event, nextEvent) {
-        var orientation = M.Environment.getOrientation();
-        if(orientation === M.PORTRAIT_BOTTOM || orientation === M.PORTRAIT_TOP) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-        }
-        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
     }
 
 });
@@ -3446,6 +3036,184 @@ M.LocationManager = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      26.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/request.js');
+
+/**
+ * A constant value for logging level: info.
+ *
+ * @type Number
+ */
+M.INFO = 0;
+
+/**
+ * A constant value for logging level: debug.
+ *
+ * @type Number
+ */
+M.DEBUG = 1;
+
+/**
+ * A constant value for logging level: warning.
+ *
+ * @type Number
+ */
+M.WARN = 2;
+
+/**
+ * A constant value for logging level: error.
+ *
+ * @type Number
+ */
+M.ERR = 3;
+
+/**
+ * @class
+ *
+ * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
+ * based on a given logging level.
+ *
+ * @extends M.Object
+ */
+M.Logger = M.Object.extend(
+/** @scope M.Logger.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Logger',
+
+    /**
+     *
+     *  for internal use
+     *  if the espresso call fails - don't try it again
+     *
+     * @type Boolean
+      */
+    _remoteAccess: YES,
+
+    /**
+     * This method is used to log anything out of an application based on the given logging level.
+     * Possible values for the logging level are:
+     *
+     * - debug:   M.DEBUG
+     * - error:   M.ERROR
+     * - warning: M.WARN
+     * - info: M.INFO
+     *
+     * @param {String} msg The logging message.
+     * @param {Number} level The logging level.
+     */
+    log: function(msg, level) {
+        level = level || M.DEBUG;
+
+        /* are we in production mode, then do not throw any logs */
+        if(M.Application.getConfig('debugMode') === false) {
+            return;
+        }
+
+        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
+        if (typeof console === 'undefined') {
+            window.console = {} ;
+            console.log = console.info = console.warn = trackError = function(){};
+        }
+
+        switch (level) {
+            case M.DEBUG:
+                this.debug(msg);
+                break;
+            case M.ERR:
+                this.error(msg);
+                break;
+            case M.WARN:
+                this.warn(msg);
+                break;
+            case M.INFO:
+                this.info(msg);
+                break;
+            default:
+                this.debug(msg);
+                break;
+        }
+    },
+
+    /**
+     * This method is used to log a message on logging level debug.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    debug: function(msg) {
+        console.debug(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level error.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    error: function(msg) {
+        trackError(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level warning.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    warn: function(msg) {
+        console.warn(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level info.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    info: function(msg) {
+        console.info(msg);
+    },
+
+    /**
+     * tries to connect to espresso and prints a debug message in the espresso console
+     * @param msg the message send to espresso
+     */
+    remote: function(msg){
+        var that = this;
+        try{
+            if(that._remoteAccess){
+                var m = JSON.stringify(msg);
+                $.ajax({
+                    url: "/__espresso_debug_console__",
+                    data: m,
+                    type: 'POST'
+                }).done(function(){
+                    that._remoteAccess = YES;
+                }).fail(function(){
+                    that._remoteAccess = NO;
+                });
+            }
+        }catch(e){
+            M.Logger.error(e);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      11.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -3616,875 +3384,6 @@ M.Cypher = M.Object.extend(
         }
 
         return string;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      11.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The root object for Error objects
- *
- * M.Error encapsulates errors in The-M-Project.
- * Should be passed to error callbacks.
- *
- * 0-99:    general errors
- *
- * 100-199: Model and Validation errors
- *
- * 200-299:   WebSQL errors
- *
- * 300-400:   CouchDB errors
- *
- *
- * Constant                             Code    Situation
- * --------                             ----    ---------
- * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
- * M.ERR_CONNECTION                     1       A connection to an external service could not be established
- *
- * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
- * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
- * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
- * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
- * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
- *
- * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
- *
- * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
- * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
- * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
- * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
- * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
- * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
- * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
- * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
- * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
- * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
- *
- * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
- * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
- * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
- * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
- *
- *
- *
- *
- * @extends M.Object
-*/
-
-
-/**
- * A constant value for an undefined error.
- *
- * @type Number
- */
-M.ERR_UNDEFINED = 0;
-
-/**
- * A constant value for an error occuring when a connection to an external service could not be established.
- *
- * @type Number
- */
-M.ERR_CONNECTION = 1;
-
-/**
- * A model record failed validation due to a property is not set but required to be.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PRESENCE = 100;
-
-/**
- * A model record failed validation due to a property does not represent a valid URL but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_URL = 101;
-
-/**
- * A model record failed validation due to a property does not represent a phone number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PHONE = 102;
-
-/**
- * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NUMBER = 103;
-
-/**
- * A model record failed validation due to a property contains a minus value but it is required to do not.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NOTMINUS = 104;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_EMAIL = 105;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_DATE = 106;
-
-/**
- * A Data Provider was not set for a model.
- *
- * @type Number
- */
-M.ERR_MODEL_PROVIDER_NOT_SET = 120;
-
-
-/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 0
- *
- * @type Number
- */
-M.ERR_WEBSQL_UNKNOWN = 200;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed for database reasons not covered by any other error code."
- * Error code in WebSQL specification: 1
- *
- * @type Number
- */
-M.ERR_WEBSQL_DATABASE = 201;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 2
- *
- * @type Number
- */
-M.ERR_WEBSQL_VERSION = 202;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
- * Error code in WebSQL specification: 3
- *
- * @type Number
- */
-M.ERR_WEBSQL_TOO_LARGE = 203;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
- * Error code in WebSQL specification: 4
- *
- * @type Number
- */
-M.ERR_WEBSQL_QUOTA = 204;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
- * Error code in WebSQL specification: 5
- *
- * @type Number
- */
-M.ERR_WEBSQL_SYNTAX = 205;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
- * Error code in WebSQL specification: 6
- *
- * @type Number
- */
-M.ERR_WEBSQL_CONSTRAINT = 206;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "A lock for the transaction could not be obtained in a reasonable time."
- * Error code in WebSQL specification: 7
- *
- * @type Number
- */
-M.ERR_WEBSQL_TIMEOUT = 207;
-
-/* following errors are WebSQL Data Provider errors. */
-
-/**
- * A constant value for an error occuring when dbHandler does not exist in
- * data provider. Reason: Initialization did not take place or failed.
- *
- * @type Number
- */
-M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
-
-/**
- * A constant value for an error occuring with bulkSave operation in dataprovider.
- * No Record array was passed to the method via the param obj.
- *
- * @type Number
- */
-M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
-
-
-/**
- * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
- *
- * @type Number
- */
-M.ERR_COUCHDB_CONFLICT = 300;
-
-/**
- * A constant value for an error occuring if the provided database could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBNOTFOUND = 301;
-
-/**
- * A constant value for an error occuring if a database that shall be created already exists
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBEXISTS = 302;
-
-/**
- * A constant value for an error occuring if a document could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DOCNOTFOUND = 303;
-
-M.Error = M.Object.extend(
-/** @scope M.Error.prototype */ {
-    code: '',
-    msg: '',
-    errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-M.STATE_UNDEFINED = 'state_undefined';
-M.STATE_NEW = 'state_new';
-M.STATE_INSYNCPOS = 'state_insyncpos';
-M.STATE_INSYNCNEG = 'state_insyncneg';
-M.STATE_LOCALCHANGED = 'state_localchange';
-M.STATE_VALID = 'state_valid';
-M.STATE_INVALID = 'state_invalid';
-M.STATE_DELETED = 'state_deleted';
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * M.Model is the prototype for every model and for every model record (a model itself is the blueprint for a model record).
- * Models hold the business data of an application respectively the application's state. It's usually the part of an application that is persisted to storage.
- * M.Model acts as the gatekeeper to storage. It uses data provider for persistence and validators to validate its records.
- *
- * @extends M.Object
- */
-M.Model = M.Object.extend(
-/** @scope M.Model.prototype */ {
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Model',
-
-    /**
-     * The name of the model.
-     *
-     * @type String
-     */
-    name: '',
-
-    /**
-     * Unique identifier for the model record.
-     *
-     * It's as unique as it needs to be: four digits, each digits can be one of 32 chars
-     *
-     * @type String
-     */
-    m_id: null,
-
-    /**
-     * The model's record defines the properties that are semantically bound to this model:
-     * e.g. a person's record is (in simplest case): firstname, lastname, age.
-     *
-     * @type Object record
-     */
-    record: null,
-
-    /**
-     * Object containing all meta information for the object's properties
-     * @type Object
-     */
-    __meta: {},
-
-    /**
-     * Manages records of this model
-     * @type Object
-     */
-    recordManager: null,
-
-    /**
-     * List containing all models in application
-     * @type Object|Array
-     */
-    modelList: {},
-
-    /**
-     * A constant defining the model's state. Important e.g. for syncing storage
-     * @type String
-     */
-    state: M.STATE_UNDEFINED,
-
-    /**
-     *
-     * @type String
-     */
-    state_remote: M.STATE_UNDEFINED,
-
-    /**
-     * determines whether model shall be validated before saving to storage or not.
-     * @type Boolean
-     */
-    usesValidation: NO,
-
-    /**
-     * The model's data provider. A data provider persists the model to a certain storage.
-     *
-     * @type Object
-     */
-    dataProvider: null,
-
-    getUniqueId: function() {
-        return M.UniqueId.uuid(4);
-    },
-
-    /**
-     * Creates a new record of the model, means an instance of the model based on the blueprint.
-     * You pass the object's specific attributes to it as an object.
-     *
-     * @param {Object} obj The properties object, e.g. {firstname: 'peter', lastname ='fox'}
-     * @returns {Object} The model record with the passed properties set. State depends on newly creation or fetch from storage: if
-     * from storage then state is M.STATE_NEW or 'state_new', if fetched from database then it is M.STATE_VALID or 'state_valid'
-     */
-    createRecord: function(obj) {
-
-        var rec = this.extend({
-            m_id: obj.m_id ? obj.m_id : this.getUniqueId(),
-            record: obj /* properties that are added to record here, but are not part of __meta, are deleted later (see below) */
-        });
-        delete obj.m_id;
-        rec.state = obj.state ? obj.state : M.STATE_NEW;
-        delete obj.state;
-
-        /* set timestamps if new */
-        if(rec.state === M.STATE_NEW) {
-            rec.record[M.META_CREATED_AT] = +new Date();
-            rec.record[M.META_UPDATED_AT] = +new Date();
-        }
-
-        for(var i in rec.record) {
-
-            if(i === M.META_CREATED_AT || i === M.META_UPDATED_AT) {
-                continue;
-            }
-
-            /* if record contains properties that are not part of __meta (means that are not defined in the model blueprint) delete them */
-            if(!rec.__meta.hasOwnProperty(i)) {
-                M.Logger.log('Deleting "' + i + '" property. It\'s not part of ' + this.name + ' definition.', M.WARN);
-                delete rec.record[i];
-                continue;
-            }
-
-            /* if reference to a record entity is in param obj, assign it like in set. */
-            if(rec.__meta[i].dataType === 'Reference' && rec.record[i] && rec.record[i].type && rec.record[i].type === 'M.Model') {
-                // call set of model
-                rec.set(i, rec.record[i]);
-            }
-
-            if(rec.__meta[i]) {
-                rec.__meta[i].isUpdated = NO;
-            }
-        }
-
-        this.recordManager.add(rec);
-        return rec;
-    },
-
-    /**
-     * Create defines a new model blueprint. It is passed an object with the model's attributes and the model's business logic
-     * and after it the type of data provider to use.
-     *
-     * @param {Object} obj An object defining the model's
-     * @param {Object} dp The data provider to use, e. g. M.LocalStorageProvider
-     * @returns {Object} The model blueprint: acts as blueprint to all records created with @link M.Model#createRecord
-     */
-    create: function(obj, dp) {
-        var model = M.Model.extend({
-            __meta: {},
-            name: obj.__name__,
-            dataProvider: dp,
-            recordManager: {},
-            usesValidation: obj.usesValidation ? obj.usesValidation : this.usesValidation
-        });
-        delete obj.__name__;
-        delete obj.usesValidation;
-
-        for(var prop in obj) {
-            if(typeof(obj[prop]) === 'function') {
-                model[prop] = obj[prop];
-            } else if(obj[prop].type === 'M.ModelAttribute') {
-                model.__meta[prop] = obj[prop];
-            }
-        }
-
-        /* add ID, _createdAt and _modifiedAt properties in meta for timestamps  */
-        model.__meta[M.META_CREATED_AT] = this.attr('String', { // could be 'Date', too
-            isRequired:YES
-        });
-        model.__meta[M.META_UPDATED_AT] = this.attr('String', { // could be 'Date', too
-            isRequired:YES
-        });
-
-        model.recordManager = M.RecordManager.extend({records:[]});
-
-        /* save model in modelList with model name as key */
-        this.modelList[model.name] = model;
-
-        return model;
-    },
-
-    /**
-     * Defines a to-one-relationship.
-     * @param refName
-     * @param refEntity
-     */
-    hasOne: function(refEntity, obj) {
-        var relAttr = this.attr('Reference', {
-            refType: 'toOne',
-            reference: refEntity,
-            validators: obj.validators,
-            isRequired: obj.isRequired
-        });
-        return relAttr;
-    },
-
-    /**
-     * Defines a to-many-relationship
-     * @param colName
-     * @param refEntity
-     * @param invRel
-     */
-    hasMany: function(colName, refEntity, invRel) {
-        var relAttr = this.attr('Reference', {
-            refType: 'toMany',
-            reference: refEntity
-        });
-        return relAttr;
-    },
-
-    /**
-     * Returns a M.ModelAttribute object to map an attribute in our record.
-     *
-     * @param {String} type type of the attribute
-     * @param {Object} opts options for the attribute, like required flag and validators array
-     * @returns {Object} An M.ModelAttribute object configured with the type and options passed to the function.
-     */
-    attr: function(type, opts) {
-        return M.ModelAttribute.attr(type, opts);
-    },
-
-    /*
-     * get and set methods for encapsulated attribute access
-     */
-
-    /**
-     * Get attribute propName from model, if async provider is used, get on references does not return the property value but a boolean indicating
-     * the load status. get must then be called again in onSuccess callback to retrieve the value
-     * @param {String} propName the name of the property whose value shall be returned
-     * @param {Object} obj optional parameter containing the load force flag and callbacks, e.g.:
-     * {
-     *   force: YES,
-     *   onSuccess: function() { console.log('yeah'); }
-     * }
-     * @returns {Boolean|Object|String} value of property or boolean indicating the load status
-     */
-    get: function(propName, obj) {
-        var metaProp = this.__meta[propName];
-        var recProp = this.record[propName];
-        /* return ref entity if property is a reference */
-        if(metaProp && metaProp.dataType === 'Reference') {
-            if(metaProp.refEntity) {// if entity is already loaded and assigned here in model record
-                return metaProp.refEntity;
-            } else if(recProp) { // if model record has a reference set, but it is not loaded yet
-                if(obj && obj.force) { // if force flag was set
-                    /* custom call to deepFind with record passed only being the one property that needs to be filled, type of dp checked in deepFind */
-                    var callback = this.dataProvider.isAsync ? obj.onSuccess : null
-                    this.deepFind([{
-                        prop: propName,
-                        name: metaProp.reference,
-                        model: this.modelList[metaProp.reference],
-                        m_id: recProp
-                    }], callback);
-                    if(!this.dataProvider.isAsync) { // if data provider acts synchronous, we can now return the fetched entity
-                        return metaProp.refEntity;
-                    }
-                    return YES;
-                } else { // if force flag was not set, and object is not in memory and record manager load is not done and we return NO
-                    var r = this.recordManager.getRecordById(recProp);
-                    if(r) { /* if object is already loaded and in record manager don't access storage */
-                        return r;
-                    } else {
-                        return NO; // return
-                    }
-                }
-            } else { // if reference has not been set yet
-                return null;
-            }
-        }
-        /* if propName is not a reference, but a "simple" property, just return it */
-        return recProp;
-    },
-
-    /**
-     * Set attribute propName of model with value val, sets' property to isUpdated (=> will be included in UPDATE call)
-     * and sets a new timestamp to _updatedAt. Will not do anything, if newVal is the same as the current prop value.
-     * @param {String} propName the name of the property whose value shall be set
-     * @param {String|Object} val the new value
-     */
-    set: function(propName, val) {
-        if(this.__meta[propName].dataType === 'Reference' && val.type && val.type === 'M.Model') {    // reference set
-            /* first check if new value is passed */
-            if(this.record[propName] !== val.m_id) {
-                /* set m_id of reference in record */
-                this.record[propName] = val.m_id;
-                this.__meta[propName].refEntity = val;
-            }
-            return;
-        }
-
-        if(this.record[propName] !== val) {
-            this.record[propName] = val;
-            this.__meta[propName].isUpdated = YES;
-            /* mark record as updated with new timestamp*/
-            this.record[M.META_UPDATED_AT] = +new Date();
-        }
-    },
-
-    /**
-     * Returns the records array of the model's record manager.
-     * @returns {Object|Array} The records array of record manager.
-     */
-    records: function() {
-        if(this.recordManager && this.recordManager.records) {
-            return this.recordManager.records;
-        }
-    },
-
-    /**
-     * Validates the model, means calling validate for each property.
-     * @returns {Boolean} Indicating whether this record is valid (YES|true) or not (NO|false).
-     */
-    validate: function() {
-        var isValid = YES;
-        var validationErrorOccured = NO;
-        /* clear validation error buffer before validation */
-        M.Validator.clearErrorBuffer();
-
-        /*
-        * validationBasis depends on the state of the model: if the model is in state NEW, all properties (__meta includes all)
-        * shall be considered for validation. if model is in another state, the model's record is used. example: the model is loaded from
-        * a database with only two properties included (select name, age FROM...). record now only contains these two properties but __meta
-        * still has all properties listed. models are valid if loaded from database so when saved again only the loaded properties need to get
-        * validated because all others have not been touched. that's why then record is used.
-        * */
-        var validationBasis = this.state === M.STATE_NEW ? this.__meta : this.record;
-
-        for (var i in validationBasis) {
-            if(i === 'ID') { // skip property ID
-                continue;
-            }
-            var prop = this.__meta[i];
-            var obj = {
-                value: this.record[i],
-                modelId: this.name + '_' + this.m_id,
-                property: i
-            };
-            if (!prop.validate(obj)) {
-                isValid = NO;
-            }
-        }
-        /* set state of model */
-        /*if(!isValid) {
-            this.state = M.STATE_INVALID;
-        } else {
-            this.state = M.STATE_VALID;
-        }*/
-        return isValid;
-    },
-
-    /* CRUD Methods below */
-    /**
-     * Calls the corresponding find() of the data provider to fetch data based on the passed query or key.
-     *
-     * @param {Object} obj The param object with query or key and callbacks.
-     * @returns {Boolean|Object} Depends on data provider used. When WebSQL used, a boolean is returned, the find result is returned asynchronously,
-     * because the call itself is asynchronous. If LocalStorage is used, the result of the query is returned.
-     */
-    find: function(obj){
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj : {};
-        /* check if the record list shall be cleared (default) before new found model records are appended to the record list */
-        obj.deleteRecordList = obj.deleteRecordList ? obj.deleteRecordList : YES;
-        if(obj.deleteRecordList) {
-            this.recordManager.removeAll();
-        }
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-
-        /* extends the given obj with self as model property in obj */
-        return this.dataProvider.find( $.extend(obj, {model: this}) );
-    },
-
-    /**
-     * Create or update a record in storage if it is valid (first check this).
-     * If param obj includes cascade:YES then save is cascadaded through all references recursively.
-     *
-     * @param {Object} obj The param object with query, cascade flag and callbacks.
-     * @returns {Boolean} The result of the data provider function call. Is a boolean. With LocalStorage used, it indicates if the save operation was successful.
-     * When WebSQL is used, the result of the save operation returns asynchronously. The result then is just the standard result returned by the web sql provider's save method
-     * which does not necessarily indicate whether the operation was successful, because the operation is asynchronous, means the operation's result is not predictable.
-     */
-    save: function(obj) {
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj: {};
-        if(!this.m_id) {
-            return NO;
-        }
-        var isValid = YES;
-
-        if(this.usesValidation) {
-            isValid = this.validate();
-        }
-
-        if(obj.cascade) {
-            for(var prop in this.__meta) {
-                if(this.__meta[prop] && this.__meta[prop].dataType === 'Reference' && this.__meta[prop].refEntity) {
-                    this.__meta[prop].refEntity.save({cascade:YES}); // cascades recursively through all referenced model records
-                }
-            }
-        }
-
-        if(isValid) {
-            return this.dataProvider.save($.extend(obj, {model: this}));
-        }
-    },
-
-    /**
-     * Delete a record in storage.
-     * @returns {Boolean} Indicating whether deletion was successful or not (only with synchronous data providers, e.g. LocalStorage). When asynchronous data providers
-     * are used, e.g. WebSQL provider the real result comes asynchronous and here just the result of the del() function call of the @link M.WebSqlProvider is used.
-     */
-    del: function(obj) {
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj : {};
-        if(!this.m_id) {
-            return NO;
-        }
-
-       var isDel = this.dataProvider.del($.extend(obj, {model: this}));
-        if(isDel) {
-            this.state = M.STATE_DELETED;
-            return YES;
-        }
-    },
-
-    /**
-     * completes the model record by loading all referenced entities.
-     *
-     * @param {Function | Object} obj The param object with query, cascade flag and callbacks.
-     */
-    complete: function(callback) {
-        //console.log('complete...');
-        var records = [];
-        for(var i in this.record) {
-            if(this.__meta[i].dataType === 'Reference') {
-                //records.push(this.__meta[i].refEntity);
-                records.push({
-                    prop:i,
-                    name: this.__meta[i].reference,
-                    model: this.modelList[this.__meta[i].reference],
-                    m_id: this.record[i]
-                });
-            }
-        }
-        this.deepFind(records, callback);
-    },
-
-    deepFind: function(records, callback) {
-        //console.log('deepFind...');
-        //console.log('### records.length: ' + records.length);
-        if(records.length < 1) {    // recursion end constraint
-            if(callback) {
-                callback();
-            }
-            return;
-        }
-        var curRec = records.pop(); // delete last element, decreases length of records by 1 => important for recursion constraint above
-        var cb = this.bindToCaller(this, this.deepFind,[records, callback]); // cb is callback for find in data provider
-        var that = this;
-
-
-        switch(this.dataProvider.type) {
-            case 'M.DataProviderLocalStorage':
-                var ref = this.modelList[curRec.name].find({
-                    key: curRec.m_id
-                });
-                this.__meta[curRec.prop].refEntity = ref;
-
-                this.deepFind(records, callback); // recursion
-                break;
-
-            default:
-                break;
-        }
-    },
-
-    setReference: function(result, that, prop, callback) {
-        that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
-        callback();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The observable knows all observers, mainly views, and pushes updates if necessary.
- *
- * @extends M.Object
- */
-M.Observable = M.Object.extend(
-/** @scope M.Observable.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Observable',
-
-    /**
-     * List that contains pairs of an observer with an observable. An observer is tightened to one
-     * observable, but one observable can have multiple observers.
-     *
-     * @type Array|Object
-     */
-    bindingList: null,
-
-    /**
-     * Attach an observer to an observable.
-     *
-     * @param {String} observer The observer.
-     * @param {String} observable The observable.
-     */
-    attach: function(observer, observable) {
-        if(!this.bindingList) {
-            this.bindingList = [];
-        }
-        this.bindingList.push({
-            observer: observer,
-            observable: observable
-        });
-    },
-
-    /**
-     * Detach an observer from an observable.
-     *
-     * @param {String} observer The observer.
-     */
-    detach: function(observer) {
-        /* grep is a jQuery function that finds
-         * elements in an array that satisfy a certain criteria.
-         * It works on a copy so we have to assign the "cleaned"
-         * array to our bindingList.
-         */
-        this.bindingList = _.filter(this.bindingList, function(value, index) {
-                return value.observable !== observer;
-        });
-    },
-
-    /**
-     * Notify all observers that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property that changed.
-     */
-    notifyObservers: function(key) {
-        _.each(this.bindingList, function(entry){
-            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
-                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
-                    entry.observer.valueDidChange();
-                }else{
-                    entry.observer.contentDidChange();
-                }
-            }
-        });
     }
 
 });
@@ -5264,6 +4163,2222 @@ M.Validator = M.Object.extend(
 
 
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      11.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The root object for Error objects
+ *
+ * M.Error encapsulates errors in The-M-Project.
+ * Should be passed to error callbacks.
+ *
+ * 0-99:    general errors
+ *
+ * 100-199: Model and Validation errors
+ *
+ * 200-299:   WebSQL errors
+ *
+ * 300-400:   CouchDB errors
+ *
+ *
+ * Constant                             Code    Situation
+ * --------                             ----    ---------
+ * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
+ * M.ERR_CONNECTION                     1       A connection to an external service could not be established
+ *
+ * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
+ * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
+ * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
+ * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
+ *
+ * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
+ *
+ * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
+ * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
+ * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
+ * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
+ * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
+ * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
+ * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
+ * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
+ * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
+ * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
+ *
+ * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
+ * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
+ * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
+ * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
+ *
+ *
+ *
+ *
+ * @extends M.Object
+*/
+
+
+/**
+ * A constant value for an undefined error.
+ *
+ * @type Number
+ */
+M.ERR_UNDEFINED = 0;
+
+/**
+ * A constant value for an error occuring when a connection to an external service could not be established.
+ *
+ * @type Number
+ */
+M.ERR_CONNECTION = 1;
+
+/**
+ * A model record failed validation due to a property is not set but required to be.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PRESENCE = 100;
+
+/**
+ * A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_URL = 101;
+
+/**
+ * A model record failed validation due to a property does not represent a phone number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PHONE = 102;
+
+/**
+ * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NUMBER = 103;
+
+/**
+ * A model record failed validation due to a property contains a minus value but it is required to do not.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NOTMINUS = 104;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_EMAIL = 105;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_DATE = 106;
+
+/**
+ * A Data Provider was not set for a model.
+ *
+ * @type Number
+ */
+M.ERR_MODEL_PROVIDER_NOT_SET = 120;
+
+
+/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 0
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_UNKNOWN = 200;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed for database reasons not covered by any other error code."
+ * Error code in WebSQL specification: 1
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_DATABASE = 201;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 2
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_VERSION = 202;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
+ * Error code in WebSQL specification: 3
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TOO_LARGE = 203;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
+ * Error code in WebSQL specification: 4
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_QUOTA = 204;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
+ * Error code in WebSQL specification: 5
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_SYNTAX = 205;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
+ * Error code in WebSQL specification: 6
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_CONSTRAINT = 206;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "A lock for the transaction could not be obtained in a reasonable time."
+ * Error code in WebSQL specification: 7
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TIMEOUT = 207;
+
+/* following errors are WebSQL Data Provider errors. */
+
+/**
+ * A constant value for an error occuring when dbHandler does not exist in
+ * data provider. Reason: Initialization did not take place or failed.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
+
+/**
+ * A constant value for an error occuring with bulkSave operation in dataprovider.
+ * No Record array was passed to the method via the param obj.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
+
+
+/**
+ * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_CONFLICT = 300;
+
+/**
+ * A constant value for an error occuring if the provided database could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBNOTFOUND = 301;
+
+/**
+ * A constant value for an error occuring if a database that shall be created already exists
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBEXISTS = 302;
+
+/**
+ * A constant value for an error occuring if a document could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DOCNOTFOUND = 303;
+
+M.Error = M.Object.extend(
+/** @scope M.Error.prototype */ {
+    code: '',
+    msg: '',
+    errObj: null
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+m_require('core/utility/environment.js');
+
+/**
+ * @class
+ *
+ * Object for dispatching all incoming events.
+ *
+ * @extends M.Object
+ */
+M.EventDispatcher = M.Object.extend(
+/** @scope M.EventDispatcher.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EventDispatcher',
+
+    /**
+     * Saves the latest on click event to make sure that there are no multiple events
+     * fired for one click.
+     *
+     * @type {Object}
+     */
+    lastEvent: {},
+
+    /**
+     * This method is used to register events and link them to a corresponding action.
+     * 
+     * @param {String|Object} eventSource The view's id or a DOM object.
+     * @param {Object} events The events to be registered for the given view or DOM object.
+     */
+    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
+        if(!events || typeof(events) !== 'object') {
+            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
+            return;
+        }
+
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+
+        _.each(events, function(handler, type) {
+            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
+        });
+    },
+
+    /**
+     * This method is used to register a certain event for a certain view or DOM object
+     * and link them to a corresponding action.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     * @param {Object} handler The handler for the event.
+     * @param {Object} recommendedEvents The recommended events for this event source.
+     * @param {Object} sourceType The type of the event source.
+     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
+     */
+    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall, skipUnbinding) {
+        if(!isInternalCall) {
+            if(!handler || typeof(handler) !== 'object') {
+                M.Logger.log('No event passed!', M.WARN);
+                return;
+            }
+
+            eventSource = this.getEventSource(eventSource);
+            if(!this.checkEventSource(eventSource)) {
+                return;
+            }
+        }
+
+        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
+            if(sourceType && typeof(sourceType) === 'string') {
+                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
+            } else {
+                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
+            }
+        }
+
+        if(!this.checkHandler(handler, type)) {
+            return;
+        }
+
+        /* switch enter event to keyup with keycode 13 */
+        if(type === 'enter') {
+            eventSource.bind('keyup', function(event) {
+                if(event.which === 13) {
+                    $(this).trigger('enter');
+                }
+            });
+        }
+
+        var that = this;
+        var view = M.ViewManager.getViewById(eventSource.attr('id'));
+        eventSource.bind(type, function(event) {
+            /* discard false twice-fired events in some special cases */
+            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
+                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
+                    return;
+                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
+                    return;
+                }
+            }
+
+            /* no propagation (except some specials) */
+            var killEvent = YES;
+            if(eventSource.attr('id')) {
+                var view = M.ViewManager.getViewById(eventSource.attr('id'));
+                if(view.type === 'M.SearchBarView') {
+                    killEvent = NO;
+                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
+                    killEvent = NO;
+                } else if(view.hyperlinkTarget && view.hyperlinkType) {
+                    killEvent = NO;
+                } else if(type === 'pageshow') {
+                    killEvent = NO;
+                }
+            }
+            if(killEvent) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            /* store event in lastEvent property for capturing false twice-fired events */
+            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
+                that.lastEvent[type] = {
+                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
+                    date: +new Date(),
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            }
+
+            /* event logger, uncomment for development mode */
+            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
+
+            if(handler.nextEvent) {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
+            } else {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+            }
+        });
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvents: function(eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind();
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvent: function(type, eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind(type);
+    },
+
+    /**
+     * This method is used to explicitly call an event handler. We mainly use this for
+     * combining internal and external events.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {Object} event The original DOM event.
+     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
+     * @param {Array} parameters The (additional) parameters for the handler call.
+     */
+    callHandler: function(handler, event, passEvent, parameters) {
+        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
+            return;
+        }
+
+        if(!passEvent) {
+            this.bindToCaller(handler.target, handler.action, parameters)();
+        } else {
+            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+        }
+    },
+
+    /**
+     * This method is used to check the handler. It tests if target and action are
+     * specified correctly.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {String} type The type of the event.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkHandler: function(handler, type) {
+        if(typeof(handler.action) === 'string') {
+            if(handler.target) {
+                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
+                    handler.action = handler.target[handler.action];
+                    return YES;
+                } else {
+                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
+                    return NO;
+                }
+            } else {
+                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
+                return NO;
+            }
+        } else if(typeof(handler.action) !== 'function') {
+            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
+            return NO;
+        }
+
+        return YES;
+    },
+
+    /**
+     * This method is used to get the event source as a DOM object.
+     *
+     * @param {Object|String} eventSource The event source.
+     * @return {Object} The event source as dom object.
+     */
+    getEventSource: function(eventSource) {
+        if(typeof(eventSource) === 'string') {
+            eventSource = $('#' + eventSource + ':first');
+        } else {
+            eventSource = $(eventSource);
+        }
+        
+        return eventSource;
+    },
+
+    /**
+     * This method is used to check the event source. It tests if it is correctly
+     * specified.
+     *
+     * @param {Object} eventSource The event source.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkEventSource: function(eventSource) {
+        if(!eventSource) {
+            M.Logger.log('The event source is invalid!', M.WARN);
+            return NO;
+        }
+        
+        return YES;
+    },
+
+    dispatchOrientationChangeEvent: function(id, event, nextEvent) {
+        var orientation = M.Environment.getOrientation();
+        if(orientation === M.PORTRAIT_BOTTOM || orientation === M.PORTRAIT_TOP) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+        }
+        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+M.STATE_UNDEFINED = 'state_undefined';
+M.STATE_NEW = 'state_new';
+M.STATE_INSYNCPOS = 'state_insyncpos';
+M.STATE_INSYNCNEG = 'state_insyncneg';
+M.STATE_LOCALCHANGED = 'state_localchange';
+M.STATE_VALID = 'state_valid';
+M.STATE_INVALID = 'state_invalid';
+M.STATE_DELETED = 'state_deleted';
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * M.Model is the prototype for every model and for every model record (a model itself is the blueprint for a model record).
+ * Models hold the business data of an application respectively the application's state. It's usually the part of an application that is persisted to storage.
+ * M.Model acts as the gatekeeper to storage. It uses data provider for persistence and validators to validate its records.
+ *
+ * @extends M.Object
+ */
+M.Model = M.Object.extend(
+/** @scope M.Model.prototype */ {
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Model',
+
+    /**
+     * The name of the model.
+     *
+     * @type String
+     */
+    name: '',
+
+    /**
+     * Unique identifier for the model record.
+     *
+     * It's as unique as it needs to be: four digits, each digits can be one of 32 chars
+     *
+     * @type String
+     */
+    m_id: null,
+
+    /**
+     * The model's record defines the properties that are semantically bound to this model:
+     * e.g. a person's record is (in simplest case): firstname, lastname, age.
+     *
+     * @type Object record
+     */
+    record: null,
+
+    /**
+     * Object containing all meta information for the object's properties
+     * @type Object
+     */
+    __meta: {},
+
+    /**
+     * Manages records of this model
+     * @type Object
+     */
+    recordManager: null,
+
+    /**
+     * List containing all models in application
+     * @type Object|Array
+     */
+    modelList: {},
+
+    /**
+     * A constant defining the model's state. Important e.g. for syncing storage
+     * @type String
+     */
+    state: M.STATE_UNDEFINED,
+
+    /**
+     *
+     * @type String
+     */
+    state_remote: M.STATE_UNDEFINED,
+
+    /**
+     * determines whether model shall be validated before saving to storage or not.
+     * @type Boolean
+     */
+    usesValidation: NO,
+
+    /**
+     * The model's data provider. A data provider persists the model to a certain storage.
+     *
+     * @type Object
+     */
+    dataProvider: null,
+
+    getUniqueId: function() {
+        return M.UniqueId.uuid(4);
+    },
+
+    /**
+     * Creates a new record of the model, means an instance of the model based on the blueprint.
+     * You pass the object's specific attributes to it as an object.
+     *
+     * @param {Object} obj The properties object, e.g. {firstname: 'peter', lastname ='fox'}
+     * @returns {Object} The model record with the passed properties set. State depends on newly creation or fetch from storage: if
+     * from storage then state is M.STATE_NEW or 'state_new', if fetched from database then it is M.STATE_VALID or 'state_valid'
+     */
+    createRecord: function(obj) {
+
+        var rec = this.extend({
+            m_id: obj.m_id ? obj.m_id : this.getUniqueId(),
+            record: obj /* properties that are added to record here, but are not part of __meta, are deleted later (see below) */
+        });
+        delete obj.m_id;
+        rec.state = obj.state ? obj.state : M.STATE_NEW;
+        delete obj.state;
+
+        /* set timestamps if new */
+        if(rec.state === M.STATE_NEW) {
+            rec.record[M.META_CREATED_AT] = +new Date();
+            rec.record[M.META_UPDATED_AT] = +new Date();
+        }
+
+        for(var i in rec.record) {
+
+            if(i === M.META_CREATED_AT || i === M.META_UPDATED_AT) {
+                continue;
+            }
+
+            /* if record contains properties that are not part of __meta (means that are not defined in the model blueprint) delete them */
+            if(!rec.__meta.hasOwnProperty(i)) {
+                M.Logger.log('Deleting "' + i + '" property. It\'s not part of ' + this.name + ' definition.', M.WARN);
+                delete rec.record[i];
+                continue;
+            }
+
+            /* if reference to a record entity is in param obj, assign it like in set. */
+            if(rec.__meta[i].dataType === 'Reference' && rec.record[i] && rec.record[i].type && rec.record[i].type === 'M.Model') {
+                // call set of model
+                rec.set(i, rec.record[i]);
+            }
+
+            if(rec.__meta[i]) {
+                rec.__meta[i].isUpdated = NO;
+            }
+        }
+
+        this.recordManager.add(rec);
+        return rec;
+    },
+
+    /**
+     * Create defines a new model blueprint. It is passed an object with the model's attributes and the model's business logic
+     * and after it the type of data provider to use.
+     *
+     * @param {Object} obj An object defining the model's
+     * @param {Object} dp The data provider to use, e. g. M.LocalStorageProvider
+     * @returns {Object} The model blueprint: acts as blueprint to all records created with @link M.Model#createRecord
+     */
+    create: function(obj, dp) {
+        var model = M.Model.extend({
+            __meta: {},
+            name: obj.__name__,
+            dataProvider: dp,
+            recordManager: {},
+            usesValidation: obj.usesValidation ? obj.usesValidation : this.usesValidation
+        });
+        delete obj.__name__;
+        delete obj.usesValidation;
+
+        for(var prop in obj) {
+            if(typeof(obj[prop]) === 'function') {
+                model[prop] = obj[prop];
+            } else if(obj[prop].type === 'M.ModelAttribute') {
+                model.__meta[prop] = obj[prop];
+            }
+        }
+
+        /* add ID, _createdAt and _modifiedAt properties in meta for timestamps  */
+        model.__meta[M.META_CREATED_AT] = this.attr('String', { // could be 'Date', too
+            isRequired:YES
+        });
+        model.__meta[M.META_UPDATED_AT] = this.attr('String', { // could be 'Date', too
+            isRequired:YES
+        });
+
+        model.recordManager = M.RecordManager.extend({records:[]});
+
+        /* save model in modelList with model name as key */
+        this.modelList[model.name] = model;
+
+        return model;
+    },
+
+    /**
+     * Defines a to-one-relationship.
+     * @param refName
+     * @param refEntity
+     */
+    hasOne: function(refEntity, obj) {
+        var relAttr = this.attr('Reference', {
+            refType: 'toOne',
+            reference: refEntity,
+            validators: obj.validators,
+            isRequired: obj.isRequired
+        });
+        return relAttr;
+    },
+
+    /**
+     * Defines a to-many-relationship
+     * @param colName
+     * @param refEntity
+     * @param invRel
+     */
+    hasMany: function(colName, refEntity, invRel) {
+        var relAttr = this.attr('Reference', {
+            refType: 'toMany',
+            reference: refEntity
+        });
+        return relAttr;
+    },
+
+    /**
+     * Returns a M.ModelAttribute object to map an attribute in our record.
+     *
+     * @param {String} type type of the attribute
+     * @param {Object} opts options for the attribute, like required flag and validators array
+     * @returns {Object} An M.ModelAttribute object configured with the type and options passed to the function.
+     */
+    attr: function(type, opts) {
+        return M.ModelAttribute.attr(type, opts);
+    },
+
+    /*
+     * get and set methods for encapsulated attribute access
+     */
+
+    /**
+     * Get attribute propName from model, if async provider is used, get on references does not return the property value but a boolean indicating
+     * the load status. get must then be called again in onSuccess callback to retrieve the value
+     * @param {String} propName the name of the property whose value shall be returned
+     * @param {Object} obj optional parameter containing the load force flag and callbacks, e.g.:
+     * {
+     *   force: YES,
+     *   onSuccess: function() { console.log('yeah'); }
+     * }
+     * @returns {Boolean|Object|String} value of property or boolean indicating the load status
+     */
+    get: function(propName, obj) {
+        var metaProp = this.__meta[propName];
+        var recProp = this.record[propName];
+        /* return ref entity if property is a reference */
+        if(metaProp && metaProp.dataType === 'Reference') {
+            if(metaProp.refEntity) {// if entity is already loaded and assigned here in model record
+                return metaProp.refEntity;
+            } else if(recProp) { // if model record has a reference set, but it is not loaded yet
+                if(obj && obj.force) { // if force flag was set
+                    /* custom call to deepFind with record passed only being the one property that needs to be filled, type of dp checked in deepFind */
+                    var callback = this.dataProvider.isAsync ? obj.onSuccess : null
+                    this.deepFind([{
+                        prop: propName,
+                        name: metaProp.reference,
+                        model: this.modelList[metaProp.reference],
+                        m_id: recProp
+                    }], callback);
+                    if(!this.dataProvider.isAsync) { // if data provider acts synchronous, we can now return the fetched entity
+                        return metaProp.refEntity;
+                    }
+                    return YES;
+                } else { // if force flag was not set, and object is not in memory and record manager load is not done and we return NO
+                    var r = this.recordManager.getRecordById(recProp);
+                    if(r) { /* if object is already loaded and in record manager don't access storage */
+                        return r;
+                    } else {
+                        return NO; // return
+                    }
+                }
+            } else { // if reference has not been set yet
+                return null;
+            }
+        }
+        /* if propName is not a reference, but a "simple" property, just return it */
+        return recProp;
+    },
+
+    /**
+     * Set attribute propName of model with value val, sets' property to isUpdated (=> will be included in UPDATE call)
+     * and sets a new timestamp to _updatedAt. Will not do anything, if newVal is the same as the current prop value.
+     * @param {String} propName the name of the property whose value shall be set
+     * @param {String|Object} val the new value
+     */
+    set: function(propName, val) {
+        if(this.__meta[propName].dataType === 'Reference' && val.type && val.type === 'M.Model') {    // reference set
+            /* first check if new value is passed */
+            if(this.record[propName] !== val.m_id) {
+                /* set m_id of reference in record */
+                this.record[propName] = val.m_id;
+                this.__meta[propName].refEntity = val;
+            }
+            return;
+        }
+
+        if(this.record[propName] !== val) {
+            this.record[propName] = val;
+            this.__meta[propName].isUpdated = YES;
+            /* mark record as updated with new timestamp*/
+            this.record[M.META_UPDATED_AT] = +new Date();
+        }
+    },
+
+    /**
+     * Returns the records array of the model's record manager.
+     * @returns {Object|Array} The records array of record manager.
+     */
+    records: function() {
+        if(this.recordManager && this.recordManager.records) {
+            return this.recordManager.records;
+        }
+    },
+
+    /**
+     * Validates the model, means calling validate for each property.
+     * @returns {Boolean} Indicating whether this record is valid (YES|true) or not (NO|false).
+     */
+    validate: function() {
+        var isValid = YES;
+        var validationErrorOccured = NO;
+        /* clear validation error buffer before validation */
+        M.Validator.clearErrorBuffer();
+
+        /*
+        * validationBasis depends on the state of the model: if the model is in state NEW, all properties (__meta includes all)
+        * shall be considered for validation. if model is in another state, the model's record is used. example: the model is loaded from
+        * a database with only two properties included (select name, age FROM...). record now only contains these two properties but __meta
+        * still has all properties listed. models are valid if loaded from database so when saved again only the loaded properties need to get
+        * validated because all others have not been touched. that's why then record is used.
+        * */
+        var validationBasis = this.state === M.STATE_NEW ? this.__meta : this.record;
+
+        for (var i in validationBasis) {
+            if(i === 'ID') { // skip property ID
+                continue;
+            }
+            var prop = this.__meta[i];
+            var obj = {
+                value: this.record[i],
+                modelId: this.name + '_' + this.m_id,
+                property: i
+            };
+            if (!prop.validate(obj)) {
+                isValid = NO;
+            }
+        }
+        /* set state of model */
+        /*if(!isValid) {
+            this.state = M.STATE_INVALID;
+        } else {
+            this.state = M.STATE_VALID;
+        }*/
+        return isValid;
+    },
+
+    /* CRUD Methods below */
+    /**
+     * Calls the corresponding find() of the data provider to fetch data based on the passed query or key.
+     *
+     * @param {Object} obj The param object with query or key and callbacks.
+     * @returns {Boolean|Object} Depends on data provider used. When WebSQL used, a boolean is returned, the find result is returned asynchronously,
+     * because the call itself is asynchronous. If LocalStorage is used, the result of the query is returned.
+     */
+    find: function(obj){
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj : {};
+        /* check if the record list shall be cleared (default) before new found model records are appended to the record list */
+        obj.deleteRecordList = obj.deleteRecordList ? obj.deleteRecordList : YES;
+        if(obj.deleteRecordList) {
+            this.recordManager.removeAll();
+        }
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+
+        /* extends the given obj with self as model property in obj */
+        return this.dataProvider.find( $.extend(obj, {model: this}) );
+    },
+
+    /**
+     * Create or update a record in storage if it is valid (first check this).
+     * If param obj includes cascade:YES then save is cascadaded through all references recursively.
+     *
+     * @param {Object} obj The param object with query, cascade flag and callbacks.
+     * @returns {Boolean} The result of the data provider function call. Is a boolean. With LocalStorage used, it indicates if the save operation was successful.
+     * When WebSQL is used, the result of the save operation returns asynchronously. The result then is just the standard result returned by the web sql provider's save method
+     * which does not necessarily indicate whether the operation was successful, because the operation is asynchronous, means the operation's result is not predictable.
+     */
+    save: function(obj) {
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj: {};
+        if(!this.m_id) {
+            return NO;
+        }
+        var isValid = YES;
+
+        if(this.usesValidation) {
+            isValid = this.validate();
+        }
+
+        if(obj.cascade) {
+            for(var prop in this.__meta) {
+                if(this.__meta[prop] && this.__meta[prop].dataType === 'Reference' && this.__meta[prop].refEntity) {
+                    this.__meta[prop].refEntity.save({cascade:YES}); // cascades recursively through all referenced model records
+                }
+            }
+        }
+
+        if(isValid) {
+            return this.dataProvider.save($.extend(obj, {model: this}));
+        }
+    },
+
+    /**
+     * Delete a record in storage.
+     * @returns {Boolean} Indicating whether deletion was successful or not (only with synchronous data providers, e.g. LocalStorage). When asynchronous data providers
+     * are used, e.g. WebSQL provider the real result comes asynchronous and here just the result of the del() function call of the @link M.WebSqlProvider is used.
+     */
+    del: function(obj) {
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj : {};
+        if(!this.m_id) {
+            return NO;
+        }
+
+       var isDel = this.dataProvider.del($.extend(obj, {model: this}));
+        if(isDel) {
+            this.state = M.STATE_DELETED;
+            return YES;
+        }
+    },
+
+    /**
+     * completes the model record by loading all referenced entities.
+     *
+     * @param {Function | Object} obj The param object with query, cascade flag and callbacks.
+     */
+    complete: function(callback) {
+        //console.log('complete...');
+        var records = [];
+        for(var i in this.record) {
+            if(this.__meta[i].dataType === 'Reference') {
+                //records.push(this.__meta[i].refEntity);
+                records.push({
+                    prop:i,
+                    name: this.__meta[i].reference,
+                    model: this.modelList[this.__meta[i].reference],
+                    m_id: this.record[i]
+                });
+            }
+        }
+        this.deepFind(records, callback);
+    },
+
+    deepFind: function(records, callback) {
+        //console.log('deepFind...');
+        //console.log('### records.length: ' + records.length);
+        if(records.length < 1) {    // recursion end constraint
+            if(callback) {
+                callback();
+            }
+            return;
+        }
+        var curRec = records.pop(); // delete last element, decreases length of records by 1 => important for recursion constraint above
+        var cb = this.bindToCaller(this, this.deepFind,[records, callback]); // cb is callback for find in data provider
+        var that = this;
+
+
+        switch(this.dataProvider.type) {
+            case 'M.DataProviderLocalStorage':
+                var ref = this.modelList[curRec.name].find({
+                    key: curRec.m_id
+                });
+                this.__meta[curRec.prop].refEntity = ref;
+
+                this.deepFind(records, callback); // recursion
+                break;
+
+            default:
+                break;
+        }
+    },
+
+    setReference: function(result, that, prop, callback) {
+        that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
+        callback();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The observable knows all observers, mainly views, and pushes updates if necessary.
+ *
+ * @extends M.Object
+ */
+M.Observable = M.Object.extend(
+/** @scope M.Observable.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Observable',
+
+    /**
+     * List that contains pairs of an observer with an observable. An observer is tightened to one
+     * observable, but one observable can have multiple observers.
+     *
+     * @type Array|Object
+     */
+    bindingList: null,
+
+    /**
+     * Attach an observer to an observable.
+     *
+     * @param {String} observer The observer.
+     * @param {String} observable The observable.
+     */
+    attach: function(observer, observable) {
+        if(!this.bindingList) {
+            this.bindingList = [];
+        }
+        this.bindingList.push({
+            observer: observer,
+            observable: observable
+        });
+    },
+
+    /**
+     * Detach an observer from an observable.
+     *
+     * @param {String} observer The observer.
+     */
+    detach: function(observer) {
+        /* grep is a jQuery function that finds
+         * elements in an array that satisfy a certain criteria.
+         * It works on a copy so we have to assign the "cleaned"
+         * array to our bindingList.
+         */
+        this.bindingList = _.filter(this.bindingList, function(value, index) {
+                return value.observable !== observer;
+        });
+    },
+
+    /**
+     * Notify all observers that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property that changed.
+     */
+    notifyObservers: function(key) {
+        _.each(this.bindingList, function(entry){
+            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
+                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
+                    entry.observer.valueDidChange();
+                }else{
+                    entry.observer.contentDidChange();
+                }
+            }
+        });
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      20.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      15.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to LocalStorage (in-browser key value store).
+ * LocalStorage is an in-browser key-value store to persist data.
+ * This data provider persists model records as JSON strings with their name and id as key.
+ * When fetching these strings from storage, their automatically converted in their corresponding model records.
+ *
+ * Operates synchronous.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderLocalStorage = M.DataProvider.extend(
+    /** @scope M.DataProviderLocalStorage.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type:'M.DataProviderLocalStorage',
+
+    /**
+     * Saves a model record to the local storage
+     * The key is the model record's name combined with id, value is stringified object
+     * e.g.
+     * Note_123 => '{ text: 'buy some food' }'
+     *
+     * @param {Object} that (is a model).
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    save:function (obj) {
+        try {
+            //console.log(obj);
+            /* add m_id to saved object */
+            /*var a = JSON.stringify(obj.model.record).split('{', 2);
+             a[2] = a[1];
+             a[1] = '"m_id":' + obj.model.m_id + ',';
+             a[0] = '{';
+             var value = a.join('');*/
+            var value = JSON.stringify(obj.model.record);
+        	if ((typeof logSave != "undefined") && logSave) {
+        		writeToLog("saving '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "': " + value);
+        	}
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
+            return YES;
+        } catch (e) {
+            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
+            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
+            return NO;
+        }
+
+    },
+
+    /**
+     * deletes a model from the local storage
+     * key defines which one to delete
+     * e.g. key: 'Note_123'
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    del:function (obj) {
+        try {
+            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
+            	if ((typeof logDelete != "undefined") && logDelete) {
+            		writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
+            	}
+                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
+                obj.model.recordManager.remove(obj.model.m_id);
+                return YES;
+            }
+            return NO;
+        } catch (e) {
+            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
+            return NO;
+        }
+    },
+
+    /**
+     * Finds all models of type defined by modelName that match a key or a simple query.
+     * A simple query example: 'price < 2.21'
+     * Right now, no AND or OR joins possible, just one query constraint.
+     *
+     * If no query is passed, all models are returned by calling findAll()
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
+     * @throws Exception when query tries to compare two different data types
+     */
+    find:function (obj) {
+        if (obj.key) {
+            var record = this.findByKey(obj);
+            if (!record) {
+                return NO;
+            }
+            /*construct new model record with the saved id*/
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
+            var m_id = reg && reg[1] ? reg[1] : null;
+            if (!m_id) {
+                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
+                return NO;
+            }
+            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+            return m;
+        }
+
+        if (obj.query) {
+            var q = obj.query;
+            var missing = [];
+            if (!q.identifier) {
+                missing.push('identifier');
+            }
+            if (!q.operator) {
+                missing.push('operator');
+            }
+            if (q.value === undefined || q.value === null) {
+                missing.push('value');
+            }
+
+            if (missing.length > 0) {
+                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
+                return [];
+            }
+
+            var ident = q.identifier;
+            var op = q.operator;
+            var val = q.value;
+
+            var res = this.findAll(obj);
+
+            // check if query is correct in respect of data types
+            if(res && res.length > 0) {
+                var o = res[0];
+                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
+					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
+						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
+                }
+            }
+
+            switch (op) {
+                case '=':
+
+                    res = _.select(res, function (o) {
+                        return o.record[ident] === val;
+                    });
+                    break;
+
+                case '~=': // => includes (works only on strings)
+
+                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
+                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
+                    }
+                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
+                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
+
+                    for(var i in metaChars) {
+                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
+                    }
+
+                    // replace whitespaces with regex equivalent
+                    val = val.replace(/\s/g, '\\s');
+
+                    var regex = new RegExp(val);
+
+                    res = _.select(res, function(o) {
+                        return regex.test(o.record[ident]);
+                    });
+
+                    break;
+
+                case '!=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] !== val;
+                    });
+                    break;
+                case '<':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] < val;
+                    });
+                    break;
+                case '>':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] > val;
+                    });
+                    break;
+                case '<=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] <= val;
+                    });
+                    break;
+                case '>=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] >= val;
+                    });
+                    break;
+                default:
+                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
+                    res = [];
+                    break;
+
+            }
+
+            return res;
+
+        } else { /* if no query is passed, all models for modelName shall be returned */
+            return this.findAll(obj);
+        }
+    },
+
+    /**
+     * Finds a record identified by the key.
+     *
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
+     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
+     * parameter passed.
+     */
+    findByKey:function (obj) {
+        if (obj.key) {
+
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
+            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
+            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
+
+            if (localStorage.getItem(obj.key)) { // if key is available
+                return this.buildRecord(obj.key, obj)
+            } else {
+                return NO;
+            }
+        }
+        M.Logger.log("Please provide a key.", M.WARN);
+        return NO;
+    },
+
+    /**
+     * Returns all models defined by modelName.
+     *
+     * Models are saved with key: Modelname_ID, e.g. Note_123
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
+     */
+    findAll:function (obj) {
+        var result = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
+
+                /*construct new model record with the saved m_id*/
+                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
+                var m_id = reg && reg[1] ? reg[1] : null;
+                if (!m_id) {
+                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
+                    continue; // if m_id does not exist, continue with next record element
+                }
+                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+
+                result.push(m);
+            }
+        }
+        return result;
+    },
+
+    /**
+     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
+     * Means: check whether resulting object's properties have the data type define by their model attribute object.
+     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
+     * 'Date' set for this property.
+     *
+     * @param {String} key The key to fetch the element from LocalStorage
+     * @param {Object} obj The param object, includes model
+     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
+     */
+    buildRecord:function (key, obj) {
+        var record = JSON.parse(localStorage.getItem(key));
+        for (var i in record) {
+            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
+                switch (obj.model.__meta[i].dataType) {
+                    case 'Date':
+                        record[i] = M.Date.create(record[i]);
+                        break;
+                }
+            }
+        }
+        return record;
+    },
+
+    /**
+     * Returns all keys for model defined by modelName.
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
+     */
+    allKeys:function (obj) {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i)
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
+ *
+ * @extends M.Validator
+ */
+M.DateValidator = M.Validator.extend(
+/** @scope M.DateValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DateValidator',
+
+    /**
+     * A RegEx describing a US date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
+     */
+    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
+
+    /**
+     * A RegEx describing a german date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
+     */
+    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
+
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
+        if(obj.isView) {
+            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is not a valid date.',
+                        viewId: obj.id,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+            }
+            return YES;
+        } else {
+            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                        modelId: obj.modelId,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                return NO;
+            }
+            return YES;
+        }
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if it represents a minus number. Works with numbers and strings containing just a number.
+ *
+ * @extends M.Validator
+ */
+M.NotMinusValidator = M.Validator.extend(
+/** @scope M.NotMinusValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NotMinusValidator',
+
+    /**
+     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
+     * if string value is checked if ^prefixed with a minus sign ( - ).
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+
+       if(typeof(obj.value) === 'number') {
+           if(obj.value < 0) {
+               var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+
+       if(typeof(obj.value) === 'string') {
+           var pattern = /-/;
+           if(this.pattern.exec(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
+ *
+ * @extends M.Validator
+ */
+M.NumberValidator = M.Validator.extend(
+/** @scope M.NumberValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NumberValidator',
+
+    /**
+     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
+     * The '==' operator makes an implicit conversion of the value. '===' would return false.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if(typeof(obj.value) === 'number') {
+            return YES;
+        }
+
+        /* == makes implicit conversion */ 
+        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
+            return YES;        
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a number.',
+            code: M.ERR_VALIDATION_NUMBER,
+            errObj: {
+                msg: obj.value + ' is not a number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'NUMBER',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a string if it matches a phone number pattern.
+ *
+ * @extends M.Validator
+ */
+M.PhoneValidator = M.Validator.extend(
+/** @scope M.PhoneValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PhoneValidator',
+
+    /**
+     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
+     * @type {RegExp} The regular expression detecting a phone adress.
+     */
+    pattern: /^[0-9-\/()+\.\s]+$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string. 
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
+            code: M.ERR_VALIDATION_PHONE,
+            errObj: {
+                msg: obj.value + ' is not a phone number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
+ *
+ * @extends M.Validator
+ */
+M.PresenceValidator = M.Validator.extend(
+/** @scope M.PresenceValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PresenceValidator',
+    
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @param {String} key
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        if(obj.value === null || obj.value === undefined || obj.value === '') {
+            if(obj.isView) {
+
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is required and is not set.',
+                        viewId: obj.id,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                
+            } else {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+            }
+            return NO;
+        }
+        return YES;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value represents a valid URL.
+ *
+ * @extends M.Validator
+ */
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.UrlValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid web URL
+     */
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+
+    /**
+     * Validation method. Executes url regex pattern to string.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+        
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
+            code: M.ERR_VALIDATION_URL,
+            errObj: {
+                msg: obj.value + ' is not a valid url.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6332,1072 +7447,6 @@ M.Controller = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      20.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
- *
- * @extends M.DataProvider
- */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      15.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to LocalStorage (in-browser key value store).
- * LocalStorage is an in-browser key-value store to persist data.
- * This data provider persists model records as JSON strings with their name and id as key.
- * When fetching these strings from storage, their automatically converted in their corresponding model records.
- *
- * Operates synchronous.
- *
- * @extends M.DataProvider
- */
-M.DataProviderLocalStorage = M.DataProvider.extend(
-    /** @scope M.DataProviderLocalStorage.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type:'M.DataProviderLocalStorage',
-
-    /**
-     * Saves a model record to the local storage
-     * The key is the model record's name combined with id, value is stringified object
-     * e.g.
-     * Note_123 => '{ text: 'buy some food' }'
-     *
-     * @param {Object} that (is a model).
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
-     */
-    save:function (obj) {
-        try {
-            //console.log(obj);
-            /* add m_id to saved object */
-            /*var a = JSON.stringify(obj.model.record).split('{', 2);
-             a[2] = a[1];
-             a[1] = '"m_id":' + obj.model.m_id + ',';
-             a[0] = '{';
-             var value = a.join('');*/
-            var value = JSON.stringify(obj.model.record);
-        	if ((typeof logSave != "undefined") && logSave) {
-        		writeToLog("saving '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "': " + value);
-        	}
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
-            return YES;
-        } catch (e) {
-            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
-            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
-            return NO;
-        }
-
-    },
-
-    /**
-     * deletes a model from the local storage
-     * key defines which one to delete
-     * e.g. key: 'Note_123'
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
-     */
-    del:function (obj) {
-        try {
-            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
-            	if ((typeof logDelete != "undefined") && logDelete) {
-            		writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
-            	}
-                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
-                obj.model.recordManager.remove(obj.model.m_id);
-                return YES;
-            }
-            return NO;
-        } catch (e) {
-            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
-            return NO;
-        }
-    },
-
-    /**
-     * Finds all models of type defined by modelName that match a key or a simple query.
-     * A simple query example: 'price < 2.21'
-     * Right now, no AND or OR joins possible, just one query constraint.
-     *
-     * If no query is passed, all models are returned by calling findAll()
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
-     * @throws Exception when query tries to compare two different data types
-     */
-    find:function (obj) {
-        if (obj.key) {
-            var record = this.findByKey(obj);
-            if (!record) {
-                return NO;
-            }
-            /*construct new model record with the saved id*/
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
-            var m_id = reg && reg[1] ? reg[1] : null;
-            if (!m_id) {
-                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
-                return NO;
-            }
-            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-            return m;
-        }
-
-        if (obj.query) {
-            var q = obj.query;
-            var missing = [];
-            if (!q.identifier) {
-                missing.push('identifier');
-            }
-            if (!q.operator) {
-                missing.push('operator');
-            }
-            if (q.value === undefined || q.value === null) {
-                missing.push('value');
-            }
-
-            if (missing.length > 0) {
-                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
-                return [];
-            }
-
-            var ident = q.identifier;
-            var op = q.operator;
-            var val = q.value;
-
-            var res = this.findAll(obj);
-
-            // check if query is correct in respect of data types
-            if(res && res.length > 0) {
-                var o = res[0];
-                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
-					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
-						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
-                }
-            }
-
-            switch (op) {
-                case '=':
-
-                    res = _.select(res, function (o) {
-                        return o.record[ident] === val;
-                    });
-                    break;
-
-                case '~=': // => includes (works only on strings)
-
-                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
-                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
-                    }
-                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
-                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
-
-                    for(var i in metaChars) {
-                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
-                    }
-
-                    // replace whitespaces with regex equivalent
-                    val = val.replace(/\s/g, '\\s');
-
-                    var regex = new RegExp(val);
-
-                    res = _.select(res, function(o) {
-                        return regex.test(o.record[ident]);
-                    });
-
-                    break;
-
-                case '!=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] !== val;
-                    });
-                    break;
-                case '<':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] < val;
-                    });
-                    break;
-                case '>':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] > val;
-                    });
-                    break;
-                case '<=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] <= val;
-                    });
-                    break;
-                case '>=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] >= val;
-                    });
-                    break;
-                default:
-                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
-                    res = [];
-                    break;
-
-            }
-
-            return res;
-
-        } else { /* if no query is passed, all models for modelName shall be returned */
-            return this.findAll(obj);
-        }
-    },
-
-    /**
-     * Finds a record identified by the key.
-     *
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
-     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
-     * parameter passed.
-     */
-    findByKey:function (obj) {
-        if (obj.key) {
-
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
-            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
-            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
-
-            if (localStorage.getItem(obj.key)) { // if key is available
-                return this.buildRecord(obj.key, obj)
-            } else {
-                return NO;
-            }
-        }
-        M.Logger.log("Please provide a key.", M.WARN);
-        return NO;
-    },
-
-    /**
-     * Returns all models defined by modelName.
-     *
-     * Models are saved with key: Modelname_ID, e.g. Note_123
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
-     */
-    findAll:function (obj) {
-        var result = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i);
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
-
-                /*construct new model record with the saved m_id*/
-                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
-                var m_id = reg && reg[1] ? reg[1] : null;
-                if (!m_id) {
-                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
-                    continue; // if m_id does not exist, continue with next record element
-                }
-                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-
-                result.push(m);
-            }
-        }
-        return result;
-    },
-
-    /**
-     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
-     * Means: check whether resulting object's properties have the data type define by their model attribute object.
-     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
-     * 'Date' set for this property.
-     *
-     * @param {String} key The key to fetch the element from LocalStorage
-     * @param {Object} obj The param object, includes model
-     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
-     */
-    buildRecord:function (key, obj) {
-        var record = JSON.parse(localStorage.getItem(key));
-        for (var i in record) {
-            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
-                switch (obj.model.__meta[i].dataType) {
-                    case 'Date':
-                        record[i] = M.Date.create(record[i]);
-                        break;
-                }
-            }
-        }
-        return record;
-    },
-
-    /**
-     * Returns all keys for model defined by modelName.
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
-     */
-    allKeys:function (obj) {
-        var keys = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i)
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
-     * @type Object
-     */
-    config: null,
-
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
-            });
-        }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
-        }
-        callback(result);
-    },
-
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
-    },
-
-    /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
-     */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
-
-}); 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
- *
- * @extends M.Validator
- */
-M.DateValidator = M.Validator.extend(
-/** @scope M.DateValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DateValidator',
-
-    /**
-     * A RegEx describing a US date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * A RegEx describing a german date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
-        if(obj.isView) {
-            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is not a valid date.',
-                        viewId: obj.id,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-            }
-            return YES;
-        } else {
-            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                        modelId: obj.modelId,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                return NO;
-            }
-            return YES;
-        }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if it represents a minus number. Works with numbers and strings containing just a number.
- *
- * @extends M.Validator
- */
-M.NotMinusValidator = M.Validator.extend(
-/** @scope M.NotMinusValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NotMinusValidator',
-
-    /**
-     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
-     * if string value is checked if ^prefixed with a minus sign ( - ).
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-
-       if(typeof(obj.value) === 'number') {
-           if(obj.value < 0) {
-               var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-
-       if(typeof(obj.value) === 'string') {
-           var pattern = /-/;
-           if(this.pattern.exec(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
- *
- * @extends M.Validator
- */
-M.NumberValidator = M.Validator.extend(
-/** @scope M.NumberValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NumberValidator',
-
-    /**
-     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
-     * The '==' operator makes an implicit conversion of the value. '===' would return false.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if(typeof(obj.value) === 'number') {
-            return YES;
-        }
-
-        /* == makes implicit conversion */ 
-        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
-            return YES;        
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a number.',
-            code: M.ERR_VALIDATION_NUMBER,
-            errObj: {
-                msg: obj.value + ' is not a number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'NUMBER',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
- *
- * @extends M.Validator
- */
-M.PresenceValidator = M.Validator.extend(
-/** @scope M.PresenceValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PresenceValidator',
-    
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @param {String} key
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        if(obj.value === null || obj.value === undefined || obj.value === '') {
-            if(obj.isView) {
-
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is required and is not set.',
-                        viewId: obj.id,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                
-            } else {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-            }
-            return NO;
-        }
-        return YES;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value represents a valid URL.
- *
- * @extends M.Validator
- */
-M.UrlValidator = M.Validator.extend(
-/** @scope M.UrlValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.UrlValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid web URL
-     */
-    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
-
-    /**
-     * Validation method. Executes url regex pattern to string.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-        
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
-            code: M.ERR_VALIDATION_URL,
-            errObj: {
-                msg: obj.value + ' is not a valid url.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a string if it matches a phone number pattern.
- *
- * @extends M.Validator
- */
-M.PhoneValidator = M.Validator.extend(
-/** @scope M.PhoneValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PhoneValidator',
-
-    /**
-     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
-     * @type {RegExp} The regular expression detecting a phone adress.
-     */
-    pattern: /^[0-9-\/()+\.\s]+$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string. 
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
-            code: M.ERR_VALIDATION_PHONE,
-            errObj: {
-                msg: obj.value + ' is not a phone number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -7788,52 +7837,3 @@ M.Application = M.Object.extend(
     }
 
 });
-(function( $ ){
-    //return the height of an element with the its margin whether it's visible or not
-    $.fn.outerMarginHeight = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var height = this.outerHeight();
-        height += parseIntRadixTen(this.css('margin-bottom'));
-        height += parseIntRadixTen(this.css('margin-top'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return height;
-
-    };
-    //return the width of an element with the its margin whether it's visible or not
-    $.fn.outerMarginWidth = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var width = this.outerWidth();
-        width += parseIntRadixTen(this.css('margin-left'));
-        width += parseIntRadixTen(this.css('margin-right'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return width;
-
-    };
-
-})( jQuery );
