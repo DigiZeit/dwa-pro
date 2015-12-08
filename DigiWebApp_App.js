@@ -22364,7 +22364,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6741
+      softwareVersion: 6742
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -22926,7 +22926,7 @@ DigiWebApp.SelectionController = M.Controller.extend({
 	        	activityId = activitiesArray[0].value;
 	        } else {
 	        	activityId = 0;
-	        	activities.push({label: M.I18N.l('selectSomething'), value: '0'});
+	        	activitiesArray.push({label: M.I18N.l('selectSomething'), value: '0'});
 	        }
 	        activitiesArray = _.map(activitiesArray, function(item) {
 	        	if (item) {
@@ -38115,7 +38115,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6741'
+              value: 'Build: 6742'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
