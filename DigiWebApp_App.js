@@ -22161,6 +22161,12 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 // Controller: OrderListController
 // ==========================================================================
 
+var OrderSelectionMode = {
+		  FOLDERS: 1
+		, POSITIONS: 2
+		, FOLDERS_WITH_HANDORDERS: 3
+}
+
 DigiWebApp.OrderListController = M.Controller.extend({
 
 	  items: null
@@ -22179,7 +22185,7 @@ DigiWebApp.OrderListController = M.Controller.extend({
 	
 	, latestId: null
 		
-	, onlyFolders: NO
+	, orderSelectionMode: OrderSelectionMode.POSITIONS
 	
 	, parentStack: null
 	
@@ -22195,7 +22201,7 @@ DigiWebApp.OrderListController = M.Controller.extend({
 		if (that.parentStack.length > 0) {
 			return that.parentStack[that.parentStack.length - 1].label;
 		}
-		if (that.onlyFolders) {
+		if (that.orderSelectionMode == OrderSelectionMode.FOLDERS) {
 			return M.I18N.l('ordnerAuswaehlen');
 		}
 		return M.I18N.l('auftragAuswaehlen');
@@ -22203,7 +22209,7 @@ DigiWebApp.OrderListController = M.Controller.extend({
 
 	, reloadItems: function(selectedObjId) {
 		var that = this;
-		if (that.parentStack == null) that.init(that.onlyFolders, that.successHandler, that.errorHandler);
+		if (that.parentStack == null) that.init(that.orderSelectionMode, that.successHandler, that.errorHandler);
 		var items = [];
 		// parent-folders from stack
 		if (that.parentStack.length > 0) {
@@ -22220,7 +22226,10 @@ DigiWebApp.OrderListController = M.Controller.extend({
 			vaterId = order.get("id");
 		}
 		_.each(DigiWebApp.Order.getByVaterId(vaterId), function(o) {
-			if (that.onlyFolders || o.hasPositions()) {
+			if (
+				   (that.orderSelectionMode == OrderSelectionMode.FOLDERS || o.hasPositions())
+				|| (that.orderSelectionMode == OrderSelectionMode.FOLDERS_WITH_HANDORDERS && o.hasPositions())
+			) {
 				items.push({
 					  icon: that.closedFolderIcon
 					, label: o.get('name')
@@ -22228,7 +22237,10 @@ DigiWebApp.OrderListController = M.Controller.extend({
 				});
 			}
 		});
-		if (!that.onlyFolders) {
+		if (
+			   (that.orderSelectionMode == OrderSelectionMode.POSITIONS)
+			|| (that.orderSelectionMode == OrderSelectionMode.FOLDERS_WITH_HANDORDERS)
+		) {
 			_.each(DigiWebApp.HandOrder.getByVaterId(vaterId), function(o) {
 				items.push({
 					  icon: that.handOrderIcon
@@ -22236,6 +22248,10 @@ DigiWebApp.OrderListController = M.Controller.extend({
 					, obj: o
 				});
 			});
+		}
+		if (
+			   (that.orderSelectionMode == OrderSelectionMode.POSITIONS)
+		) {
 			_.each(DigiWebApp.Position.getByVaterId(vaterId), function(o) {
 				items.push({
 					  icon: that.orderIcon
@@ -22256,12 +22272,18 @@ DigiWebApp.OrderListController = M.Controller.extend({
 		that.set('items', items);
 	}
 	
-	, init: function(onlyFolders, successHandler, errorHandler, startInFolderId) {
+	, init: function(orderSelectionMode, successHandler, errorHandler, startInFolderId) {
 		var that = this;
+		
 		that.parentStack = [];
-		if (typeof(onlyFolders) != "undefined") that.onlyFolders = parseBool(onlyFolders);
-		if (typeof(successHandler) != "undefined") that.successHandler = successHandler;
-		if (typeof(errorHandler) != "undefined") that.errorHandler = errorHandler;
+		
+		if (typeof(orderSelectionMode) != "undefined") 
+				that.orderSelectionMode = orderSelectionMode;
+		if (typeof(successHandler) != "undefined") 
+				that.successHandler = successHandler;
+		if (typeof(errorHandler) != "undefined") 
+				that.errorHandler = errorHandler;
+		
 		if (startInFolderId) {
 			var allOrders = DigiWebApp.Order.find();
 			// rebuild parentStack
@@ -22327,7 +22349,7 @@ DigiWebApp.OrderListController = M.Controller.extend({
 	    		selectedItem = that.parentStack[that.parentStack.length - 1];
 	    	} else {
 	    		// restart with root-folder
-	    	    return that.init(that.onlyFolders, that.successHandler, that.errorHandler);
+	    	    return that.init(that.orderSelectionMode, that.successHandler, that.errorHandler);
 	    	}
 	    } else if (selectedItem.icon == that.closedFolderIcon) {
 		    // put this folder on the stack
@@ -22336,7 +22358,7 @@ DigiWebApp.OrderListController = M.Controller.extend({
 	    
 	    if (selectedItem.icon == that.orderIcon
 	     || selectedItem.icon == that.handOrderIcon
-	     || (that.onlyFolders && selectedItem.icon == that.useFolderIcon)
+	     || (that.orderSelectionMode == OrderSelectionMode.FOLDERS && selectedItem.icon == that.useFolderIcon)
 	    ) {
 	    	//that.buttonToUpdate.setValue(selectedItem.label);
 	    	return that.successHandler(selectedItem.obj);
@@ -22364,7 +22386,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6748
+      softwareVersion: 6749
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -27106,13 +27128,20 @@ DigiWebApp.BautagebuchBautagesberichtDetailsPage = M.PageView.design({
 		            //console.log(projektleiterArray);
 					DigiWebApp.BautagebuchBautagesberichtDetailsController.set("projektleiterList", projektleiterArray);
 
-					// verfügbare Aufträge kopieren und ausgewählten selektieren
+                    M.ViewManager.getView('bautagebuchBautagesberichtDetailsPage', 'orderButton').setValue(M.I18N.l('selectSomething'));
+
+                    // verfügbare Aufträge kopieren und ausgewählten selektieren
 		            var auftraegeArray = _.map(DigiWebApp.BautagebuchMainController.auftraege, function(o) {
 		            	if ( typeof(o) === "undefined" ) {
 		            		console.log("UNDEFINED ORDER");
 		            	} else {    
 		    				if (DigiWebApp.BautagebuchBautagesberichtDetailsController.auftragsId) {
 		    					o.isSelected = (o.value === DigiWebApp.BautagebuchBautagesberichtDetailsController.auftragsId);
+		                        if (o.isSelected) {
+		                        	M.ViewManager.
+		                        		getView('bautagebuchBautagesberichtDetailsPage', 'orderButton').
+		                        		setValue(o.label);
+		                        }
 		    				}
 		                    return o;
 		            	}
@@ -27693,17 +27722,16 @@ DigiWebApp.BautagebuchBautagesberichtDetailsPage = M.PageView.design({
 							}
 									
 						}
+						// TODO: wir brauchen hier Ordner mit hasPositions 
 						this.init(
-								  YES 
+								  OrderSelectionMode.FOLDERS_WITH_HANDORDERS 
 								, function(obj){
-									  // TODO: Ausgewählten Ordner setzen (siehe change-event in auftragComboBox bzw. positionComboBox)
-//									if (typeof(obj) != "undefined" && obj != null && obj.name == DigiWebApp.HandOrder.name) {
-//										DigiWebApp.SelectionController.setSelectedOrder(obj);
-//									} else {
-//										DigiWebApp.SelectionController.setSelectedPosition(obj);
-//									}
-									DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition();
-									DigiWebApp.BautagebuchBautagesberichtDetailsPage.content.orderButton.setValue(obj.get("name"));
+									  DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition();
+									  if (typeof(obj) != "undefined" && obj != null) {
+										  M.ViewManager.
+										  	getView('bautagebuchBautagesberichtDetailsPage', 'auftragComboBox').
+										  	setSelection(obj.get("id"));
+									  }
 								}
 								, function(){
 									DigiWebApp.NavigationController.backToBautagebuchBautagesberichtDetailsPageTransition();
@@ -27753,6 +27781,9 @@ DigiWebApp.BautagebuchBautagesberichtDetailsPage = M.PageView.design({
 	        				}
 		      				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("auftragsId", mySelection.value);
 		      				DigiWebApp.BautagebuchBautagesberichtDetailsController.set("auftragsName", mySelection.label);
+							M.ViewManager.
+								getView('bautagebuchBautagesberichtDetailsPage', 'orderButton').
+							  	setValue(mySelection.label);
 		      				DigiWebApp.BautagebuchBautagesberichtDetailsController.setPositionen(M.ViewManager.getView('bautagebuchBautagesberichtDetailsPage', 'auftragComboBox').getSelection(YES).value);
 
 					  		// Positionen-ComboBox ausblenden, falls DigiWebApp.BautagebuchEinstellungenController.settings.positionVorselektieren != true
@@ -36980,7 +37011,7 @@ DigiWebApp.BookingPage = M.PageView.design({
 									
 						}
 						this.init(
-								  NO 
+								  OrderSelectionMode.FOLDERS_WITH_HANDORDERS 
 								, function(obj){
 									//DigiWebApp.BookingPage.content.orderButton.setValue(obj.get("name"));
 									if (typeof(obj) != "undefined" && obj != null && obj.name == DigiWebApp.HandOrder.name) {
@@ -37833,7 +37864,7 @@ DigiWebApp.HandOrderPage = M.PageView.design({
                       target: DigiWebApp.OrderListController
                     , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
 						this.init(
-								  YES 
+								  OrderSelectionMode.FOLDERS 
 								, function(obj) {
 									  var buttonText = M.I18N.l('keinOrdnerAusgewaehlt');
 									  var vaterId = null;
@@ -38119,7 +38150,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6748'
+              value: 'Build: 6749'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
