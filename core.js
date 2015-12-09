@@ -2291,119 +2291,6 @@ m_require('core/foundation/object.js');
 /**
  * @class
  *
- * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
- * normally don't call this object respectively its methods directly, but let M.Cypher handle
- * this.
- *
- * @extends M.Object
- */
-M.Base64 = M.Object.extend(
-/** @scope M.Base64.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Base64',
-
-    /**
-     * The key string for the base 64 decoding and encoding.
-     *
-     * @type String
-     */
-    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
-
-    /**
-     * This method encodes a given input string, using the base64 encoding.
-     *
-     * @param {String} input The string to be encoded.
-     * @returns {String} The base64 encoded string.
-     */
-    encode: function(input) {
-        var output = '';
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = M.Cypher.utf8_encode(input);
-
-        while (i < input.length) {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if(isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if(isNaN(chr3)) {
-                enc4 = 64;
-            }
-
-            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
-        }
-
-        return output;
-    },
-
-    /**
-     * This method decodes a given input string, using the base64 decoding.
-     *
-     * @param {String} input The string to be decoded.
-     * @returns {String} The base64 decoded string.
-     */
-    decode: function(input) {
-        var output = "";
-        var chr1, chr2, chr3;
-        var enc1, enc2, enc3, enc4;
-        var i = 0;
-
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        while (i < input.length) {
-            enc1 = this.keyString.indexOf(input.charAt(i++));
-            enc2 = this.keyString.indexOf(input.charAt(i++));
-            enc3 = this.keyString.indexOf(input.charAt(i++));
-            enc4 = this.keyString.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if(enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            
-            if(enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-        }
-
-        return M.Cypher.utf8_decode(output);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      11.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
  * This prototype defines a hashing mechanism based on the SHA256 algorithm. You normally
  * don't call this object respectively its methods directly, but let M.Cypher handle
  * this.
@@ -2586,6 +2473,119 @@ M.SHA256 = M.Object.extend(
                     hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
         }
         return str;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      11.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines decoding and encoding mechanisms based on the Base64 algorithm. You
+ * normally don't call this object respectively its methods directly, but let M.Cypher handle
+ * this.
+ *
+ * @extends M.Object
+ */
+M.Base64 = M.Object.extend(
+/** @scope M.Base64.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Base64',
+
+    /**
+     * The key string for the base 64 decoding and encoding.
+     *
+     * @type String
+     */
+    keyString: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",    
+
+    /**
+     * This method encodes a given input string, using the base64 encoding.
+     *
+     * @param {String} input The string to be encoded.
+     * @returns {String} The base64 encoded string.
+     */
+    encode: function(input) {
+        var output = '';
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = M.Cypher.utf8_encode(input);
+
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+
+            if(isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if(isNaN(chr3)) {
+                enc4 = 64;
+            }
+
+            output += this.keyString.charAt(enc1) + this.keyString.charAt(enc2) + this.keyString.charAt(enc3) + this.keyString.charAt(enc4);
+        }
+
+        return output;
+    },
+
+    /**
+     * This method decodes a given input string, using the base64 decoding.
+     *
+     * @param {String} input The string to be decoded.
+     * @returns {String} The base64 decoded string.
+     */
+    decode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+        while (i < input.length) {
+            enc1 = this.keyString.indexOf(input.charAt(i++));
+            enc2 = this.keyString.indexOf(input.charAt(i++));
+            enc3 = this.keyString.indexOf(input.charAt(i++));
+            enc4 = this.keyString.indexOf(input.charAt(i++));
+
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+
+            output = output + String.fromCharCode(chr1);
+
+            if(enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            
+            if(enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+
+        return M.Cypher.utf8_decode(output);
     }
 
 });
@@ -3630,80 +3630,6 @@ M.DataConsumer = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4089,6 +4015,80 @@ M.ModelAttribute.attr = function(dataType, opts) {
     }
     return this.extend(opts);
 };
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5962,72 +5962,58 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates if it represents a minus number. Works with numbers and strings containing just a number.
+ * Validates a String if it represents a valid e-mail adress.
  *
  * @extends M.Validator
  */
-M.NotMinusValidator = M.Validator.extend(
-/** @scope M.NotMinusValidator.prototype */ {
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NotMinusValidator',
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
 
-    /**
-     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
-     * if string value is checked if ^prefixed with a minus sign ( - ).
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
 
-       if(typeof(obj.value) === 'number') {
-           if(obj.value < 0) {
-               var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
 
-       if(typeof(obj.value) === 'string') {
-           var pattern = /-/;
-           if(this.pattern.exec(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-    }
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6112,129 +6098,72 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a string if it matches a phone number pattern.
+ * Validates if it represents a minus number. Works with numbers and strings containing just a number.
  *
  * @extends M.Validator
  */
-M.PhoneValidator = M.Validator.extend(
-/** @scope M.PhoneValidator.prototype */ {
+M.NotMinusValidator = M.Validator.extend(
+/** @scope M.NotMinusValidator.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.PhoneValidator',
+    type: 'M.NotMinusValidator',
 
     /**
-     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
-     * @type {RegExp} The regular expression detecting a phone adress.
-     */
-    pattern: /^[0-9-\/()+\.\s]+$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string. 
+     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
+     * if string value is checked if ^prefixed with a minus sign ( - ).
      *
      * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
      * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
      */
     validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
 
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
+       if(typeof(obj.value) === 'number') {
+           if(obj.value < 0) {
+               var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
 
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
-            code: M.ERR_VALIDATION_PHONE,
-            errObj: {
-                msg: obj.value + ' is not a phone number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-        return NO;
+       if(typeof(obj.value) === 'string') {
+           var pattern = /-/;
+           if(this.pattern.exec(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
     }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6311,6 +6240,77 @@ M.PresenceValidator = M.Validator.extend(
         return YES;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a string if it matches a phone number pattern.
+ *
+ * @extends M.Validator
+ */
+M.PhoneValidator = M.Validator.extend(
+/** @scope M.PhoneValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PhoneValidator',
+
+    /**
+     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
+     * @type {RegExp} The regular expression detecting a phone adress.
+     */
+    pattern: /^[0-9-\/()+\.\s]+$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string. 
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
+            code: M.ERR_VALIDATION_PHONE,
+            errObj: {
+                msg: obj.value + ' is not a phone number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
