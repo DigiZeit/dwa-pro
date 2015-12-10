@@ -6217,13 +6217,13 @@ DigiWebApp.Sonderbuchung = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: SpesenAuswahlOption
+// Model: UebernachtungAuswahlOption
 // ==========================================================================
 
-DigiWebApp.SpesenAuswahlOption = M.Model.create({
+DigiWebApp.UebernachtungAuswahlOption = M.Model.create({
     
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'SpesenAuswahlOption'
+    __name__: 'UebernachtungAuswahlOption'
 
     , id: M.Model.attr('String', {
         isRequired: NO
@@ -6320,13 +6320,13 @@ DigiWebApp.SpesenAuswahlOption = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: UebernachtungAuswahlOption
+// Model: SpesenAuswahlOption
 // ==========================================================================
 
-DigiWebApp.UebernachtungAuswahlOption = M.Model.create({
+DigiWebApp.SpesenAuswahlOption = M.Model.create({
     
     /* Define the name of your model. Do not delete this property! */
-    __name__: 'UebernachtungAuswahlOption'
+    __name__: 'SpesenAuswahlOption'
 
     , id: M.Model.attr('String', {
         isRequired: NO
@@ -22433,7 +22433,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6793
+      softwareVersion: 6794
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -27796,7 +27796,7 @@ DigiWebApp.BautagebuchBautagesberichtDetailsPage = M.PageView.design({
 								potentialOrder = DigiWebApp.HandOrder.getById(selectedOrder);
 								if (typeof(potentialOrder) != "undefined" && potentialOrder != null)
 									vaterId = potentialOrder.get("vaterId");
-							} else if (typeof(potentialOrder) != "undefined" && potentialOrder != null)
+							} else if (typeof(potentialOrder) != "undefined" && potentialOrder != null) {
 								vaterId = potentialOrder.get("id");
 							}
 						}
@@ -38248,7 +38248,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6793'
+              value: 'Build: 6794'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
