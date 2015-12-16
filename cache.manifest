@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.4.6823 beta, Timestamp:1450286215755
+#Application:DigiWebApp, Version:1.8.4.6824 beta, Timestamp:1450286496513
 
 
 # Explicitly cached entries
@@ -11,22 +11,21 @@ fr_fr.js
 nl_nl.js
 jquery-1.9.1.js
 underscore-min.js
-theme/tmp.css
 d8-0.1.3.min.js
 d8-0.4.0.min.js
-bootstrap.js
 jquery_mobile.js
 jquery.xml2json_1.3.js
-jstz.js
 barcodescanner.js
 childbrowser.js
 cordova.js
+jstz.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
 Math.uuid.js
-ui.js
+theme/tmp.css
+bootstrap.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_SCHOLPP.png
@@ -73,15 +72,15 @@ theme/images/arrow_white.png
 theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_ldpi.png
 theme/images/ic_launcher_mdpi.png
-theme/images/ic_launcher_xhdpi.png
 theme/images/ic_launcher_xxhdpi.png
+theme/images/ic_launcher_xhdpi.png
 theme/images/icon-winphone.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
 theme/images/icon_ios_120.png
 theme/images/icon_ios_144.png
-theme/images/icon_ios_57.png
 theme/images/icon_ios_152.png
+theme/images/icon_ios_57.png
 theme/images/icon_ios_72.png
 theme/images/icon_ios_76.png
 theme/images/icon_playbackAudio.png
@@ -104,6 +103,7 @@ theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
 theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
+ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
 CHANGELOG.md
@@ -118,8 +118,8 @@ accept-multiple-signatures.html
 accept-signature.html
 full-window.html
 regenerate-signature.html
-require-drawn-signature.html
 sample-signature-output.js
+require-drawn-signature.html
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
