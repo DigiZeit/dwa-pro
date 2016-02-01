@@ -14129,6 +14129,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 	            							//successCallback();
 			      						}
 			      	        		}
+	                			}
 		            		});
 	                		successCallback();
 	                	}
@@ -22506,7 +22507,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6833
+      softwareVersion: 6834
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -38380,7 +38381,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6833'
+              value: 'Build: 6834'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
