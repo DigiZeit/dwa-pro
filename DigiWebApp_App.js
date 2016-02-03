@@ -13650,7 +13650,7 @@ DigiWebApp.BookingController = M.Controller.extend({
                     //if (DigiWebApp.SettingsController.globalDebugMode) console.log('useCurrentBooking');
                     DigiWebApp.SelectionController.setSelectionByCurrentBooking();
                 } else {
-                    //DigiWebApp.SelectionController.initSelection();
+                    DigiWebApp.SelectionController.initSelection();
                 }
 
             }
@@ -14408,11 +14408,11 @@ DigiWebApp.BookingController = M.Controller.extend({
 
     
     /**
-     * Callback of location retrival
+     * Callback of location retrieval
      *
      * Checks if a selection is set.
-     * Distinguishes between an open booking is available or not
-     * and distinguishes also, whether a hand order or a regular order is selected
+     * Distinguishes whether an open booking is available or not
+     * and distinguishes also, whether a hand order or a regular order is selected.
      *
      * Triggers a send operation if autoTransferAfterBookTime is activated in the settings, otherwise just saves the booking.
      *
@@ -14545,8 +14545,7 @@ DigiWebApp.BookingController = M.Controller.extend({
 		    DigiWebApp.ApplicationController.startNotification();
 
 			try{that.startBookingNotification();}catch(e){}
-
-	    }
+	    } // if (bookingWasClosed)
 	    
 	    // don't use selections anymore, use the current booking (till selection is changed again)
 	    DigiWebApp.SelectionController.useSelections = NO;
@@ -15424,14 +15423,12 @@ DigiWebApp.BookingController = M.Controller.extend({
         }
 
 		if (bookingWasClosed) {
-			
 	        that.set('currentBookingStr', '');
 	
 	        // reset selections to show "Bitte wählen: "
 	        DigiWebApp.SelectionController.resetSelection();
 	        DigiWebApp.SelectionController.initSelection();
 	        DigiWebApp.SelectionController.useSelections = NO;
-		
 		}
 		
         var finishBooking = function() {
@@ -17029,6 +17026,7 @@ DigiWebApp.DashboardController = M.Controller.extend({
 
     , closingTime: function() {
     	if (DigiWebApp.DashboardPage.content.list.selectedItem) $('#' + DigiWebApp.DashboardPage.content.list.selectedItem.id).removeClass('selected');
+		writeToLog("Hauptmenü: '" + M.I18N.l('closingTime') + "' gedrückt");
 		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('bucheFeierabend'));
 		setTimeout(DigiWebApp.BookingController.closeDay,100);
     }
@@ -17036,7 +17034,10 @@ DigiWebApp.DashboardController = M.Controller.extend({
     , dataTransfer: function(isClosingDay) {
     	if (DigiWebApp.DashboardPage.content.list.selectedItem) $('#' + DigiWebApp.DashboardPage.content.list.selectedItem.id).removeClass('selected');
 
-		writeToLog("Hauptmenü: '" + M.I18N.l('dataTransfer') + "' gedrückt");
+    	// Feierabend wird in closingTime() geloggt
+    	if (!isClosingDay) {
+    		writeToLog("Hauptmenü: '" + M.I18N.l('dataTransfer') + "' gedrückt");
+    	}
 
     	var startTransfer = NO;
     	if (DigiWebApp.DashboardController.lastTimestampDatatransfer !== null) {
@@ -20142,6 +20143,8 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 				return errorCallback();
 			} else {
 				// weiter in der Verarbeitungskette
+				//TODO: Warum hier kein Aufruf von setSelectionWithCurrentHandOrderFirst()/setSelectionByCurrentBooking()
+				//analog zu empfangePositionen?
 				return successCallback();
 			}
 			
@@ -22507,7 +22510,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6834
+      softwareVersion: 6835
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -38381,7 +38384,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6834'
+              value: 'Build: 6835'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
