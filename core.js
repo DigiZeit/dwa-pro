@@ -2094,52 +2094,6 @@ M.Math = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-// Returns a unique identifier
-
-m_require('core/foundation/object.js');
-
-M.UniqueId = M.Object.extend({
-    uuid: function(len, radix) {
-        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uuid = [];
-        //len = len ? len : 32; 
-        radix = radix || chars.length;
-        var i;
-
-        if (len) {
-            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
-        } else {
-            // rfc4122, version 4 form
-            var r;
-
-            // rfc4122 requires these characters
-            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-            uuid[14] = '4';
-
-            // Fill in random data.  At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
-            for (i = 0; i < 36; i++) {
-                if (!uuid[i]) {
-                    r = 0 | Math.random() * 16;
-                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-                }
-            }
-        }
-        return uuid.join('');
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Frank
@@ -2225,6 +2179,52 @@ M.StringBuilder = M.Object.extend(
         return stringBuilder;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+// Returns a unique identifier
+
+m_require('core/foundation/object.js');
+
+M.UniqueId = M.Object.extend({
+    uuid: function(len, radix) {
+        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = [];
+        //len = len ? len : 32; 
+        radix = radix || chars.length;
+        var i;
+
+        if (len) {
+            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+        } else {
+            // rfc4122, version 4 form
+            var r;
+
+            // rfc4122 requires these characters
+            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+            uuid[14] = '4';
+
+            // Fill in random data.  At i==19 set the high bits of clock sequence as
+            // per rfc4122, sec. 4.1.5
+            for (i = 0; i < 36; i++) {
+                if (!uuid[i]) {
+                    r = 0 | Math.random() * 16;
+                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+                }
+            }
+        }
+        return uuid.join('');
+    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -3621,875 +3621,6 @@ M.Cypher = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      11.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The root object for Error objects
- *
- * M.Error encapsulates errors in The-M-Project.
- * Should be passed to error callbacks.
- *
- * 0-99:    general errors
- *
- * 100-199: Model and Validation errors
- *
- * 200-299:   WebSQL errors
- *
- * 300-400:   CouchDB errors
- *
- *
- * Constant                             Code    Situation
- * --------                             ----    ---------
- * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
- * M.ERR_CONNECTION                     1       A connection to an external service could not be established
- *
- * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
- * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
- * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
- * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
- * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
- *
- * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
- *
- * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
- * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
- * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
- * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
- * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
- * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
- * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
- * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
- * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
- * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
- *
- * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
- * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
- * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
- * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
- *
- *
- *
- *
- * @extends M.Object
-*/
-
-
-/**
- * A constant value for an undefined error.
- *
- * @type Number
- */
-M.ERR_UNDEFINED = 0;
-
-/**
- * A constant value for an error occuring when a connection to an external service could not be established.
- *
- * @type Number
- */
-M.ERR_CONNECTION = 1;
-
-/**
- * A model record failed validation due to a property is not set but required to be.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PRESENCE = 100;
-
-/**
- * A model record failed validation due to a property does not represent a valid URL but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_URL = 101;
-
-/**
- * A model record failed validation due to a property does not represent a phone number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PHONE = 102;
-
-/**
- * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NUMBER = 103;
-
-/**
- * A model record failed validation due to a property contains a minus value but it is required to do not.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NOTMINUS = 104;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_EMAIL = 105;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_DATE = 106;
-
-/**
- * A Data Provider was not set for a model.
- *
- * @type Number
- */
-M.ERR_MODEL_PROVIDER_NOT_SET = 120;
-
-
-/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 0
- *
- * @type Number
- */
-M.ERR_WEBSQL_UNKNOWN = 200;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed for database reasons not covered by any other error code."
- * Error code in WebSQL specification: 1
- *
- * @type Number
- */
-M.ERR_WEBSQL_DATABASE = 201;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 2
- *
- * @type Number
- */
-M.ERR_WEBSQL_VERSION = 202;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
- * Error code in WebSQL specification: 3
- *
- * @type Number
- */
-M.ERR_WEBSQL_TOO_LARGE = 203;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
- * Error code in WebSQL specification: 4
- *
- * @type Number
- */
-M.ERR_WEBSQL_QUOTA = 204;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
- * Error code in WebSQL specification: 5
- *
- * @type Number
- */
-M.ERR_WEBSQL_SYNTAX = 205;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
- * Error code in WebSQL specification: 6
- *
- * @type Number
- */
-M.ERR_WEBSQL_CONSTRAINT = 206;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "A lock for the transaction could not be obtained in a reasonable time."
- * Error code in WebSQL specification: 7
- *
- * @type Number
- */
-M.ERR_WEBSQL_TIMEOUT = 207;
-
-/* following errors are WebSQL Data Provider errors. */
-
-/**
- * A constant value for an error occuring when dbHandler does not exist in
- * data provider. Reason: Initialization did not take place or failed.
- *
- * @type Number
- */
-M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
-
-/**
- * A constant value for an error occuring with bulkSave operation in dataprovider.
- * No Record array was passed to the method via the param obj.
- *
- * @type Number
- */
-M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
-
-
-/**
- * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
- *
- * @type Number
- */
-M.ERR_COUCHDB_CONFLICT = 300;
-
-/**
- * A constant value for an error occuring if the provided database could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBNOTFOUND = 301;
-
-/**
- * A constant value for an error occuring if a database that shall be created already exists
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBEXISTS = 302;
-
-/**
- * A constant value for an error occuring if a document could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DOCNOTFOUND = 303;
-
-M.Error = M.Object.extend(
-/** @scope M.Error.prototype */ {
-    code: '',
-    msg: '',
-    errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The observable knows all observers, mainly views, and pushes updates if necessary.
- *
- * @extends M.Object
- */
-M.Observable = M.Object.extend(
-/** @scope M.Observable.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Observable',
-
-    /**
-     * List that contains pairs of an observer with an observable. An observer is tightened to one
-     * observable, but one observable can have multiple observers.
-     *
-     * @type Array|Object
-     */
-    bindingList: null,
-
-    /**
-     * Attach an observer to an observable.
-     *
-     * @param {String} observer The observer.
-     * @param {String} observable The observable.
-     */
-    attach: function(observer, observable) {
-        if(!this.bindingList) {
-            this.bindingList = [];
-        }
-        this.bindingList.push({
-            observer: observer,
-            observable: observable
-        });
-    },
-
-    /**
-     * Detach an observer from an observable.
-     *
-     * @param {String} observer The observer.
-     */
-    detach: function(observer) {
-        /* grep is a jQuery function that finds
-         * elements in an array that satisfy a certain criteria.
-         * It works on a copy so we have to assign the "cleaned"
-         * array to our bindingList.
-         */
-        this.bindingList = _.filter(this.bindingList, function(value, index) {
-                return value.observable !== observer;
-        });
-    },
-
-    /**
-     * Notify all observers that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property that changed.
-     */
-    notifyObservers: function(key) {
-        _.each(this.bindingList, function(entry){
-            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
-                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
-                    entry.observer.valueDidChange();
-                }else{
-                    entry.observer.contentDidChange();
-                }
-            }
-        });
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-M.STATE_UNDEFINED = 'state_undefined';
-M.STATE_NEW = 'state_new';
-M.STATE_INSYNCPOS = 'state_insyncpos';
-M.STATE_INSYNCNEG = 'state_insyncneg';
-M.STATE_LOCALCHANGED = 'state_localchange';
-M.STATE_VALID = 'state_valid';
-M.STATE_INVALID = 'state_invalid';
-M.STATE_DELETED = 'state_deleted';
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * M.Model is the prototype for every model and for every model record (a model itself is the blueprint for a model record).
- * Models hold the business data of an application respectively the application's state. It's usually the part of an application that is persisted to storage.
- * M.Model acts as the gatekeeper to storage. It uses data provider for persistence and validators to validate its records.
- *
- * @extends M.Object
- */
-M.Model = M.Object.extend(
-/** @scope M.Model.prototype */ {
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Model',
-
-    /**
-     * The name of the model.
-     *
-     * @type String
-     */
-    name: '',
-
-    /**
-     * Unique identifier for the model record.
-     *
-     * It's as unique as it needs to be: four digits, each digits can be one of 32 chars
-     *
-     * @type String
-     */
-    m_id: null,
-
-    /**
-     * The model's record defines the properties that are semantically bound to this model:
-     * e.g. a person's record is (in simplest case): firstname, lastname, age.
-     *
-     * @type Object record
-     */
-    record: null,
-
-    /**
-     * Object containing all meta information for the object's properties
-     * @type Object
-     */
-    __meta: {},
-
-    /**
-     * Manages records of this model
-     * @type Object
-     */
-    recordManager: null,
-
-    /**
-     * List containing all models in application
-     * @type Object|Array
-     */
-    modelList: {},
-
-    /**
-     * A constant defining the model's state. Important e.g. for syncing storage
-     * @type String
-     */
-    state: M.STATE_UNDEFINED,
-
-    /**
-     *
-     * @type String
-     */
-    state_remote: M.STATE_UNDEFINED,
-
-    /**
-     * determines whether model shall be validated before saving to storage or not.
-     * @type Boolean
-     */
-    usesValidation: NO,
-
-    /**
-     * The model's data provider. A data provider persists the model to a certain storage.
-     *
-     * @type Object
-     */
-    dataProvider: null,
-
-    getUniqueId: function() {
-        return M.UniqueId.uuid(4);
-    },
-
-    /**
-     * Creates a new record of the model, means an instance of the model based on the blueprint.
-     * You pass the object's specific attributes to it as an object.
-     *
-     * @param {Object} obj The properties object, e.g. {firstname: 'peter', lastname ='fox'}
-     * @returns {Object} The model record with the passed properties set. State depends on newly creation or fetch from storage: if
-     * from storage then state is M.STATE_NEW or 'state_new', if fetched from database then it is M.STATE_VALID or 'state_valid'
-     */
-    createRecord: function(obj) {
-
-        var rec = this.extend({
-            m_id: obj.m_id ? obj.m_id : this.getUniqueId(),
-            record: obj /* properties that are added to record here, but are not part of __meta, are deleted later (see below) */
-        });
-        delete obj.m_id;
-        rec.state = obj.state ? obj.state : M.STATE_NEW;
-        delete obj.state;
-
-        /* set timestamps if new */
-        if(rec.state === M.STATE_NEW) {
-            rec.record[M.META_CREATED_AT] = +new Date();
-            rec.record[M.META_UPDATED_AT] = +new Date();
-        }
-
-        for(var i in rec.record) {
-
-            if(i === M.META_CREATED_AT || i === M.META_UPDATED_AT) {
-                continue;
-            }
-
-            /* if record contains properties that are not part of __meta (means that are not defined in the model blueprint) delete them */
-            if(!rec.__meta.hasOwnProperty(i)) {
-                M.Logger.log('Deleting "' + i + '" property. It\'s not part of ' + this.name + ' definition.', M.WARN);
-                delete rec.record[i];
-                continue;
-            }
-
-            /* if reference to a record entity is in param obj, assign it like in set. */
-            if(rec.__meta[i].dataType === 'Reference' && rec.record[i] && rec.record[i].type && rec.record[i].type === 'M.Model') {
-                // call set of model
-                rec.set(i, rec.record[i]);
-            }
-
-            if(rec.__meta[i]) {
-                rec.__meta[i].isUpdated = NO;
-            }
-        }
-
-        this.recordManager.add(rec);
-        return rec;
-    },
-
-    /**
-     * Create defines a new model blueprint. It is passed an object with the model's attributes and the model's business logic
-     * and after it the type of data provider to use.
-     *
-     * @param {Object} obj An object defining the model's
-     * @param {Object} dp The data provider to use, e. g. M.LocalStorageProvider
-     * @returns {Object} The model blueprint: acts as blueprint to all records created with @link M.Model#createRecord
-     */
-    create: function(obj, dp) {
-        var model = M.Model.extend({
-            __meta: {},
-            name: obj.__name__,
-            dataProvider: dp,
-            recordManager: {},
-            usesValidation: obj.usesValidation ? obj.usesValidation : this.usesValidation
-        });
-        delete obj.__name__;
-        delete obj.usesValidation;
-
-        for(var prop in obj) {
-            if(typeof(obj[prop]) === 'function') {
-                model[prop] = obj[prop];
-            } else if(obj[prop].type === 'M.ModelAttribute') {
-                model.__meta[prop] = obj[prop];
-            }
-        }
-
-        /* add ID, _createdAt and _modifiedAt properties in meta for timestamps  */
-        model.__meta[M.META_CREATED_AT] = this.attr('String', { // could be 'Date', too
-            isRequired:YES
-        });
-        model.__meta[M.META_UPDATED_AT] = this.attr('String', { // could be 'Date', too
-            isRequired:YES
-        });
-
-        model.recordManager = M.RecordManager.extend({records:[]});
-
-        /* save model in modelList with model name as key */
-        this.modelList[model.name] = model;
-
-        return model;
-    },
-
-    /**
-     * Defines a to-one-relationship.
-     * @param refName
-     * @param refEntity
-     */
-    hasOne: function(refEntity, obj) {
-        var relAttr = this.attr('Reference', {
-            refType: 'toOne',
-            reference: refEntity,
-            validators: obj.validators,
-            isRequired: obj.isRequired
-        });
-        return relAttr;
-    },
-
-    /**
-     * Defines a to-many-relationship
-     * @param colName
-     * @param refEntity
-     * @param invRel
-     */
-    hasMany: function(colName, refEntity, invRel) {
-        var relAttr = this.attr('Reference', {
-            refType: 'toMany',
-            reference: refEntity
-        });
-        return relAttr;
-    },
-
-    /**
-     * Returns a M.ModelAttribute object to map an attribute in our record.
-     *
-     * @param {String} type type of the attribute
-     * @param {Object} opts options for the attribute, like required flag and validators array
-     * @returns {Object} An M.ModelAttribute object configured with the type and options passed to the function.
-     */
-    attr: function(type, opts) {
-        return M.ModelAttribute.attr(type, opts);
-    },
-
-    /*
-     * get and set methods for encapsulated attribute access
-     */
-
-    /**
-     * Get attribute propName from model, if async provider is used, get on references does not return the property value but a boolean indicating
-     * the load status. get must then be called again in onSuccess callback to retrieve the value
-     * @param {String} propName the name of the property whose value shall be returned
-     * @param {Object} obj optional parameter containing the load force flag and callbacks, e.g.:
-     * {
-     *   force: YES,
-     *   onSuccess: function() { console.log('yeah'); }
-     * }
-     * @returns {Boolean|Object|String} value of property or boolean indicating the load status
-     */
-    get: function(propName, obj) {
-        var metaProp = this.__meta[propName];
-        var recProp = this.record[propName];
-        /* return ref entity if property is a reference */
-        if(metaProp && metaProp.dataType === 'Reference') {
-            if(metaProp.refEntity) {// if entity is already loaded and assigned here in model record
-                return metaProp.refEntity;
-            } else if(recProp) { // if model record has a reference set, but it is not loaded yet
-                if(obj && obj.force) { // if force flag was set
-                    /* custom call to deepFind with record passed only being the one property that needs to be filled, type of dp checked in deepFind */
-                    var callback = this.dataProvider.isAsync ? obj.onSuccess : null
-                    this.deepFind([{
-                        prop: propName,
-                        name: metaProp.reference,
-                        model: this.modelList[metaProp.reference],
-                        m_id: recProp
-                    }], callback);
-                    if(!this.dataProvider.isAsync) { // if data provider acts synchronous, we can now return the fetched entity
-                        return metaProp.refEntity;
-                    }
-                    return YES;
-                } else { // if force flag was not set, and object is not in memory and record manager load is not done and we return NO
-                    var r = this.recordManager.getRecordById(recProp);
-                    if(r) { /* if object is already loaded and in record manager don't access storage */
-                        return r;
-                    } else {
-                        return NO; // return
-                    }
-                }
-            } else { // if reference has not been set yet
-                return null;
-            }
-        }
-        /* if propName is not a reference, but a "simple" property, just return it */
-        return recProp;
-    },
-
-    /**
-     * Set attribute propName of model with value val, sets' property to isUpdated (=> will be included in UPDATE call)
-     * and sets a new timestamp to _updatedAt. Will not do anything, if newVal is the same as the current prop value.
-     * @param {String} propName the name of the property whose value shall be set
-     * @param {String|Object} val the new value
-     */
-    set: function(propName, val) {
-        if(this.__meta[propName].dataType === 'Reference' && val.type && val.type === 'M.Model') {    // reference set
-            /* first check if new value is passed */
-            if(this.record[propName] !== val.m_id) {
-                /* set m_id of reference in record */
-                this.record[propName] = val.m_id;
-                this.__meta[propName].refEntity = val;
-            }
-            return;
-        }
-
-        if(this.record[propName] !== val) {
-            this.record[propName] = val;
-            this.__meta[propName].isUpdated = YES;
-            /* mark record as updated with new timestamp*/
-            this.record[M.META_UPDATED_AT] = +new Date();
-        }
-    },
-
-    /**
-     * Returns the records array of the model's record manager.
-     * @returns {Object|Array} The records array of record manager.
-     */
-    records: function() {
-        if(this.recordManager && this.recordManager.records) {
-            return this.recordManager.records;
-        }
-    },
-
-    /**
-     * Validates the model, means calling validate for each property.
-     * @returns {Boolean} Indicating whether this record is valid (YES|true) or not (NO|false).
-     */
-    validate: function() {
-        var isValid = YES;
-        var validationErrorOccured = NO;
-        /* clear validation error buffer before validation */
-        M.Validator.clearErrorBuffer();
-
-        /*
-        * validationBasis depends on the state of the model: if the model is in state NEW, all properties (__meta includes all)
-        * shall be considered for validation. if model is in another state, the model's record is used. example: the model is loaded from
-        * a database with only two properties included (select name, age FROM...). record now only contains these two properties but __meta
-        * still has all properties listed. models are valid if loaded from database so when saved again only the loaded properties need to get
-        * validated because all others have not been touched. that's why then record is used.
-        * */
-        var validationBasis = this.state === M.STATE_NEW ? this.__meta : this.record;
-
-        for (var i in validationBasis) {
-            if(i === 'ID') { // skip property ID
-                continue;
-            }
-            var prop = this.__meta[i];
-            var obj = {
-                value: this.record[i],
-                modelId: this.name + '_' + this.m_id,
-                property: i
-            };
-            if (!prop.validate(obj)) {
-                isValid = NO;
-            }
-        }
-        /* set state of model */
-        /*if(!isValid) {
-            this.state = M.STATE_INVALID;
-        } else {
-            this.state = M.STATE_VALID;
-        }*/
-        return isValid;
-    },
-
-    /* CRUD Methods below */
-    /**
-     * Calls the corresponding find() of the data provider to fetch data based on the passed query or key.
-     *
-     * @param {Object} obj The param object with query or key and callbacks.
-     * @returns {Boolean|Object} Depends on data provider used. When WebSQL used, a boolean is returned, the find result is returned asynchronously,
-     * because the call itself is asynchronous. If LocalStorage is used, the result of the query is returned.
-     */
-    find: function(obj){
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj : {};
-        /* check if the record list shall be cleared (default) before new found model records are appended to the record list */
-        obj.deleteRecordList = obj.deleteRecordList ? obj.deleteRecordList : YES;
-        if(obj.deleteRecordList) {
-            this.recordManager.removeAll();
-        }
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-
-        /* extends the given obj with self as model property in obj */
-        return this.dataProvider.find( $.extend(obj, {model: this}) );
-    },
-
-    /**
-     * Create or update a record in storage if it is valid (first check this).
-     * If param obj includes cascade:YES then save is cascadaded through all references recursively.
-     *
-     * @param {Object} obj The param object with query, cascade flag and callbacks.
-     * @returns {Boolean} The result of the data provider function call. Is a boolean. With LocalStorage used, it indicates if the save operation was successful.
-     * When WebSQL is used, the result of the save operation returns asynchronously. The result then is just the standard result returned by the web sql provider's save method
-     * which does not necessarily indicate whether the operation was successful, because the operation is asynchronous, means the operation's result is not predictable.
-     */
-    save: function(obj) {
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj: {};
-        if(!this.m_id) {
-            return NO;
-        }
-        var isValid = YES;
-
-        if(this.usesValidation) {
-            isValid = this.validate();
-        }
-
-        if(obj.cascade) {
-            for(var prop in this.__meta) {
-                if(this.__meta[prop] && this.__meta[prop].dataType === 'Reference' && this.__meta[prop].refEntity) {
-                    this.__meta[prop].refEntity.save({cascade:YES}); // cascades recursively through all referenced model records
-                }
-            }
-        }
-
-        if(isValid) {
-            return this.dataProvider.save($.extend(obj, {model: this}));
-        }
-    },
-
-    /**
-     * Delete a record in storage.
-     * @returns {Boolean} Indicating whether deletion was successful or not (only with synchronous data providers, e.g. LocalStorage). When asynchronous data providers
-     * are used, e.g. WebSQL provider the real result comes asynchronous and here just the result of the del() function call of the @link M.WebSqlProvider is used.
-     */
-    del: function(obj) {
-        if(!this.dataProvider) {
-            M.Logger.log('No data provider given.', M.ERR);
-        }
-        obj = obj ? obj : {};
-        if(!this.m_id) {
-            return NO;
-        }
-
-       var isDel = this.dataProvider.del($.extend(obj, {model: this}));
-        if(isDel) {
-            this.state = M.STATE_DELETED;
-            return YES;
-        }
-    },
-
-    /**
-     * completes the model record by loading all referenced entities.
-     *
-     * @param {Function | Object} obj The param object with query, cascade flag and callbacks.
-     */
-    complete: function(callback) {
-        //console.log('complete...');
-        var records = [];
-        for(var i in this.record) {
-            if(this.__meta[i].dataType === 'Reference') {
-                //records.push(this.__meta[i].refEntity);
-                records.push({
-                    prop:i,
-                    name: this.__meta[i].reference,
-                    model: this.modelList[this.__meta[i].reference],
-                    m_id: this.record[i]
-                });
-            }
-        }
-        this.deepFind(records, callback);
-    },
-
-    deepFind: function(records, callback) {
-        //console.log('deepFind...');
-        //console.log('### records.length: ' + records.length);
-        if(records.length < 1) {    // recursion end constraint
-            if(callback) {
-                callback();
-            }
-            return;
-        }
-        var curRec = records.pop(); // delete last element, decreases length of records by 1 => important for recursion constraint above
-        var cb = this.bindToCaller(this, this.deepFind,[records, callback]); // cb is callback for find in data provider
-        var that = this;
-
-
-        switch(this.dataProvider.type) {
-            case 'M.DataProviderLocalStorage':
-                var ref = this.modelList[curRec.name].find({
-                    key: curRec.m_id
-                });
-                this.__meta[curRec.prop].refEntity = ref;
-
-                this.deepFind(records, callback); // recursion
-                break;
-
-            default:
-                break;
-        }
-    },
-
-    setReference: function(result, that, prop, callback) {
-        that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
-        callback();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      26.07.2011
@@ -5269,1065 +4400,871 @@ M.Validator = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.10.2010
+// Creator:   Sebastian
+// Date:      11.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/* Available transitions for page changes */
-M.TRANSITION = {};
-M.TRANSITION.NONE = 'none';
-M.TRANSITION.SLIDE = 'slide';
-M.TRANSITION.SLIDEUP = 'slideup';
-M.TRANSITION.SLIDEDOWN = 'slidedown';
-M.TRANSITION.POP = 'pop';
-M.TRANSITION.FADE = 'fade';
-M.TRANSITION.FLIP = 'flip';
 
-m_require('core/foundation/observable.js');
+m_require('core/utility/logger.js');
 
 /**
  * @class
  *
- * The root class for every controller.
+ * The root object for Error objects
  *
- * Controllers, respectively their properties, are observables. Views can observe them.
+ * M.Error encapsulates errors in The-M-Project.
+ * Should be passed to error callbacks.
+ *
+ * 0-99:    general errors
+ *
+ * 100-199: Model and Validation errors
+ *
+ * 200-299:   WebSQL errors
+ *
+ * 300-400:   CouchDB errors
+ *
+ *
+ * Constant                             Code    Situation
+ * --------                             ----    ---------
+ * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
+ * M.ERR_CONNECTION                     1       A connection to an external service could not be established
+ *
+ * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
+ * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
+ * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
+ * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
+ *
+ * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
+ *
+ * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
+ * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
+ * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
+ * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
+ * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
+ * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
+ * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
+ * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
+ * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
+ * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
+ *
+ * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
+ * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
+ * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
+ * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
+ *
+ *
+ *
  *
  * @extends M.Object
+*/
+
+
+/**
+ * A constant value for an undefined error.
+ *
+ * @type Number
  */
-M.Controller = M.Object.extend(
-/** @scope M.Controller.prototype */ {
+M.ERR_UNDEFINED = 0;
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Controller',
+/**
+ * A constant value for an error occuring when a connection to an external service could not be established.
+ *
+ * @type Number
+ */
+M.ERR_CONNECTION = 1;
 
-    /**
-     * Makes the controller's properties observable.
-     */
-    observable: null,
+/**
+ * A model record failed validation due to a property is not set but required to be.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PRESENCE = 100;
 
-    /**
-     * Switch the active tab in the application. This includes both activating this tab
-     * visually and switching the page.
-     *
-     * @param {M.TabBarItemView} tab The tab to be activated.
-     */
-    switchToTab: function(tab,back) {
-		if (!back) back = NO;
-        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
-            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
-            return;
-        }
-        var currentTab = tab.parentView.activeTab;
-        var newPage = M.ViewManager.getPage(tab.page);
+/**
+ * A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_URL = 101;
 
-        /* store the active tab in tab bar view */
-        tab.parentView.setActiveTab(tab);
+/**
+ * A model record failed validation due to a property does not represent a phone number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PHONE = 102;
 
-        if(tab === currentTab) {
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage !== newPage) {
-                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
-            }
-        } else {
-            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
-        }
-    },
+/**
+ * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NUMBER = 103;
 
-    /**
-     * Switch the active page in the application.
-     *
-     * @param {Object|String} page The page to be displayed or its name.
-     * @param {String} transition The transition that should be used. Default: horizontal slide
-     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
-     * @param {Boolean} updateHistory Update the browser history. Default: YES
-     */
-    switchToPage: function(page, transition, isBack, updateHistory) {
-        var timeStart = M.Date.now();
-        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
+/**
+ * A model record failed validation due to a property contains a minus value but it is required to do not.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NOTMINUS = 104;
 
-        if(page) {
-            transition = transition ? transition : M.TRANSITION.SLIDE;
-            isBack = isBack !== undefined ? isBack : NO;
-            updateHistory = updateHistory !== undefined ? updateHistory : YES;
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_EMAIL = 105;
 
-            /* Now do the page change by using a jquery mobile method and pass the properties */
-            if(page.type === 'M.PageView') {
-                $.mobile.changePage($('#' + page.id), {
-                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
-                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
-                    changeHash: updateHistory,
-                    showLoadMsg: NO
-                });
-            }
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_DATE = 106;
 
-            /* Save the current page in the view manager */
-            M.ViewManager.setCurrentPage(page);
-        } else {
-            M.Logger.log('Page "' + page + '" not found', M.ERR);
-        }
-    },
+/**
+ * A Data Provider was not set for a model.
+ *
+ * @type Number
+ */
+M.ERR_MODEL_PROVIDER_NOT_SET = 120;
 
-    /**
-     * This method initializes the notification of all observers, that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property to be changed.
-     * @param {Object|String} value The value to be set.
-     */
-    set: function(key, value) {
-        var keyPath = key.split('.');
 
-        if(keyPath.length === 1) {
-            this[key] = value;
-        } else {
-            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
-            for(var i = 1; i < keyPath.length - 1; i++) {
-                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
-            }
+/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 0
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_UNKNOWN = 200;
 
-            t[keyPath[keyPath.length - 1]] = value;
-        }
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed for database reasons not covered by any other error code."
+ * Error code in WebSQL specification: 1
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_DATABASE = 201;
 
-        if(!this.observable) {
-            return;
-        }
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 2
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_VERSION = 202;
 
-        this.observable.notifyObservers(key);
-    }
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
+ * Error code in WebSQL specification: 3
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TOO_LARGE = 203;
 
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
+ * Error code in WebSQL specification: 4
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_QUOTA = 204;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
+ * Error code in WebSQL specification: 5
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_SYNTAX = 205;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
+ * Error code in WebSQL specification: 6
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_CONSTRAINT = 206;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "A lock for the transaction could not be obtained in a reasonable time."
+ * Error code in WebSQL specification: 7
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TIMEOUT = 207;
+
+/* following errors are WebSQL Data Provider errors. */
+
+/**
+ * A constant value for an error occuring when dbHandler does not exist in
+ * data provider. Reason: Initialization did not take place or failed.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
+
+/**
+ * A constant value for an error occuring with bulkSave operation in dataprovider.
+ * No Record array was passed to the method via the param obj.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
+
+
+/**
+ * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_CONFLICT = 300;
+
+/**
+ * A constant value for an error occuring if the provided database could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBNOTFOUND = 301;
+
+/**
+ * A constant value for an error occuring if a database that shall be created already exists
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBEXISTS = 302;
+
+/**
+ * A constant value for an error occuring if a document could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DOCNOTFOUND = 303;
+
+M.Error = M.Object.extend(
+/** @scope M.Error.prototype */ {
+    code: '',
+    msg: '',
+    errObj: null
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      04.11.2010
+// Date:      28.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/foundation/model.js');
+M.STATE_UNDEFINED = 'state_undefined';
+M.STATE_NEW = 'state_new';
+M.STATE_INSYNCPOS = 'state_insyncpos';
+M.STATE_INSYNCNEG = 'state_insyncneg';
+M.STATE_LOCALCHANGED = 'state_localchange';
+M.STATE_VALID = 'state_valid';
+M.STATE_INVALID = 'state_invalid';
+M.STATE_DELETED = 'state_deleted';
+
+m_require('core/utility/logger.js');
 
 /**
  * @class
  *
- * The root object for RecordManager.
- *
- * A RecordManager is used by a controllers and is an interface that makes it easy for him to
- * handle his model records.
+ * M.Model is the prototype for every model and for every model record (a model itself is the blueprint for a model record).
+ * Models hold the business data of an application respectively the application's state. It's usually the part of an application that is persisted to storage.
+ * M.Model acts as the gatekeeper to storage. It uses data provider for persistence and validators to validate its records.
  *
  * @extends M.Object
  */
-M.RecordManager = M.Object.extend(
-/** @scope M.RecordManager.prototype */ { 
+M.Model = M.Object.extend(
+/** @scope M.Model.prototype */ {
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.RecordManager',
+    type: 'M.Model',
 
     /**
-     * Array containing all currently loaded records.
+     * The name of the model.
+     *
+     * @type String
+     */
+    name: '',
+
+    /**
+     * Unique identifier for the model record.
+     *
+     * It's as unique as it needs to be: four digits, each digits can be one of 32 chars
+     *
+     * @type String
+     */
+    m_id: null,
+
+    /**
+     * The model's record defines the properties that are semantically bound to this model:
+     * e.g. a person's record is (in simplest case): firstname, lastname, age.
+     *
+     * @type Object record
+     */
+    record: null,
+
+    /**
+     * Object containing all meta information for the object's properties
+     * @type Object
+     */
+    __meta: {},
+
+    /**
+     * Manages records of this model
+     * @type Object
+     */
+    recordManager: null,
+
+    /**
+     * List containing all models in application
+     * @type Object|Array
+     */
+    modelList: {},
+
+    /**
+     * A constant defining the model's state. Important e.g. for syncing storage
+     * @type String
+     */
+    state: M.STATE_UNDEFINED,
+
+    /**
+     *
+     * @type String
+     */
+    state_remote: M.STATE_UNDEFINED,
+
+    /**
+     * determines whether model shall be validated before saving to storage or not.
+     * @type Boolean
+     */
+    usesValidation: NO,
+
+    /**
+     * The model's data provider. A data provider persists the model to a certain storage.
      *
      * @type Object
      */
-    records: [],
+    dataProvider: null,
 
-    /**
-     * Add the given model to the modelList.
-     *
-     * @param {Object} record
-     */
-    add: function(record) {
-        this.records.push(record);
+    getUniqueId: function() {
+        return M.UniqueId.uuid(4);
     },
 
     /**
-     * Concats an array if records to the records array.
+     * Creates a new record of the model, means an instance of the model based on the blueprint.
+     * You pass the object's specific attributes to it as an object.
      *
-     * @param {Object} record
+     * @param {Object} obj The properties object, e.g. {firstname: 'peter', lastname ='fox'}
+     * @returns {Object} The model record with the passed properties set. State depends on newly creation or fetch from storage: if
+     * from storage then state is M.STATE_NEW or 'state_new', if fetched from database then it is M.STATE_VALID or 'state_valid'
      */
-    addMany: function(arrOfRecords) {
+    createRecord: function(obj) {
 
-        if(_.isArray(arrOfRecords)){
-            this.records = this.records.concat(arrOfRecords);
+        var rec = this.extend({
+            m_id: obj.m_id ? obj.m_id : this.getUniqueId(),
+            record: obj /* properties that are added to record here, but are not part of __meta, are deleted later (see below) */
+        });
+        delete obj.m_id;
+        rec.state = obj.state ? obj.state : M.STATE_NEW;
+        delete obj.state;
 
-        } else if(arrOfRecords.type === 'M.Model') {
-            this.add(arrOfRecords);
+        /* set timestamps if new */
+        if(rec.state === M.STATE_NEW) {
+            rec.record[M.META_CREATED_AT] = +new Date();
+            rec.record[M.META_UPDATED_AT] = +new Date();
         }
 
+        for(var i in rec.record) {
+
+            if(i === M.META_CREATED_AT || i === M.META_UPDATED_AT) {
+                continue;
+            }
+
+            /* if record contains properties that are not part of __meta (means that are not defined in the model blueprint) delete them */
+            if(!rec.__meta.hasOwnProperty(i)) {
+                M.Logger.log('Deleting "' + i + '" property. It\'s not part of ' + this.name + ' definition.', M.WARN);
+                delete rec.record[i];
+                continue;
+            }
+
+            /* if reference to a record entity is in param obj, assign it like in set. */
+            if(rec.__meta[i].dataType === 'Reference' && rec.record[i] && rec.record[i].type && rec.record[i].type === 'M.Model') {
+                // call set of model
+                rec.set(i, rec.record[i]);
+            }
+
+            if(rec.__meta[i]) {
+                rec.__meta[i].isUpdated = NO;
+            }
+        }
+
+        this.recordManager.add(rec);
+        return rec;
     },
 
     /**
-     * Resets record list 
+     * Create defines a new model blueprint. It is passed an object with the model's attributes and the model's business logic
+     * and after it the type of data provider to use.
+     *
+     * @param {Object} obj An object defining the model's
+     * @param {Object} dp The data provider to use, e. g. M.LocalStorageProvider
+     * @returns {Object} The model blueprint: acts as blueprint to all records created with @link M.Model#createRecord
      */
-    removeAll: function() {
-        this.records.length = 0;
+    create: function(obj, dp) {
+        var model = M.Model.extend({
+            __meta: {},
+            name: obj.__name__,
+            dataProvider: dp,
+            recordManager: {},
+            usesValidation: obj.usesValidation ? obj.usesValidation : this.usesValidation
+        });
+        delete obj.__name__;
+        delete obj.usesValidation;
+
+        for(var prop in obj) {
+            if(typeof(obj[prop]) === 'function') {
+                model[prop] = obj[prop];
+            } else if(obj[prop].type === 'M.ModelAttribute') {
+                model.__meta[prop] = obj[prop];
+            }
+        }
+
+        /* add ID, _createdAt and _modifiedAt properties in meta for timestamps  */
+        model.__meta[M.META_CREATED_AT] = this.attr('String', { // could be 'Date', too
+            isRequired:YES
+        });
+        model.__meta[M.META_UPDATED_AT] = this.attr('String', { // could be 'Date', too
+            isRequired:YES
+        });
+
+        model.recordManager = M.RecordManager.extend({records:[]});
+
+        /* save model in modelList with model name as key */
+        this.modelList[model.name] = model;
+
+        return model;
     },
 
     /**
-     * Deletes a model record from the record array
-     * @param {Number} m_id The internal model id of the model record.
+     * Defines a to-one-relationship.
+     * @param refName
+     * @param refEntity
      */
-    remove: function(m_id) {
+    hasOne: function(refEntity, obj) {
+        var relAttr = this.attr('Reference', {
+            refType: 'toOne',
+            reference: refEntity,
+            validators: obj.validators,
+            isRequired: obj.isRequired
+        });
+        return relAttr;
+    },
 
-        if(!m_id) {
-            M.Logger.log('No id given.', M.WARN);
+    /**
+     * Defines a to-many-relationship
+     * @param colName
+     * @param refEntity
+     * @param invRel
+     */
+    hasMany: function(colName, refEntity, invRel) {
+        var relAttr = this.attr('Reference', {
+            refType: 'toMany',
+            reference: refEntity
+        });
+        return relAttr;
+    },
+
+    /**
+     * Returns a M.ModelAttribute object to map an attribute in our record.
+     *
+     * @param {String} type type of the attribute
+     * @param {Object} opts options for the attribute, like required flag and validators array
+     * @returns {Object} An M.ModelAttribute object configured with the type and options passed to the function.
+     */
+    attr: function(type, opts) {
+        return M.ModelAttribute.attr(type, opts);
+    },
+
+    /*
+     * get and set methods for encapsulated attribute access
+     */
+
+    /**
+     * Get attribute propName from model, if async provider is used, get on references does not return the property value but a boolean indicating
+     * the load status. get must then be called again in onSuccess callback to retrieve the value
+     * @param {String} propName the name of the property whose value shall be returned
+     * @param {Object} obj optional parameter containing the load force flag and callbacks, e.g.:
+     * {
+     *   force: YES,
+     *   onSuccess: function() { console.log('yeah'); }
+     * }
+     * @returns {Boolean|Object|String} value of property or boolean indicating the load status
+     */
+    get: function(propName, obj) {
+        var metaProp = this.__meta[propName];
+        var recProp = this.record[propName];
+        /* return ref entity if property is a reference */
+        if(metaProp && metaProp.dataType === 'Reference') {
+            if(metaProp.refEntity) {// if entity is already loaded and assigned here in model record
+                return metaProp.refEntity;
+            } else if(recProp) { // if model record has a reference set, but it is not loaded yet
+                if(obj && obj.force) { // if force flag was set
+                    /* custom call to deepFind with record passed only being the one property that needs to be filled, type of dp checked in deepFind */
+                    var callback = this.dataProvider.isAsync ? obj.onSuccess : null
+                    this.deepFind([{
+                        prop: propName,
+                        name: metaProp.reference,
+                        model: this.modelList[metaProp.reference],
+                        m_id: recProp
+                    }], callback);
+                    if(!this.dataProvider.isAsync) { // if data provider acts synchronous, we can now return the fetched entity
+                        return metaProp.refEntity;
+                    }
+                    return YES;
+                } else { // if force flag was not set, and object is not in memory and record manager load is not done and we return NO
+                    var r = this.recordManager.getRecordById(recProp);
+                    if(r) { /* if object is already loaded and in record manager don't access storage */
+                        return r;
+                    } else {
+                        return NO; // return
+                    }
+                }
+            } else { // if reference has not been set yet
+                return null;
+            }
+        }
+        /* if propName is not a reference, but a "simple" property, just return it */
+        return recProp;
+    },
+
+    /**
+     * Set attribute propName of model with value val, sets' property to isUpdated (=> will be included in UPDATE call)
+     * and sets a new timestamp to _updatedAt. Will not do anything, if newVal is the same as the current prop value.
+     * @param {String} propName the name of the property whose value shall be set
+     * @param {String|Object} val the new value
+     */
+    set: function(propName, val) {
+        if(this.__meta[propName].dataType === 'Reference' && val.type && val.type === 'M.Model') {    // reference set
+            /* first check if new value is passed */
+            if(this.record[propName] !== val.m_id) {
+                /* set m_id of reference in record */
+                this.record[propName] = val.m_id;
+                this.__meta[propName].refEntity = val;
+            }
             return;
         }
 
-        var rec = this.getRecordById(m_id);
+        if(this.record[propName] !== val) {
+            this.record[propName] = val;
+            this.__meta[propName].isUpdated = YES;
+            /* mark record as updated with new timestamp*/
+            this.record[M.META_UPDATED_AT] = +new Date();
+        }
+    },
 
-        if(rec) {
-            this.records = _.select(this.records, function(r){
-                return r.m_id !== rec.m_id;
-            });
+    /**
+     * Returns the records array of the model's record manager.
+     * @returns {Object|Array} The records array of record manager.
+     */
+    records: function() {
+        if(this.recordManager && this.recordManager.records) {
+            return this.recordManager.records;
+        }
+    },
+
+    /**
+     * Validates the model, means calling validate for each property.
+     * @returns {Boolean} Indicating whether this record is valid (YES|true) or not (NO|false).
+     */
+    validate: function() {
+        var isValid = YES;
+        var validationErrorOccured = NO;
+        /* clear validation error buffer before validation */
+        M.Validator.clearErrorBuffer();
+
+        /*
+        * validationBasis depends on the state of the model: if the model is in state NEW, all properties (__meta includes all)
+        * shall be considered for validation. if model is in another state, the model's record is used. example: the model is loaded from
+        * a database with only two properties included (select name, age FROM...). record now only contains these two properties but __meta
+        * still has all properties listed. models are valid if loaded from database so when saved again only the loaded properties need to get
+        * validated because all others have not been touched. that's why then record is used.
+        * */
+        var validationBasis = this.state === M.STATE_NEW ? this.__meta : this.record;
+
+        for (var i in validationBasis) {
+            if(i === 'ID') { // skip property ID
+                continue;
+            }
+            var prop = this.__meta[i];
+            var obj = {
+                value: this.record[i],
+                modelId: this.name + '_' + this.m_id,
+                property: i
+            };
+            if (!prop.validate(obj)) {
+                isValid = NO;
+            }
+        }
+        /* set state of model */
+        /*if(!isValid) {
+            this.state = M.STATE_INVALID;
+        } else {
+            this.state = M.STATE_VALID;
+        }*/
+        return isValid;
+    },
+
+    /* CRUD Methods below */
+    /**
+     * Calls the corresponding find() of the data provider to fetch data based on the passed query or key.
+     *
+     * @param {Object} obj The param object with query or key and callbacks.
+     * @returns {Boolean|Object} Depends on data provider used. When WebSQL used, a boolean is returned, the find result is returned asynchronously,
+     * because the call itself is asynchronous. If LocalStorage is used, the result of the query is returned.
+     */
+    find: function(obj){
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj : {};
+        /* check if the record list shall be cleared (default) before new found model records are appended to the record list */
+        obj.deleteRecordList = obj.deleteRecordList ? obj.deleteRecordList : YES;
+        if(obj.deleteRecordList) {
+            this.recordManager.removeAll();
+        }
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
         }
 
-        delete rec;
+        /* extends the given obj with self as model property in obj */
+        return this.dataProvider.find( $.extend(obj, {model: this}) );
     },
 
     /**
-    * Returns a record from the record array identified by the interal model id.
-    * @param {Number} m_id The internal model id of the model record.
-    * @deprecated
-    */
-    getRecordForId: function(m_id) {
-        return this.getRecordById(m_id);
-    },
-
-    /**
-     * Returns a record from the record array identified by the interal model id.
-     * @param {Number} m_id The internal model id of the model record.
+     * Create or update a record in storage if it is valid (first check this).
+     * If param obj includes cascade:YES then save is cascadaded through all references recursively.
+     *
+     * @param {Object} obj The param object with query, cascade flag and callbacks.
+     * @returns {Boolean} The result of the data provider function call. Is a boolean. With LocalStorage used, it indicates if the save operation was successful.
+     * When WebSQL is used, the result of the save operation returns asynchronously. The result then is just the standard result returned by the web sql provider's save method
+     * which does not necessarily indicate whether the operation was successful, because the operation is asynchronous, means the operation's result is not predictable.
      */
-    getRecordById: function(m_id) {
-        var record = _.detect(this.records, function(r){
-            return r.m_id === m_id;
-        });
-        return record;
+    save: function(obj) {
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj: {};
+        if(!this.m_id) {
+            return NO;
+        }
+        var isValid = YES;
+
+        if(this.usesValidation) {
+            isValid = this.validate();
+        }
+
+        if(obj.cascade) {
+            for(var prop in this.__meta) {
+                if(this.__meta[prop] && this.__meta[prop].dataType === 'Reference' && this.__meta[prop].refEntity) {
+                    this.__meta[prop].refEntity.save({cascade:YES}); // cascades recursively through all referenced model records
+                }
+            }
+        }
+
+        if(isValid) {
+            return this.dataProvider.save($.extend(obj, {model: this}));
+        }
     },
 
     /**
-     * Debug method to print out all content from the records array to the console.
+     * Delete a record in storage.
+     * @returns {Boolean} Indicating whether deletion was successful or not (only with synchronous data providers, e.g. LocalStorage). When asynchronous data providers
+     * are used, e.g. WebSQL provider the real result comes asynchronous and here just the result of the del() function call of the @link M.WebSqlProvider is used.
      */
-    dumpRecords: function() {
-        _.each(this.records, function(rec){
-            //console.log(rec.m_id);
-            console.log(rec);
-        });
+    del: function(obj) {
+        if(!this.dataProvider) {
+            M.Logger.log('No data provider given.', M.ERR);
+        }
+        obj = obj ? obj : {};
+        if(!this.m_id) {
+            return NO;
+        }
+
+       var isDel = this.dataProvider.del($.extend(obj, {model: this}));
+        if(isDel) {
+            this.state = M.STATE_DELETED;
+            return YES;
+        }
+    },
+
+    /**
+     * completes the model record by loading all referenced entities.
+     *
+     * @param {Function | Object} obj The param object with query, cascade flag and callbacks.
+     */
+    complete: function(callback) {
+        //console.log('complete...');
+        var records = [];
+        for(var i in this.record) {
+            if(this.__meta[i].dataType === 'Reference') {
+                //records.push(this.__meta[i].refEntity);
+                records.push({
+                    prop:i,
+                    name: this.__meta[i].reference,
+                    model: this.modelList[this.__meta[i].reference],
+                    m_id: this.record[i]
+                });
+            }
+        }
+        this.deepFind(records, callback);
+    },
+
+    deepFind: function(records, callback) {
+        //console.log('deepFind...');
+        //console.log('### records.length: ' + records.length);
+        if(records.length < 1) {    // recursion end constraint
+            if(callback) {
+                callback();
+            }
+            return;
+        }
+        var curRec = records.pop(); // delete last element, decreases length of records by 1 => important for recursion constraint above
+        var cb = this.bindToCaller(this, this.deepFind,[records, callback]); // cb is callback for find in data provider
+        var that = this;
+
+
+        switch(this.dataProvider.type) {
+            case 'M.DataProviderLocalStorage':
+                var ref = this.modelList[curRec.name].find({
+                    key: curRec.m_id
+                });
+                this.__meta[curRec.prop].refEntity = ref;
+
+                this.deepFind(records, callback); // recursion
+                break;
+
+            default:
+                break;
+        }
+    },
+
+    setReference: function(result, that, prop, callback) {
+        that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
+        callback();
     }
-    
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      26.10.2010
+// Date:      29.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/foundation/model.js');
+m_require('core/utility/logger.js');
 
 /**
  * @class
  *
- * M.View defines the prototype for any view within The M-Project. It implements lots of basic
- * properties and methods that are used in many derived views. M.View specifies a default
- * behaviour for functionalities like rendering, theming, delegating updates etc.
+ * The observable knows all observers, mainly views, and pushes updates if necessary.
  *
  * @extends M.Object
  */
-M.View = M.Object.extend(
-/** @scope M.View.prototype */ {
+M.Observable = M.Object.extend(
+/** @scope M.Observable.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.View',
+    type: 'M.Observable',
 
     /**
-     * A boolean value to definitely recognize a view as a view, independent on its
-     * concrete type, e.g. M.ButtonView or M.LabelView.
+     * List that contains pairs of an observer with an observable. An observer is tightened to one
+     * observable, but one observable can have multiple observers.
      *
-     * @type Boolean
+     * @type Array|Object
      */
-    isView: YES,
+    bindingList: null,
 
     /**
-     * The value property is a generic property for all values. Even if not all views
-     * really use it, e.g. the wrapper views like M.ButtonGroupView, most of it do.
+     * Attach an observer to an observable.
      *
-     * @property {String}
+     * @param {String} observer The observer.
+     * @param {String} observable The observable.
      */
-    value: null,
-
-    /**
-     * This property contains the relevant information about the view's computed value. In
-     * particular it is used to specify the pre-value, the content binding and the just-
-     * in-time performed operation, that computes the view's value.
-     *
-     * @property {Object}
-     */
-    computedValue: null,
-
-    /**
-     * The path to a content that is bound to the view's value. If this content
-     * changes, the view will automatically be updated.
-     *
-     * @property {String}
-     */
-    contentBinding: null,
-
-    /**
-     * The path to a content that is bound to the view's value (reverse). If this
-     * the view's value changes, the bound content will automatically be updated.
-     *
-     * @property {String}
-     */
-    contentBindingReverse: null,
-
-    /**
-     * some kind of ContentBinding for thinks like SelectionListViews if you want to apply some businessdata like a model to it.
-     *
-     * @property {String}
-     */
-    valueBinding: null,
-
-    /**
-     * An array specifying the view's children.
-     *
-     * @type Array
-     */
-    childViews: null,
-
-    /**
-     * Indicates whether this view currently has the focus or not.
-     *
-     * @type Boolean
-     */
-    hasFocus: NO,
-
-    /**
-     * The id of the view used for the html attribute id. Every view gets its own unique
-     * id during the rendering process.
-     */
-    id: null,
-
-    /**
-     * Indicates whether the view should be displayed inline or not. This property isn't
-     * supported by all views, but e.g. by M.LabelView or M.ButtonView.
-     */
-    isInline: NO,
-
-    /*
-     * Indicates whether the view is currently enabled or disabled.
-     */
-    isEnabled: YES,
-
-    /**
-     * This property can be used to save a reference to the view's parent view.
-     *
-     * @param {Object}
-     */
-    parentView: null,
-
-    /**
-     * If a view represents a model, e.g. within a list view, this property is used to save
-     * the model's id. So the view can be used to get to the record.
-     *
-     * @param {Object}
-     */
-    modelId: null,
-
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: null,
-
-    /**
-     * This property can be used to assign a css style to the view. This allows you to
-     * create your custom styles inline.
-     *
-     * @type String
-     */
-    cssStyle: null,
-
-    /**
-     * This property can be used to assign a css class to the view if an error occurs. The
-     * applying of this class is automatically triggered if the validation of the view
-     * goes wrong. This property is mainly used by input views, e.g. M.TextFieldView.
-     *
-     * @type String
-     */
-    cssClassOnError: null,
-
-    /**
-     * This property can be used to assign a css class to the view on its initialization. This
-     * property is mainly used for input ui elements like text fields, that might have a initial
-     * value that should be rendered in a different style than the later value entered by the
-     * user. This property is mainly used by input views, e.g. M.TextFieldView.
-     *
-     * @type String
-     */
-    cssClassOnInit: null,
-
-    /**
-     * This property is used internally to recursively build the pages html representation.
-     * It is once set within the render method and then eventually updated within the
-     * renderUpdate method.
-     *
-     * @type String
-     */
-    html: '',
-
-    /**
-     * Determines whether an onChange event will trigger a defined action or not.
-     * This property is basically interesting for input ui elements, e.g. for
-     * text fields.
-     *
-     * @type Boolean
-     */
-    triggerActionOnChange: NO,
-
-    /**
-     * Determines whether an onKeyUp event will trigger a defined action or not.
-     * This property is basically interesting for input ui elements, e.g. for
-     * text fields.
-     *
-     * @type Boolean
-     */
-    triggerActionOnKeyUp: NO,
-
-    /**
-     * Determines whether an onKeyUp event with the enter button will trigger a defined
-     * action or not. This property is basically interesting for input ui elements, e.g.
-     * for text fields.
-     *
-     * @type Boolean
-     */
-    triggerActionOnEnter: NO,
-
-    /**
-     * This property is used to specify a view's events and their corresponding actions.
-     *
-     * @type Object
-     */
-    events: null,
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions.
-     *
-     * @private
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: null,
-    
-    /**
-     * Cache for getParentPage function.
-     *
-     * @type M.PageView
-     */
-
-    parentPage : null,
-
-    /**
-     * This method encapsulates the 'extend' method of M.Object for better reading of code syntax.
-     * It triggers the content binding for this view,
-     * gets an ID from and registers itself at the ViewManager.
-     *
-     * @param {Object} obj The mixed in object for the extend call.
-     */
-    design: function(obj) {
-        var view = this.extend(obj);
-        view.id = M.ViewManager.getNextId();
-        M.ViewManager.register(view);
-
-        view.attachToObservable();
-        
-        return view;
-    },
-
-     /**
-     * This is the basic render method for any views. It does not specific rendering, it just calls
-     * renderChildViews method. Most views overwrite this method with a custom render behaviour.
-     * 
-     * @private
-     * @returns {String} The list item view's html representation.
-     */
-    render: function() {
-        this.renderChildViews();
-        return this.html;
-    },
-
-    /**
-     * @interface
-     *
-     * This method defines an interface method for updating an already rendered html representation
-     * of a view. This should be implemented with a specific behaviour for any view.
-     */
-    renderUpdate: function() {
-
-    },
-
-    /**
-     * Triggers render() on all children. This method defines a basic behaviour for rendering a view's
-     * child views. If a custom behaviour for a view is desired, the view has to overwrite this method.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]]) {
-                    this[childViews[i]]._name = childViews[i];
-                    this[childViews[i]].parentView = this;
-                    this.html += this[childViews[i]].render();
-                } else {
-                    this.childViews = this.childViews.replace(childViews[i], ' ');
-                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
-                }
-
-                if(this.type === 'M.PageView' && this[childViews[i]].type === 'M.TabBarView') {
-                    this.hasTabBarView = YES;
-                    this.tabBarView = this[childViews[i]];
-                }
-            }
-            return this.html;
+    attach: function(observer, observable) {
+        if(!this.bindingList) {
+            this.bindingList = [];
         }
-    },
-
-    /**
-     * This method is used internally for removing a view's child views both from DOM and the
-     * view manager.
-     *
-     * @private
-     */
-    removeChildViews: function() {
-        var childViews = this.getChildViewsAsArray();
-        for(var i in childViews) {
-            if(this[childViews[i]].childViews) {
-                this[childViews[i]].removeChildViews();
-            }
-            this[childViews[i]].destroy();
-            M.ViewManager.unregister(this[childViews[i]]);
-        }
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method transforms the child views property (string) into an array.
-     *
-     * @returns {Array} The child views as an array.
-     */
-    getChildViewsAsArray: function() {
-    	try{
-    	    return this.childViews ? $.trim(this.childViews.replace(/\s+/g, ' ')).split(' ') : [];
-    	} catch(e){
-    	    return [];
-    	}
-    },
-
-    /**
-     * This method creates and returns an associative array of all child views and
-     * their values.
-     *
-     * The key of an array item is the name of the view specified in the view
-     * definition. The value of an array item is the value of the corresponding
-     * view.
-     *
-     * @returns {Array} The child view's values as an array.
-     */
-    getValues: function() {
-        var values = {};
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(Object.getPrototypeOf(this[childViews[i]]).hasOwnProperty('getValue')) {
-                    values[childViews[i]] = this[childViews[i]].getValue();
-                }
-                if(this[childViews[i]].childViews) {
-                    var newValues = this[childViews[i]].getValues();
-                    for(var value in newValues) {
-                        values[value] = newValues[value];
-                    }
-                }
-            }
-        }
-        return values;
-    },
-
-    /**
-     * @interface
-     *
-     * This method defines an interface method for getting the view's value. This should
-     * be implemented for any view that offers a value and can be used within a form view.
-     */
-    getValue: function() {
-        
-    },
-
-    /**
-     * This method creates and returns an associative array of all child views and
-     * their ids.
-     *
-     * The key of an array item is the name of the view specified in the view
-     * definition. The value of an array item is the id of the corresponding
-     * view.
-     *
-     * @returns {Array} The child view's ids as an array.
-     */
-    getIds: function() {
-        var ids = {};
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]].id) {
-                    ids[childViews[i]] = this[childViews[i]].id;
-                }
-                if(this[childViews[i]].childViews) {
-                    var newIds = this[childViews[i]].getIds();
-                    for(var id in newIds) {
-                        ids[id] = newIds[id];
-                    }
-                }
-            }
-        }
-        return ids;
-    },
-
-
-    /**
-     * Clears the html property of a view and triggers the same method on all of its
-     * child views.
-     */
-    clearHtml: function() {
-        this.html = '';
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                this[childViews[i]].clearHtml();
-            }
-        }
-    },
-
-    /**
-     * If the view's computedValue property is set, compute the value. This allows you to
-     * apply a method to a dynamically set value. E.g. you can provide your value with an
-     * toUpperCase().
-     */
-    computeValue: function() {
-        if(this.computedValue) {
-            this.value = this.computedValue.operation(this.computedValue.valuePattern ? this.value : this.computedValue.value, this);
-        }
-    },
-
-    /**
-     * This method is a basic implementation for theming a view. It simply calls the
-     * themeChildViews method. Most views overwrite this method with a custom theming
-     * behaviour.
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     */
-    registerEvents: function() {
-        var externalEvents = {};
-        for(var event in this.events) {
-            /* map orientationchange event to orientationdidchange event */
-            if(event === 'orientationchange') {
-                event = 'orientationdidchange';
-            }
-            externalEvents[event] = this.events[event];
-        }
-
-        if(this.internalEvents) {
-            for(var event in this.internalEvents) {
-                /* map orientationchange event to orientationdidchange event */
-                if(this.internalEvents[event]) {
-                    if(event === 'orientationchange') {
-                        this.internalEvents['orientationdidchange'] = this.internalEvents[event];
-                        delete this.internalEvents[event];
-                    }
-                }
-            }
-        }
-
-        if(this.internalEvents && externalEvents) {
-            for(var event in externalEvents) {
-                if(this.internalEvents[event]) {
-                    this.internalEvents[event].nextEvent = externalEvents[event];
-                    delete externalEvents[event];
-                }
-            }
-            M.EventDispatcher.registerEvents(this.id, this.internalEvents, this.recommendedEvents, this.type);
-        } else if(this.internalEvents) {
-            M.EventDispatcher.registerEvents(this.id, this.internalEvents, this.recommendedEvents, this.type);
-        }
-
-        if(externalEvents) {
-            M.EventDispatcher.registerEvents(this.id, externalEvents, this.recommendedEvents, this.type);
-        }
-        
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                this[childViews[i]].registerEvents();
-            }
-        }
-    },
-
-    /**
-     * This method triggers the theme method on all children.
-     */
-    themeChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                this[childViews[i]].theme();
-            }
-        }
-    },
-
-    /**
-     * The contentDidChange method is automatically called by the observable when the
-     * observable's state did change. It then updates the view's value property based
-     * on the specified content binding.
-     */
-    contentDidChange: function(){
-        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
-
-        if(!contentBinding) {
-            return;
-        }
-
-        var value = contentBinding.target;
-        var propertyChain = contentBinding.property.split('.');
-        _.each(propertyChain, function(level) {
-            if(value) {
-                value = value[level];
-            }
+        this.bindingList.push({
+            observer: observer,
+            observable: observable
         });
-
-        if(value === undefined || value === null) {
-            //M.Logger.log('The value assigned by content binding (property: \'' + contentBinding.property + '\') for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ') is invalid!', M.WARN);
-            return;
-        }
-
-        if(this.contentBinding) {
-            this.value = value;
-        } else if(this.computedValue.contentBinding) {
-            this.computedValue.value = value;
-        }
-
-        this.renderUpdate();
-        this.delegateValueUpdate();
     },
 
     /**
-     * This method attaches the view to an observable to be later notified once the observable's
-     * state did change.
+     * Detach an observer from an observable.
+     *
+     * @param {String} observer The observer.
      */
-
-    attachToObservable: function() {
-        this.registerContentBinding();
-        this.registervalueBinding();
-    },
-
-    registervalueBinding:function () {
-        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
-        if(!valueBinding) { return; }
-        this.attachBinding(valueBinding, 'valueBinding');
-    },
-
-    registerContentBinding: function(){
-        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
-        if(!contentBinding) { return; }
-        this.attachBinding(contentBinding, 'contentBinding');
-    },
-
-    attachBinding: function(binding, name) {
-        if(!binding) {
-            return;
-        }
-
-        if(typeof(binding) === 'object') {
-            if(binding.target && typeof(binding.target) === 'object') {
-                if(binding.property && typeof(binding.property) === 'string') {
-                    var propertyChain = binding.property.split('.');
-                    if(binding.target[propertyChain[0]] !== undefined) {
-                        if(!binding.target.observable) {
-                            binding.target.observable = M.Observable.extend({});
-                        }
-                        binding.target.observable.attach(this, binding.property);
-                        this.isObserver = YES;
-                    } else {
-                        M.Logger.log('The specified target for ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' has no property \'' + binding.property + '!', M.WARN);
-                    }
-                } else {
-                    M.Logger.log('The type of the value of \'action\' in ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' is \'' + typeof(binding.property) + ' but it must be of type \'string\'!', M.WARN);
-                }
-            } else {
-                M.Logger.log('No valid target specified in ' + name + ' \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
-            }
-        } else {
-            M.Logger.log('No valid ' + name + ' specified for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
-        }
-    },
-
-    /**
-     * @interface
-     * 
-     * This method defines an interface method for setting the view's value from its DOM
-     * representation. This should be implemented with a specific behaviour for any view.
-     */
-    setValueFromDOM: function() {
-
-    },
-
-    /**
-     * This method delegates any value changes to a controller, if the 'contentBindingReverse'
-     * property is specified.
-     */
-    delegateValueUpdate: function() {
-        /**
-         * delegate value updates to a bound controller, but only if the view currently is
-         * the master
+    detach: function(observer) {
+        /* grep is a jQuery function that finds
+         * elements in an array that satisfy a certain criteria.
+         * It works on a copy so we have to assign the "cleaned"
+         * array to our bindingList.
          */
-        if(this.contentBindingReverse && this.hasFocus) {
-            this.contentBindingReverse.target.set(this.contentBindingReverse.property, this.value);
-        }
+        this.bindingList = _.filter(this.bindingList, function(value, index) {
+                return value.observable !== observer;
+        });
     },
 
     /**
-     * @interface
+     * Notify all observers that observe the property behind 'key'.
      *
-     * This method defines an interface method for styling the view. This should be
-     * implemented with a specific behaviour for any view.
+     * @param {String} key The key of the property that changed.
      */
-    style: function() {
-
-    },
-
-    /**
-     * This method is called whenever the view got the focus and basically only sets
-     * the view's hasFocus property to YES. If a more complex behaviour is desired,
-     * a view has to overwrite this method.
-     */
-    gotFocus: function() {
-        this.hasFocus = YES;
-    },
-
-    /**
-     * This method is called whenever the view lost the focus and basically only sets
-     * the view's hasFocus property to NO. If a more complex behaviour is desired,
-     * a view has to overwrite this method.
-     */
-    lostFocus: function() {
-        this.hasFocus = NO;
-    },
-
-    /**
-     * This method secure the passed string. It is mainly used for securing input elements
-     * like M.TextFieldView but since it is part of M.View it can be used and called out
-     * of any view.
-     *
-     * So far we only replace '<' and '>' with their corresponding html entity. The functionality
-     * of this method will be extended in the future. If a more complex behaviour is desired,
-     * any view using this method has to overwrite it.
-     *
-     * @param {String} str The string to be secured.
-     * @returns {String} The secured string.
-     */
-    secure: function(str) {
-        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    },
-
-    /**
-     * This method parses a given string, replaces any new line, '\n', with a line break, '<br/>',
-     * and returns the modified string. This can be useful especially for input views, e.g. it is
-     * used in context with the M.TextFieldView.
-     *
-     * @param {String} str The string to be modified.
-     * @returns {String} The modified string.
-     */
-    nl2br: function(str) {
-        if(str) {
-            if(typeof(str) !== 'string') {
-                str = String(str);
-            }
-            return str.replace(/\n/g, '<br />');
-        }
-        return str;
-    },
-
-    /**
-     * This method parses a given string, replaces any tabulator, '\t', with four spaces, '&#160;',
-     * and returns the modified string. This can be useful especially for input views, e.g. it is
-     * used in context with the M.TextFieldView.
-     *
-     * @param {String} str The string to be modified.
-     * @returns {String} The modified string.
-     */
-    tab2space: function(str) {
-        if(str) {
-            if(typeof(str) !== 'string') {
-                str = String(str);
-            }
-            return str.replace(/\t/g, '&#160;&#160;&#160;&#160;');
-        }
-        return str;
-    },
-
-    /**
-     * @interface
-     *
-     * This method defines an interface method for clearing a view's value. This should be
-     * implemented with a specific behaviour for any input view. This method defines a basic
-     * functionality for clearing a view's value. This should be overwritten with a specific
-     * behaviour for most input view. What we do here is nothing but to call the cleaValue
-     * method for any child view.
-     */
-    clearValue: function() {
-
-    },
-
-    /**
-     * This method defines a basic functionality for clearing a view's value. This should be
-     * overwritten with a specific behaviour for most input view. What we do here is nothing
-     * but to call the cleaValue method for any child view.
-     */
-    clearValues: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-            for(var i in childViews) {
-                if(this[childViews[i]].childViews) {
-                    this[childViews[i]].clearValues();
+    notifyObservers: function(key) {
+        _.each(this.bindingList, function(entry){
+            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
+                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
+                    entry.observer.valueDidChange();
+                }else{
+                    entry.observer.contentDidChange();
                 }
-                if(typeof(this[childViews[i]].clearValue) === 'function'){
-                    this[childViews[i]].clearValue();
-                }
-            }
-        }
-        this.clearValue();
-    },
-
-    /**
-     * Adds a css class to the view's DOM representation.
-     *
-     * @param {String} cssClass The css class to be added.
-     */
-    addCssClass: function(cssClass) {
-        $('#' + this.id).addClass(cssClass);
-    },
-
-    /**
-     * Removes a css class to the view's DOM representation.
-     *
-     * @param {String} cssClass The css class to be added.
-     */
-    removeCssClass: function(cssClass) {
-        $('#' + this.id).removeClass(cssClass);
-    },
-
-    /**
-     * Adds or updates a css property to the view's DOM representation.
-     *
-     * @param {String} key The property's name.
-     * @param {String} value The property's value.
-     */
-    setCssProperty: function(key, value) {
-        $('#' + this.id).css(key, value);
-    },
-
-    /**
-     * Removes a css property from the view's DOM representation.
-     *
-     * @param {String} key The property's name.
-     */
-    removeCssProperty: function(key) {
-        this.setCssProperty(key, '');
-    },
-	/**
-     *
-     * returns the page on which the current view is defined
-     *
-      * @return {*} M.PageView
-     */
-    getParentPage: function(){
-        if(this.parentPage){
-            return this.parentPage;
-        }else{
-            if(this.type === 'M.PageView'){
-                return this;
-            }else if(this.parentView){
-                this.parentPage = this.parentView.getParentPage();
-            }else{
-                var parentId = $('#' + this.id).parent().closest('[id^=m_]').attr('id');
-                if(parentId){
-                    this.parentPage = M.ViewManager.getViewById(parentId).getParentPage();
-                }
-            }
-            return this.parentPage;
-        }
-    },
-    
-    /*
-    * find all childviews to the given string
-    *
-    * @param {String} childName the name of the child view looking for.
-    * @param {Boolean} deepSearch look also in all childViews for the one.
-    * @return {Array} all found childViews
-    * 
-    */
-    findChildViews: function( childName, deepSearch ) {
-    	var that = this;
-        var childViews = this.getChildViewsAsArray();
-        var foundChildren = [];
-        _.each(childViews, function( child ) {
-            if( child === childName ) {
-                foundChildren.push(that[child]);
             }
         });
-
-        if( deepSearch ) {
-            _.each(childViews, function( child ) {
-                foundChildren.push.apply(foundChildren, that[child].findChildViews(childName, deepSearch));
-            });
-        }
-
-        return foundChildren;
     }
-	
-});
 
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -7393,6 +6330,1069 @@ M.UrlValidator = M.Validator.extend(
         return NO;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/model.js');
+
+/**
+ * @class
+ *
+ * The root object for RecordManager.
+ *
+ * A RecordManager is used by a controllers and is an interface that makes it easy for him to
+ * handle his model records.
+ *
+ * @extends M.Object
+ */
+M.RecordManager = M.Object.extend(
+/** @scope M.RecordManager.prototype */ { 
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.RecordManager',
+
+    /**
+     * Array containing all currently loaded records.
+     *
+     * @type Object
+     */
+    records: [],
+
+    /**
+     * Add the given model to the modelList.
+     *
+     * @param {Object} record
+     */
+    add: function(record) {
+        this.records.push(record);
+    },
+
+    /**
+     * Concats an array if records to the records array.
+     *
+     * @param {Object} record
+     */
+    addMany: function(arrOfRecords) {
+
+        if(_.isArray(arrOfRecords)){
+            this.records = this.records.concat(arrOfRecords);
+
+        } else if(arrOfRecords.type === 'M.Model') {
+            this.add(arrOfRecords);
+        }
+
+    },
+
+    /**
+     * Resets record list 
+     */
+    removeAll: function() {
+        this.records.length = 0;
+    },
+
+    /**
+     * Deletes a model record from the record array
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    remove: function(m_id) {
+
+        if(!m_id) {
+            M.Logger.log('No id given.', M.WARN);
+            return;
+        }
+
+        var rec = this.getRecordById(m_id);
+
+        if(rec) {
+            this.records = _.select(this.records, function(r){
+                return r.m_id !== rec.m_id;
+            });
+        }
+
+        delete rec;
+    },
+
+    /**
+    * Returns a record from the record array identified by the interal model id.
+    * @param {Number} m_id The internal model id of the model record.
+    * @deprecated
+    */
+    getRecordForId: function(m_id) {
+        return this.getRecordById(m_id);
+    },
+
+    /**
+     * Returns a record from the record array identified by the interal model id.
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    getRecordById: function(m_id) {
+        var record = _.detect(this.records, function(r){
+            return r.m_id === m_id;
+        });
+        return record;
+    },
+
+    /**
+     * Debug method to print out all content from the records array to the console.
+     */
+    dumpRecords: function() {
+        _.each(this.records, function(rec){
+            //console.log(rec.m_id);
+            console.log(rec);
+        });
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/model.js');
+
+/**
+ * @class
+ *
+ * M.View defines the prototype for any view within The M-Project. It implements lots of basic
+ * properties and methods that are used in many derived views. M.View specifies a default
+ * behaviour for functionalities like rendering, theming, delegating updates etc.
+ *
+ * @extends M.Object
+ */
+M.View = M.Object.extend(
+/** @scope M.View.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.View',
+
+    /**
+     * A boolean value to definitely recognize a view as a view, independent on its
+     * concrete type, e.g. M.ButtonView or M.LabelView.
+     *
+     * @type Boolean
+     */
+    isView: YES,
+
+    /**
+     * The value property is a generic property for all values. Even if not all views
+     * really use it, e.g. the wrapper views like M.ButtonGroupView, most of it do.
+     *
+     * @property {String}
+     */
+    value: null,
+
+    /**
+     * This property contains the relevant information about the view's computed value. In
+     * particular it is used to specify the pre-value, the content binding and the just-
+     * in-time performed operation, that computes the view's value.
+     *
+     * @property {Object}
+     */
+    computedValue: null,
+
+    /**
+     * The path to a content that is bound to the view's value. If this content
+     * changes, the view will automatically be updated.
+     *
+     * @property {String}
+     */
+    contentBinding: null,
+
+    /**
+     * The path to a content that is bound to the view's value (reverse). If this
+     * the view's value changes, the bound content will automatically be updated.
+     *
+     * @property {String}
+     */
+    contentBindingReverse: null,
+
+    /**
+     * some kind of ContentBinding for thinks like SelectionListViews if you want to apply some businessdata like a model to it.
+     *
+     * @property {String}
+     */
+    valueBinding: null,
+
+    /**
+     * An array specifying the view's children.
+     *
+     * @type Array
+     */
+    childViews: null,
+
+    /**
+     * Indicates whether this view currently has the focus or not.
+     *
+     * @type Boolean
+     */
+    hasFocus: NO,
+
+    /**
+     * The id of the view used for the html attribute id. Every view gets its own unique
+     * id during the rendering process.
+     */
+    id: null,
+
+    /**
+     * Indicates whether the view should be displayed inline or not. This property isn't
+     * supported by all views, but e.g. by M.LabelView or M.ButtonView.
+     */
+    isInline: NO,
+
+    /*
+     * Indicates whether the view is currently enabled or disabled.
+     */
+    isEnabled: YES,
+
+    /**
+     * This property can be used to save a reference to the view's parent view.
+     *
+     * @param {Object}
+     */
+    parentView: null,
+
+    /**
+     * If a view represents a model, e.g. within a list view, this property is used to save
+     * the model's id. So the view can be used to get to the record.
+     *
+     * @param {Object}
+     */
+    modelId: null,
+
+    /**
+     * This property can be used to assign a css class to the view to get a custom styling.
+     *
+     * @type String
+     */
+    cssClass: null,
+
+    /**
+     * This property can be used to assign a css style to the view. This allows you to
+     * create your custom styles inline.
+     *
+     * @type String
+     */
+    cssStyle: null,
+
+    /**
+     * This property can be used to assign a css class to the view if an error occurs. The
+     * applying of this class is automatically triggered if the validation of the view
+     * goes wrong. This property is mainly used by input views, e.g. M.TextFieldView.
+     *
+     * @type String
+     */
+    cssClassOnError: null,
+
+    /**
+     * This property can be used to assign a css class to the view on its initialization. This
+     * property is mainly used for input ui elements like text fields, that might have a initial
+     * value that should be rendered in a different style than the later value entered by the
+     * user. This property is mainly used by input views, e.g. M.TextFieldView.
+     *
+     * @type String
+     */
+    cssClassOnInit: null,
+
+    /**
+     * This property is used internally to recursively build the pages html representation.
+     * It is once set within the render method and then eventually updated within the
+     * renderUpdate method.
+     *
+     * @type String
+     */
+    html: '',
+
+    /**
+     * Determines whether an onChange event will trigger a defined action or not.
+     * This property is basically interesting for input ui elements, e.g. for
+     * text fields.
+     *
+     * @type Boolean
+     */
+    triggerActionOnChange: NO,
+
+    /**
+     * Determines whether an onKeyUp event will trigger a defined action or not.
+     * This property is basically interesting for input ui elements, e.g. for
+     * text fields.
+     *
+     * @type Boolean
+     */
+    triggerActionOnKeyUp: NO,
+
+    /**
+     * Determines whether an onKeyUp event with the enter button will trigger a defined
+     * action or not. This property is basically interesting for input ui elements, e.g.
+     * for text fields.
+     *
+     * @type Boolean
+     */
+    triggerActionOnEnter: NO,
+
+    /**
+     * This property is used to specify a view's events and their corresponding actions.
+     *
+     * @type Object
+     */
+    events: null,
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions.
+     *
+     * @private
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: null,
+    
+    /**
+     * Cache for getParentPage function.
+     *
+     * @type M.PageView
+     */
+
+    parentPage : null,
+
+    /**
+     * This method encapsulates the 'extend' method of M.Object for better reading of code syntax.
+     * It triggers the content binding for this view,
+     * gets an ID from and registers itself at the ViewManager.
+     *
+     * @param {Object} obj The mixed in object for the extend call.
+     */
+    design: function(obj) {
+        var view = this.extend(obj);
+        view.id = M.ViewManager.getNextId();
+        M.ViewManager.register(view);
+
+        view.attachToObservable();
+        
+        return view;
+    },
+
+     /**
+     * This is the basic render method for any views. It does not specific rendering, it just calls
+     * renderChildViews method. Most views overwrite this method with a custom render behaviour.
+     * 
+     * @private
+     * @returns {String} The list item view's html representation.
+     */
+    render: function() {
+        this.renderChildViews();
+        return this.html;
+    },
+
+    /**
+     * @interface
+     *
+     * This method defines an interface method for updating an already rendered html representation
+     * of a view. This should be implemented with a specific behaviour for any view.
+     */
+    renderUpdate: function() {
+
+    },
+
+    /**
+     * Triggers render() on all children. This method defines a basic behaviour for rendering a view's
+     * child views. If a custom behaviour for a view is desired, the view has to overwrite this method.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]]) {
+                    this[childViews[i]]._name = childViews[i];
+                    this[childViews[i]].parentView = this;
+                    this.html += this[childViews[i]].render();
+                } else {
+                    this.childViews = this.childViews.replace(childViews[i], ' ');
+                    M.Logger.log('There is no child view \'' + childViews[i] + '\' available for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')! It will be excluded from the child views and won\'t be rendered.', M.WARN);
+                }
+
+                if(this.type === 'M.PageView' && this[childViews[i]].type === 'M.TabBarView') {
+                    this.hasTabBarView = YES;
+                    this.tabBarView = this[childViews[i]];
+                }
+            }
+            return this.html;
+        }
+    },
+
+    /**
+     * This method is used internally for removing a view's child views both from DOM and the
+     * view manager.
+     *
+     * @private
+     */
+    removeChildViews: function() {
+        var childViews = this.getChildViewsAsArray();
+        for(var i in childViews) {
+            if(this[childViews[i]].childViews) {
+                this[childViews[i]].removeChildViews();
+            }
+            this[childViews[i]].destroy();
+            M.ViewManager.unregister(this[childViews[i]]);
+        }
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method transforms the child views property (string) into an array.
+     *
+     * @returns {Array} The child views as an array.
+     */
+    getChildViewsAsArray: function() {
+    	try{
+    	    return this.childViews ? $.trim(this.childViews.replace(/\s+/g, ' ')).split(' ') : [];
+    	} catch(e){
+    	    return [];
+    	}
+    },
+
+    /**
+     * This method creates and returns an associative array of all child views and
+     * their values.
+     *
+     * The key of an array item is the name of the view specified in the view
+     * definition. The value of an array item is the value of the corresponding
+     * view.
+     *
+     * @returns {Array} The child view's values as an array.
+     */
+    getValues: function() {
+        var values = {};
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(Object.getPrototypeOf(this[childViews[i]]).hasOwnProperty('getValue')) {
+                    values[childViews[i]] = this[childViews[i]].getValue();
+                }
+                if(this[childViews[i]].childViews) {
+                    var newValues = this[childViews[i]].getValues();
+                    for(var value in newValues) {
+                        values[value] = newValues[value];
+                    }
+                }
+            }
+        }
+        return values;
+    },
+
+    /**
+     * @interface
+     *
+     * This method defines an interface method for getting the view's value. This should
+     * be implemented for any view that offers a value and can be used within a form view.
+     */
+    getValue: function() {
+        
+    },
+
+    /**
+     * This method creates and returns an associative array of all child views and
+     * their ids.
+     *
+     * The key of an array item is the name of the view specified in the view
+     * definition. The value of an array item is the id of the corresponding
+     * view.
+     *
+     * @returns {Array} The child view's ids as an array.
+     */
+    getIds: function() {
+        var ids = {};
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]].id) {
+                    ids[childViews[i]] = this[childViews[i]].id;
+                }
+                if(this[childViews[i]].childViews) {
+                    var newIds = this[childViews[i]].getIds();
+                    for(var id in newIds) {
+                        ids[id] = newIds[id];
+                    }
+                }
+            }
+        }
+        return ids;
+    },
+
+
+    /**
+     * Clears the html property of a view and triggers the same method on all of its
+     * child views.
+     */
+    clearHtml: function() {
+        this.html = '';
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                this[childViews[i]].clearHtml();
+            }
+        }
+    },
+
+    /**
+     * If the view's computedValue property is set, compute the value. This allows you to
+     * apply a method to a dynamically set value. E.g. you can provide your value with an
+     * toUpperCase().
+     */
+    computeValue: function() {
+        if(this.computedValue) {
+            this.value = this.computedValue.operation(this.computedValue.valuePattern ? this.value : this.computedValue.value, this);
+        }
+    },
+
+    /**
+     * This method is a basic implementation for theming a view. It simply calls the
+     * themeChildViews method. Most views overwrite this method with a custom theming
+     * behaviour.
+     */
+    theme: function() {
+        this.themeChildViews();
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     */
+    registerEvents: function() {
+        var externalEvents = {};
+        for(var event in this.events) {
+            /* map orientationchange event to orientationdidchange event */
+            if(event === 'orientationchange') {
+                event = 'orientationdidchange';
+            }
+            externalEvents[event] = this.events[event];
+        }
+
+        if(this.internalEvents) {
+            for(var event in this.internalEvents) {
+                /* map orientationchange event to orientationdidchange event */
+                if(this.internalEvents[event]) {
+                    if(event === 'orientationchange') {
+                        this.internalEvents['orientationdidchange'] = this.internalEvents[event];
+                        delete this.internalEvents[event];
+                    }
+                }
+            }
+        }
+
+        if(this.internalEvents && externalEvents) {
+            for(var event in externalEvents) {
+                if(this.internalEvents[event]) {
+                    this.internalEvents[event].nextEvent = externalEvents[event];
+                    delete externalEvents[event];
+                }
+            }
+            M.EventDispatcher.registerEvents(this.id, this.internalEvents, this.recommendedEvents, this.type);
+        } else if(this.internalEvents) {
+            M.EventDispatcher.registerEvents(this.id, this.internalEvents, this.recommendedEvents, this.type);
+        }
+
+        if(externalEvents) {
+            M.EventDispatcher.registerEvents(this.id, externalEvents, this.recommendedEvents, this.type);
+        }
+        
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                this[childViews[i]].registerEvents();
+            }
+        }
+    },
+
+    /**
+     * This method triggers the theme method on all children.
+     */
+    themeChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                this[childViews[i]].theme();
+            }
+        }
+    },
+
+    /**
+     * The contentDidChange method is automatically called by the observable when the
+     * observable's state did change. It then updates the view's value property based
+     * on the specified content binding.
+     */
+    contentDidChange: function(){
+        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
+
+        if(!contentBinding) {
+            return;
+        }
+
+        var value = contentBinding.target;
+        var propertyChain = contentBinding.property.split('.');
+        _.each(propertyChain, function(level) {
+            if(value) {
+                value = value[level];
+            }
+        });
+
+        if(value === undefined || value === null) {
+            //M.Logger.log('The value assigned by content binding (property: \'' + contentBinding.property + '\') for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ') is invalid!', M.WARN);
+            return;
+        }
+
+        if(this.contentBinding) {
+            this.value = value;
+        } else if(this.computedValue.contentBinding) {
+            this.computedValue.value = value;
+        }
+
+        this.renderUpdate();
+        this.delegateValueUpdate();
+    },
+
+    /**
+     * This method attaches the view to an observable to be later notified once the observable's
+     * state did change.
+     */
+
+    attachToObservable: function() {
+        this.registerContentBinding();
+        this.registervalueBinding();
+    },
+
+    registervalueBinding:function () {
+        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
+        if(!valueBinding) { return; }
+        this.attachBinding(valueBinding, 'valueBinding');
+    },
+
+    registerContentBinding: function(){
+        var contentBinding = this.contentBinding ? this.contentBinding : (this.computedValue) ? this.computedValue.contentBinding : null;
+        if(!contentBinding) { return; }
+        this.attachBinding(contentBinding, 'contentBinding');
+    },
+
+    attachBinding: function(binding, name) {
+        if(!binding) {
+            return;
+        }
+
+        if(typeof(binding) === 'object') {
+            if(binding.target && typeof(binding.target) === 'object') {
+                if(binding.property && typeof(binding.property) === 'string') {
+                    var propertyChain = binding.property.split('.');
+                    if(binding.target[propertyChain[0]] !== undefined) {
+                        if(!binding.target.observable) {
+                            binding.target.observable = M.Observable.extend({});
+                        }
+                        binding.target.observable.attach(this, binding.property);
+                        this.isObserver = YES;
+                    } else {
+                        M.Logger.log('The specified target for ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' has no property \'' + binding.property + '!', M.WARN);
+                    }
+                } else {
+                    M.Logger.log('The type of the value of \'action\' in ' + name + ' for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')\' is \'' + typeof(binding.property) + ' but it must be of type \'string\'!', M.WARN);
+                }
+            } else {
+                M.Logger.log('No valid target specified in ' + name + ' \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
+            }
+        } else {
+            M.Logger.log('No valid ' + name + ' specified for \'' + this.type + '\' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ')!', M.WARN);
+        }
+    },
+
+    /**
+     * @interface
+     * 
+     * This method defines an interface method for setting the view's value from its DOM
+     * representation. This should be implemented with a specific behaviour for any view.
+     */
+    setValueFromDOM: function() {
+
+    },
+
+    /**
+     * This method delegates any value changes to a controller, if the 'contentBindingReverse'
+     * property is specified.
+     */
+    delegateValueUpdate: function() {
+        /**
+         * delegate value updates to a bound controller, but only if the view currently is
+         * the master
+         */
+        if(this.contentBindingReverse && this.hasFocus) {
+            this.contentBindingReverse.target.set(this.contentBindingReverse.property, this.value);
+        }
+    },
+
+    /**
+     * @interface
+     *
+     * This method defines an interface method for styling the view. This should be
+     * implemented with a specific behaviour for any view.
+     */
+    style: function() {
+
+    },
+
+    /**
+     * This method is called whenever the view got the focus and basically only sets
+     * the view's hasFocus property to YES. If a more complex behaviour is desired,
+     * a view has to overwrite this method.
+     */
+    gotFocus: function() {
+        this.hasFocus = YES;
+    },
+
+    /**
+     * This method is called whenever the view lost the focus and basically only sets
+     * the view's hasFocus property to NO. If a more complex behaviour is desired,
+     * a view has to overwrite this method.
+     */
+    lostFocus: function() {
+        this.hasFocus = NO;
+    },
+
+    /**
+     * This method secure the passed string. It is mainly used for securing input elements
+     * like M.TextFieldView but since it is part of M.View it can be used and called out
+     * of any view.
+     *
+     * So far we only replace '<' and '>' with their corresponding html entity. The functionality
+     * of this method will be extended in the future. If a more complex behaviour is desired,
+     * any view using this method has to overwrite it.
+     *
+     * @param {String} str The string to be secured.
+     * @returns {String} The secured string.
+     */
+    secure: function(str) {
+        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    },
+
+    /**
+     * This method parses a given string, replaces any new line, '\n', with a line break, '<br/>',
+     * and returns the modified string. This can be useful especially for input views, e.g. it is
+     * used in context with the M.TextFieldView.
+     *
+     * @param {String} str The string to be modified.
+     * @returns {String} The modified string.
+     */
+    nl2br: function(str) {
+        if(str) {
+            if(typeof(str) !== 'string') {
+                str = String(str);
+            }
+            return str.replace(/\n/g, '<br />');
+        }
+        return str;
+    },
+
+    /**
+     * This method parses a given string, replaces any tabulator, '\t', with four spaces, '&#160;',
+     * and returns the modified string. This can be useful especially for input views, e.g. it is
+     * used in context with the M.TextFieldView.
+     *
+     * @param {String} str The string to be modified.
+     * @returns {String} The modified string.
+     */
+    tab2space: function(str) {
+        if(str) {
+            if(typeof(str) !== 'string') {
+                str = String(str);
+            }
+            return str.replace(/\t/g, '&#160;&#160;&#160;&#160;');
+        }
+        return str;
+    },
+
+    /**
+     * @interface
+     *
+     * This method defines an interface method for clearing a view's value. This should be
+     * implemented with a specific behaviour for any input view. This method defines a basic
+     * functionality for clearing a view's value. This should be overwritten with a specific
+     * behaviour for most input view. What we do here is nothing but to call the cleaValue
+     * method for any child view.
+     */
+    clearValue: function() {
+
+    },
+
+    /**
+     * This method defines a basic functionality for clearing a view's value. This should be
+     * overwritten with a specific behaviour for most input view. What we do here is nothing
+     * but to call the cleaValue method for any child view.
+     */
+    clearValues: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+            for(var i in childViews) {
+                if(this[childViews[i]].childViews) {
+                    this[childViews[i]].clearValues();
+                }
+                if(typeof(this[childViews[i]].clearValue) === 'function'){
+                    this[childViews[i]].clearValue();
+                }
+            }
+        }
+        this.clearValue();
+    },
+
+    /**
+     * Adds a css class to the view's DOM representation.
+     *
+     * @param {String} cssClass The css class to be added.
+     */
+    addCssClass: function(cssClass) {
+        $('#' + this.id).addClass(cssClass);
+    },
+
+    /**
+     * Removes a css class to the view's DOM representation.
+     *
+     * @param {String} cssClass The css class to be added.
+     */
+    removeCssClass: function(cssClass) {
+        $('#' + this.id).removeClass(cssClass);
+    },
+
+    /**
+     * Adds or updates a css property to the view's DOM representation.
+     *
+     * @param {String} key The property's name.
+     * @param {String} value The property's value.
+     */
+    setCssProperty: function(key, value) {
+        $('#' + this.id).css(key, value);
+    },
+
+    /**
+     * Removes a css property from the view's DOM representation.
+     *
+     * @param {String} key The property's name.
+     */
+    removeCssProperty: function(key) {
+        this.setCssProperty(key, '');
+    },
+	/**
+     *
+     * returns the page on which the current view is defined
+     *
+      * @return {*} M.PageView
+     */
+    getParentPage: function(){
+        if(this.parentPage){
+            return this.parentPage;
+        }else{
+            if(this.type === 'M.PageView'){
+                return this;
+            }else if(this.parentView){
+                this.parentPage = this.parentView.getParentPage();
+            }else{
+                var parentId = $('#' + this.id).parent().closest('[id^=m_]').attr('id');
+                if(parentId){
+                    this.parentPage = M.ViewManager.getViewById(parentId).getParentPage();
+                }
+            }
+            return this.parentPage;
+        }
+    },
+    
+    /*
+    * find all childviews to the given string
+    *
+    * @param {String} childName the name of the child view looking for.
+    * @param {Boolean} deepSearch look also in all childViews for the one.
+    * @return {Array} all found childViews
+    * 
+    */
+    findChildViews: function( childName, deepSearch ) {
+    	var that = this;
+        var childViews = this.getChildViewsAsArray();
+        var foundChildren = [];
+        _.each(childViews, function( child ) {
+            if( child === childName ) {
+                foundChildren.push(that[child]);
+            }
+        });
+
+        if( deepSearch ) {
+            _.each(childViews, function( child ) {
+                foundChildren.push.apply(foundChildren, that[child].findChildViews(childName, deepSearch));
+            });
+        }
+
+        return foundChildren;
+    }
+	
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/* Available transitions for page changes */
+M.TRANSITION = {};
+M.TRANSITION.NONE = 'none';
+M.TRANSITION.SLIDE = 'slide';
+M.TRANSITION.SLIDEUP = 'slideup';
+M.TRANSITION.SLIDEDOWN = 'slidedown';
+M.TRANSITION.POP = 'pop';
+M.TRANSITION.FADE = 'fade';
+M.TRANSITION.FLIP = 'flip';
+
+m_require('core/foundation/observable.js');
+
+/**
+ * @class
+ *
+ * The root class for every controller.
+ *
+ * Controllers, respectively their properties, are observables. Views can observe them.
+ *
+ * @extends M.Object
+ */
+M.Controller = M.Object.extend(
+/** @scope M.Controller.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Controller',
+
+    /**
+     * Makes the controller's properties observable.
+     */
+    observable: null,
+
+    /**
+     * Switch the active tab in the application. This includes both activating this tab
+     * visually and switching the page.
+     *
+     * @param {M.TabBarItemView} tab The tab to be activated.
+     */
+    switchToTab: function(tab,back) {
+		if (!back) back = NO;
+        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
+            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
+            return;
+        }
+        var currentTab = tab.parentView.activeTab;
+        var newPage = M.ViewManager.getPage(tab.page);
+
+        /* store the active tab in tab bar view */
+        tab.parentView.setActiveTab(tab);
+
+        if(tab === currentTab) {
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage !== newPage) {
+                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
+            }
+        } else {
+            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
+        }
+    },
+
+    /**
+     * Switch the active page in the application.
+     *
+     * @param {Object|String} page The page to be displayed or its name.
+     * @param {String} transition The transition that should be used. Default: horizontal slide
+     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
+     * @param {Boolean} updateHistory Update the browser history. Default: YES
+     */
+    switchToPage: function(page, transition, isBack, updateHistory) {
+        var timeStart = M.Date.now();
+        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
+
+        if(page) {
+            transition = transition ? transition : M.TRANSITION.SLIDE;
+            isBack = isBack !== undefined ? isBack : NO;
+            updateHistory = updateHistory !== undefined ? updateHistory : YES;
+
+            /* Now do the page change by using a jquery mobile method and pass the properties */
+            if(page.type === 'M.PageView') {
+                $.mobile.changePage($('#' + page.id), {
+                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
+                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
+                    changeHash: updateHistory,
+                    showLoadMsg: NO
+                });
+            }
+
+            /* Save the current page in the view manager */
+            M.ViewManager.setCurrentPage(page);
+        } else {
+            M.Logger.log('Page "' + page + '" not found', M.ERR);
+        }
+    },
+
+    /**
+     * This method initializes the notification of all observers, that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property to be changed.
+     * @param {Object|String} value The value to be set.
+     */
+    set: function(key, value) {
+        var keyPath = key.split('.');
+
+        if(keyPath.length === 1) {
+            this[key] = value;
+        } else {
+            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
+            for(var i = 1; i < keyPath.length - 1; i++) {
+                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
+            }
+
+            t[keyPath[keyPath.length - 1]] = value;
+        }
+
+        if(!this.observable) {
+            return;
+        }
+
+        this.observable.notifyObservers(key);
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
