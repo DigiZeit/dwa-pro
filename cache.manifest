@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.4.6854 beta, Timestamp:1454944528269
+#Application:DigiWebApp, Version:1.8.4.6855 beta, Timestamp:1454944800314
 
 
 # Explicitly cached entries
@@ -9,24 +9,13 @@ en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
+theme/tmp.css
+underscore-min.js
+jquery_mobile.js
+jquery-1.9.1.js
 d8-0.1.3.min.js
 d8-0.4.0.min.js
-underscore-min.js
-jquery-1.9.1.js
-bootstrap.js
-theme/tmp.css
-jquery_mobile.js
 jquery.xml2json_1.3.js
-digi_list.js
-digi_list_item.js
-digi_selection_list.js
-digi_selection_list_item.js
-barcodescanner.js
-childbrowser.js
-cordova.js
-Math.uuid.js
-jstz.js
-ui.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_SCHOLPP.png
@@ -40,9 +29,9 @@ theme/images/48x48_plain_businessmen.png
 theme/images/48x48_plain_camera2.png
 theme/images/48x48_plain_car_compact_grey.png
 theme/images/48x48_plain_clipboard.png
+theme/images/48x48_plain_clock_pause.png
 theme/images/48x48_plain_cloud_dark.png
 theme/images/48x48_plain_cup.png
-theme/images/48x48_plain_clock_pause.png
 theme/images/48x48_plain_document.png
 theme/images/48x48_plain_folder.png
 theme/images/48x48_plain_folder_closed.png
@@ -104,8 +93,13 @@ theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
 theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
-jquery_mobile_plugins.js
-theme/jquery_mobile_plugins.css
+digi_list.js
+digi_list_item.js
+digi_selection_list.js
+digi_selection_list_item.js
+Math.uuid.js
+bootstrap.js
+ui.js
 CHANGELOG.md
 Gruntfile.coffee
 LICENSE.txt
@@ -129,7 +123,12 @@ full-window.html
 regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
-core.js
+jstz.js
+barcodescanner.js
+cordova.js
+childbrowser.js
+jquery_mobile_plugins.js
+theme/jquery_mobile_plugins.css
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
@@ -137,6 +136,7 @@ theme/images/icons-18-black.png
 theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
+core.js
 DigiWebApp_App.js
 
 
