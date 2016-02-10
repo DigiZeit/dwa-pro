@@ -1,31 +1,30 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.4.6864 beta, Timestamp:1455112305884
+#Application:DigiWebApp, Version:1.8.4.6865 beta, Timestamp:1455114496468
 
 
 # Explicitly cached entries
 CACHE:
 underscore-min.js
+d8-0.1.3.min.js
+d8-0.4.0.min.js
 jquery-1.9.1.js
+theme/tmp.css
+bootstrap.js
+jquery_mobile.js
+digi_list.js
+digi_list_item.js
+digi_selection_list.js
+digi_selection_list_item.js
+jquery.xml2json_1.3.js
+barcodescanner.js
+childbrowser.js
+cordova.js
+Math.uuid.js
 de_de.js
 en_us.js
 es_es.js
 fr_fr.js
 nl_nl.js
-theme/tmp.css
-bootstrap.js
-d8-0.1.3.min.js
-d8-0.4.0.min.js
-jquery_mobile.js
-jquery.xml2json_1.3.js
-barcodescanner.js
-childbrowser.js
-cordova.js
-jstz.js
-Math.uuid.js
-digi_list.js
-digi_list_item.js
-digi_selection_list.js
-digi_selection_list_item.js
 ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
@@ -106,12 +105,13 @@ theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
 theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
+jstz.js
 core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
 theme/images/ajax-loader.png
-theme/images/icons-18-white.png
 theme/images/icons-18-black.png
+theme/images/icons-18-white.png
 theme/images/icons-36-black.png
 theme/images/icons-36-white.png
 CHANGELOG.md
