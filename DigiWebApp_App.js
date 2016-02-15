@@ -22514,7 +22514,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6870
+      softwareVersion: 6871
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -23235,15 +23235,12 @@ DigiWebApp.SelectionController = M.Controller.extend({
     	}
     }
 
-    // Auswahl initialisieren. Falls es schon eine Auswahl gab dann diese verwenden, ansonsten "Bitte wählen" anzeigen.
+    // Auswahl initialisieren. Falls es keine frühere Auswahl gibt, dann "Bitte wählen" anzeigen, ansonsten den
+    // Buchen-Screen unangetastet lassen.
     , initSelection: function() {
        var that = this;
 
-       if (that.selections.order != null)
-       {
-    	   setSelectionByPreviousSelection();
-       }
-       else
+       if (getSelectedOrder() == null)
        {
 	       that.set('orders', []);
 	       that.set('positions', []);
@@ -38411,7 +38408,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6870'
+              value: 'Build: 6871'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
