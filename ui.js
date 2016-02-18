@@ -505,6 +505,131 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -994,7 +1119,7 @@ M.ButtonGroupView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
-// Date:      28.10.11
+// Date:      10.04.12
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -1003,115 +1128,47 @@ M.ButtonGroupView = M.View.extend(
 /**
  * @class
  *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
+ * A carousel item view is the one and only valid sub view of a carousel view. It basically
+ * serves as a container that allows you to put anything into such an element. Simply
+ * apply as much child views as you like and let this view (in combination with the carousel)
+ * take care of the rest.
  *
  * @extends M.View
  */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
+M.CarouselItemView = M.View.extend(
+/** @scope M.CarouselItemView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.CanvasView',
+    type: 'M.CarouselItemView',
 
     /**
-     * This property specifies the recommended events for this type of view.
+     * This property can be used to specify a tag, that is independent from the carousel
+     * item's content. This allows you to identify a carousel item e.g. within the callback
+     * of the carousel's change event.
      *
-     * @type Array
+     * @type String
      */
-    recommendedEvents: ['tap'],
+    tag: null,
 
     /**
-     * This method simply renders a canvas view as a html canvas element.
+     * This method renders a carousel item and its content with an li element as the
+     * surrounding element.
      *
      * @private
-     * @returns {String} The image view's styling as html representation.
+     * @returns {String} The carousel item view's html representation.
      */
     render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
+        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+
+        this.renderChildViews();
+
+        this.html += '</li>';
 
         return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
     }
 
 });
@@ -1713,9 +1770,10 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      01.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -1724,47 +1782,93 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 /**
  * @class
  *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
+ * A container view renders a simple div container that can be used to display
+ * any html valid content, e.g. by third party frameworks.
  *
  * @extends M.View
  */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
+M.ContainerView = M.View.extend(
+/** @scope M.ContainerView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.CarouselItemView',
+    type: 'M.ContainerView',
 
     /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
+     * The name of the container. During the rendering, this property gets assigned to the name
+     * property of the container's html representation. This can be used to manually access the
+     * text field's DOM representation later on.
      *
      * @type String
      */
-    tag: null,
+     name: null,
+
+     /**
+     * The label proeprty defines a text that is shown above or next to the container as a 'title'
+     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
 
     /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
+     * Define whether putting an asterisk to the right of the label for this textfield.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a simple div container and applies css classes if specified.
      *
      * @private
-     * @returns {String} The carousel item view's html representation.
+     * @returns {String} The container view's html representation.
      */
     render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+		this.html = '';
+	    if(this.label) {
+	        this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
+	        if(this.hasAsteriskOnLabel) {
+	            if(this.cssClassForAsterisk) {
+	                this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+	            } else {
+	                this.html += '<span>*</span></label>';
+	            }
+	        } else {
+	            this.html += '</label>';
+	        }
+	    }
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
 
         this.renderChildViews();
 
-        this.html += '</li>';
+        this.html += '</div>';
 
         return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the container view.
+     *
+     * @private
+     * @returns {String} The container's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
     }
 
 });
@@ -2299,110 +2403,6 @@ M.DashboardView = M.View.extend(
         var html = '';
         if(this.cssClass) {
             html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      01.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A container view renders a simple div container that can be used to display
- * any html valid content, e.g. by third party frameworks.
- *
- * @extends M.View
- */
-M.ContainerView = M.View.extend(
-/** @scope M.ContainerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ContainerView',
-
-    /**
-     * The name of the container. During the rendering, this property gets assigned to the name
-     * property of the container's html representation. This can be used to manually access the
-     * text field's DOM representation later on.
-     *
-     * @type String
-     */
-     name: null,
-
-     /**
-     * The label proeprty defines a text that is shown above or next to the container as a 'title'
-     * for the textfield. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this textfield.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a simple div container and applies css classes if specified.
-     *
-     * @private
-     * @returns {String} The container view's html representation.
-     */
-    render: function() {
-		this.html = '';
-	    if(this.label) {
-	        this.html += '<label for="' + (this.name ? this.name : this.id) + '">' + this.label;
-	        if(this.hasAsteriskOnLabel) {
-	            if(this.cssClassForAsterisk) {
-	                this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-	            } else {
-	                this.html += '<span>*</span></label>';
-	            }
-	        } else {
-	            this.html += '</label>';
-	        }
-	    }
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the container view.
-     *
-     * @private
-     * @returns {String} The container's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
         }
         return html;
     }
@@ -6116,138 +6116,6 @@ M.PageView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -6450,6 +6318,138 @@ M.PopoverView = M.View.extend(
     }
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
