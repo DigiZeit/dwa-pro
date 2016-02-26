@@ -1,53 +1,4 @@
 
-(function( $ ){
-    //return the height of an element with the its margin whether it's visible or not
-    $.fn.outerMarginHeight = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var height = this.outerHeight();
-        height += parseIntRadixTen(this.css('margin-bottom'));
-        height += parseIntRadixTen(this.css('margin-top'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return height;
-
-    };
-    //return the width of an element with the its margin whether it's visible or not
-    $.fn.outerMarginWidth = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var width = this.outerWidth();
-        width += parseIntRadixTen(this.css('margin-left'));
-        width += parseIntRadixTen(this.css('margin-right'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return width;
-
-    };
-
-})( jQuery );
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -271,7 +222,7 @@ M.Object =
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      11.11.2010
+// Date:      28.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -280,553 +231,311 @@ M.Object =
 m_require('core/foundation/object.js');
 
 /**
- * A constant value for milliseconds.
- *
- * @type String
- */
-M.MILLISECONDS = 'milliseconds';
-
-/**
- * A constant value for seconds.
- *
- * @type String
- */
-M.SECONDS = 'seconds';
-
-/**
- * A constant value for minutes.
- *
- * @type String
- */
-M.MINUTES = 'minutes';
-
-/**
- * A constant value for hours.
- *
- * @type String
- */
-M.HOURS = 'hours';
-
-/**
- * A constant value for days.
- *
- * @type String
- */
-M.DAYS = 'days';
-
-/**
- * A constant array for day names.
- *
- * @type String
- */
-M.DAY_NAMES = [
-    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
-    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-]
-
-/**
- * A constant array for month names.
- *
- * @type String
- */
-M.MONTH_NAMES = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-];
-
-/**
  * @class
- * 
- * M.Date defines a prototype for creating, handling and computing dates. It is basically a wrapper
- * to JavaScripts own date object that provides more convenient functionalities.
+ *
+ * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
+ * First M.Request.init needs to be called, then send.
  *
  * @extends M.Object
  */
-M.Date = M.Object.extend(
-/** @scope M.Date.prototype */ {
+M.Request = M.Object.extend(
+/** @scope M.Request.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.Date',
+    type: 'M.Request',
+
     /**
-     * The native JavaScript date object.
+     * The HTTP method to use.
+     *
+     * Defaults to GET.
+     *
+     * @type String
+     */
+    method: 'GET',
+
+    /**
+     * The URL this request is sent to.
+     *
+     * @type String
+     */
+    url: null,
+
+    /**
+     * Sends the request asynchronously instead of blocking the browser.
+     * You should almost always make requests asynchronous. You can change this
+     * options with the async() helper option (or simply set it directly).
+     *
+     * Defaults to YES.
+     *
+     * @type Boolean
+     */
+    isAsync: YES,
+
+
+    /**
+     * Processes the request and response as JSON if possible.
+     *
+     * Defaults to NO.
+     *
+     * @type Boolean
+     */
+    isJSON: NO,
+
+    /**
+     * Optional timeout value of the request in milliseconds.
+     *
+     * @type Number
+     */
+    timeout: null,
+
+    /**
+     * If set, contains the request's callbacks in sub objects. There are three
+     * possible callbacks that can be used:
+     *
+     *   - beforeSend
+     *   - success
+     *   - error
+     *
+     * A callback object consists of at least an action but can also specify a
+     * target object that determines the scope for that action. If a target is
+     * specified, the action can either  be a string (the name if a method within
+     * the specified scope) or a function. If there is no target specified, the
+     * action must be a function. So a success callback could e.g. look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: 'successCallback'
+     *     }
+     *   }
+     *
+     * Or it could look like:
+     *
+     *   callbacks: {
+     *     success: {
+     *       target: MyApp.MyController,
+     *       action: function() {
+     *         // do something...
+     *       }
+     *     }
+     *   }
+     *
+     * Depending on the type of callback, there are different parameters, that
+     * are automatically passed to the callback:
+     *
+     *   - beforeSend(request)
+     *   - success(data, msg, request)
+     *   - error(request, msg)
+     *
+     * For further information about that, take a look at the internal callbacks
+     * of M.Request:
+     *
+     *   - internalBeforeSend
+     *   - internalOnSuccess
+     *   - internalOnError
      *
      * @type Object
      */
-    date: null,
+    callbacks: null,
 
     /**
-     * Returns the current date, e.g.
-     * Thu Nov 11 2010 14:20:55 GMT+0100 (CET)
+     * This property can be used to specify whether or not to cache the request.
+     * Setting this to YES will set the 'Cache-Control' property of the request
+     * header to 'no-cache'.
      *
-     * @returns {M.Date} The current date.
+     * @Boolean
      */
-    now: function() {
+    sendNoCacheHeader: YES,
+
+    /**
+     * This property can be used to specify whether or not to send a timestamp
+     * along with the request in order to make every request unique. Since some
+     * browsers (e.g. Android) automatically cache identical requests, setting
+     * this property to YES will add an additional parameter to the request,
+     * containing the current timestamp.
+     *
+     * So if you have any trouble with caching of requests, try setting this to
+     * YES. But note, that it might also cause trouble on the server-side if they
+     * do not expect this additional parameter.
+     *
+     * @Boolean
+     */
+    sendTimestamp: NO,
+
+    /**
+     * The data body of the request.
+     *
+     * @type String, Object
+     */
+    data: null,
+
+    /**
+     * Holds the jQuery request object
+     *
+     * @type Object
+     */
+    request: null,
+
+    /**
+     * Initializes a request. Sets the parameter of this request object with the passed values.
+     *
+     * @param {Object} obj The parameter object. Includes:
+     * * method: the http method to use, e.g. 'POST'
+     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
+     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
+     * * isJSON: defines whether to process request and response as JSON
+     * * timout: defines timeout in milliseconds
+     * * data: the data to be transmitted
+     * * beforeSend: callback that is called before request is sent
+     * * onError: callback that is called when an error occured
+     * * onSuccess: callback that is called when request was successful
+     */
+    init: function(obj){
+        obj = obj ? obj : {};
         return this.extend({
-            date: new Date()
+            method: obj['method'] ? obj['method'] : this.method,
+            url: obj['url'] ? obj['url'] : this.url,
+            isAsync: (obj['isAsync'] !== undefined && obj['isAsync'] !== null) ? obj['isAsync'] : this.isAsync,
+            isJSON: (obj['isJSON'] !== undefined && obj['isJSON'] !== null) ? obj['isJSON'] : this.isJSON,
+            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
+            data: obj['data'] ? obj['data'] : this.data,
+            callbacks: obj['callbacks'],
+            sendNoCacheHeader: obj['sendNoCacheHeader'],
+            sendTimestamp: obj['sendTimestamp'],
+            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
+            onError: obj['onError'] ? obj['onError'] : this.onError,
+            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
         });
     },
 
     /**
-     * This method returns the date, 24h in the future.
+     * A pre-callback that is called right before the request is sent.
      *
-     * @returns {M.Date} The current date, 24 hours in the future.
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
      */
-    tomorrow: function() {
-        return this.daysFromNow(1);
+    beforeSend: function(request){},
+
+    /**
+     * The callback to be called if the request failed.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
+     */
+    onError: function(request, msg){},
+
+    /**
+     * The callback to be called if the request succeeded.
+     *
+     * Note: This method will be removed with v1.0! Use the callbacks
+     * property instead.
+     *
+     * @deprecated
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    onSuccess: function(data, msg, request){},
+
+    /**
+     * This method is an internal callback that is called right before a
+     * request is send.
+     *
+     * @param {Object} request The XMLHttpRequest object.
+     */
+    internalBeforeSend: function(request){
+        if(this.sendNoCacheHeader) {
+            request.setRequestHeader('Cache-Control', 'no-cache');
+        }
+
+        if(!this.callbacks && this.beforeSend) {
+            this.beforeSend(request);
+        }
+
+        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
+            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
+        }
     },
 
     /**
-     * This method returns the date, 24h in the past.
+     * This method is an internal callback that is called if a request
+     * failed.
      *
-     * @returns {M.Date} The current date, 24 hours in the past.
+     * @param {Object} request The XMLHttpRequest object.
+     * @param {String} msg The error message.
      */
-    yesterday: function() {
-        return this.daysFromNow(-1);
+    internalOnError: function(request, msg){
+        if(!this.callbacks && this.onError) {
+            this.onError(request, msg);
+        }
+
+        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
+            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
+        }
     },
 
     /**
-     * This method returns a date for a given date string. It is based on JS Date's parse
-     * method.
+     * This method is an internal callback that is called if the request
+     * succeeded.
      *
-     * The following formats are accepted (time and timezone are optional):
-     * - 11/12/2010
-     * - 11/12/2010 15:28:15
-     * - 11/12/2010 13:28:15 GMT
-     * - 11/12/2010 15:28:15 GMT+0200
-     * - 12 November 2010
-     * - 12 November 2010 15:28:15
-     * - 12 November 2010 13:28:15 GMT
-     * - 12 November 2010 15:28:15 GMT+0200
-     * - 12 Nov 2010
-     * - 12 Nov 2010 15:28:15
-     * - 12 Nov 2010 13:28:15 GMT
-     * - 12 Nov 2010 15:28:15 GMT+0200
-     *
-     * If a wrong formatted date string is given, the method will return null. Otherwise a
-     * JS Date object will be returned.
-     *
-     * @param {String} dateString The date string specifying a certain date.
-     * @returns {M.Date} The date, specified by the given date string.
+     * @param {String|Object} data The data returned from the server.
+     * @param {String} msg A String describing the status.
+     * @param {Object} request The XMLHttpRequest object.
      */
-    create: function(dateString) {
-        var milliseconds = typeof(dateString) === 'number' ? dateString : null;
-
-        if(!milliseconds) {
-            var regexResult = /(\d{1,2})\.(\d{1,2})\.(\d{2,4})/.exec(dateString);
-            if(regexResult && regexResult[1] && regexResult[2] && regexResult[3]) {
-                var date = $.trim(dateString).split(' ');
-                dateString = regexResult[2] + '/' + regexResult[1] + '/' + regexResult[3] + (date[1] ? ' ' + date[1] : '');
-            }
-            milliseconds = Date.parse(dateString);
+    internalOnSuccess: function(data, msg, request){
+        if(!this.callbacks && this.onSuccess) {
+            this.onSuccess(data, msg, request);
         }
 
-        if(dateString && !milliseconds) {
-            M.Logger.log('Invalid dateString \'' + dateString + '\'.', M.WARN);
-            return null;
-        } else if(!dateString) {
-            return this.now();
+        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
+            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
         }
+    },
 
-        return this.extend({
-            date: new Date(milliseconds)
+    /**
+     * Sends an Ajax request by using jQuery's $.ajax().
+     * Needs init first!
+     */
+    send: function(){
+        this.request = $.ajax({
+            type: this.method,
+            url: this.url,
+            async: this.isAsync,
+            dataType: this.isJSON ? 'json' : 'text',
+            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
+            timeout: this.timeout,
+            data: this.data ? this.data : '',
+            context: this,
+            beforeSend: this.internalBeforeSend,
+            success: this.internalOnSuccess,
+            error: this.internalOnError,
+            cache: !this.sendTimestamp,
+            xhrFields: { withCredentials: true }
         });
     },
 
     /**
-     * This method formats a given date object according to the passed 'format' property and
-     * returns it as a String.
+     * Aborts this request. Delegate to jQuery
      *
-     * The following list defines the special characters that can be used in the 'format' property
-     * to format the given date:
-     *
-     * d        Day of the month as digits; no leading zero for single-digit days.
-     * dd 	    Day of the month as digits; leading zero for single-digit days.
-     * ddd 	    Day of the week as a three-letter abbreviation.
-     * dddd 	Day of the week as its full name.
-     * D 	    Day of the week as number.
-     * m 	    Month as digits; no leading zero for single-digit months.
-     * mm 	    Month as digits; leading zero for single-digit months.
-     * mmm 	    Month as a three-letter abbreviation.
-     * mmmm 	Month as its full name.
-     * yy 	    Year as last two digits; leading zero for years less than 10.
-     * yyyy 	Year represented by four digits.
-     * h 	    Hours; no leading zero for single-digit hours (12-hour clock).
-     * hh 	    Hours; leading zero for single-digit hours (12-hour clock).
-     * H 	    Hours; no leading zero for single-digit hours (24-hour clock).
-     * HH 	    Hours; leading zero for single-digit hours (24-hour clock).
-     * M 	    Minutes; no leading zero for single-digit minutes.
-     * MM 	    Minutes; leading zero for single-digit minutes.
-     * s 	    Seconds; no leading zero for single-digit seconds.
-     * ss 	    Seconds; leading zero for single-digit seconds.
-     * l or L 	Milliseconds. l gives 3 digits. L gives 2 digits.
-     * t 	    Lowercase, single-character time marker string: a or p.
-     * tt   	Lowercase, two-character time marker string: am or pm.
-     * T 	    Uppercase, single-character time marker string: A or P.
-     * TT 	    Uppercase, two-character time marker string: AM or PM.
-     * Z 	    US timezone abbreviation, e.g. EST or MDT. With non-US timezones or in the Opera browser, the GMT/UTC offset is returned, e.g. GMT-0500
-     * o 	    GMT/UTC timezone offset, e.g. -0500 or +0230.
-     * S 	    The date's ordinal suffix (st, nd, rd, or th). Works well with d.
-     *
-     * @param {String} format The format.
-     * @param {Boolean} utc Determines whether to convert to UTC time or not. Default: NO.
-     * @returns {String} The date, formatted with a given format.
+     * @return Boolean Indicating whether request exists and is aborted or not
      */
-    format: function(format, utc) {
-        if(isNaN(this.date)) {
-            M.Logger.log('Invalid date!', M.WARN);
+    abort: function() {
+        if(this.request) {
+            this.request.abort();
+            return YES;
         }
-
-        var	token = /d{1,4}|D{1}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
-        var	timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g;
-        var	timezoneClip = /[^-+\dA-Z]/g;
-        var	pad = function (val, len) {
-            val = String(val);
-            len = len || 2;
-            while (val.length < len) val = "0" + val;
-            return val;
-        };
-
-		if(arguments.length == 1 && Object.prototype.toString.call(this.date) == "[object String]" && !/\d/.test(this.date)) {
-			format = this.date;
-			date = undefined;
-		}
-
-		var	_ = utc ? "getUTC" : "get";
-        var	d = this.date[_ + "Date"]();
-        var	D = this.date[_ + "Day"]();
-        var	m = this.date[_ + "Month"]();
-        var	y = this.date[_ + "FullYear"]();
-        var	H = this.date[_ + "Hours"]();
-        var	Min = this.date[_ + "Minutes"]();
-        var	s = this.date[_ + "Seconds"]();
-        var	L = this.date[_ + "Milliseconds"]();
-        var	o = utc ? 0 : this.date.getTimezoneOffset();
-        var	flags = {
-            d:    d,
-            dd:   pad(d),
-            ddd:  M.DAY_NAMES[D],
-            dddd: M.DAY_NAMES[D + 7],
-            D:    D,
-            m:    m + 1,
-            mm:   pad(m + 1),
-            mmm:  M.MONTH_NAMES[m],
-            mmmm: M.MONTH_NAMES[m + 12],
-            yy:   String(y).slice(2),
-            yyyy: y,
-            h:    H % 12 || 12,
-            hh:   pad(H % 12 || 12),
-            H:    H,
-            HH:   pad(H),
-            M:    Min,
-            MM:   pad(Min),
-            s:    s,
-            ss:   pad(s),
-            l:    pad(L, 3),
-            L:    pad(L > 99 ? Math.round(L / 10) : L),
-            t:    H < 12 ? "a"  : "p",
-            tt:   H < 12 ? "am" : "pm",
-            T:    H < 12 ? "A"  : "P",
-            TT:   H < 12 ? "AM" : "PM",
-            Z:    utc ? "UTC" : (String(this.date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
-            o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-            S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
-        };
-
-		return format.replace(token, function ($0) {
-			return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
-		});
-    },
-
-    /**
-     * This method returns a timestamp.
-     *
-     * @returns {Number} The current date as a timestamp.
-     */
-    getTimestamp: function() {
-        if(this.date) {
-            return this.date.getTime();
-        }
-        return null
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'days'. Basically it adds or
-     * subtracts x times the milliseconds of a day, but also checks for clock changes and
-     * automatically includes these into the calculation of the future or past date.
-     *
-     * @param {Number} days The number of days to be added to or subtracted from the current date.
-     * @returns {M.Date} The current date, x days in the future (based on parameter 'days').
-     */
-    daysFromNow: function(days) {
-        var date = this.now();
-        return date.daysFromDate(days);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'days' and a given date. Basically
-     * it adds or subtracts x days, but also checks for clock changes and automatically includes
-     * these into the calculation of the future or past date.
-     *
-     * @param {Number} days The number of days to be added to or subtracted from the current date.
-     * @returns {M.Date} The date, x days in the future (based on parameter 'days').
-     */
-    daysFromDate: function(days) {
-        return this.millisecondsFromDate(days * 24 * 60 * 60 * 1000);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'hours'. Basically it adds or
-     * subtracts x times the milliseconds of an hour, but also checks for clock changes and
-     * automatically includes these into the calculation of the future or past date.
-     *
-     * @param {Number} hours The number of hours to be added to or subtracted from the current date.
-     * @returns {M.Date} The current date, x hours in the future (based on parameter 'hours').
-     */
-    hoursFromNow: function(hours) {
-        var date = this.now();
-        return date.hoursFromDate(hours);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'hours' and a given date. Basically
-     * it adds or subtracts x hours, but also checks for clock changes and automatically includes
-     * these into the calculation of the future or past date.
-     *
-     * @param {Number} hours The number of hours to be added to or subtracted from the current date.
-     * @returns {M.Date} The date, x hours in the future (based on parameter 'hours').
-     */
-    hoursFromDate: function(hours) {
-        return this.millisecondsFromDate(hours * 60 * 60 * 1000);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'minutes'. Basically it adds or
-     * subtracts x times the milliseconds of a minute, but also checks for clock changes and
-     * automatically includes these into the calculation of the future or past date.
-     *
-     * @param {Number} minutes The number of minutes to be added to or subtracted from the current date.
-     * @returns {M.Date} The current date, x minutes in the future (based on parameter 'minutes').
-     */
-    minutesFromNow: function(minutes) {
-        var date = this.now();
-        return date.minutesFromDate(minutes);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'minutes' and a given date. Basically
-     * it adds or subtracts x minutes, but also checks for clock changes and automatically includes
-     * these into the calculation of the future or past date.
-     *
-     * @param {Number} minutes The number of minutes to be added to or subtracted from the current date.
-     * @returns {M.Date} The date, x minutes in the future (based on parameter 'minutes').
-     */
-    minutesFromDate: function(minutes) {
-        return this.millisecondsFromDate(minutes * 60 * 1000);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'seconds'. Basically it adds or
-     * subtracts x times the milliseconds of a second, but also checks for clock changes and
-     * automatically includes these into the calculation of the future or past date.
-     *
-     * @param {Number} seconds The number of seconds to be added to or subtracted from the current date.
-     * @returns {M.Date} The current date, x seconds in the future (based on parameter 'seconds').
-     */
-    secondsFromNow: function(seconds) {
-        var date = this.now();
-        return date.secondsFromDate(seconds);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'seconds' and a given date. Basically
-     * it adds or subtracts x seconds, but also checks for clock changes and automatically includes
-     * these into the calculation of the future or past date.
-     *
-     * @param {Number} seconds The number of seconds to be added to or subtracted from the current date.
-     * @returns {M.Date} The date, x seconds in the future (based on parameter 'seconds').
-     */
-    secondsFromDate: function(seconds) {
-        return this.millisecondsFromDate(seconds * 1000);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'milliseconds'. Basically it adds or
-     * subtracts x milliseconds, but also checks for clock changes and automatically includes these
-     * into the calculation of the future or past date.
-     *
-     * @param {Number} milliseconds The number of milliseconds to be added to or subtracted from the current date.
-     * @returns {M.Date} The current date, x milliseconds in the future (based on parameter 'milliseconds').
-     */
-    millisecondsFromNow: function(milliseconds) {
-        var date = this.now();
-        return date.millisecondsFromDate(milliseconds);
-    },
-
-    /**
-     * This method returns a date in the future or past, based on 'milliseconds' and a given date. Basically
-     * it adds or subtracts x milliseconds, but also checks for clock changes and automatically includes
-     * these into the calculation of the future or past date.
-     *
-     * @param {Number} milliseconds The number of milliseconds to be added to or subtracted from the current date.
-     * @returns {M.Date} The date, x milliseconds in the future (based on parameter 'milliseconds').
-     */
-    millisecondsFromDate: function(milliseconds) {
-        if(!this.date) {
-            M.Logger.log('no date specified!', M.ERR);
-        }
-
-        return this.extend({
-            date: new Date(this.getTimestamp() + milliseconds)
-        });
-    },
-
-    /**
-     * This method returns the time between two dates, based on the given returnType.
-     *
-     * Possible returnTypes are:
-     * - M.MILLISECONDS: milliseconds
-     * - M.SECONDS: seconds
-     * - M.MINUTES: minutes
-     * - M.HOURS: hours
-     * - M.DAYS: days
-     *
-     * @param {Object} date The date.
-     * @param {String} returnType The return type for the call.
-     * @returns {Number} The time between the two dates, computed as what is specified by the 'returnType' parameter.
-     */
-    timeBetween: function(date, returnType) {
-        var firstDateInMilliseconds = this.date ? this.getTimestamp() : null;
-        var secondDateInMilliseconds = date.date ? date.getTimestamp() : null;
-        
-        if(firstDateInMilliseconds && secondDateInMilliseconds) {
-            switch (returnType) {
-                case M.DAYS:
-                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (24 * 60 * 60 * 1000);
-                    break;
-                case M.HOURS:
-                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (60 * 60 * 1000);
-                    break;
-                case M.MINUTES:
-                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (60 * 1000);
-                    break;
-                case M.SECONDS:
-                    return (secondDateInMilliseconds - firstDateInMilliseconds) / 1000;
-                    break;
-                case M.MILLISECONDS:
-                default:
-                    return (secondDateInMilliseconds - firstDateInMilliseconds);
-                    break;
-            }
-        } else if(firstDateInMilliseconds) {
-            M.Logger.log('invalid date passed.', M.ERR);
-        } else {
-            M.Logger.log('invalid date.', M.ERR);
-        }
-    },
-
-
-    /**
-     * This method computes the calendar week of a date. It can either be executed on a M.Date object,
-     * to get the calendar week of that date, or you can pass parameters to get the calendar week
-     * for the specified date.
-     *
-     * @param {Number} year The year part of the date, e.g. 2011. Must be four digits.
-     * @param {Number} month The month part of the date: 0-11. Must be one/two digit.
-     * @param {Number} day The day part of the date: 1-31. Must be one/two digits.
-     *
-     * @returns {Number} The calendar week: 1-52.
-     */
-    getCalendarWeek: function(year, month, day){
-        if(!year) {
-            year = parseIntRadixTen(this.format('yyyy'));
-            month = parseIntRadixTen(this.format('m'));
-            day = parseIntRadixTen(this.format('d'));
-        } else {
-            month += 1;
-        }
-
-        var a = Math.floor((14 - (month)) / 12);
-        var y = year + 4800 - a;
-        var m = (month) + (12 * a) - 3;
-        var jd = day + Math.floor(((153 * m) + 2) / 5) + (365 * y) + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-        var d4 = (jd + 31741 - (jd % 7)) % 146097 % 36524 % 1461;
-        var L = Math.floor(d4 / 1460);
-        var d1 = ((d4 - L) % 365) + L;
-        var calendarWeek = Math.floor(d1 / 7) + 1;
-
-        return calendarWeek;
-    },
-
-    /**
-     * This method returns an array containing all dates within one calendar week. If no parameters are given,
-     * the calendar week of the current date is taken.
-     *
-     * @param {Number} calendarWeek The calendar week. Note: Pass 'null' if you use this method on an existing M.Date object.
-     * @param {Boolean} startWeekOnMonday Determines whether a week starts on monday or sunday (optional, default is NO).
-     * @param {Number} year The year (optional, default is current year).
-     *
-     * @returns {Array} An array containing all dates within the specified calendar week.
-     */
-    getDatesOfCalendarWeek: function(calendarWeek, startWeekOnMonday, year) {
-        year = year && !isNaN(year) ? year : (this.date ? this.format('yyyy') : M.Date.now().format('yyyy'));
-        var newYear = M.Date.create('01/01/' + year);
-        var newYearWeekDay = newYear.format('D');
-
-        var firstWeek = null;
-        if(startWeekOnMonday) {
-            firstWeek = newYearWeekDay == 1 ? newYear : newYear.daysFromDate(8 - (newYearWeekDay == 0 ? 7 : newYearWeekDay));
-        } else {
-            firstWeek = newYearWeekDay == 0 ? newYear : newYear.daysFromDate(7 - newYearWeekDay);
-        }
-
-        calendarWeek = calendarWeek ? calendarWeek : this.getCalendarWeek();
-
-        var requiredWeek = firstWeek.daysFromDate((calendarWeek - 1) * 7);
-
-        var dates = [];
-        for(var i = 0; i < 7; i++) {
-            var date = requiredWeek.daysFromDate(i);
-            date = M.Date.create(date.format('mm') + '/' + date.format('dd') + '/' + date.format('yyyy'));
-            dates.push(date);
-        }
-
-        return dates;
-    },
-
-    /**
-     * This method returns a date for a given calendar week and day of this week.
-     *
-     * @param {Number} calendarWeek The calendar week.
-     * @param {Number} dayOfWeek The day of the week (0 = sunday, ..., 7 = saturday).
-     * @param {Number} year The year (optional, default is current year).
-     *
-     * @returns {M.Date} The date.
-     */
-    getDateByWeekdayAndCalendarWeek: function(calendarWeek, dayOfWeek, year) {
-        if(calendarWeek && !isNaN(calendarWeek) && ((dayOfWeek && !isNaN(dayOfWeek)) || dayOfWeek === 0)) {
-            var dates = M.Date.getDatesOfCalendarWeek(calendarWeek, NO, year);
-            if(dates && dates.length > 0 && dates[dayOfWeek]) {
-                return dates[dayOfWeek];
-            } else {
-                M.Logger.log('Day ' + dayOfWeek + ' of calendar week ' + calendarWeek + ' could not be found!', M.ERR);
-            }
-        } else {
-            M.Logger.log('Please pass a valid calendarWeek and a valid day of the week!', M.ERR);
-        }
-    },
-
-    /**
-     * This method is used for stringify an M.Date object, e.g. when persisting it into locale storage.
-     *
-     * @private
-     * @returns {String} The date as a string.
-     */
-    toJSON: function() {
-        return String(this.date);
+        return NO;
     }
 
 });
@@ -1671,6 +1380,570 @@ M.Location = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      11.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for milliseconds.
+ *
+ * @type String
+ */
+M.MILLISECONDS = 'milliseconds';
+
+/**
+ * A constant value for seconds.
+ *
+ * @type String
+ */
+M.SECONDS = 'seconds';
+
+/**
+ * A constant value for minutes.
+ *
+ * @type String
+ */
+M.MINUTES = 'minutes';
+
+/**
+ * A constant value for hours.
+ *
+ * @type String
+ */
+M.HOURS = 'hours';
+
+/**
+ * A constant value for days.
+ *
+ * @type String
+ */
+M.DAYS = 'days';
+
+/**
+ * A constant array for day names.
+ *
+ * @type String
+ */
+M.DAY_NAMES = [
+    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+]
+
+/**
+ * A constant array for month names.
+ *
+ * @type String
+ */
+M.MONTH_NAMES = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+];
+
+/**
+ * @class
+ * 
+ * M.Date defines a prototype for creating, handling and computing dates. It is basically a wrapper
+ * to JavaScripts own date object that provides more convenient functionalities.
+ *
+ * @extends M.Object
+ */
+M.Date = M.Object.extend(
+/** @scope M.Date.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Date',
+    /**
+     * The native JavaScript date object.
+     *
+     * @type Object
+     */
+    date: null,
+
+    /**
+     * Returns the current date, e.g.
+     * Thu Nov 11 2010 14:20:55 GMT+0100 (CET)
+     *
+     * @returns {M.Date} The current date.
+     */
+    now: function() {
+        return this.extend({
+            date: new Date()
+        });
+    },
+
+    /**
+     * This method returns the date, 24h in the future.
+     *
+     * @returns {M.Date} The current date, 24 hours in the future.
+     */
+    tomorrow: function() {
+        return this.daysFromNow(1);
+    },
+
+    /**
+     * This method returns the date, 24h in the past.
+     *
+     * @returns {M.Date} The current date, 24 hours in the past.
+     */
+    yesterday: function() {
+        return this.daysFromNow(-1);
+    },
+
+    /**
+     * This method returns a date for a given date string. It is based on JS Date's parse
+     * method.
+     *
+     * The following formats are accepted (time and timezone are optional):
+     * - 11/12/2010
+     * - 11/12/2010 15:28:15
+     * - 11/12/2010 13:28:15 GMT
+     * - 11/12/2010 15:28:15 GMT+0200
+     * - 12 November 2010
+     * - 12 November 2010 15:28:15
+     * - 12 November 2010 13:28:15 GMT
+     * - 12 November 2010 15:28:15 GMT+0200
+     * - 12 Nov 2010
+     * - 12 Nov 2010 15:28:15
+     * - 12 Nov 2010 13:28:15 GMT
+     * - 12 Nov 2010 15:28:15 GMT+0200
+     *
+     * If a wrong formatted date string is given, the method will return null. Otherwise a
+     * JS Date object will be returned.
+     *
+     * @param {String} dateString The date string specifying a certain date.
+     * @returns {M.Date} The date, specified by the given date string.
+     */
+    create: function(dateString) {
+        var milliseconds = typeof(dateString) === 'number' ? dateString : null;
+
+        if(!milliseconds) {
+            var regexResult = /(\d{1,2})\.(\d{1,2})\.(\d{2,4})/.exec(dateString);
+            if(regexResult && regexResult[1] && regexResult[2] && regexResult[3]) {
+                var date = $.trim(dateString).split(' ');
+                dateString = regexResult[2] + '/' + regexResult[1] + '/' + regexResult[3] + (date[1] ? ' ' + date[1] : '');
+            }
+            milliseconds = Date.parse(dateString);
+        }
+
+        if(dateString && !milliseconds) {
+            M.Logger.log('Invalid dateString \'' + dateString + '\'.', M.WARN);
+            return null;
+        } else if(!dateString) {
+            return this.now();
+        }
+
+        return this.extend({
+            date: new Date(milliseconds)
+        });
+    },
+
+    /**
+     * This method formats a given date object according to the passed 'format' property and
+     * returns it as a String.
+     *
+     * The following list defines the special characters that can be used in the 'format' property
+     * to format the given date:
+     *
+     * d        Day of the month as digits; no leading zero for single-digit days.
+     * dd 	    Day of the month as digits; leading zero for single-digit days.
+     * ddd 	    Day of the week as a three-letter abbreviation.
+     * dddd 	Day of the week as its full name.
+     * D 	    Day of the week as number.
+     * m 	    Month as digits; no leading zero for single-digit months.
+     * mm 	    Month as digits; leading zero for single-digit months.
+     * mmm 	    Month as a three-letter abbreviation.
+     * mmmm 	Month as its full name.
+     * yy 	    Year as last two digits; leading zero for years less than 10.
+     * yyyy 	Year represented by four digits.
+     * h 	    Hours; no leading zero for single-digit hours (12-hour clock).
+     * hh 	    Hours; leading zero for single-digit hours (12-hour clock).
+     * H 	    Hours; no leading zero for single-digit hours (24-hour clock).
+     * HH 	    Hours; leading zero for single-digit hours (24-hour clock).
+     * M 	    Minutes; no leading zero for single-digit minutes.
+     * MM 	    Minutes; leading zero for single-digit minutes.
+     * s 	    Seconds; no leading zero for single-digit seconds.
+     * ss 	    Seconds; leading zero for single-digit seconds.
+     * l or L 	Milliseconds. l gives 3 digits. L gives 2 digits.
+     * t 	    Lowercase, single-character time marker string: a or p.
+     * tt   	Lowercase, two-character time marker string: am or pm.
+     * T 	    Uppercase, single-character time marker string: A or P.
+     * TT 	    Uppercase, two-character time marker string: AM or PM.
+     * Z 	    US timezone abbreviation, e.g. EST or MDT. With non-US timezones or in the Opera browser, the GMT/UTC offset is returned, e.g. GMT-0500
+     * o 	    GMT/UTC timezone offset, e.g. -0500 or +0230.
+     * S 	    The date's ordinal suffix (st, nd, rd, or th). Works well with d.
+     *
+     * @param {String} format The format.
+     * @param {Boolean} utc Determines whether to convert to UTC time or not. Default: NO.
+     * @returns {String} The date, formatted with a given format.
+     */
+    format: function(format, utc) {
+        if(isNaN(this.date)) {
+            M.Logger.log('Invalid date!', M.WARN);
+        }
+
+        var	token = /d{1,4}|D{1}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
+        var	timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g;
+        var	timezoneClip = /[^-+\dA-Z]/g;
+        var	pad = function (val, len) {
+            val = String(val);
+            len = len || 2;
+            while (val.length < len) val = "0" + val;
+            return val;
+        };
+
+		if(arguments.length == 1 && Object.prototype.toString.call(this.date) == "[object String]" && !/\d/.test(this.date)) {
+			format = this.date;
+			date = undefined;
+		}
+
+		var	_ = utc ? "getUTC" : "get";
+        var	d = this.date[_ + "Date"]();
+        var	D = this.date[_ + "Day"]();
+        var	m = this.date[_ + "Month"]();
+        var	y = this.date[_ + "FullYear"]();
+        var	H = this.date[_ + "Hours"]();
+        var	Min = this.date[_ + "Minutes"]();
+        var	s = this.date[_ + "Seconds"]();
+        var	L = this.date[_ + "Milliseconds"]();
+        var	o = utc ? 0 : this.date.getTimezoneOffset();
+        var	flags = {
+            d:    d,
+            dd:   pad(d),
+            ddd:  M.DAY_NAMES[D],
+            dddd: M.DAY_NAMES[D + 7],
+            D:    D,
+            m:    m + 1,
+            mm:   pad(m + 1),
+            mmm:  M.MONTH_NAMES[m],
+            mmmm: M.MONTH_NAMES[m + 12],
+            yy:   String(y).slice(2),
+            yyyy: y,
+            h:    H % 12 || 12,
+            hh:   pad(H % 12 || 12),
+            H:    H,
+            HH:   pad(H),
+            M:    Min,
+            MM:   pad(Min),
+            s:    s,
+            ss:   pad(s),
+            l:    pad(L, 3),
+            L:    pad(L > 99 ? Math.round(L / 10) : L),
+            t:    H < 12 ? "a"  : "p",
+            tt:   H < 12 ? "am" : "pm",
+            T:    H < 12 ? "A"  : "P",
+            TT:   H < 12 ? "AM" : "PM",
+            Z:    utc ? "UTC" : (String(this.date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+            o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+            S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+        };
+
+		return format.replace(token, function ($0) {
+			return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+		});
+    },
+
+    /**
+     * This method returns a timestamp.
+     *
+     * @returns {Number} The current date as a timestamp.
+     */
+    getTimestamp: function() {
+        if(this.date) {
+            return this.date.getTime();
+        }
+        return null
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'days'. Basically it adds or
+     * subtracts x times the milliseconds of a day, but also checks for clock changes and
+     * automatically includes these into the calculation of the future or past date.
+     *
+     * @param {Number} days The number of days to be added to or subtracted from the current date.
+     * @returns {M.Date} The current date, x days in the future (based on parameter 'days').
+     */
+    daysFromNow: function(days) {
+        var date = this.now();
+        return date.daysFromDate(days);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'days' and a given date. Basically
+     * it adds or subtracts x days, but also checks for clock changes and automatically includes
+     * these into the calculation of the future or past date.
+     *
+     * @param {Number} days The number of days to be added to or subtracted from the current date.
+     * @returns {M.Date} The date, x days in the future (based on parameter 'days').
+     */
+    daysFromDate: function(days) {
+        return this.millisecondsFromDate(days * 24 * 60 * 60 * 1000);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'hours'. Basically it adds or
+     * subtracts x times the milliseconds of an hour, but also checks for clock changes and
+     * automatically includes these into the calculation of the future or past date.
+     *
+     * @param {Number} hours The number of hours to be added to or subtracted from the current date.
+     * @returns {M.Date} The current date, x hours in the future (based on parameter 'hours').
+     */
+    hoursFromNow: function(hours) {
+        var date = this.now();
+        return date.hoursFromDate(hours);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'hours' and a given date. Basically
+     * it adds or subtracts x hours, but also checks for clock changes and automatically includes
+     * these into the calculation of the future or past date.
+     *
+     * @param {Number} hours The number of hours to be added to or subtracted from the current date.
+     * @returns {M.Date} The date, x hours in the future (based on parameter 'hours').
+     */
+    hoursFromDate: function(hours) {
+        return this.millisecondsFromDate(hours * 60 * 60 * 1000);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'minutes'. Basically it adds or
+     * subtracts x times the milliseconds of a minute, but also checks for clock changes and
+     * automatically includes these into the calculation of the future or past date.
+     *
+     * @param {Number} minutes The number of minutes to be added to or subtracted from the current date.
+     * @returns {M.Date} The current date, x minutes in the future (based on parameter 'minutes').
+     */
+    minutesFromNow: function(minutes) {
+        var date = this.now();
+        return date.minutesFromDate(minutes);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'minutes' and a given date. Basically
+     * it adds or subtracts x minutes, but also checks for clock changes and automatically includes
+     * these into the calculation of the future or past date.
+     *
+     * @param {Number} minutes The number of minutes to be added to or subtracted from the current date.
+     * @returns {M.Date} The date, x minutes in the future (based on parameter 'minutes').
+     */
+    minutesFromDate: function(minutes) {
+        return this.millisecondsFromDate(minutes * 60 * 1000);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'seconds'. Basically it adds or
+     * subtracts x times the milliseconds of a second, but also checks for clock changes and
+     * automatically includes these into the calculation of the future or past date.
+     *
+     * @param {Number} seconds The number of seconds to be added to or subtracted from the current date.
+     * @returns {M.Date} The current date, x seconds in the future (based on parameter 'seconds').
+     */
+    secondsFromNow: function(seconds) {
+        var date = this.now();
+        return date.secondsFromDate(seconds);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'seconds' and a given date. Basically
+     * it adds or subtracts x seconds, but also checks for clock changes and automatically includes
+     * these into the calculation of the future or past date.
+     *
+     * @param {Number} seconds The number of seconds to be added to or subtracted from the current date.
+     * @returns {M.Date} The date, x seconds in the future (based on parameter 'seconds').
+     */
+    secondsFromDate: function(seconds) {
+        return this.millisecondsFromDate(seconds * 1000);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'milliseconds'. Basically it adds or
+     * subtracts x milliseconds, but also checks for clock changes and automatically includes these
+     * into the calculation of the future or past date.
+     *
+     * @param {Number} milliseconds The number of milliseconds to be added to or subtracted from the current date.
+     * @returns {M.Date} The current date, x milliseconds in the future (based on parameter 'milliseconds').
+     */
+    millisecondsFromNow: function(milliseconds) {
+        var date = this.now();
+        return date.millisecondsFromDate(milliseconds);
+    },
+
+    /**
+     * This method returns a date in the future or past, based on 'milliseconds' and a given date. Basically
+     * it adds or subtracts x milliseconds, but also checks for clock changes and automatically includes
+     * these into the calculation of the future or past date.
+     *
+     * @param {Number} milliseconds The number of milliseconds to be added to or subtracted from the current date.
+     * @returns {M.Date} The date, x milliseconds in the future (based on parameter 'milliseconds').
+     */
+    millisecondsFromDate: function(milliseconds) {
+        if(!this.date) {
+            M.Logger.log('no date specified!', M.ERR);
+        }
+
+        return this.extend({
+            date: new Date(this.getTimestamp() + milliseconds)
+        });
+    },
+
+    /**
+     * This method returns the time between two dates, based on the given returnType.
+     *
+     * Possible returnTypes are:
+     * - M.MILLISECONDS: milliseconds
+     * - M.SECONDS: seconds
+     * - M.MINUTES: minutes
+     * - M.HOURS: hours
+     * - M.DAYS: days
+     *
+     * @param {Object} date The date.
+     * @param {String} returnType The return type for the call.
+     * @returns {Number} The time between the two dates, computed as what is specified by the 'returnType' parameter.
+     */
+    timeBetween: function(date, returnType) {
+        var firstDateInMilliseconds = this.date ? this.getTimestamp() : null;
+        var secondDateInMilliseconds = date.date ? date.getTimestamp() : null;
+        
+        if(firstDateInMilliseconds && secondDateInMilliseconds) {
+            switch (returnType) {
+                case M.DAYS:
+                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (24 * 60 * 60 * 1000);
+                    break;
+                case M.HOURS:
+                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (60 * 60 * 1000);
+                    break;
+                case M.MINUTES:
+                    return (secondDateInMilliseconds - firstDateInMilliseconds) / (60 * 1000);
+                    break;
+                case M.SECONDS:
+                    return (secondDateInMilliseconds - firstDateInMilliseconds) / 1000;
+                    break;
+                case M.MILLISECONDS:
+                default:
+                    return (secondDateInMilliseconds - firstDateInMilliseconds);
+                    break;
+            }
+        } else if(firstDateInMilliseconds) {
+            M.Logger.log('invalid date passed.', M.ERR);
+        } else {
+            M.Logger.log('invalid date.', M.ERR);
+        }
+    },
+
+
+    /**
+     * This method computes the calendar week of a date. It can either be executed on a M.Date object,
+     * to get the calendar week of that date, or you can pass parameters to get the calendar week
+     * for the specified date.
+     *
+     * @param {Number} year The year part of the date, e.g. 2011. Must be four digits.
+     * @param {Number} month The month part of the date: 0-11. Must be one/two digit.
+     * @param {Number} day The day part of the date: 1-31. Must be one/two digits.
+     *
+     * @returns {Number} The calendar week: 1-52.
+     */
+    getCalendarWeek: function(year, month, day){
+        if(!year) {
+            year = parseIntRadixTen(this.format('yyyy'));
+            month = parseIntRadixTen(this.format('m'));
+            day = parseIntRadixTen(this.format('d'));
+        } else {
+            month += 1;
+        }
+
+        var a = Math.floor((14 - (month)) / 12);
+        var y = year + 4800 - a;
+        var m = (month) + (12 * a) - 3;
+        var jd = day + Math.floor(((153 * m) + 2) / 5) + (365 * y) + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+        var d4 = (jd + 31741 - (jd % 7)) % 146097 % 36524 % 1461;
+        var L = Math.floor(d4 / 1460);
+        var d1 = ((d4 - L) % 365) + L;
+        var calendarWeek = Math.floor(d1 / 7) + 1;
+
+        return calendarWeek;
+    },
+
+    /**
+     * This method returns an array containing all dates within one calendar week. If no parameters are given,
+     * the calendar week of the current date is taken.
+     *
+     * @param {Number} calendarWeek The calendar week. Note: Pass 'null' if you use this method on an existing M.Date object.
+     * @param {Boolean} startWeekOnMonday Determines whether a week starts on monday or sunday (optional, default is NO).
+     * @param {Number} year The year (optional, default is current year).
+     *
+     * @returns {Array} An array containing all dates within the specified calendar week.
+     */
+    getDatesOfCalendarWeek: function(calendarWeek, startWeekOnMonday, year) {
+        year = year && !isNaN(year) ? year : (this.date ? this.format('yyyy') : M.Date.now().format('yyyy'));
+        var newYear = M.Date.create('01/01/' + year);
+        var newYearWeekDay = newYear.format('D');
+
+        var firstWeek = null;
+        if(startWeekOnMonday) {
+            firstWeek = newYearWeekDay == 1 ? newYear : newYear.daysFromDate(8 - (newYearWeekDay == 0 ? 7 : newYearWeekDay));
+        } else {
+            firstWeek = newYearWeekDay == 0 ? newYear : newYear.daysFromDate(7 - newYearWeekDay);
+        }
+
+        calendarWeek = calendarWeek ? calendarWeek : this.getCalendarWeek();
+
+        var requiredWeek = firstWeek.daysFromDate((calendarWeek - 1) * 7);
+
+        var dates = [];
+        for(var i = 0; i < 7; i++) {
+            var date = requiredWeek.daysFromDate(i);
+            date = M.Date.create(date.format('mm') + '/' + date.format('dd') + '/' + date.format('yyyy'));
+            dates.push(date);
+        }
+
+        return dates;
+    },
+
+    /**
+     * This method returns a date for a given calendar week and day of this week.
+     *
+     * @param {Number} calendarWeek The calendar week.
+     * @param {Number} dayOfWeek The day of the week (0 = sunday, ..., 7 = saturday).
+     * @param {Number} year The year (optional, default is current year).
+     *
+     * @returns {M.Date} The date.
+     */
+    getDateByWeekdayAndCalendarWeek: function(calendarWeek, dayOfWeek, year) {
+        if(calendarWeek && !isNaN(calendarWeek) && ((dayOfWeek && !isNaN(dayOfWeek)) || dayOfWeek === 0)) {
+            var dates = M.Date.getDatesOfCalendarWeek(calendarWeek, NO, year);
+            if(dates && dates.length > 0 && dates[dayOfWeek]) {
+                return dates[dayOfWeek];
+            } else {
+                M.Logger.log('Day ' + dayOfWeek + ' of calendar week ' + calendarWeek + ' could not be found!', M.ERR);
+            }
+        } else {
+            M.Logger.log('Please pass a valid calendarWeek and a valid day of the week!', M.ERR);
+        }
+    },
+
+    /**
+     * This method is used for stringify an M.Date object, e.g. when persisting it into locale storage.
+     *
+     * @private
+     * @returns {String} The date as a string.
+     */
+    toJSON: function() {
+        return String(this.date);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1952,328 +2225,6 @@ M.UniqueId = M.Object.extend({
         }
         return uuid.join('');
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
- * First M.Request.init needs to be called, then send.
- *
- * @extends M.Object
- */
-M.Request = M.Object.extend(
-/** @scope M.Request.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Request',
-
-    /**
-     * The HTTP method to use.
-     *
-     * Defaults to GET.
-     *
-     * @type String
-     */
-    method: 'GET',
-
-    /**
-     * The URL this request is sent to.
-     *
-     * @type String
-     */
-    url: null,
-
-    /**
-     * Sends the request asynchronously instead of blocking the browser.
-     * You should almost always make requests asynchronous. You can change this
-     * options with the async() helper option (or simply set it directly).
-     *
-     * Defaults to YES.
-     *
-     * @type Boolean
-     */
-    isAsync: YES,
-
-
-    /**
-     * Processes the request and response as JSON if possible.
-     *
-     * Defaults to NO.
-     *
-     * @type Boolean
-     */
-    isJSON: NO,
-
-    /**
-     * Optional timeout value of the request in milliseconds.
-     *
-     * @type Number
-     */
-    timeout: null,
-
-    /**
-     * If set, contains the request's callbacks in sub objects. There are three
-     * possible callbacks that can be used:
-     *
-     *   - beforeSend
-     *   - success
-     *   - error
-     *
-     * A callback object consists of at least an action but can also specify a
-     * target object that determines the scope for that action. If a target is
-     * specified, the action can either  be a string (the name if a method within
-     * the specified scope) or a function. If there is no target specified, the
-     * action must be a function. So a success callback could e.g. look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: 'successCallback'
-     *     }
-     *   }
-     *
-     * Or it could look like:
-     *
-     *   callbacks: {
-     *     success: {
-     *       target: MyApp.MyController,
-     *       action: function() {
-     *         // do something...
-     *       }
-     *     }
-     *   }
-     *
-     * Depending on the type of callback, there are different parameters, that
-     * are automatically passed to the callback:
-     *
-     *   - beforeSend(request)
-     *   - success(data, msg, request)
-     *   - error(request, msg)
-     *
-     * For further information about that, take a look at the internal callbacks
-     * of M.Request:
-     *
-     *   - internalBeforeSend
-     *   - internalOnSuccess
-     *   - internalOnError
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * This property can be used to specify whether or not to cache the request.
-     * Setting this to YES will set the 'Cache-Control' property of the request
-     * header to 'no-cache'.
-     *
-     * @Boolean
-     */
-    sendNoCacheHeader: YES,
-
-    /**
-     * This property can be used to specify whether or not to send a timestamp
-     * along with the request in order to make every request unique. Since some
-     * browsers (e.g. Android) automatically cache identical requests, setting
-     * this property to YES will add an additional parameter to the request,
-     * containing the current timestamp.
-     *
-     * So if you have any trouble with caching of requests, try setting this to
-     * YES. But note, that it might also cause trouble on the server-side if they
-     * do not expect this additional parameter.
-     *
-     * @Boolean
-     */
-    sendTimestamp: NO,
-
-    /**
-     * The data body of the request.
-     *
-     * @type String, Object
-     */
-    data: null,
-
-    /**
-     * Holds the jQuery request object
-     *
-     * @type Object
-     */
-    request: null,
-
-    /**
-     * Initializes a request. Sets the parameter of this request object with the passed values.
-     *
-     * @param {Object} obj The parameter object. Includes:
-     * * method: the http method to use, e.g. 'POST'
-     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
-     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
-     * * isJSON: defines whether to process request and response as JSON
-     * * timout: defines timeout in milliseconds
-     * * data: the data to be transmitted
-     * * beforeSend: callback that is called before request is sent
-     * * onError: callback that is called when an error occured
-     * * onSuccess: callback that is called when request was successful
-     */
-    init: function(obj){
-        obj = obj ? obj : {};
-        return this.extend({
-            method: obj['method'] ? obj['method'] : this.method,
-            url: obj['url'] ? obj['url'] : this.url,
-            isAsync: (obj['isAsync'] !== undefined && obj['isAsync'] !== null) ? obj['isAsync'] : this.isAsync,
-            isJSON: (obj['isJSON'] !== undefined && obj['isJSON'] !== null) ? obj['isJSON'] : this.isJSON,
-            timeout: obj['timeout'] ? obj['timeout'] : this.timeout,
-            data: obj['data'] ? obj['data'] : this.data,
-            callbacks: obj['callbacks'],
-            sendNoCacheHeader: obj['sendNoCacheHeader'],
-            sendTimestamp: obj['sendTimestamp'],
-            beforeSend: obj['beforeSend'] ? obj['beforeSend'] : this.beforeSend,
-            onError: obj['onError'] ? obj['onError'] : this.onError,
-            onSuccess: obj['onSuccess'] ? obj['onSuccess'] : this.onSuccess
-        });
-    },
-
-    /**
-     * A pre-callback that is called right before the request is sent.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    beforeSend: function(request){},
-
-    /**
-     * The callback to be called if the request failed.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    onError: function(request, msg){},
-
-    /**
-     * The callback to be called if the request succeeded.
-     *
-     * Note: This method will be removed with v1.0! Use the callbacks
-     * property instead.
-     *
-     * @deprecated
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    onSuccess: function(data, msg, request){},
-
-    /**
-     * This method is an internal callback that is called right before a
-     * request is send.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalBeforeSend: function(request){
-        if(this.sendNoCacheHeader) {
-            request.setRequestHeader('Cache-Control', 'no-cache');
-        }
-
-        if(!this.callbacks && this.beforeSend) {
-            this.beforeSend(request);
-        }
-
-        if(this.callbacks && this.callbacks['beforeSend'] && M.EventDispatcher.checkHandler(this.callbacks['beforeSend'])) {
-            M.EventDispatcher.callHandler(this.callbacks['beforeSend'], null, NO, [request]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if a request
-     * failed.
-     *
-     * @param {Object} request The XMLHttpRequest object.
-     * @param {String} msg The error message.
-     */
-    internalOnError: function(request, msg){
-        if(!this.callbacks && this.onError) {
-            this.onError(request, msg);
-        }
-
-        if(this.callbacks && this.callbacks['error'] && M.EventDispatcher.checkHandler(this.callbacks['error'])) {
-            M.EventDispatcher.callHandler(this.callbacks['error'], null, NO, [request, msg]);
-        }
-    },
-
-    /**
-     * This method is an internal callback that is called if the request
-     * succeeded.
-     *
-     * @param {String|Object} data The data returned from the server.
-     * @param {String} msg A String describing the status.
-     * @param {Object} request The XMLHttpRequest object.
-     */
-    internalOnSuccess: function(data, msg, request){
-        if(!this.callbacks && this.onSuccess) {
-            this.onSuccess(data, msg, request);
-        }
-
-        if(this.callbacks && this.callbacks['success'] && M.EventDispatcher.checkHandler(this.callbacks['success'])) {
-            M.EventDispatcher.callHandler(this.callbacks['success'], null, NO, [data, msg, request]);
-        }
-    },
-
-    /**
-     * Sends an Ajax request by using jQuery's $.ajax().
-     * Needs init first!
-     */
-    send: function(){
-        this.request = $.ajax({
-            type: this.method,
-            url: this.url,
-            async: this.isAsync,
-            dataType: this.isJSON ? 'json' : 'text',
-            contentType: this.isJSON ? 'application/json' : 'application/x-www-form-urlencoded',
-            timeout: this.timeout,
-            data: this.data ? this.data : '',
-            context: this,
-            beforeSend: this.internalBeforeSend,
-            success: this.internalOnSuccess,
-            error: this.internalOnError,
-            cache: !this.sendTimestamp,
-            xhrFields: { withCredentials: true }
-        });
-    },
-
-    /**
-     * Aborts this request. Delegate to jQuery
-     *
-     * @return Boolean Indicating whether request exists and is aborted or not
-     */
-    abort: function() {
-        if(this.request) {
-            this.request.abort();
-            return YES;
-        }
-        return NO;
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -2586,6 +2537,465 @@ M.SHA256 = M.Object.extend(
                     hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
         }
         return str;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      26.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/request.js');
+
+/**
+ * A constant value for logging level: info.
+ *
+ * @type Number
+ */
+M.INFO = 0;
+
+/**
+ * A constant value for logging level: debug.
+ *
+ * @type Number
+ */
+M.DEBUG = 1;
+
+/**
+ * A constant value for logging level: warning.
+ *
+ * @type Number
+ */
+M.WARN = 2;
+
+/**
+ * A constant value for logging level: error.
+ *
+ * @type Number
+ */
+M.ERR = 3;
+
+/**
+ * @class
+ *
+ * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
+ * based on a given logging level.
+ *
+ * @extends M.Object
+ */
+M.Logger = M.Object.extend(
+/** @scope M.Logger.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Logger',
+
+    /**
+     *
+     *  for internal use
+     *  if the espresso call fails - don't try it again
+     *
+     * @type Boolean
+      */
+    _remoteAccess: YES,
+
+    /**
+     * This method is used to log anything out of an application based on the given logging level.
+     * Possible values for the logging level are:
+     *
+     * - debug:   M.DEBUG
+     * - error:   M.ERROR
+     * - warning: M.WARN
+     * - info: M.INFO
+     *
+     * @param {String} msg The logging message.
+     * @param {Number} level The logging level.
+     */
+    log: function(msg, level) {
+        level = level || M.DEBUG;
+
+        /* are we in production mode, then do not throw any logs */
+        if(M.Application.getConfig('debugMode') === false) {
+            return;
+        }
+
+        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
+        if (typeof console === 'undefined') {
+            window.console = {} ;
+            console.log = console.info = console.warn = trackError = function(){};
+        }
+
+        switch (level) {
+            case M.DEBUG:
+                this.debug(msg);
+                break;
+            case M.ERR:
+                this.error(msg);
+                break;
+            case M.WARN:
+                this.warn(msg);
+                break;
+            case M.INFO:
+                this.info(msg);
+                break;
+            default:
+                this.debug(msg);
+                break;
+        }
+    },
+
+    /**
+     * This method is used to log a message on logging level debug.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    debug: function(msg) {
+        console.debug(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level error.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    error: function(msg) {
+        trackError(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level warning.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    warn: function(msg) {
+        console.warn(msg);
+    },
+
+    /**
+     * This method is used to log a message on logging level info.
+     *
+     * @private
+     * @param {String} msg The logging message.
+     */
+    info: function(msg) {
+        console.info(msg);
+    },
+
+    /**
+     * tries to connect to espresso and prints a debug message in the espresso console
+     * @param msg the message send to espresso
+     */
+    remote: function(msg){
+        var that = this;
+        try{
+            if(that._remoteAccess){
+                var m = JSON.stringify(msg);
+                $.ajax({
+                    url: "/__espresso_debug_console__",
+                    data: m,
+                    type: 'POST'
+                }).done(function(){
+                    that._remoteAccess = YES;
+                }).fail(function(){
+                    that._remoteAccess = NO;
+                });
+            }
+        }catch(e){
+            M.Logger.error(e);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+m_require('core/utility/environment.js');
+
+/**
+ * @class
+ *
+ * Object for dispatching all incoming events.
+ *
+ * @extends M.Object
+ */
+M.EventDispatcher = M.Object.extend(
+/** @scope M.EventDispatcher.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EventDispatcher',
+
+    /**
+     * Saves the latest on click event to make sure that there are no multiple events
+     * fired for one click.
+     *
+     * @type {Object}
+     */
+    lastEvent: {},
+
+    /**
+     * This method is used to register events and link them to a corresponding action.
+     * 
+     * @param {String|Object} eventSource The view's id or a DOM object.
+     * @param {Object} events The events to be registered for the given view or DOM object.
+     */
+    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
+        if(!events || typeof(events) !== 'object') {
+            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
+            return;
+        }
+
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+
+        _.each(events, function(handler, type) {
+            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
+        });
+    },
+
+    /**
+     * This method is used to register a certain event for a certain view or DOM object
+     * and link them to a corresponding action.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     * @param {Object} handler The handler for the event.
+     * @param {Object} recommendedEvents The recommended events for this event source.
+     * @param {Object} sourceType The type of the event source.
+     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
+     */
+    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall, skipUnbinding) {
+        if(!isInternalCall) {
+            if(!handler || typeof(handler) !== 'object') {
+                M.Logger.log('No event passed!', M.WARN);
+                return;
+            }
+
+            eventSource = this.getEventSource(eventSource);
+            if(!this.checkEventSource(eventSource)) {
+                return;
+            }
+        }
+
+        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
+            if(sourceType && typeof(sourceType) === 'string') {
+                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
+            } else {
+                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
+            }
+        }
+
+        if(!this.checkHandler(handler, type)) {
+            return;
+        }
+
+        /* switch enter event to keyup with keycode 13 */
+        if(type === 'enter') {
+            eventSource.bind('keyup', function(event) {
+                if(event.which === 13) {
+                    $(this).trigger('enter');
+                }
+            });
+        }
+
+        var that = this;
+        var view = M.ViewManager.getViewById(eventSource.attr('id'));
+        eventSource.bind(type, function(event) {
+            /* discard false twice-fired events in some special cases */
+            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
+                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
+                    return;
+                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
+                    return;
+                }
+            }
+
+            /* no propagation (except some specials) */
+            var killEvent = YES;
+            if(eventSource.attr('id')) {
+                var view = M.ViewManager.getViewById(eventSource.attr('id'));
+                if(view.type === 'M.SearchBarView') {
+                    killEvent = NO;
+                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
+                    killEvent = NO;
+                } else if(view.hyperlinkTarget && view.hyperlinkType) {
+                    killEvent = NO;
+                } else if(type === 'pageshow') {
+                    killEvent = NO;
+                }
+            }
+            if(killEvent) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            /* store event in lastEvent property for capturing false twice-fired events */
+            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
+                that.lastEvent[type] = {
+                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
+                    date: +new Date(),
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            }
+
+            /* event logger, uncomment for development mode */
+            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
+
+            if(handler.nextEvent) {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
+            } else {
+                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+            }
+        });
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvents: function(eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind();
+    },
+
+    /**
+     * This method can be used to unregister events.
+     *
+     * @param {String} type The type of the event.
+     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
+     */
+    unregisterEvent: function(type, eventSource) {
+        eventSource = this.getEventSource(eventSource);
+        if(!this.checkEventSource(eventSource)) {
+            return;
+        }
+        eventSource.unbind(type);
+    },
+
+    /**
+     * This method is used to explicitly call an event handler. We mainly use this for
+     * combining internal and external events.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {Object} event The original DOM event.
+     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
+     * @param {Array} parameters The (additional) parameters for the handler call.
+     */
+    callHandler: function(handler, event, passEvent, parameters) {
+        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
+            return;
+        }
+
+        if(!passEvent) {
+            this.bindToCaller(handler.target, handler.action, parameters)();
+        } else {
+            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
+        }
+    },
+
+    /**
+     * This method is used to check the handler. It tests if target and action are
+     * specified correctly.
+     *
+     * @param {Object} handler The handler for the event.
+     * @param {String} type The type of the event.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkHandler: function(handler, type) {
+        if(typeof(handler.action) === 'string') {
+            if(handler.target) {
+                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
+                    handler.action = handler.target[handler.action];
+                    return YES;
+                } else {
+                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
+                    return NO;
+                }
+            } else {
+                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
+                return NO;
+            }
+        } else if(typeof(handler.action) !== 'function') {
+            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
+            return NO;
+        }
+
+        return YES;
+    },
+
+    /**
+     * This method is used to get the event source as a DOM object.
+     *
+     * @param {Object|String} eventSource The event source.
+     * @return {Object} The event source as dom object.
+     */
+    getEventSource: function(eventSource) {
+        if(typeof(eventSource) === 'string') {
+            eventSource = $('#' + eventSource + ':first');
+        } else {
+            eventSource = $(eventSource);
+        }
+        
+        return eventSource;
+    },
+
+    /**
+     * This method is used to check the event source. It tests if it is correctly
+     * specified.
+     *
+     * @param {Object} eventSource The event source.
+     * @return {Boolean} Specifies whether or not the check was successful.
+     */
+    checkEventSource: function(eventSource) {
+        if(!eventSource) {
+            M.Logger.log('The event source is invalid!', M.WARN);
+            return NO;
+        }
+        
+        return YES;
+    },
+
+    dispatchOrientationChangeEvent: function(id, event, nextEvent) {
+        var orientation = M.Environment.getOrientation();
+        if(orientation === M.PORTRAIT_BOTTOM || orientation === M.PORTRAIT_TOP) {
+            $('html').removeClass('landscape');
+            $('html').addClass('portrait');
+        } else {
+            $('html').removeClass('portrait');
+            $('html').addClass('landscape');
+        }
+        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
     }
 
 });
@@ -3027,184 +3437,6 @@ M.LocationManager = M.Object.extend(
                     }
                 }
             });
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      26.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/request.js');
-
-/**
- * A constant value for logging level: info.
- *
- * @type Number
- */
-M.INFO = 0;
-
-/**
- * A constant value for logging level: debug.
- *
- * @type Number
- */
-M.DEBUG = 1;
-
-/**
- * A constant value for logging level: warning.
- *
- * @type Number
- */
-M.WARN = 2;
-
-/**
- * A constant value for logging level: error.
- *
- * @type Number
- */
-M.ERR = 3;
-
-/**
- * @class
- *
- * M.Logger defines the prototype for any logging object. It is used to log messages out of the application
- * based on a given logging level.
- *
- * @extends M.Object
- */
-M.Logger = M.Object.extend(
-/** @scope M.Logger.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Logger',
-
-    /**
-     *
-     *  for internal use
-     *  if the espresso call fails - don't try it again
-     *
-     * @type Boolean
-      */
-    _remoteAccess: YES,
-
-    /**
-     * This method is used to log anything out of an application based on the given logging level.
-     * Possible values for the logging level are:
-     *
-     * - debug:   M.DEBUG
-     * - error:   M.ERROR
-     * - warning: M.WARN
-     * - info: M.INFO
-     *
-     * @param {String} msg The logging message.
-     * @param {Number} level The logging level.
-     */
-    log: function(msg, level) {
-        level = level || M.DEBUG;
-
-        /* are we in production mode, then do not throw any logs */
-        if(M.Application.getConfig('debugMode') === false) {
-            return;
-        }
-
-        /* Prevent a console.log from blowing things up if we are on a browser that doesn't support this. */
-        if (typeof console === 'undefined') {
-            window.console = {} ;
-            console.log = console.info = console.warn = trackError = function(){};
-        }
-
-        switch (level) {
-            case M.DEBUG:
-                this.debug(msg);
-                break;
-            case M.ERR:
-                this.error(msg);
-                break;
-            case M.WARN:
-                this.warn(msg);
-                break;
-            case M.INFO:
-                this.info(msg);
-                break;
-            default:
-                this.debug(msg);
-                break;
-        }
-    },
-
-    /**
-     * This method is used to log a message on logging level debug.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    debug: function(msg) {
-        console.debug(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level error.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    error: function(msg) {
-        trackError(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level warning.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    warn: function(msg) {
-        console.warn(msg);
-    },
-
-    /**
-     * This method is used to log a message on logging level info.
-     *
-     * @private
-     * @param {String} msg The logging message.
-     */
-    info: function(msg) {
-        console.info(msg);
-    },
-
-    /**
-     * tries to connect to espresso and prints a debug message in the espresso console
-     * @param msg the message send to espresso
-     */
-    remote: function(msg){
-        var that = this;
-        try{
-            if(that._remoteAccess){
-                var m = JSON.stringify(msg);
-                $.ajax({
-                    url: "/__espresso_debug_console__",
-                    data: m,
-                    type: 'POST'
-                }).done(function(){
-                    that._remoteAccess = YES;
-                }).fail(function(){
-                    that._remoteAccess = NO;
-                });
-            }
-        }catch(e){
-            M.Logger.error(e);
         }
     }
 
@@ -4429,287 +4661,6 @@ M.Error = M.Object.extend(
     code: '',
     msg: '',
     errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-m_require('core/utility/environment.js');
-
-/**
- * @class
- *
- * Object for dispatching all incoming events.
- *
- * @extends M.Object
- */
-M.EventDispatcher = M.Object.extend(
-/** @scope M.EventDispatcher.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EventDispatcher',
-
-    /**
-     * Saves the latest on click event to make sure that there are no multiple events
-     * fired for one click.
-     *
-     * @type {Object}
-     */
-    lastEvent: {},
-
-    /**
-     * This method is used to register events and link them to a corresponding action.
-     * 
-     * @param {String|Object} eventSource The view's id or a DOM object.
-     * @param {Object} events The events to be registered for the given view or DOM object.
-     */
-    registerEvents: function(eventSource, events, recommendedEvents, sourceType) {
-        if(!events || typeof(events) !== 'object') {
-            M.Logger.log('No events passed for \'' + eventSource + '\'!', M.WARN);
-            return;
-        }
-
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-
-        _.each(events, function(handler, type) {
-            M.EventDispatcher.registerEvent(type, eventSource, handler, recommendedEvents, sourceType, YES);
-        });
-    },
-
-    /**
-     * This method is used to register a certain event for a certain view or DOM object
-     * and link them to a corresponding action.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     * @param {Object} handler The handler for the event.
-     * @param {Object} recommendedEvents The recommended events for this event source.
-     * @param {Object} sourceType The type of the event source.
-     * @param {Boolean} isInternalCall The flag to determine whether this is an internal call or not.
-     */
-    registerEvent: function(type, eventSource, handler, recommendedEvents, sourceType, isInternalCall, skipUnbinding) {
-        if(!isInternalCall) {
-            if(!handler || typeof(handler) !== 'object') {
-                M.Logger.log('No event passed!', M.WARN);
-                return;
-            }
-
-            eventSource = this.getEventSource(eventSource);
-            if(!this.checkEventSource(eventSource)) {
-                return;
-            }
-        }
-
-        if(!(recommendedEvents && _.indexOf(recommendedEvents, type) > -1)) {
-            if(sourceType && typeof(sourceType) === 'string') {
-                M.Logger.log('Event type \'' + type + '\' not recommended for ' + sourceType + '!', M.WARN);
-            } else {
-                M.Logger.log('Event type \'' + type + '\' not recommended!', M.WARN);
-            }
-        }
-
-        if(!this.checkHandler(handler, type)) {
-            return;
-        }
-
-        /* switch enter event to keyup with keycode 13 */
-        if(type === 'enter') {
-            eventSource.bind('keyup', function(event) {
-                if(event.which === 13) {
-                    $(this).trigger('enter');
-                }
-            });
-        }
-
-        var that = this;
-        var view = M.ViewManager.getViewById(eventSource.attr('id'));
-        eventSource.bind(type, function(event) {
-            /* discard false twice-fired events in some special cases */
-            if(eventSource.attr('id') && M.ViewManager.getViewById(eventSource.attr('id')).type === 'M.DashboardItemView') {
-                if(that.lastEvent.tap && that.lastEvent.tap.view === 'M.DashboardItemView' && that.lastEvent.tap.x === event.clientX && that.lastEvent.tap.y === event.clientY) {
-                    return;
-                } else if(that.lastEvent.taphold && that.lastEvent.taphold.view === 'M.DashboardItemView' && that.lastEvent.taphold.x === event.clientX && that.lastEvent.taphold.y === event.clientY) {
-                    return;
-                }
-            }
-
-            /* no propagation (except some specials) */
-            var killEvent = YES;
-            if(eventSource.attr('id')) {
-                var view = M.ViewManager.getViewById(eventSource.attr('id'));
-                if(view.type === 'M.SearchBarView') {
-                    killEvent = NO;
-                } else if((type === 'click' || type === 'tap') && view.type === 'M.ButtonView' && view.parentView && view.parentView.type === 'M.ToggleView' && view.parentView.toggleOnClick) {
-                    killEvent = NO;
-                } else if(view.hyperlinkTarget && view.hyperlinkType) {
-                    killEvent = NO;
-                } else if(type === 'pageshow') {
-                    killEvent = NO;
-                }
-            }
-            if(killEvent) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            /* store event in lastEvent property for capturing false twice-fired events */
-            if(M.ViewManager.getViewById(eventSource.attr('id'))) {
-                that.lastEvent[type] = {
-                    view: M.ViewManager.getViewById(eventSource.attr('id')).type,
-                    date: +new Date(),
-                    x: event.clientX,
-                    y: event.clientY
-                }
-            }
-
-            /* event logger, uncomment for development mode */
-            //M.Logger.log('Event \'' + event.type + '\' did happen for id \'' + event.currentTarget.id + '\'', M.INFO);
-
-            if(handler.nextEvent) {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event, handler.nextEvent])();
-            } else {
-                that.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-            }
-        });
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvents: function(eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind();
-    },
-
-    /**
-     * This method can be used to unregister events.
-     *
-     * @param {String} type The type of the event.
-     * @param {String|Object} eventSource The view's id, the view object or a DOM object.
-     */
-    unregisterEvent: function(type, eventSource) {
-        eventSource = this.getEventSource(eventSource);
-        if(!this.checkEventSource(eventSource)) {
-            return;
-        }
-        eventSource.unbind(type);
-    },
-
-    /**
-     * This method is used to explicitly call an event handler. We mainly use this for
-     * combining internal and external events.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {Object} event The original DOM event.
-     * @param {Boolean} passEvent Determines whether or not to pass the event and its target as the first parameters for the handler call.
-     * @param {Array} parameters The (additional) parameters for the handler call.
-     */
-    callHandler: function(handler, event, passEvent, parameters) {
-        if(!this.checkHandler(handler, (event && event.type ? event.type : 'undefined'))) {
-            return;
-        }
-
-        if(!passEvent) {
-            this.bindToCaller(handler.target, handler.action, parameters)();
-        } else {
-            this.bindToCaller(handler.target, handler.action, [event.currentTarget.id ? event.currentTarget.id : event.currentTarget, event])();
-        }
-    },
-
-    /**
-     * This method is used to check the handler. It tests if target and action are
-     * specified correctly.
-     *
-     * @param {Object} handler The handler for the event.
-     * @param {String} type The type of the event.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkHandler: function(handler, type) {
-        if(typeof(handler.action) === 'string') {
-            if(handler.target) {
-                if(handler.target[handler.action] && typeof(handler.target[handler.action]) === 'function') {
-                    handler.action = handler.target[handler.action];
-                    return YES;
-                } else {
-                    M.Logger.log('No action \'' + handler.action + '\' found for given target and the event type \'' + type + '\'!', M.WARN);
-                    return NO;
-                }
-            } else {
-                M.Logger.log('No valid target passed for action \'' + handler.action + '\' and the event type \'' + type + '\'!', M.WARN);
-                return NO;
-            }
-        } else if(typeof(handler.action) !== 'function') {
-            M.Logger.log('No valid action passed for the event type \'' + type + '\'!', M.WARN);
-            return NO;
-        }
-
-        return YES;
-    },
-
-    /**
-     * This method is used to get the event source as a DOM object.
-     *
-     * @param {Object|String} eventSource The event source.
-     * @return {Object} The event source as dom object.
-     */
-    getEventSource: function(eventSource) {
-        if(typeof(eventSource) === 'string') {
-            eventSource = $('#' + eventSource + ':first');
-        } else {
-            eventSource = $(eventSource);
-        }
-        
-        return eventSource;
-    },
-
-    /**
-     * This method is used to check the event source. It tests if it is correctly
-     * specified.
-     *
-     * @param {Object} eventSource The event source.
-     * @return {Boolean} Specifies whether or not the check was successful.
-     */
-    checkEventSource: function(eventSource) {
-        if(!eventSource) {
-            M.Logger.log('The event source is invalid!', M.WARN);
-            return NO;
-        }
-        
-        return YES;
-    },
-
-    dispatchOrientationChangeEvent: function(id, event, nextEvent) {
-        var orientation = M.Environment.getOrientation();
-        if(orientation === M.PORTRAIT_BOTTOM || orientation === M.PORTRAIT_TOP) {
-            $('html').removeClass('landscape');
-            $('html').addClass('portrait');
-        } else {
-            $('html').removeClass('portrait');
-            $('html').addClass('landscape');
-        }
-        $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7837,3 +7788,52 @@ M.Application = M.Object.extend(
     }
 
 });
+(function( $ ){
+    //return the height of an element with the its margin whether it's visible or not
+    $.fn.outerMarginHeight = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var height = this.outerHeight();
+        height += parseIntRadixTen(this.css('margin-bottom'));
+        height += parseIntRadixTen(this.css('margin-top'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return height;
+
+    };
+    //return the width of an element with the its margin whether it's visible or not
+    $.fn.outerMarginWidth = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var width = this.outerWidth();
+        width += parseIntRadixTen(this.css('margin-left'));
+        width += parseIntRadixTen(this.css('margin-right'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return width;
+
+    };
+
+})( jQuery );
