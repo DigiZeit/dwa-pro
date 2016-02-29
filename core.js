@@ -268,81 +268,6 @@ M.Object =
 };
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.05.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.DeviceSwitch defines a prototype for using device specific objects within
- * an application developed with The M-Project.
- *
- * @extends M.Object
- */
-M.DeviceSwitch = M.Object.extend(
-/** @scope M.DeviceSwitch.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DeviceSwitch',
-
-    /**
-     * The name of the current device.
-     *
-     * @type String
-     */
-    device: null,
-
-    /**
-     * This method returns the specialized string for the given key based on
-     * the current device/environment.
-     *
-     * @param {String} key The key to the specialized string.
-     * @returns {String} The specialized string based on the current device/environment.
-     */
-    s: function(key) {
-        return this.specialize(key);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @returns {String} The localizes string based on the current application language.
-     */
-    specialize: function(key) {
-        if(!this.device) {
-            M.Logger.log('No device specified!', M.ERR);
-            return null;
-        }
-
-        if(this[this.device] && this[this.device][key]) {
-            return this[this.device][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
-            return null;
-        }
-    }
-
-});
-
-M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -905,6 +830,81 @@ M.Date = M.Object.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.05.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.DeviceSwitch defines a prototype for using device specific objects within
+ * an application developed with The M-Project.
+ *
+ * @extends M.Object
+ */
+M.DeviceSwitch = M.Object.extend(
+/** @scope M.DeviceSwitch.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DeviceSwitch',
+
+    /**
+     * The name of the current device.
+     *
+     * @type String
+     */
+    device: null,
+
+    /**
+     * This method returns the specialized string for the given key based on
+     * the current device/environment.
+     *
+     * @param {String} key The key to the specialized string.
+     * @returns {String} The specialized string based on the current device/environment.
+     */
+    s: function(key) {
+        return this.specialize(key);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @returns {String} The localizes string based on the current application language.
+     */
+    specialize: function(key) {
+        if(!this.device) {
+            M.Logger.log('No device specified!', M.ERR);
+            return null;
+        }
+
+        if(this[this.device] && this[this.device][key]) {
+            return this[this.device][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
+            return null;
+        }
+    }
+
+});
+
+M.DS = M.DeviceSwitch;
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1669,94 +1669,6 @@ M.Location = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1906,6 +1818,94 @@ M.Math = M.Object.extend(
         return nearestNumber;
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -3630,6 +3630,80 @@ M.DataConsumer = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4094,6 +4168,272 @@ M.Validator = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      11.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The root object for Error objects
+ *
+ * M.Error encapsulates errors in The-M-Project.
+ * Should be passed to error callbacks.
+ *
+ * 0-99:    general errors
+ *
+ * 100-199: Model and Validation errors
+ *
+ * 200-299:   WebSQL errors
+ *
+ * 300-400:   CouchDB errors
+ *
+ *
+ * Constant                             Code    Situation
+ * --------                             ----    ---------
+ * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
+ * M.ERR_CONNECTION                     1       A connection to an external service could not be established
+ *
+ * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
+ * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
+ * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
+ * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
+ *
+ * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
+ *
+ * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
+ * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
+ * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
+ * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
+ * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
+ * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
+ * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
+ * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
+ * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
+ * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
+ *
+ * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
+ * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
+ * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
+ * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
+ *
+ *
+ *
+ *
+ * @extends M.Object
+*/
+
+
+/**
+ * A constant value for an undefined error.
+ *
+ * @type Number
+ */
+M.ERR_UNDEFINED = 0;
+
+/**
+ * A constant value for an error occuring when a connection to an external service could not be established.
+ *
+ * @type Number
+ */
+M.ERR_CONNECTION = 1;
+
+/**
+ * A model record failed validation due to a property is not set but required to be.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PRESENCE = 100;
+
+/**
+ * A model record failed validation due to a property does not represent a valid URL but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_URL = 101;
+
+/**
+ * A model record failed validation due to a property does not represent a phone number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_PHONE = 102;
+
+/**
+ * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NUMBER = 103;
+
+/**
+ * A model record failed validation due to a property contains a minus value but it is required to do not.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_NOTMINUS = 104;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_EMAIL = 105;
+
+/**
+ * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
+ *
+ * @type Number
+ */
+M.ERR_VALIDATION_DATE = 106;
+
+/**
+ * A Data Provider was not set for a model.
+ *
+ * @type Number
+ */
+M.ERR_MODEL_PROVIDER_NOT_SET = 120;
+
+
+/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 0
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_UNKNOWN = 200;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed for database reasons not covered by any other error code."
+ * Error code in WebSQL specification: 1
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_DATABASE = 201;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
+ * Error code in WebSQL specification: 2
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_VERSION = 202;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
+ * Error code in WebSQL specification: 3
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TOO_LARGE = 203;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
+ * Error code in WebSQL specification: 4
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_QUOTA = 204;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
+ * Error code in WebSQL specification: 5
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_SYNTAX = 205;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
+ * Error code in WebSQL specification: 6
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_CONSTRAINT = 206;
+
+/**
+ * A constant value for an error occuring with WebSQL.
+ * "A lock for the transaction could not be obtained in a reasonable time."
+ * Error code in WebSQL specification: 7
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_TIMEOUT = 207;
+
+/* following errors are WebSQL Data Provider errors. */
+
+/**
+ * A constant value for an error occuring when dbHandler does not exist in
+ * data provider. Reason: Initialization did not take place or failed.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
+
+/**
+ * A constant value for an error occuring with bulkSave operation in dataprovider.
+ * No Record array was passed to the method via the param obj.
+ *
+ * @type Number
+ */
+M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
+
+
+/**
+ * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_CONFLICT = 300;
+
+/**
+ * A constant value for an error occuring if the provided database could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBNOTFOUND = 301;
+
+/**
+ * A constant value for an error occuring if a database that shall be created already exists
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DBEXISTS = 302;
+
+/**
+ * A constant value for an error occuring if a document could not be found
+ *
+ * @type Number
+ */
+M.ERR_COUCHDB_DOCNOTFOUND = 303;
+
+M.Error = M.Object.extend(
+/** @scope M.Error.prototype */ {
+    code: '',
+    msg: '',
+    errObj: null
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      27.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -4368,346 +4708,6 @@ M.EventDispatcher = M.Object.extend(
             $('html').addClass('landscape');
         }
         $('#' + M.ViewManager.getCurrentPage().id).trigger('orientationdidchange');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      11.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The root object for Error objects
- *
- * M.Error encapsulates errors in The-M-Project.
- * Should be passed to error callbacks.
- *
- * 0-99:    general errors
- *
- * 100-199: Model and Validation errors
- *
- * 200-299:   WebSQL errors
- *
- * 300-400:   CouchDB errors
- *
- *
- * Constant                             Code    Situation
- * --------                             ----    ---------
- * M.ERR_UNDEFINED                      0       The reason for the error could not be clarified.
- * M.ERR_CONNECTION                     1       A connection to an external service could not be established
- *
- * M.ERR_VALIDATION_PRESENCE            100     A model record failed validation due to a property is not set but required to be.
- * M.ERR_VALIDATION_URL                 101     A model record failed validation due to a property does not represent a valid URL but is required to do so.
- * M.ERR_VALIDATION_PHONE               102     A model record failed validation due to a property does not represent a phone number but is required to do so.
- * M.ERR_VALIDATION_NUMBER              103     A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- * M.ERR_VALIDATION_NOTMINUS            104     A model record failed validation due to a property contains a minus value but it is required to do not.
- * M.ERR_VALIDATION_EMAIL               105     A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- * M.ERR_VALIDATION_DATE                106     A model record failed validation due to a property does not represent a valid date but is required to do so.
- *
- * M.ERR_MODEL_PROVIDER_NOT_SET         120     A data provider has not been set.
- *
- * M.ERR_WEBSQL_UNKNOWN                 200     The transaction failed for reasons unrelated to the database itself and not covered by any other error code.
- * M.ERR_WEBSQL_DATABASE                201     The statement failed for database reasons not covered by any other error code.
- * M.ERR_WEBSQL_VERSION                 202     The operation failed because the actual database version was not what it should be. For example, a statement found that the actual database version no longer matched the expected version of the Database or DatabaseSync object, or the Database.changeVersion() or DatabaseSync.changeVersion() methods were passed a version that doesn't match the actual database version.
- * M.ERR_WEBSQL_TOO_LARGE               203     The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set.
- * M.ERR_WEBSQL_QUOTA                   204     The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database.
- * M.ERR_WEBSQL_SYNTAX                  205     The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only.
- * M.ERR_WEBSQL_CONSTRAINT              206     An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row.
- * M.ERR_WEBSQL_TIMEOUT                 207     A lock for the transaction could not be obtained in a reasonable time.
- * M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER   208     No DBHandler, initialization did not take place or failed.
- * M.ERR_WEBSQL_BULK_NO_RECORDS         210     No Records given for bulk transaction
- *
- * M.ERR_COUCHDB_CONFLICT               300     A conflict occured while saving a document in CouchDB, propably caused by duplicate IDs
- * M.ERR_COUCHDB_DBNOTFOUND             301     The provided database could not be found.
- * M.ERR_COUCHDB_DBEXISTS               302     The db already exists and therefor cannot be created again.
- * M.ERR_COUCHDB_DOCNOTFOUND            303     No document was found for the provided ID in the database.
- *
- *
- *
- *
- * @extends M.Object
-*/
-
-
-/**
- * A constant value for an undefined error.
- *
- * @type Number
- */
-M.ERR_UNDEFINED = 0;
-
-/**
- * A constant value for an error occuring when a connection to an external service could not be established.
- *
- * @type Number
- */
-M.ERR_CONNECTION = 1;
-
-/**
- * A model record failed validation due to a property is not set but required to be.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PRESENCE = 100;
-
-/**
- * A model record failed validation due to a property does not represent a valid URL but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_URL = 101;
-
-/**
- * A model record failed validation due to a property does not represent a phone number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_PHONE = 102;
-
-/**
- * A model record failed validation due to a property is not of type number or represents a number but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NUMBER = 103;
-
-/**
- * A model record failed validation due to a property contains a minus value but it is required to do not.
- *
- * @type Number
- */
-M.ERR_VALIDATION_NOTMINUS = 104;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_EMAIL = 105;
-
-/**
- * A model record failed validation due to a property does not represent a valid eMail but is required to do so.
- *
- * @type Number
- */
-M.ERR_VALIDATION_DATE = 106;
-
-/**
- * A Data Provider was not set for a model.
- *
- * @type Number
- */
-M.ERR_MODEL_PROVIDER_NOT_SET = 120;
-
-
-/* WebSQL Error Codes (see e.g. http://www.w3.org/TR/webdatabase/) */
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 0
- *
- * @type Number
- */
-M.ERR_WEBSQL_UNKNOWN = 200;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed for database reasons not covered by any other error code."
- * Error code in WebSQL specification: 1
- *
- * @type Number
- */
-M.ERR_WEBSQL_DATABASE = 201;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The transaction failed for reasons unrelated to the database itself and not covered by any other error code."
- * Error code in WebSQL specification: 2
- *
- * @type Number
- */
-M.ERR_WEBSQL_VERSION = 202;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because the data returned from the database was too large. The SQL "LIMIT" modifier might be useful to reduce the size of the result set."
- * Error code in WebSQL specification: 3
- *
- * @type Number
- */
-M.ERR_WEBSQL_TOO_LARGE = 203;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because there was not enough remaining storage space, or the storage quota was reached and the user declined to give more space to the database."
- * Error code in WebSQL specification: 4
- *
- * @type Number
- */
-M.ERR_WEBSQL_QUOTA = 204;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "The statement failed because of a syntax error, or the number of arguments did not match the number of ? placeholders in the statement, or the statement tried to use a statement that is not allowed, such as BEGIN, COMMIT, or ROLLBACK, or the statement tried to use a verb that could modify the database but the transaction was read-only."
- * Error code in WebSQL specification: 5
- *
- * @type Number
- */
-M.ERR_WEBSQL_SYNTAX = 205;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "An INSERT, UPDATE, or REPLACE statement failed due to a constraint failure. For example, because a row was being inserted and the value given for the primary key column duplicated the value of an existing row."
- * Error code in WebSQL specification: 6
- *
- * @type Number
- */
-M.ERR_WEBSQL_CONSTRAINT = 206;
-
-/**
- * A constant value for an error occuring with WebSQL.
- * "A lock for the transaction could not be obtained in a reasonable time."
- * Error code in WebSQL specification: 7
- *
- * @type Number
- */
-M.ERR_WEBSQL_TIMEOUT = 207;
-
-/* following errors are WebSQL Data Provider errors. */
-
-/**
- * A constant value for an error occuring when dbHandler does not exist in
- * data provider. Reason: Initialization did not take place or failed.
- *
- * @type Number
- */
-M.ERR_WEBSQL_PROVIDER_NO_DBHANDLER = 208;
-
-/**
- * A constant value for an error occuring with bulkSave operation in dataprovider.
- * No Record array was passed to the method via the param obj.
- *
- * @type Number
- */
-M.ERR_WEBSQL_BULK_NO_RECORDS = 210;
-
-
-/**
- * A constant value for an error occuring when a conflict appears when saving a document in CouchDB. This is propably caused by duplicate IDs
- *
- * @type Number
- */
-M.ERR_COUCHDB_CONFLICT = 300;
-
-/**
- * A constant value for an error occuring if the provided database could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBNOTFOUND = 301;
-
-/**
- * A constant value for an error occuring if a database that shall be created already exists
- *
- * @type Number
- */
-M.ERR_COUCHDB_DBEXISTS = 302;
-
-/**
- * A constant value for an error occuring if a document could not be found
- *
- * @type Number
- */
-M.ERR_COUCHDB_DOCNOTFOUND = 303;
-
-M.Error = M.Object.extend(
-/** @scope M.Error.prototype */ {
-    code: '',
-    msg: '',
-    errObj: null
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
     }
 
 });
@@ -5319,532 +5319,6 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if it represents a minus number. Works with numbers and strings containing just a number.
- *
- * @extends M.Validator
- */
-M.NotMinusValidator = M.Validator.extend(
-/** @scope M.NotMinusValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NotMinusValidator',
-
-    /**
-     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
-     * if string value is checked if ^prefixed with a minus sign ( - ).
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-
-       if(typeof(obj.value) === 'number') {
-           if(obj.value < 0) {
-               var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-
-       if(typeof(obj.value) === 'string') {
-           var pattern = /-/;
-           if(this.pattern.exec(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
- *
- * @extends M.Validator
- */
-M.DateValidator = M.Validator.extend(
-/** @scope M.DateValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DateValidator',
-
-    /**
-     * A RegEx describing a US date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * A RegEx describing a german date.
-     * Used for validation.
-     *
-     * @type Function (actually a RegEx)
-     */
-    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
-
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
-        if(obj.isView) {
-            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is not a valid date.',
-                        viewId: obj.id,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-            }
-            return YES;
-        } else {
-            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                    code: M.ERR_VALIDATION_DATE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
-                        modelId: obj.modelId,
-                        validator: 'DATE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                return NO;
-            }
-            return YES;
-        }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
- *
- * @extends M.Validator
- */
-M.NumberValidator = M.Validator.extend(
-/** @scope M.NumberValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NumberValidator',
-
-    /**
-     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
-     * The '==' operator makes an implicit conversion of the value. '===' would return false.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if(typeof(obj.value) === 'number') {
-            return YES;
-        }
-
-        /* == makes implicit conversion */ 
-        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
-            return YES;        
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a number.',
-            code: M.ERR_VALIDATION_NUMBER,
-            errObj: {
-                msg: obj.value + ' is not a number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'NUMBER',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a string if it matches a phone number pattern.
- *
- * @extends M.Validator
- */
-M.PhoneValidator = M.Validator.extend(
-/** @scope M.PhoneValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PhoneValidator',
-
-    /**
-     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
-     * @type {RegExp} The regular expression detecting a phone adress.
-     */
-    pattern: /^[0-9-\/()+\.\s]+$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string. 
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
-            code: M.ERR_VALIDATION_PHONE,
-            errObj: {
-                msg: obj.value + ' is not a phone number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
- *
- * @extends M.Validator
- */
-M.PresenceValidator = M.Validator.extend(
-/** @scope M.PresenceValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PresenceValidator',
-    
-    /**
-     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
-     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @param {String} key
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj, key) {
-        if(obj.value === null || obj.value === undefined || obj.value === '') {
-            if(obj.isView) {
-
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : key + ' is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : key + ' is required and is not set.',
-                        viewId: obj.id,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-                
-            } else {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
-                    code: M.ERR_VALIDATION_PRESENCE,
-                    errObj: {
-                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        validator: 'PRESENCE',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-                });
-                this.validationErrors.push(err);
-            }
-            return NO;
-        }
-        return YES;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if value represents a valid URL.
- *
- * @extends M.Validator
- */
-M.UrlValidator = M.Validator.extend(
-/** @scope M.UrlValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.UrlValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid web URL
-     */
-    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
-
-    /**
-     * Validation method. Executes url regex pattern to string.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value !== 'string')) {
-            return NO;
-        }
-
-        if (this.pattern.exec(obj.value)) {
-            return YES;
-        }
-        
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
-            code: M.ERR_VALIDATION_URL,
-            errObj: {
-                msg: obj.value + ' is not a valid url.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'PHONE',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      20.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -6380,6 +5854,532 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
     }
 
 }); 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a given date. Validates whether it is possible to create a {@link M.Date} (then valid) or not (then invalid).
+ *
+ * @extends M.Validator
+ */
+M.DateValidator = M.Validator.extend(
+/** @scope M.DateValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DateValidator',
+
+    /**
+     * A RegEx describing a US date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
+     */
+    patternDateUS:  /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
+
+    /**
+     * A RegEx describing a german date.
+     * Used for validation.
+     *
+     * @type Function (actually a RegEx)
+     */
+    patternDateDE:  /^([0-9]{2})\.([0-9]{2})\.([0-9]{4})(\s+([0-9]{2})\:([0-9]{2})(\:([0-9]{2}))?)?$/,
+
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        /* validate the date to be a valid german or us date: dd.mm.yyyy or mm/dd/yyyy */
+        if(obj.isView) {
+            if(obj.value === null || obj.value === undefined || obj.value === '' || !(this.patternDateUS.test(obj.value) || this.patternDateDE.test(obj.value)) || !M.Date.create(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is not a valid date.',
+                        viewId: obj.id,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+            }
+            return YES;
+        } else {
+            if(obj.value.type && obj.value.type !== 'M.Date' && (obj.value === null || obj.value === undefined || obj.value === '' || !M.Date.create(obj.value))) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                    code: M.ERR_VALIDATION_DATE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is not a valid date.',
+                        modelId: obj.modelId,
+                        validator: 'DATE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                return NO;
+            }
+            return YES;
+        }
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if it represents a minus number. Works with numbers and strings containing just a number.
+ *
+ * @extends M.Validator
+ */
+M.NotMinusValidator = M.Validator.extend(
+/** @scope M.NotMinusValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NotMinusValidator',
+
+    /**
+     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
+     * if string value is checked if ^prefixed with a minus sign ( - ).
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+
+       if(typeof(obj.value) === 'number') {
+           if(obj.value < 0) {
+               var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+
+       if(typeof(obj.value) === 'string') {
+           var pattern = /-/;
+           if(this.pattern.exec(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
+ *
+ * @extends M.Validator
+ */
+M.NumberValidator = M.Validator.extend(
+/** @scope M.NumberValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NumberValidator',
+
+    /**
+     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
+     * The '==' operator makes an implicit conversion of the value. '===' would return false.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if(typeof(obj.value) === 'number') {
+            return YES;
+        }
+
+        /* == makes implicit conversion */ 
+        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
+            return YES;        
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a number.',
+            code: M.ERR_VALIDATION_NUMBER,
+            errObj: {
+                msg: obj.value + ' is not a number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'NUMBER',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a string if it matches a phone number pattern.
+ *
+ * @extends M.Validator
+ */
+M.PhoneValidator = M.Validator.extend(
+/** @scope M.PhoneValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PhoneValidator',
+
+    /**
+     * It is assumed that phone numbers consist only of: 0-9, -, /, (), .
+     * @type {RegExp} The regular expression detecting a phone adress.
+     */
+    pattern: /^[0-9-\/()+\.\s]+$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string. 
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a phone number.',
+            code: M.ERR_VALIDATION_PHONE,
+            errObj: {
+                msg: obj.value + ' is not a phone number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value is existing. Used, e.g. for every property in a model record that is marked as  'required' ({@link M.Model#isRequired}.
+ *
+ * @extends M.Validator
+ */
+M.PresenceValidator = M.Validator.extend(
+/** @scope M.PresenceValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PresenceValidator',
+    
+    /**
+     * Validation method. First checks if value is not null, undefined or an empty string and then tries to create a {@link M.Date} with it.
+     * Pushes different validation errors depending on where the validator is used: in the view or in the model.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @param {String} key
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj, key) {
+        if(obj.value === null || obj.value === undefined || obj.value === '') {
+            if(obj.isView) {
+
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : key + ' is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : key + ' is required and is not set.',
+                        viewId: obj.id,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+                
+            } else {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.property + 'is required and is not set.',
+                    code: M.ERR_VALIDATION_PRESENCE,
+                    errObj: {
+                        msg: this.msg ? this.msg : obj.property + ' is required and is not set.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        validator: 'PRESENCE',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+                });
+                this.validationErrors.push(err);
+            }
+            return NO;
+        }
+        return YES;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if value represents a valid URL.
+ *
+ * @extends M.Validator
+ */
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.UrlValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid web URL
+     */
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
+
+    /**
+     * Validation method. Executes url regex pattern to string.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value !== 'string')) {
+            return NO;
+        }
+
+        if (this.pattern.exec(obj.value)) {
+            return YES;
+        }
+        
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid url.',
+            code: M.ERR_VALIDATION_URL,
+            errObj: {
+                msg: obj.value + ' is not a valid url.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'PHONE',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+        return NO;
+    }
+    
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
