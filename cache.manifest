@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.4.6967 beta, Timestamp:1457092487205
+#Application:DigiWebApp, Version:1.8.4.6968 beta, Timestamp:1457093444150
 
 
 # Explicitly cached entries
@@ -7,25 +7,25 @@ CACHE:
 de_de.js
 en_us.js
 es_es.js
-nl_nl.js
 fr_fr.js
-jquery-1.9.1.js
+nl_nl.js
 underscore-min.js
-bootstrap.js
+jquery-1.9.1.js
 d8-0.1.3.min.js
 d8-0.4.0.min.js
 theme/tmp.css
+bootstrap.js
 jquery_mobile.js
 jquery.xml2json_1.3.js
 barcodescanner.js
 cordova.js
 childbrowser.js
-digi_list.js
-digi_list_item.js
-digi_selection_list.js
-digi_selection_list_item.js
-Math.uuid.js
 jstz.js
+Math.uuid.js
+digi_list.js
+digi_selection_list.js
+digi_list_item.js
+digi_selection_list_item.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_SCHOLPP.png
@@ -33,8 +33,8 @@ theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1536x2048_90_SCHOLPP.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/480x800_90_SCHOLPP.png
-theme/images/48x48_plain_book_blue_find.png
 theme/images/48x48_plain_about.png
+theme/images/48x48_plain_book_blue_find.png
 theme/images/48x48_plain_businessmen.png
 theme/images/48x48_plain_camera2.png
 theme/images/48x48_plain_car_compact_grey.png
@@ -103,9 +103,9 @@ theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
 theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
+ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
-ui.js
 CHANGELOG.md
 Gruntfile.coffee
 jquery.signaturepad.js
