@@ -7965,8 +7965,7 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 
 	    writeToLog('Version: ' + M.Application.getConfig('version'));
 	    if (typeof(device) !== "undefined") {
-	        var output = '\nDevice Name: ' + device.name + '\n' +
-	            'Device Model: ' + device.model + '\n' +
+	        var output = '\nDevice Model: ' + device.model + '\n' +
 	            'Device Platform: ' + device.platform + '\n' +
 	            'Device Version: ' + device.version + '\n' +
                 'Device UUID: ' + device.uuid;
@@ -22605,7 +22604,7 @@ DigiWebApp.RequestController = M.Controller.extend({
 //	, DatabaseServer: null
 //	, DatabaseServerTimestamp: null
     
-      softwareVersion: 6991
+      softwareVersion: 6992
 
     , getDatabaseServer: function(myFunc, obj) {
     	
@@ -38423,7 +38422,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 6991'
+              value: 'Build: 6992'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
