@@ -3,8 +3,8 @@
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	xmlns:android = "http://schemas.android.com/apk/res/android"
 	id		    = "com.digi.webapppro"
-	versionCode = "7000"
-	version 	= "1.8.5.7000">
+	versionCode = "7001"
+	version 	= "1.8.5.7001">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -99,7 +99,7 @@ which PhoneGap requires. -->
 	<gap:plugin name="cordova-plugin-wkwebview" source='npm' version='0.6.3' />
 
 <gap:config-file platform="ios" parent="CFBundleShortVersionString"> 
-	<string>7000</string> 
+	<string>7001</string> 
 </gap:config-file>
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>
