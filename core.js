@@ -541,6 +541,81 @@ M.Request = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.05.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.DeviceSwitch defines a prototype for using device specific objects within
+ * an application developed with The M-Project.
+ *
+ * @extends M.Object
+ */
+M.DeviceSwitch = M.Object.extend(
+/** @scope M.DeviceSwitch.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DeviceSwitch',
+
+    /**
+     * The name of the current device.
+     *
+     * @type String
+     */
+    device: null,
+
+    /**
+     * This method returns the specialized string for the given key based on
+     * the current device/environment.
+     *
+     * @param {String} key The key to the specialized string.
+     * @returns {String} The specialized string based on the current device/environment.
+     */
+    s: function(key) {
+        return this.specialize(key);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @returns {String} The localizes string based on the current application language.
+     */
+    specialize: function(key) {
+        if(!this.device) {
+            M.Logger.log('No device specified!', M.ERR);
+            return null;
+        }
+
+        if(this[this.device] && this[this.device][key]) {
+            return this[this.device][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
+            return null;
+        }
+    }
+
+});
+
+M.DS = M.DeviceSwitch;
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -1105,257 +1180,6 @@ M.Date = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.05.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.DeviceSwitch defines a prototype for using device specific objects within
- * an application developed with The M-Project.
- *
- * @extends M.Object
- */
-M.DeviceSwitch = M.Object.extend(
-/** @scope M.DeviceSwitch.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DeviceSwitch',
-
-    /**
-     * The name of the current device.
-     *
-     * @type String
-     */
-    device: null,
-
-    /**
-     * This method returns the specialized string for the given key based on
-     * the current device/environment.
-     *
-     * @param {String} key The key to the specialized string.
-     * @returns {String} The specialized string based on the current device/environment.
-     */
-    s: function(key) {
-        return this.specialize(key);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @returns {String} The localizes string based on the current application language.
-     */
-    specialize: function(key) {
-        if(!this.device) {
-            M.Logger.log('No device specified!', M.ERR);
-            return null;
-        }
-
-        if(this[this.device] && this[this.device][key]) {
-            return this[this.device][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
-            return null;
-        }
-    }
-
-});
-
-M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -1623,6 +1447,182 @@ M.Environment = M.Object.extend(
             return YES;
         }
         return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
     }
 
 });
@@ -3621,6 +3621,80 @@ M.Cypher = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      26.07.2011
@@ -3855,80 +3929,6 @@ M.DataConsumer = M.Object.extend(
      */
     url: function() {
         // needs to be implemented by concrete data consumer object
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
     }
 
 });
@@ -5809,6 +5809,75 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5913,59 +5982,57 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a String if it represents a valid e-mail adress.
+ * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
  *
  * @extends M.Validator
  */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
+M.NumberValidator = M.Validator.extend(
+/** @scope M.NumberValidator.prototype */ {
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NumberValidator',
 
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+    /**
+     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
+     * The '==' operator makes an implicit conversion of the value. '===' would return false.
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if(typeof(obj.value) === 'number') {
+            return YES;
+        }
 
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
+        /* == makes implicit conversion */ 
+        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
+            return YES;        
+        }
 
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a number.',
+            code: M.ERR_VALIDATION_NUMBER,
+            errObj: {
+                msg: obj.value + ' is not a number.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'NUMBER',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
 
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
+        this.validationErrors.push(err);
 
-        return NO;
-    }
-    
+        return NO;
+    }
 });
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6049,73 +6116,6 @@ M.NotMinusValidator = M.Validator.extend(
        }
     }
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates if passed value is a number. Works with Strings and Numbers. Strings are parsed into numbers and then checked.
- *
- * @extends M.Validator
- */
-M.NumberValidator = M.Validator.extend(
-/** @scope M.NumberValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NumberValidator',
-
-    /**
-     * Validation method. If value's type is not "number" but a string, the value is parsed into an integer or float and checked versus the string value with '=='.
-     * The '==' operator makes an implicit conversion of the value. '===' would return false.
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if(typeof(obj.value) === 'number') {
-            return YES;
-        }
-
-        /* == makes implicit conversion */ 
-        if(typeof(obj.value) === 'string' && (parseIntRadixTen(obj.value) == obj.value || parseFloat(obj.value) == obj.value)) {
-            return YES;        
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a number.',
-            code: M.ERR_VALIDATION_NUMBER,
-            errObj: {
-                msg: obj.value + ' is not a number.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'NUMBER',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
