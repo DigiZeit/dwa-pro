@@ -1126,6 +1126,63 @@ M.CanvasView = M.View.extend(
 // ==========================================================================
 
 /**
+ * @class
+ *
+ * A carousel item view is the one and only valid sub view of a carousel view. It basically
+ * serves as a container that allows you to put anything into such an element. Simply
+ * apply as much child views as you like and let this view (in combination with the carousel)
+ * take care of the rest.
+ *
+ * @extends M.View
+ */
+M.CarouselItemView = M.View.extend(
+/** @scope M.CarouselItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CarouselItemView',
+
+    /**
+     * This property can be used to specify a tag, that is independent from the carousel
+     * item's content. This allows you to identify a carousel item e.g. within the callback
+     * of the carousel's change event.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This method renders a carousel item and its content with an li element as the
+     * surrounding element.
+     *
+     * @private
+     * @returns {String} The carousel item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+
+        this.renderChildViews();
+
+        this.html += '</li>';
+
+        return this.html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      10.04.12
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
  * A constant value for calculating the carousel's size based on its content.
  *
  * @type Number
@@ -1711,63 +1768,6 @@ if(this.options.snap)b="next"==b?this.currPageX+1:"prev"==b?this.currPageX-1:b,a
 this.enabled=!1;this._unbind(q);this._unbind(r);this._unbind(s)},enable:function(){this.enabled=!0},stop:function(){this.options.useTransition?this._unbind("webkitTransitionEnd"):A(this.aniTime);this.steps=[];this.animating=this.moved=!1},zoom:function(b,a,c,d){var e=c/this.scale;this.options.useTransform&&(this.zoomed=!0,d=void 0===d?200:d,b=b-this.wrapperOffsetLeft-this.x,a=a-this.wrapperOffsetTop-this.y,this.x=b-b*e+this.x,this.y=a-a*e+this.y,this.scale=c,this.refresh(),this.x=0<this.x?0:this.x<
 this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScrollY:this.y<this.maxScrollY?this.maxScrollY:this.y,this.scroller.style[f+"TransitionDuration"]=d+"ms",this.scroller.style[f+"Transform"]=n+this.x+"px,"+this.y+"px"+o+" scale("+c+")",this.zoomed=!1)},isReady:function(){return!this.moved&&!this.zoomed&&!this.animating}};"undefined"!==typeof exports?exports.iScroll=p:window.iScroll=p})();
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
- *
- * @extends M.View
- */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CarouselItemView',
-
-    /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
-     *
-     * @private
-     * @returns {String} The carousel item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
-
-        this.renderChildViews();
-
-        this.html += '</li>';
-
-        return this.html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5186,595 +5186,6 @@ M.MapView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the map's marker animation type: none
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_NONE = 'NONE';
-
-/**
- * A constant value for the map's marker animation type: drop
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_DROP = 'DROP';
-
-/**
- * A constant value for the map's marker animation type: bounce
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
-
-/**
- * @class
- *
- * M.MapMarkerView is the prototype of a map marker view. It defines a set
- * of methods for adding, removing and managing the markers of a M.MapView.
- *
- * The M.MapMarkerView is based on google maps markers.
- *
- * @extends M.View
- */
-M.MapMarkerView = M.View.extend(
-/** @scope M.MapMarkerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapMarkerView',
-
-    /**
-     * This property is used to save a reference to the actual google map marker.
-     * It is set automatically when the map marker is firstly initialized.
-     *
-     * @type Object
-     */
-    marker: null,
-
-    /**
-     * This property can be used to store additional information about a marker.
-     * Since this property is an object, you can store pretty much anything in
-     * this property.
-     *
-     * This can be useful especially if you are using the click event for map
-     * markers. So you can store any information with a marker and retrieve
-     * this information on the click event.
-     *
-     * @type Object
-     */
-    data: null,
-
-    /**
-     * This property contains a reference to the marker's map view.
-     *
-     * @type M.MapView
-     */
-    map: null,
-
-    /**
-     * This property specifies the title of a map marker view. It can be used in
-     * an annotation.
-     *
-     * @type String
-     */
-    title: null,
-
-    /**
-     * This property specifies the message of a map marker view respectively for
-     * its annotation.
-     *
-     * @type String
-     */
-    message: null,
-
-    /**
-     * This property can be used to specify whether or not to show the annotation,
-     * if title and / or message are defined, automatically on click event.
-     *
-     * @type Boolean
-     */
-    showAnnotationOnClick: NO,
-
-    /**
-     * This property contains a reference to a google maps info window that is
-     * connected to this map marker. By calling either the showAnnotation() or
-     * the hideAnnotation() method, this info window can be toggled.
-     *
-     * Additionally the info window will be automatically set to visible if the
-     * showAnnotationOnClick property is set to YES.
-     *
-     * @type Object
-     */
-    annotation: null,
-
-    /**
-     * This property specifies whether the marker is draggable or not. If set
-     * to NO, a user won't be able to move the marker. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: NO,
-
-    /**
-     * This property specifies the location for this map marker view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the position
-     * property of a google maps marker. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type M.Location
-     */
-    location: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property can be used to specify the animation type for this map marker
-     * view. If this property is set, the markerAnimationType property of the parent
-     * map view is ignored. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: null,
-
-    /**
-     * This property can be used to specify a custom marker icon. Simply pass a valid
-     * path to an image and it will be shown instead of google's default marker.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This method initializes an M.MapMarkerView. It connects a map marker directly with
-     * the parent map view and returns the created M.MapMarkerView object.
-     *
-     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
-     * initialized and can no be displayed by using the map view's addMarker() method or via
-     * content binding.
-     *
-     * @param {Object} options The options for the map marker view.
-     */
-    init: function(options) {
-        var marker = this.extend(options);
-
-        if(marker.annotation || marker.message) {
-            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
-            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
-            
-            marker.annotation = new google.maps.InfoWindow({
-                content: content,
-                maxWidth: 100
-            });
-        }
-
-        return marker;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'showAnnotation'
-            }
-        }
-
-        var that = this;
-        google.maps.event.addListener(this.marker, 'click', function() {
-            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
-        });
-    },
-
-    /**
-     * This method can be used to remove a map marker from a map view.
-     */
-    remove: function() {
-        this.map.removeMarker(this);
-    },
-
-    /**
-     * This method can be used to show a map markers annotation.
-     */
-    showAnnotation: function(id, event, nextEvent) {
-        if(this.annotation) {
-            this.annotation.open(this.map.map, this.marker);
-        }
-
-        /* delegate event to external handler, if specified */
-        if(this.events || this.map.events) {
-            var events = this.events ? this.events : this.map.events;
-            for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
-                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
-                }
-            }
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of a movable label view.
- * It extends M.LabelView and has special methods and overrides for making it movable
- *
- * @extends M.LabelView
- */
-M.MovableLabelView = M.LabelView.extend(
-/** @scope M.MovableLabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type {String}
-     */
-    type: 'M.MovableLabelView',
-
-    /**
-     * movable object property responsible for making this view movable
-     *
-     */
-    movable: null,
-
-    /**
-     * The CSSOM representation of the newly created style in the document-head
-     *
-     * @private
-     * @type {Object}
-     */
-    extraStyle: null,
-
-    /**
-     * Signalizes if there are any moveRules attached to this view
-     *
-     * @private
-     * @type {Boolean}
-     */
-    moveRulesAvailable: NO,
-
-    /**
-     * jQuery object of the DOM representation of this view
-     *
-     * @private
-     * @type {Object}
-     */
-    $this: null,
-
-    /**
-     * jQuery object of the DOM representation of this view's parent
-     *
-     * @private
-     * @type {Object}
-     */
-    $parent: null,
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value. Also checks if the label has to move hence that the movable property has been passed.
-     * If so renders an outer div, creates an extra style inside the document-head, checks if moving is necessary
-     * and if so sets the label movable.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-
-    render: function() {
-        var that = this,
-            diff;
-        this.computeValue();
-        if(_.isObject(this.movable)) {
-            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
-                this.html = '<div class="tmp-movable-outer outer-'+ this.id +'">';
-                this.extraStyle = this._createExtraStyle();
-                window.setTimeout(function(){
-                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
-                }, 0);
-            }else {
-                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
-            }
-        }
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        /* If movable is set, an outer div box was defined before and we need to close it here */
-        if(_.isObject(this.movable)) {
-            this.html += '</div>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery. Checks again if this view has to move
-     * as the width might has changed hence of changes in the views value.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var that = this;
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-        if(_.isObject(this.movable)){
-            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
-                window.setTimeout(function(){
-                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
-                }, 0);
-            }else {
-                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * Actual method which makes this view movable by inserting CSS3 animation rule
-     * to the extra style-tag in the document-head.
-     *
-     * @private
-     */
-    _makeMovable: function(diff) {
-        var that = this;
-        window.setTimeout(function(){
-            that._insertMoveRules(that._getBrowserKeyframeRule(), diff, (that.movable.offset || that.movable.offset === 0) ? that.movable.offset : 0, (that.movable.pxPerSec) ? (diff / that.movable.pxPerSec) : that.movable.time);
-        }, 0);
-    },
-
-    /**
-     * Responsible for deciding whether this view should move or not.
-     *
-     * @private
-     * @returns either the calculated number or false
-     */
-    _checkIfMovingNecessary: function() {
-        var diff;
-        this.$this = $('#' + this.id);
-        this.$parent = this.$this.parent();
-        this._addMoveClasses(this.$this, this.$parent);
-        diff = this._getDiff(this.$this, this.$parent);
-        if(diff > 0){
-            if(this.moveRulesAvailable){
-                this._deleteMoveRules();
-            }
-            return diff;
-        }else {
-            this._removeMoveClasses(this.$this, this.$parent);
-            if(this.moveRulesAvailable) {
-                this._deleteMoveRules();
-            }
-            return NO;
-        }
-    },
-
-    /**
-     *
-     * Appends an extra style tag to the head
-     *
-     * @private
-     * @returns {HTMLElement} The style element as CSSOM
-     */
-    _createExtraStyle: function(){
-        var animationStyle = document.createElement('style'), styles;
-        animationStyle.type = "text/css";
-        document.getElementsByTagName('head').item(0).appendChild(animationStyle);
-        styles = document.styleSheets.length;
-        animationStyle = document.styleSheets[styles-1];
-        return animationStyle;
-    },
-
-    /**
-     * Calculates the width-difference of the inner div (the one containing the value) and
-     * its outer box.
-     *
-     * Difference + offset results in the "moving value", the offset that the label is animated.
-     *
-     * @private
-     * @param {Object} $self
-     * @param {Object} $parent
-     * @returns {number} difference self-width minus parent-width
-     */
-    _getDiff: function($self, $parent) {
-        var diff = $self.outerWidth() - $parent.width();
-        return diff;
-    },
-
-    /**
-     * Returns the CSSRule for the specific browser.
-     *
-     * @private
-     * @returns {string} the name of the browser for css3-animation
-     */
-    _getBrowserKeyframeRule: function(){
-        if(CSSRule.WEBKIT_KEYFRAME_RULE) {
-            return "-webkit-";
-        }else if(CSSRule.MOZ_KEYRAME_RULE) {
-            return "-moz-";
-        }else if(CSSRule.O_KEYFRAME_RULE) {
-            return "-o-";
-        }else {
-            return "";
-        }
-    },
-
-    /**
-     * Adds special classes responsible for making the label move.
-     *
-     * @private
-     * @param {Object} $self The jQuery-Object of this label
-     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
-     */
-    _addMoveClasses: function($self, $parent) {
-        $self.addClass('tmp-movable-inner inner-' + this.id);
-        $parent.addClass('tmp-movable-outer');
-    },
-
-    /**
-     * Removes special classes responsible for making the label move.
-     *
-     * @private
-     * @param {Object} $self The jQuery-Object of this label
-     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
-     */
-    _removeMoveClasses: function($self, $parent) {
-        $self.removeClass('tmp-movable-inner inner-' + this.id);
-        $parent.removeClass('tmp-movable-outer');
-    },
-
-    /**
-     * Inserts Animation-Rules to the CSSOM in the document-head.
-     *
-     * @private
-     * @param {String} The String for the specific browser
-     * @param diff The difference self-parent
-     * @param offset The offset value of the passed movable-object
-     * @param sec The time value of the passed movable-object
-     */
-    _insertMoveRules: function(browsertype, diff, offset, sec){
-        this.extraStyle.insertRule('.inner-' + this.id + ' {'+
-            browsertype+'animation-name: move-' + this.id + ';'+
-            browsertype+'animation-duration: ' + sec + 's;'+
-            browsertype+'animation-iteration-count: infinite;'+
-            browsertype+'animation-timing-function: linear;'+
-            '}', 0);
-        this.extraStyle.insertRule('@' + browsertype + 'keyframes move-' + this.id + '{ 0%,100% { left: ' + offset + 'px;} 50% { left:' + (-diff - offset) + 'px;}}', 1);
-        this.moveRulesAvailable = YES;
-    },
-
-    /**
-     * Deletes the extra CSS3 animation-rules from the CSSOM in the document-head.
-     *
-     * @private
-     *
-     */
-    _deleteMoveRules: function(){
-        var l = this.extraStyle.cssRules.length;
-        while(l > 0){
-            this.extraStyle.removeRule(l-1);
-            l = this.extraStyle.cssRules.length;
-        }
-        this.moveRulesAvailable = NO;
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -6116,6 +5527,327 @@ M.PageView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of a movable label view.
+ * It extends M.LabelView and has special methods and overrides for making it movable
+ *
+ * @extends M.LabelView
+ */
+M.MovableLabelView = M.LabelView.extend(
+/** @scope M.MovableLabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type {String}
+     */
+    type: 'M.MovableLabelView',
+
+    /**
+     * movable object property responsible for making this view movable
+     *
+     */
+    movable: null,
+
+    /**
+     * The CSSOM representation of the newly created style in the document-head
+     *
+     * @private
+     * @type {Object}
+     */
+    extraStyle: null,
+
+    /**
+     * Signalizes if there are any moveRules attached to this view
+     *
+     * @private
+     * @type {Boolean}
+     */
+    moveRulesAvailable: NO,
+
+    /**
+     * jQuery object of the DOM representation of this view
+     *
+     * @private
+     * @type {Object}
+     */
+    $this: null,
+
+    /**
+     * jQuery object of the DOM representation of this view's parent
+     *
+     * @private
+     * @type {Object}
+     */
+    $parent: null,
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value. Also checks if the label has to move hence that the movable property has been passed.
+     * If so renders an outer div, creates an extra style inside the document-head, checks if moving is necessary
+     * and if so sets the label movable.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+
+    render: function() {
+        var that = this,
+            diff;
+        this.computeValue();
+        if(_.isObject(this.movable)) {
+            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
+                this.html = '<div class="tmp-movable-outer outer-'+ this.id +'">';
+                this.extraStyle = this._createExtraStyle();
+                window.setTimeout(function(){
+                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
+                }, 0);
+            }else {
+                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
+            }
+        }
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        /* If movable is set, an outer div box was defined before and we need to close it here */
+        if(_.isObject(this.movable)) {
+            this.html += '</div>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery. Checks again if this view has to move
+     * as the width might has changed hence of changes in the views value.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var that = this;
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+        if(_.isObject(this.movable)){
+            if ((this.movable.time || this.movable.time === 0) || (this.movable.pxPerSec || this.movable.pxPerSec === 0)){
+                window.setTimeout(function(){
+                    (diff = that._checkIfMovingNecessary()) ? that._makeMovable(diff) : M.Logger.log('Width not big enough to move', M.INFO);
+                }, 0);
+            }else {
+                M.Logger.log('"time" OR "pxPerSec" are needed', M.WARN);
+            }
+        }
+    },
+
+    /**
+     * Actual method which makes this view movable by inserting CSS3 animation rule
+     * to the extra style-tag in the document-head.
+     *
+     * @private
+     */
+    _makeMovable: function(diff) {
+        var that = this;
+        window.setTimeout(function(){
+            that._insertMoveRules(that._getBrowserKeyframeRule(), diff, (that.movable.offset || that.movable.offset === 0) ? that.movable.offset : 0, (that.movable.pxPerSec) ? (diff / that.movable.pxPerSec) : that.movable.time);
+        }, 0);
+    },
+
+    /**
+     * Responsible for deciding whether this view should move or not.
+     *
+     * @private
+     * @returns either the calculated number or false
+     */
+    _checkIfMovingNecessary: function() {
+        var diff;
+        this.$this = $('#' + this.id);
+        this.$parent = this.$this.parent();
+        this._addMoveClasses(this.$this, this.$parent);
+        diff = this._getDiff(this.$this, this.$parent);
+        if(diff > 0){
+            if(this.moveRulesAvailable){
+                this._deleteMoveRules();
+            }
+            return diff;
+        }else {
+            this._removeMoveClasses(this.$this, this.$parent);
+            if(this.moveRulesAvailable) {
+                this._deleteMoveRules();
+            }
+            return NO;
+        }
+    },
+
+    /**
+     *
+     * Appends an extra style tag to the head
+     *
+     * @private
+     * @returns {HTMLElement} The style element as CSSOM
+     */
+    _createExtraStyle: function(){
+        var animationStyle = document.createElement('style'), styles;
+        animationStyle.type = "text/css";
+        document.getElementsByTagName('head').item(0).appendChild(animationStyle);
+        styles = document.styleSheets.length;
+        animationStyle = document.styleSheets[styles-1];
+        return animationStyle;
+    },
+
+    /**
+     * Calculates the width-difference of the inner div (the one containing the value) and
+     * its outer box.
+     *
+     * Difference + offset results in the "moving value", the offset that the label is animated.
+     *
+     * @private
+     * @param {Object} $self
+     * @param {Object} $parent
+     * @returns {number} difference self-width minus parent-width
+     */
+    _getDiff: function($self, $parent) {
+        var diff = $self.outerWidth() - $parent.width();
+        return diff;
+    },
+
+    /**
+     * Returns the CSSRule for the specific browser.
+     *
+     * @private
+     * @returns {string} the name of the browser for css3-animation
+     */
+    _getBrowserKeyframeRule: function(){
+        if(CSSRule.WEBKIT_KEYFRAME_RULE) {
+            return "-webkit-";
+        }else if(CSSRule.MOZ_KEYRAME_RULE) {
+            return "-moz-";
+        }else if(CSSRule.O_KEYFRAME_RULE) {
+            return "-o-";
+        }else {
+            return "";
+        }
+    },
+
+    /**
+     * Adds special classes responsible for making the label move.
+     *
+     * @private
+     * @param {Object} $self The jQuery-Object of this label
+     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
+     */
+    _addMoveClasses: function($self, $parent) {
+        $self.addClass('tmp-movable-inner inner-' + this.id);
+        $parent.addClass('tmp-movable-outer');
+    },
+
+    /**
+     * Removes special classes responsible for making the label move.
+     *
+     * @private
+     * @param {Object} $self The jQuery-Object of this label
+     * @param {Object} $parent The jQuery-Object of the surrounding div-container of the label
+     */
+    _removeMoveClasses: function($self, $parent) {
+        $self.removeClass('tmp-movable-inner inner-' + this.id);
+        $parent.removeClass('tmp-movable-outer');
+    },
+
+    /**
+     * Inserts Animation-Rules to the CSSOM in the document-head.
+     *
+     * @private
+     * @param {String} The String for the specific browser
+     * @param diff The difference self-parent
+     * @param offset The offset value of the passed movable-object
+     * @param sec The time value of the passed movable-object
+     */
+    _insertMoveRules: function(browsertype, diff, offset, sec){
+        this.extraStyle.insertRule('.inner-' + this.id + ' {'+
+            browsertype+'animation-name: move-' + this.id + ';'+
+            browsertype+'animation-duration: ' + sec + 's;'+
+            browsertype+'animation-iteration-count: infinite;'+
+            browsertype+'animation-timing-function: linear;'+
+            '}', 0);
+        this.extraStyle.insertRule('@' + browsertype + 'keyframes move-' + this.id + '{ 0%,100% { left: ' + offset + 'px;} 50% { left:' + (-diff - offset) + 'px;}}', 1);
+        this.moveRulesAvailable = YES;
+    },
+
+    /**
+     * Deletes the extra CSS3 animation-rules from the CSSOM in the document-head.
+     *
+     * @private
+     *
+     */
+    _deleteMoveRules: function(){
+        var l = this.extraStyle.cssRules.length;
+        while(l > 0){
+            this.extraStyle.removeRule(l-1);
+            l = this.extraStyle.cssRules.length;
+        }
+        this.moveRulesAvailable = NO;
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2012 panacoda GmbH. All rights reserved.
 // Creator:   Frank
@@ -6243,6 +5975,274 @@ M.PanelView = M.View.extend(
      */
     close: function() {
         $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      27.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the map's marker animation type: none
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_NONE = 'NONE';
+
+/**
+ * A constant value for the map's marker animation type: drop
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_DROP = 'DROP';
+
+/**
+ * A constant value for the map's marker animation type: bounce
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
+
+/**
+ * @class
+ *
+ * M.MapMarkerView is the prototype of a map marker view. It defines a set
+ * of methods for adding, removing and managing the markers of a M.MapView.
+ *
+ * The M.MapMarkerView is based on google maps markers.
+ *
+ * @extends M.View
+ */
+M.MapMarkerView = M.View.extend(
+/** @scope M.MapMarkerView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.MapMarkerView',
+
+    /**
+     * This property is used to save a reference to the actual google map marker.
+     * It is set automatically when the map marker is firstly initialized.
+     *
+     * @type Object
+     */
+    marker: null,
+
+    /**
+     * This property can be used to store additional information about a marker.
+     * Since this property is an object, you can store pretty much anything in
+     * this property.
+     *
+     * This can be useful especially if you are using the click event for map
+     * markers. So you can store any information with a marker and retrieve
+     * this information on the click event.
+     *
+     * @type Object
+     */
+    data: null,
+
+    /**
+     * This property contains a reference to the marker's map view.
+     *
+     * @type M.MapView
+     */
+    map: null,
+
+    /**
+     * This property specifies the title of a map marker view. It can be used in
+     * an annotation.
+     *
+     * @type String
+     */
+    title: null,
+
+    /**
+     * This property specifies the message of a map marker view respectively for
+     * its annotation.
+     *
+     * @type String
+     */
+    message: null,
+
+    /**
+     * This property can be used to specify whether or not to show the annotation,
+     * if title and / or message are defined, automatically on click event.
+     *
+     * @type Boolean
+     */
+    showAnnotationOnClick: NO,
+
+    /**
+     * This property contains a reference to a google maps info window that is
+     * connected to this map marker. By calling either the showAnnotation() or
+     * the hideAnnotation() method, this info window can be toggled.
+     *
+     * Additionally the info window will be automatically set to visible if the
+     * showAnnotationOnClick property is set to YES.
+     *
+     * @type Object
+     */
+    annotation: null,
+
+    /**
+     * This property specifies whether the marker is draggable or not. If set
+     * to NO, a user won't be able to move the marker. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: NO,
+
+    /**
+     * This property specifies the location for this map marker view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the position
+     * property of a google maps marker. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type M.Location
+     */
+    location: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property can be used to specify the animation type for this map marker
+     * view. If this property is set, the markerAnimationType property of the parent
+     * map view is ignored. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: null,
+
+    /**
+     * This property can be used to specify a custom marker icon. Simply pass a valid
+     * path to an image and it will be shown instead of google's default marker.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * This property can be used to specify the display size of the icon used for the
+     * marker. This is important if you want to support e.g. the iphone's retina display.
+     *
+     * Pass along an object containing the desired width and height, e.g.:
+     *
+     *     {
+     *         width: 20,
+     *         height: 20
+     *     }
+     *
+     * @type Object
+     */
+    iconSize: null,
+
+    /**
+     * This property can be used to display a map marker icon centered about its location.
+     * By default a map marker is positioned with its bottom center at the location.
+     *
+     * @type Boolean
+     */
+    isIconCentered: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This method initializes an M.MapMarkerView. It connects a map marker directly with
+     * the parent map view and returns the created M.MapMarkerView object.
+     *
+     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
+     * initialized and can no be displayed by using the map view's addMarker() method or via
+     * content binding.
+     *
+     * @param {Object} options The options for the map marker view.
+     */
+    init: function(options) {
+        var marker = this.extend(options);
+
+        if(marker.annotation || marker.message) {
+            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
+            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
+            
+            marker.annotation = new google.maps.InfoWindow({
+                content: content,
+                maxWidth: 100
+            });
+        }
+
+        return marker;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'showAnnotation'
+            }
+        }
+
+        var that = this;
+        google.maps.event.addListener(this.marker, 'click', function() {
+            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        });
+    },
+
+    /**
+     * This method can be used to remove a map marker from a map view.
+     */
+    remove: function() {
+        this.map.removeMarker(this);
+    },
+
+    /**
+     * This method can be used to show a map markers annotation.
+     */
+    showAnnotation: function(id, event, nextEvent) {
+        if(this.annotation) {
+            this.annotation.open(this.map.map, this.marker);
+        }
+
+        /* delegate event to external handler, if specified */
+        if(this.events || this.map.events) {
+            var events = this.events ? this.events : this.map.events;
+            for(var e in events) {
+                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+                }
+            }
+        }
     }
 
 });
@@ -8460,254 +8460,6 @@ M.SelectionListView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      16.02.2011
@@ -9148,6 +8900,254 @@ M.SplitView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.11.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
+ *
+ * @extends M.View
+ */
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SliderView',
+
+    /**
+     * This property contains the slider's value.
+     */
+    value: 0,
+
+    /**
+     * This property contains the slider's initial value.
+     *
+     * @private
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
+        return this.html;
+    },
+
+    /**
+     * This method registers the change event to internally re-set the value of the
+     * slider.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the slider.
+     *
+     * @private
+     * @returns {String} The slider's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      17.02.2011
@@ -9342,248 +9342,6 @@ M.SplitToolbarView = M.View.extend(
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
- *
- * @extends M.View
- */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TableView',
-
-    /**
-     * Determines whether to remove all content rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeContentRowsOnUpdate: YES,
-
-    /**
-     * Determines whether to remove the header rows if the table is updated or not.
-     *
-     * @type Boolean
-     */
-    removeHeaderRowOnUpdate: NO,
-
-    /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the table.
-     *
-     * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
-     */
-    theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
-    },
-
-    /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
-        }
-
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
-        }
-    },
-
-    /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
-     *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
-     */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
-        }
-    },
-
-    /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
-     */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
-     */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
-    }
-
-});
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -10666,6 +10424,248 @@ M.ToggleView = M.View.extend(
     }
 
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
+    }
+
+});
+
 /**
  * @class
  *
