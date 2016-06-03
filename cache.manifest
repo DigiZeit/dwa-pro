@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.6.7046 beta, Timestamp:1464957498931
+#Application:DigiWebApp, Version:1.8.6.7047 beta, Timestamp:1464964283857
 
 
 # Explicitly cached entries
@@ -7,10 +7,10 @@ CACHE:
 de_de.js
 en_us.js
 underscore-min.js
-d8-0.4.0.min.js
+jquery-1.9.1.js
 bootstrap.js
 theme/tmp.css
-jquery-1.9.1.js
+d8-0.4.0.min.js
 jquery_mobile.js
 jquery.xml2json_1.3.js
 jstz.js
@@ -18,8 +18,8 @@ barcodescanner.js
 cordova.js
 childbrowser.js
 digi_list.js
-digi_list_item.js
 digi_selection_list.js
+digi_list_item.js
 digi_selection_list_item.js
 Math.uuid.js
 pen.cur
@@ -63,8 +63,8 @@ theme/images/ajax-loader_digi-transparent.gif
 theme/images/arrow_grey.png
 theme/images/arrow_white.png
 theme/images/DigiLogo2013_DSO.png
-theme/images/DigiLogo2013_scholpp.png
 theme/images/icon-winphone.png
+theme/images/DigiLogo2013_scholpp.png
 theme/images/Icon.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
@@ -86,8 +86,8 @@ theme/images/roter_balken.png
 theme/images/splash_default_320x426_DSO.png
 theme/images/splash_hdpi_480x640_DSO.9.png
 theme/images/splash_ios_1024x768_DSO.png
-theme/images/splash_ios_320x480_DSO.png
 theme/images/splash_ios_640x1136_DSO.png
+theme/images/splash_ios_320x480_DSO.png
 theme/images/splash_ios_640x960_DSO.png
 theme/images/splash_ios_768x1024_DSO.png
 theme/images/splash_ldpi_320x426_DSO.9.png
