@@ -3,8 +3,8 @@
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	xmlns:android = "http://schemas.android.com/apk/res/android"
 	id		    = "com.digi.webapppro"
-	versionCode = "7044"
-	version 	= "1.8.6.7044">
+	versionCode = "7045"
+	version 	= "1.8.6.7045">
 
 	<name>DIGI-WebApp Pro</name>
 
@@ -110,7 +110,7 @@
 	<gap:plugin name="cordova-plugin-wkwebview" source='npm' version='0.6.3' />
 
 <gap:config-file platform="ios" parent="CFBundleShortVersionString"> 
-	<string>7044</string> 
+	<string>7045</string> 
 </gap:config-file>
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>
