@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.8.8.7159 beta, Timestamp:1481644114537
+#Application:DigiWebApp, Version:1.8.8.7160 beta, Timestamp:1481644587554
 
 
 # Explicitly cached entries
@@ -8,25 +8,25 @@ de_de.js
 en_us.js
 underscore-min.js
 d8-0.4.0.min.js
-bootstrap.js
 jquery-1.9.1.js
-jquery_mobile.js
 theme/tmp.css
+bootstrap.js
+jquery_mobile.js
 jquery.xml2json_1.3.js
+barcodescanner.js
+cordova.js
+childbrowser.js
 jstz.js
+Math.uuid.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
-barcodescanner.js
-cordova.js
-childbrowser.js
-Math.uuid.js
-pen.cur
 theme/style.css
+pen.cur
 theme/images/1024x1024_90_SCHOLPP.png
-theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1536x2048_90_SCHOLPP.png
+theme/images/1080x1920_90_SCHOLPP.png
 theme/images/320x480_90_SCHOLPP.png
 theme/images/480x800_90_SCHOLPP.png
 theme/images/48x48_plain_about.png
@@ -68,14 +68,14 @@ theme/images/DigiLogo2013_scholpp.png
 theme/images/icon-winphone.png
 theme/images/Icon.png
 theme/images/icon_bookTime.png
-theme/images/icon_ios_114.png
 theme/images/icon_ios_120.png
+theme/images/icon_ios_114.png
 theme/images/icon_ios_144.png
 theme/images/icon_ios_152.png
 theme/images/icon_ios_57.png
 theme/images/icon_ios_72.png
-theme/images/icon_ios_76.png
 theme/images/icon_playbackAudio.png
+theme/images/icon_ios_76.png
 theme/images/icon_record.png
 theme/images/icon_stop.png
 theme/images/ic_launcher_hdpi.png
@@ -114,8 +114,8 @@ README.md
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
-theme/journal.svg
 theme/journal.ttf
+theme/journal.svg
 theme/journal.woff
 theme/jquery.signaturepad.css
 json2.min.js
@@ -123,9 +123,9 @@ pen.cur
 accept-multiple-signatures.html
 accept-signature.html
 full-window.html
+regenerate-signature.html
 require-drawn-signature.html
 sample-signature-output.js
-regenerate-signature.html
 core.js
 theme/jquery.mobile-1.3.0.min.css
 theme/images/ajax-loader.gif
