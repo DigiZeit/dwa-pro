@@ -146,256 +146,155 @@ DigiWebApp.Activity = M.Model.create({
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
+// Generated with: Espresso
 //
 // Project: DigiWebApp
-// Model: BautagebuchHersteller
-// 
-// zu bestücken mittels WebService
+// Model: Anwesenheitsliste
 // ==========================================================================
 
-DigiWebApp.BautagebuchHersteller = M.Model.create({
+DigiWebApp.Anwesenheitsliste = M.Model.create({
     
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchHersteller'
+      __name__: 'Anwesenheitsliste'
 
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , bezeichnung: M.Model.attr('String', {
-        isRequired: NO
-    })
+      	//"auftragsBezeichnung": "27.08.2012",
+    	  	, auftragsBezeichnung: M.Model.attr('String', {})
+    	//"auftragsId": "27.08.2012",
+    	    , auftragsId: M.Model.attr('String', {})
+    	//"bis": "10:37:08",
+    	    , bis: M.Model.attr('String', {})
+    	//"datum": "27.08.2012",
+    	    , datum: M.Model.attr('String', {})
+    	    , datumLabel: M.Model.attr('String', {})
+    	//"farbeAmpel": "",
+    	    , farbeAmpel: M.Model.attr('String', {})
+    	//"farbeAnwesenheit": "#00FF00",
+    	    , farbeAnwesenheit: M.Model.attr('String', {})
+    	//"fehlzeitBezeichnung": "",
+    	    , fehlzeitBezeichnung: M.Model.attr('String', {})
+    	//"gpsBreite": "0.0",
+    	    , gpsBreite: M.Model.attr('String', {})
+    	//"gpsBreitePosition": "0.0",
+    	    , gpsBreitePosition: M.Model.attr('String', {})
+    	//"gpsLaenge": "0.0",
+    	    , gpsLaenge: M.Model.attr('String', {})
+    	//"gpsLaengePosition": "0.0",
+    	    , gpsLaengePosition: M.Model.attr('String', {})
+    	//"handauftragsBezeichnung": "",
+    	    , handauftragsBezeichnung: M.Model.attr('String', {})
+    	//"handauftragsId": "",
+    	    , handauftragsId: M.Model.attr('String', {})
+    	//"mitarbeiterId": "29",
+    	    , mitarbeiterId: M.Model.attr('String', {})
+    	//"name": "Maier",
+    	    , name: M.Model.attr('String', {})
+    	//"nameVorname": "Maier, Peter",
+    	    , nameVorname: M.Model.attr('String', {})
+    	//"positionsBezeichnung": "1446DEKRA",
+    	    , positionsBezeichnung: M.Model.attr('String', {})
+    	//"positionsId": "1929",
+    	    , positionsId: M.Model.attr('String', {})
+    	//"taetigkeit": "05Stromversorger",
+    	    , taetigkeit: M.Model.attr('String', {})
+    	//"taetigkeitsId": "89",
+    	    , taetigkeitsId: M.Model.attr('String', {})
+    	//"taetigkeitsart": "0",
+    	    , taetigkeitsart: M.Model.attr('String', {})
+    	//"uhrzeit": "27-08-2012 11:50:52",
+    	    , uhrzeit: M.Model.attr('String', {})
+    	//"vorname": "Peter"
+    	    , vorname: M.Model.attr('String', {})
 
-	, getMaterialien: function() {
-		var that = this;
-		return _.filter(DigiWebApp.BautagebuchMaterial.findSorted(), function(mat) {
-			var foundIndex = _.find([JSON.parse(mat.get('herstellerId'))], function(myId) {
-				return (that.get('id') == myId);
-			});
-			return (foundIndex);
-		});
-	}
-	
-	, getList: function(paramObj) {
-		if (!paramObj) paramObj = {};
-		var that = this;
-		var resultList = [];
-		var items = DigiWebApp[that.name].findSorted();
-		var itemSelected = NO;
-		_.each(items, function(obj){
-			var item = { label: obj.get('bezeichnung'), value: obj.get('id') };
-//			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
-//				item.isSelected = YES;
-//				itemSelected = YES;
-//			}
-			resultList.push(item);
-		});
-		resultList.push({label: M.I18N.l('alle'), value: '0', isSelected:!itemSelected});
-		return resultList;
-	}
-	
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
+}, M.DataConsumer.configure({
+
+      appendRecords: NO
+
+    , responsePath: 'anwesenheitsliste'
+
+    , url: function () {
+        var myUrl = 'https://';
+        if (DigiWebApp.SettingsController.getSetting('benutzeHttps') === false) {
+            myUrl = 'http://';
+        }
+        myUrl = myUrl + DigiWebApp.JSONDatenuebertragungController.DatabaseServer
+            + '/WebAppServices/anwesenheitsliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company')
+            + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password')
+            + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId')
+            + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion
+            + '&requestTimestamp=' + M.Date.now().date.valueOf();
+        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
+        	console.log('Anwesenheitsliste: using ' + myUrl);
+        }
+		return myUrl;
     }
 
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-	        });
-	    }
-	    records = _.sortBy(records, function(n) { return n.get("bezeichnung");})
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: BautagebuchEinstellungen
-// ==========================================================================
-
-DigiWebApp.BautagebuchEinstellungen = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchEinstellungen'
-
-    , startUhrzeit: M.Model.attr('String', {
-          isRequired: NO
-    })
-
-    , inStundenBuchen: M.Model.attr('String', {
-          isRequired: NO
-    })
-    
-    , falscheZeitenIgnorieren: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , positionVorselektieren: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , minutenSchritte: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , alleMitarbeiterVorselektiert: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-	, deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
+    /* map needs to return record obj which can be handled by createRecord */
+    , map: function(obj) {
+    	//console.log(obj);
+        var outObj = {
+        	//"auftragsBezeichnung":"1234Hermann"
+        	  auftragsBezeichnung: obj.auftragsBezeichnung
+        	//"auftragsId":"947"
+			, auftragsId: obj.auftragsId
+			//"bis": "10:37:08",
+			, bis: obj.bis
+			//"datum": "27.08.2012",
+			, datum: obj.datum
+			, datumLabel: ''
+			//"farbeAmpel": "",
+			, farbeAmpel: obj.farbeAmpel
+			//"farbeAnwesenheit": "#00FF00",
+			, farbeAnwesenheit: obj.farbeAnwesenheit
+			//"fehlzeitBezeichnung": "",
+			, fehlzeitBezeichnung: obj.fehlzeitBezeichnung 
+			//"gpsBreite": "0.0",
+			, gpsBreite: obj.gpsBreite
+			//"gpsBreitePosition": "0.0",
+			, gpsBreitePosition: obj.gpsBreitePosition
+			//"gpsLaenge": "0.0",
+			, gpsLaenge: obj.gpsLaenge
+			//"gpsLaengePosition": "0.0",
+			, gpsLaengePosition: obj.gpsLaengePosition
+			//"handauftragsBezeichnung": "",
+			, handauftragsBezeichnung: obj.handauftragsBezeichnung
+			//"handauftragsId": "",
+			, handauftragsId: obj.handauftragsId
+			//"mitarbeiterId": "29",
+			, mitarbeiterId: obj.mitarbeiterId
+			//"name": "Maier",
+			, name: obj.name
+			//"nameVorname": "Maier, Peter",
+			, nameVorname: obj.nameVorname
+			//"positionsBezeichnung": "1446DEKRA",
+			, positionsBezeichnung: obj.positionsBezeichnung
+			//"positionsId": "1929",
+			, positionsId: obj.positionsId
+			//"taetigkeit": "05Stromversorger",
+			, taetigkeit: obj.taetigkeit
+			//"taetigkeitsId": "89",
+			, taetigkeitsId: obj.taetigkeitsId
+			//"taetigkeitsart": "0",
+			, taetigkeitsart: obj.taetigkeitsart
+			//"uhrzeit": "27-08-2012 11:50:52",
+			, uhrzeit: obj.uhrzeit
+			//"vorname": "Peter"
+			, vorname: obj.vorname
+        };
+		if (outObj.datum !== "-") {
+			if (outObj.bis === "-") {
+				outObj.datumLabel = M.I18N.l('bookingSince') + ': ';
+			} else {
+				outObj.datumLabel = M.I18N.l('lastWorkday') + ': ';
+				outObj.uhrzeit = '-';
+			}
+		} else {
+			outObj.datumLabel = M.I18N.l('noData');
+			outObj.uhrzeit = '-';
+			outObj.bis = '-';
+		}
+		return outObj;
     }
 
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys){
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    that.save();
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-	        });
-	    }
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
+}));
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -966,155 +865,256 @@ DigiWebApp.BautagebuchBautagesbericht = M.Model.create({
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso
+// Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: Anwesenheitsliste
+// Model: BautagebuchEinstellungen
 // ==========================================================================
 
-DigiWebApp.Anwesenheitsliste = M.Model.create({
+DigiWebApp.BautagebuchEinstellungen = M.Model.create({
     
-      __name__: 'Anwesenheitsliste'
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchEinstellungen'
 
-      	//"auftragsBezeichnung": "27.08.2012",
-    	  	, auftragsBezeichnung: M.Model.attr('String', {})
-    	//"auftragsId": "27.08.2012",
-    	    , auftragsId: M.Model.attr('String', {})
-    	//"bis": "10:37:08",
-    	    , bis: M.Model.attr('String', {})
-    	//"datum": "27.08.2012",
-    	    , datum: M.Model.attr('String', {})
-    	    , datumLabel: M.Model.attr('String', {})
-    	//"farbeAmpel": "",
-    	    , farbeAmpel: M.Model.attr('String', {})
-    	//"farbeAnwesenheit": "#00FF00",
-    	    , farbeAnwesenheit: M.Model.attr('String', {})
-    	//"fehlzeitBezeichnung": "",
-    	    , fehlzeitBezeichnung: M.Model.attr('String', {})
-    	//"gpsBreite": "0.0",
-    	    , gpsBreite: M.Model.attr('String', {})
-    	//"gpsBreitePosition": "0.0",
-    	    , gpsBreitePosition: M.Model.attr('String', {})
-    	//"gpsLaenge": "0.0",
-    	    , gpsLaenge: M.Model.attr('String', {})
-    	//"gpsLaengePosition": "0.0",
-    	    , gpsLaengePosition: M.Model.attr('String', {})
-    	//"handauftragsBezeichnung": "",
-    	    , handauftragsBezeichnung: M.Model.attr('String', {})
-    	//"handauftragsId": "",
-    	    , handauftragsId: M.Model.attr('String', {})
-    	//"mitarbeiterId": "29",
-    	    , mitarbeiterId: M.Model.attr('String', {})
-    	//"name": "Maier",
-    	    , name: M.Model.attr('String', {})
-    	//"nameVorname": "Maier, Peter",
-    	    , nameVorname: M.Model.attr('String', {})
-    	//"positionsBezeichnung": "1446DEKRA",
-    	    , positionsBezeichnung: M.Model.attr('String', {})
-    	//"positionsId": "1929",
-    	    , positionsId: M.Model.attr('String', {})
-    	//"taetigkeit": "05Stromversorger",
-    	    , taetigkeit: M.Model.attr('String', {})
-    	//"taetigkeitsId": "89",
-    	    , taetigkeitsId: M.Model.attr('String', {})
-    	//"taetigkeitsart": "0",
-    	    , taetigkeitsart: M.Model.attr('String', {})
-    	//"uhrzeit": "27-08-2012 11:50:52",
-    	    , uhrzeit: M.Model.attr('String', {})
-    	//"vorname": "Peter"
-    	    , vorname: M.Model.attr('String', {})
+    , startUhrzeit: M.Model.attr('String', {
+          isRequired: NO
+    })
 
-}, M.DataConsumer.configure({
+    , inStundenBuchen: M.Model.attr('String', {
+          isRequired: NO
+    })
+    
+    , falscheZeitenIgnorieren: M.Model.attr('String', {
+        isRequired: NO
+    })
 
-      appendRecords: NO
+    , positionVorselektieren: M.Model.attr('String', {
+        isRequired: NO
+    })
 
-    , responsePath: 'anwesenheitsliste'
+    , minutenSchritte: M.Model.attr('String', {
+        isRequired: NO
+    })
 
-    , url: function () {
-        var myUrl = 'https://';
-        if (DigiWebApp.SettingsController.getSetting('benutzeHttps') === false) {
-            myUrl = 'http://';
-        }
-        myUrl = myUrl + DigiWebApp.JSONDatenuebertragungController.DatabaseServer
-            + '/WebAppServices/anwesenheitsliste?modus=0&firmenId=' + DigiWebApp.SettingsController.getSetting('company')
-            + '&kennwort=' + DigiWebApp.SettingsController.getSetting('password')
-            + '&geraeteId=' + DigiWebApp.SettingsController.getSetting('workerId')
-            + '&geraeteTyp=2&softwareVersion=' + DigiWebApp.RequestController.softwareVersion
-            + '&requestTimestamp=' + M.Date.now().date.valueOf();
-        if (DigiWebApp.ApplicationController.profilingIntervalVar === null) {
-        	console.log('Anwesenheitsliste: using ' + myUrl);
-        }
-		return myUrl;
+    , alleMitarbeiterVorselektiert: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+	, deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
     }
 
-    /* map needs to return record obj which can be handled by createRecord */
-    , map: function(obj) {
-    	//console.log(obj);
-        var outObj = {
-        	//"auftragsBezeichnung":"1234Hermann"
-        	  auftragsBezeichnung: obj.auftragsBezeichnung
-        	//"auftragsId":"947"
-			, auftragsId: obj.auftragsId
-			//"bis": "10:37:08",
-			, bis: obj.bis
-			//"datum": "27.08.2012",
-			, datum: obj.datum
-			, datumLabel: ''
-			//"farbeAmpel": "",
-			, farbeAmpel: obj.farbeAmpel
-			//"farbeAnwesenheit": "#00FF00",
-			, farbeAnwesenheit: obj.farbeAnwesenheit
-			//"fehlzeitBezeichnung": "",
-			, fehlzeitBezeichnung: obj.fehlzeitBezeichnung 
-			//"gpsBreite": "0.0",
-			, gpsBreite: obj.gpsBreite
-			//"gpsBreitePosition": "0.0",
-			, gpsBreitePosition: obj.gpsBreitePosition
-			//"gpsLaenge": "0.0",
-			, gpsLaenge: obj.gpsLaenge
-			//"gpsLaengePosition": "0.0",
-			, gpsLaengePosition: obj.gpsLaengePosition
-			//"handauftragsBezeichnung": "",
-			, handauftragsBezeichnung: obj.handauftragsBezeichnung
-			//"handauftragsId": "",
-			, handauftragsId: obj.handauftragsId
-			//"mitarbeiterId": "29",
-			, mitarbeiterId: obj.mitarbeiterId
-			//"name": "Maier",
-			, name: obj.name
-			//"nameVorname": "Maier, Peter",
-			, nameVorname: obj.nameVorname
-			//"positionsBezeichnung": "1446DEKRA",
-			, positionsBezeichnung: obj.positionsBezeichnung
-			//"positionsId": "1929",
-			, positionsId: obj.positionsId
-			//"taetigkeit": "05Stromversorger",
-			, taetigkeit: obj.taetigkeit
-			//"taetigkeitsId": "89",
-			, taetigkeitsId: obj.taetigkeitsId
-			//"taetigkeitsart": "0",
-			, taetigkeitsart: obj.taetigkeitsart
-			//"uhrzeit": "27-08-2012 11:50:52",
-			, uhrzeit: obj.uhrzeit
-			//"vorname": "Peter"
-			, vorname: obj.vorname
-        };
-		if (outObj.datum !== "-") {
-			if (outObj.bis === "-") {
-				outObj.datumLabel = M.I18N.l('bookingSince') + ': ';
-			} else {
-				outObj.datumLabel = M.I18N.l('lastWorkday') + ': ';
-				outObj.uhrzeit = '-';
-			}
-		} else {
-			outObj.datumLabel = M.I18N.l('noData');
-			outObj.uhrzeit = '-';
-			outObj.bis = '-';
-		}
-		return outObj;
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys){
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    that.save();
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchHersteller
+// 
+// zu bestücken mittels WebService
+// ==========================================================================
+
+DigiWebApp.BautagebuchHersteller = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchHersteller'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , bezeichnung: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+	, getMaterialien: function() {
+		var that = this;
+		return _.filter(DigiWebApp.BautagebuchMaterial.findSorted(), function(mat) {
+			var foundIndex = _.find([JSON.parse(mat.get('herstellerId'))], function(myId) {
+				return (that.get('id') == myId);
+			});
+			return (foundIndex);
+		});
+	}
+	
+	, getList: function(paramObj) {
+		if (!paramObj) paramObj = {};
+		var that = this;
+		var resultList = [];
+		var items = DigiWebApp[that.name].findSorted();
+		var itemSelected = NO;
+		_.each(items, function(obj){
+			var item = { label: obj.get('bezeichnung'), value: obj.get('id') };
+//			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
+//				item.isSelected = YES;
+//				itemSelected = YES;
+//			}
+			resultList.push(item);
+		});
+		resultList.push({label: M.I18N.l('alle'), value: '0', isSelected:!itemSelected});
+		return resultList;
+	}
+	
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
     }
 
-}));
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+	        });
+	    }
+	    records = _.sortBy(records, function(n) { return n.get("bezeichnung");})
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -2437,6 +2437,131 @@ DigiWebApp.BautagebuchMediaFile = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: BautagebuchMitarbeiter
+// 
+// zu bestücken mittels WebService
+// ==========================================================================
+
+DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchMitarbeiter'
+
+    , id: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , webAppId: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , webAppPin: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , projektleiterId: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , vollername: function() {
+        return this.get("vorname") + " " + this.get("nachname");
+    }
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: BautagebuchMengeneinheit
 // 
 // zu bestücken mittels WebService
@@ -2590,131 +2715,6 @@ DigiWebApp.BautagebuchMengeneinheit = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Model: BautagebuchMitarbeiter
-// 
-// zu bestücken mittels WebService
-// ==========================================================================
-
-DigiWebApp.BautagebuchMitarbeiter = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchMitarbeiter'
-
-    , id: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , vorname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , nachname: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , webAppId: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , webAppPin: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , projektleiterId: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , vollername: function() {
-        return this.get("vorname") + " " + this.get("nachname");
-    }
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
-    }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-	        });
-	    }
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Model: BautagebuchNotiz
 // ==========================================================================
 
@@ -2841,141 +2841,6 @@ DigiWebApp.BautagebuchNotiz = M.Model.create({
 	        	var loadedItem = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
 	        	if (loadedItem && ( (bautagesberichtId && loadedItem.get("bautagesberichtId") === bautagesberichtId) || (typeof(bautagesberichtId) === "undefined") )) {
 		            records.push(loadedItem);
-	        	}
-	        });
-	    }
-	    return records;
-	}
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: BautagebuchProjektleiter
-// 
-// zu bestücken mittels WebService (alle Gruppenführer)
-// ==========================================================================
-
-DigiWebApp.BautagebuchProjektleiter = M.Model.create({
-    
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'BautagebuchProjektleiter'
-
-    , id: M.Model.attr('Number', {
-        isRequired: NO
-    })
-
-    , vorname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , nachname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , vollername: function() {
-		return this.get("vorname") + " " + this.get("nachname");
-    }
-
-	, getList: function(paramObj) {
-		if (!paramObj) paramObj = {};
-		var that = this;
-		var resultList = [];
-		var items = DigiWebApp[that.name].findSorted();
-		var itemSelected = NO;
-		_.each(items, function(obj){
-			var item = { label: obj.get('vollername'), value: obj.get('id') };
-			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
-				item.isSelected = YES;
-				itemSelected = YES;
-			}
-			resultList.push(item);
-		});
-		if (!itemSelected && resultList.length > 0) {
-			resultList.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
-		} else if (resultList.length == 0) {
-			resultList.push({label: M.I18N.l('noData'), value: '0', isSelected:YES});
-		}
-		return resultList;
-	}
-	
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-    		el.deleteSorted();
-        });
-    }
-
-	, deleteSorted: function() {
-	    var that = this;
-	
-	    // remove m_id from Key-Stringlist
-	    var keys = [];
-	    var newKeys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e2) {
-	    	trackError(e2);
-	    }
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	if (k !== that.m_id) {
-	        		newKeys.push(k);
-	        	}
-	        });
-		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
-	    }
-	
-	    return that.del();
-	}
-	
-	, saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-	
-	, findSorted: function() {
-	    var that = this;
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e4) {
-	    	trackError(e4);
-	    }
-	
-	    var records = [];
-	
-	    if (keys) {
-	        _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
 	        	}
 	        });
 	    }
@@ -3165,6 +3030,141 @@ DigiWebApp.BautagebuchZeitbuchung = M.Model.create({
 	        	var loadedItem = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
 	        	if (loadedItem && ( (bautagesberichtId && loadedItem.get("bautagesberichtId") === bautagesberichtId) || (typeof(bautagesberichtId) === "undefined") )) {
 		            records.push(loadedItem);
+	        	}
+	        });
+	    }
+	    return records;
+	}
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Model: BautagebuchProjektleiter
+// 
+// zu bestücken mittels WebService (alle Gruppenführer)
+// ==========================================================================
+
+DigiWebApp.BautagebuchProjektleiter = M.Model.create({
+    
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'BautagebuchProjektleiter'
+
+    , id: M.Model.attr('Number', {
+        isRequired: NO
+    })
+
+    , vorname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , nachname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , vollername: function() {
+		return this.get("vorname") + " " + this.get("nachname");
+    }
+
+	, getList: function(paramObj) {
+		if (!paramObj) paramObj = {};
+		var that = this;
+		var resultList = [];
+		var items = DigiWebApp[that.name].findSorted();
+		var itemSelected = NO;
+		_.each(items, function(obj){
+			var item = { label: obj.get('vollername'), value: obj.get('id') };
+			if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
+				item.isSelected = YES;
+				itemSelected = YES;
+			}
+			resultList.push(item);
+		});
+		if (!itemSelected && resultList.length > 0) {
+			resultList.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+		} else if (resultList.length == 0) {
+			resultList.push({label: M.I18N.l('noData'), value: '0', isSelected:YES});
+		}
+		return resultList;
+	}
+	
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+    		el.deleteSorted();
+        });
+    }
+
+	, deleteSorted: function() {
+	    var that = this;
+	
+	    // remove m_id from Key-Stringlist
+	    var keys = [];
+	    var newKeys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e2) {
+	    	trackError(e2);
+	    }
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	if (k !== that.m_id) {
+	        		newKeys.push(k);
+	        	}
+	        });
+		    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(newKeys));
+	    }
+	
+	    return that.del();
+	}
+	
+	, saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+	
+	, findSorted: function() {
+	    var that = this;
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e4) {
+	    	trackError(e4);
+	    }
+	
+	    var records = [];
+	
+	    if (keys) {
+	        _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
 	        	}
 	        });
 	    }
@@ -4882,6 +4882,288 @@ DigiWebApp.OnlinePosition = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: Position
+// ==========================================================================
+
+DigiWebApp.Position = M.Model.create({
+
+    /* Define the name of your model. Do not delete this property! */
+    __name__: 'Position'
+
+    , id: M.Model.attr('String',{
+    	isRequired: NO
+    })
+
+    , name: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , strasse: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , hausnummer: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , plz: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ort: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , land: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , countrycode: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , telefon: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , fax: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , email: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , ansprechpartner: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , kundenname: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , longitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , latitude: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , description: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , orderId: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , positionBegin: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , positionEnd: M.Model.attr('String', {
+        isRequired: NO
+    })
+    
+    , appointments: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , arbeitsbeginn: M.Model.attr('String', {
+        isRequired: NO
+    })
+    	
+    , arbeitsende: M.Model.attr('String', {
+        isRequired: NO
+    })
+    	
+    , getById: function(selectedId) {
+		var that = this;
+		return _.find(DigiWebApp[that.name].find(), function(item) {
+			return (item.get('id') == selectedId);
+		});
+	}
+
+    , getAuftrag: function() {
+		return DigiWebApp.Order.getById(this.get('orderId'));
+	}
+
+	, getTaetigkeiten: function() {
+		var that = this;
+		var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
+            if (wp) return wp.get('id') == that.get('id');
+        });
+        var activities;
+        if (workPlans.length > 0) {
+            activities = that.getActivitiesFromWorkplan(workPlans[0]);
+        } else {
+            activities = _.filter(DigiWebApp.Activity.findSorted(), function(act){ return (act.get('positionId') == 1)});
+        }
+        return _.compact(activities);
+	}
+
+    , getActivitiesFromWorkplan: function(workplan) {
+        var actIds = workplan.get('activityIds').split(',');
+        var activities = [];
+        if (actIds && actIds.length > 0) {
+        	var alleTaetigkeiten = DigiWebApp.Activity.find(); 
+            for (var i = 0; i < actIds.length; i++) {
+            	var taet = _.find(alleTaetigkeiten, function(t){ return parseIntRadixTen(t.get("id")) === parseIntRadixTen(actIds[i])});
+            	if (taet) activities.push(taet);
+            }
+
+        }
+        if (parseIntRadixTen(workplan.get("workplanType")) === 1) {
+        	// only those activities which are bound to employee
+            activities = _.map(activities, function(act) {
+            	if ( typeof(act) === "undefined" ) {
+            		console.log("UNDEFINED ACTIVITY");
+            		return null;
+            	} else {
+        			var zugeordnet = NO;
+            		var allActivities = DigiWebApp.Activity.findSorted();
+            		_.each(allActivities, function(acti) {
+            			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
+            			if (act.get("id") === acti.get("id") && parseIntRadixTen(acti.get("positionId")) === 1) {
+            				zugeordnet = YES;
+            			}
+            		});
+        			if (zugeordnet) {
+        				return act;
+        			} else {
+        				return null;	
+        			}
+            	}
+            });
+        }
+        activities = _.compact(activities);
+        return activities;
+    }
+
+    , getList: function(paramObj) {
+		if (!paramObj) paramObj = {};
+		var that = this;
+		var resultList = [];
+		var items = DigiWebApp.Position.findSorted();
+		if (paramObj.parentId) {
+			items = _.filter(items, function(item){
+				return (item.get('orderId') == paramObj.parentId);
+			});
+		}
+		var itemSelected = NO;
+		_.each(items, function(obj){
+    		var item = { label: obj.get('name'), value: obj.get('id') };
+    		if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
+    			item.isSelected = YES;
+    			itemSelected = YES;
+    		}
+    		resultList.push(item);
+		});
+		if (!itemSelected && resultList.length > 0) {
+			resultList.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
+		} else if (resultList.length == 0) {
+			resultList.push({label: M.I18N.l('noData'), value: '0', isSelected:YES});
+		}
+		return resultList;
+	}
+
+	, deleteAll: function() {
+		var that = this;
+	    _.each(this.find(), function(el) {
+	        el.del();
+	    });
+	    localStorage.removeItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	}
+
+    , findSorted: function() {
+        var that = this;
+        var keys = [];
+        try {
+            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
+        } catch(e2) {
+        	trackError(e2);
+        }
+
+        var records = [];
+
+        if (keys) {
+            _.each(keys, function(k) {
+	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
+	        	if (record) {
+	        		records.push(record);
+	        	}
+            });
+        }
+        return records;
+    }
+
+    , saveSorted: function() {
+	    var that = this;
+	    if (!that.save()) return false;
+	
+	    // add m_id to Key-Stringlist
+	    var keys = [];
+	    try {
+	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
+	    	if ( keyString !== null) {
+	    		keys = JSON.parse(keyString);
+	    	}
+	    } catch(e3) {
+	    	trackError(e3);
+	    }
+        var found = NO;
+        _.each(keys, function(k) {
+        	if (that.m_id === k) { found = YES; }
+        });
+        if (found === NO) { keys.push(that.m_id); }
+	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
+	    return true;
+	}
+
+	, getByVaterId: function(vaterId) {
+		var that = this;
+		var result = [];
+		var sortInApp = true;
+		var all = [];
+		if (sortInApp) {
+			all = that.find();
+		} else {
+			all = that.findSorted();
+		}
+		
+		//all = DigiWebApp.Order.getHandpositionen(sortInApp).concat(all);
+		
+		if (typeof(vaterId) == "undefined" || vaterId == null || parseIntRadixTen(vaterId) == 0) {
+			_.each(all, function(el){
+				if (typeof(el.get("orderId")) == "undefined" || el.get("orderId") == null ) {
+					result.push(el);
+				}
+			});
+		} else {
+			//return that.find({query:{identifier: 'vaterId', operator: '=', value: vaterId}}); // funktioniert nicht, wenn vaterId im localStorage undefined...
+			_.each(all, function(el){
+				if (typeof(el.get("orderId")) != "undefined" 
+						&& el.get("orderId")  != null 
+						&& parseIntRadixTen(el.get("orderId")) == parseIntRadixTen(vaterId)
+				) {
+					result.push(el);
+				}
+			});
+		}
+		if (sortInApp) {
+			return _.sortBy(result, function(el) { return el.get('name'); });
+		} else {
+			return result;
+		}
+	}
+
+}, M.DataProviderLocalStorage);
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Model: Order
 // ==========================================================================
 
@@ -5182,288 +5464,6 @@ DigiWebApp.Order = M.Model.create({
 
 }, M.DataProviderLocalStorage);
 
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: Position
-// ==========================================================================
-
-DigiWebApp.Position = M.Model.create({
-
-    /* Define the name of your model. Do not delete this property! */
-    __name__: 'Position'
-
-    , id: M.Model.attr('String',{
-    	isRequired: NO
-    })
-
-    , name: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , strasse: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , hausnummer: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , plz: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ort: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , land: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , countrycode: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , telefon: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , fax: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , email: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , ansprechpartner: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , kundenname: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , longitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , latitude: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , description: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , orderId: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , positionBegin: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , positionEnd: M.Model.attr('String', {
-        isRequired: NO
-    })
-    
-    , appointments: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , arbeitsbeginn: M.Model.attr('String', {
-        isRequired: NO
-    })
-    	
-    , arbeitsende: M.Model.attr('String', {
-        isRequired: NO
-    })
-    	
-    , getById: function(selectedId) {
-		var that = this;
-		return _.find(DigiWebApp[that.name].find(), function(item) {
-			return (item.get('id') == selectedId);
-		});
-	}
-
-    , getAuftrag: function() {
-		return DigiWebApp.Order.getById(this.get('orderId'));
-	}
-
-	, getTaetigkeiten: function() {
-		var that = this;
-		var workPlans = _.select(DigiWebApp.WorkPlan.find(), function(wp) {
-            if (wp) return wp.get('id') == that.get('id');
-        });
-        var activities;
-        if (workPlans.length > 0) {
-            activities = that.getActivitiesFromWorkplan(workPlans[0]);
-        } else {
-            activities = _.filter(DigiWebApp.Activity.findSorted(), function(act){ return (act.get('positionId') == 1)});
-        }
-        return _.compact(activities);
-	}
-
-    , getActivitiesFromWorkplan: function(workplan) {
-        var actIds = workplan.get('activityIds').split(',');
-        var activities = [];
-        if (actIds && actIds.length > 0) {
-        	var alleTaetigkeiten = DigiWebApp.Activity.find(); 
-            for (var i = 0; i < actIds.length; i++) {
-            	var taet = _.find(alleTaetigkeiten, function(t){ return parseIntRadixTen(t.get("id")) === parseIntRadixTen(actIds[i])});
-            	if (taet) activities.push(taet);
-            }
-
-        }
-        if (parseIntRadixTen(workplan.get("workplanType")) === 1) {
-        	// only those activities which are bound to employee
-            activities = _.map(activities, function(act) {
-            	if ( typeof(act) === "undefined" ) {
-            		console.log("UNDEFINED ACTIVITY");
-            		return null;
-            	} else {
-        			var zugeordnet = NO;
-            		var allActivities = DigiWebApp.Activity.findSorted();
-            		_.each(allActivities, function(acti) {
-            			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
-            			if (act.get("id") === acti.get("id") && parseIntRadixTen(acti.get("positionId")) === 1) {
-            				zugeordnet = YES;
-            			}
-            		});
-        			if (zugeordnet) {
-        				return act;
-        			} else {
-        				return null;	
-        			}
-            	}
-            });
-        }
-        activities = _.compact(activities);
-        return activities;
-    }
-
-    , getList: function(paramObj) {
-		if (!paramObj) paramObj = {};
-		var that = this;
-		var resultList = [];
-		var items = DigiWebApp.Position.findSorted();
-		if (paramObj.parentId) {
-			items = _.filter(items, function(item){
-				return (item.get('orderId') == paramObj.parentId);
-			});
-		}
-		var itemSelected = NO;
-		_.each(items, function(obj){
-    		var item = { label: obj.get('name'), value: obj.get('id') };
-    		if ((paramObj.selectedId && obj.get('id') == paramObj.selectedId) || items.length == 1) {
-    			item.isSelected = YES;
-    			itemSelected = YES;
-    		}
-    		resultList.push(item);
-		});
-		if (!itemSelected && resultList.length > 0) {
-			resultList.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:YES});
-		} else if (resultList.length == 0) {
-			resultList.push({label: M.I18N.l('noData'), value: '0', isSelected:YES});
-		}
-		return resultList;
-	}
-
-	, deleteAll: function() {
-		var that = this;
-	    _.each(this.find(), function(el) {
-	        el.del();
-	    });
-	    localStorage.removeItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	}
-
-    , findSorted: function() {
-        var that = this;
-        var keys = [];
-        try {
-            keys = JSON.parse(localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + this.name.toLowerCase() + 'Keys'));
-        } catch(e2) {
-        	trackError(e2);
-        }
-
-        var records = [];
-
-        if (keys) {
-            _.each(keys, function(k) {
-	        	var record = that.find({key:DigiWebApp.ApplicationController.storagePrefix + that.name + '_' + k});
-	        	if (record) {
-	        		records.push(record);
-	        	}
-            });
-        }
-        return records;
-    }
-
-    , saveSorted: function() {
-	    var that = this;
-	    if (!that.save()) return false;
-	
-	    // add m_id to Key-Stringlist
-	    var keys = [];
-	    try {
-	    	var keyString = localStorage.getItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys');
-	    	if ( keyString !== null) {
-	    		keys = JSON.parse(keyString);
-	    	}
-	    } catch(e3) {
-	    	trackError(e3);
-	    }
-        var found = NO;
-        _.each(keys, function(k) {
-        	if (that.m_id === k) { found = YES; }
-        });
-        if (found === NO) { keys.push(that.m_id); }
-	    localStorage.setItem(DigiWebApp.ApplicationController.storagePrefix + '_' + that.name.toLowerCase() + 'Keys', JSON.stringify(keys));
-	    return true;
-	}
-
-	, getByVaterId: function(vaterId) {
-		var that = this;
-		var result = [];
-		var sortInApp = true;
-		var all = [];
-		if (sortInApp) {
-			all = that.find();
-		} else {
-			all = that.findSorted();
-		}
-		
-		//all = DigiWebApp.Order.getHandpositionen(sortInApp).concat(all);
-		
-		if (typeof(vaterId) == "undefined" || vaterId == null || parseIntRadixTen(vaterId) == 0) {
-			_.each(all, function(el){
-				if (typeof(el.get("orderId")) == "undefined" || el.get("orderId") == null ) {
-					result.push(el);
-				}
-			});
-		} else {
-			//return that.find({query:{identifier: 'vaterId', operator: '=', value: vaterId}}); // funktioniert nicht, wenn vaterId im localStorage undefined...
-			_.each(all, function(el){
-				if (typeof(el.get("orderId")) != "undefined" 
-						&& el.get("orderId")  != null 
-						&& parseIntRadixTen(el.get("orderId")) == parseIntRadixTen(vaterId)
-				) {
-					result.push(el);
-				}
-			});
-		}
-		if (sortInApp) {
-			return _.sortBy(result, function(el) { return el.get('name'); });
-		} else {
-			return result;
-		}
-	}
-
-}, M.DataProviderLocalStorage);
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -6455,42 +6455,6 @@ DigiWebApp.UebernachtungAuswahlOption = M.Model.create({
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Model: WorkPlan
-// ==========================================================================
-
-DigiWebApp.WorkPlan = M.Model.create({
-
-    __name__: 'WorkPlan'
-
-    , id: M.Model.attr('String', {
-        isRequired: NO
-    })
-
-    , workplanType: M.Model.attr('String', {
-        isRequired: NO          // 0: alle, 1: normal (gefiltert)
-    })
-
-    , activityIds: M.Model.attr('String', {
-        isRequired: NO          // saved as string comma-separated
-    })
-
-    , activityPositions: M.Model.attr('String', {
-        isRequired: NO          // saved as string comma-separated
-    })
-
-    , deleteAll: function() {
-        _.each(this.find(), function(el) {
-            el.del();
-        });
-    }
-
-}, M.DataProviderLocalStorage);
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso
 //
 // Project: DigiWebApp
@@ -6660,6 +6624,42 @@ DigiWebApp.Zeitbuchungen = M.Model.create({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Model: WorkPlan
+// ==========================================================================
+
+DigiWebApp.WorkPlan = M.Model.create({
+
+    __name__: 'WorkPlan'
+
+    , id: M.Model.attr('String', {
+        isRequired: NO
+    })
+
+    , workplanType: M.Model.attr('String', {
+        isRequired: NO          // 0: alle, 1: normal (gefiltert)
+    })
+
+    , activityIds: M.Model.attr('String', {
+        isRequired: NO          // saved as string comma-separated
+    })
+
+    , activityPositions: M.Model.attr('String', {
+        isRequired: NO          // saved as string comma-separated
+    })
+
+    , deleteAll: function() {
+        _.each(this.find(), function(el) {
+            el.del();
+        });
+    }
+
+}, M.DataProviderLocalStorage);
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: ActivityListController
 // ==========================================================================
 
@@ -6701,97 +6701,6 @@ DigiWebApp.ActivityListController = M.Controller.extend({
 	    DigiWebApp.BautagebuchZeitenDetailsPage.content.activityComboBox.events.change.action();
 	    history.back();
 	}
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: AnwesenheitslisteController
-// ==========================================================================
-//var-checked
-DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
-
-	  items: null
-	
-	, init: function(isFirstLoad) {
-		//console.log("Anwesenheitsliste: showing Loader");		
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('AnwesenheitslisteLaden'));
-		var that = DigiWebApp.AnwesenheitslisteController;
-		if (that.items === null) {
-			DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.AnwesenheitslisteController.initWithServer, isFirstLoad);
-		} else {
-			DigiWebApp.AnwesenheitslisteController.initWithServer(isFirstLoad);
-		}
-	}
-
-    , initWithServer: function(isFirstLoad) {
-    	var that = DigiWebApp.AnwesenheitslisteController;
-		if (that.items === null) {
-
-			//console.log("Anwesenheitsliste: find --> request");		
-			DigiWebApp.Anwesenheitsliste.find({
-	              urlParams: {}
-	            , callbacks: {
-	                success: {
-	                      action: function(records) {
-	                        if(records && records.length === 0) {
-		            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                    		//console.log("Anwesenheitsliste: error length==0");		
-	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	            		              title: M.I18N.l('error')
-	            		            , message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden')
-	            		            , callbacks: {
-	            		                confirm: {
-	            		                      target: that
-	            		                    , action: function () {
-				            					if (DigiWebApp.SettingsController.featureAvailable('404')) {
-				            						DigiWebApp.NavigationController.backToButtonDashboardPageFlipTransition();
-				            					} else {
-			        		        				DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
-				            					}
-	            		                    }
-	            		                }
-	            		            }
-	            		        });
-	                        } else {
-	                    		//console.log("Anwesenheitsliste: success");		
-	                        	DigiWebApp.AnwesenheitslisteController.set('items', records);
-		            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                        }
-	                    }
-	                }
-	                , error: {
-	                    action: function(request, error) {
-	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	                		//console.log("Anwesenheitsliste: error request failed");		
-	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
-	        		              title: M.I18N.l('error')
-	        		            , message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden')
-	        		            , callbacks: {
-	        		                confirm: {
-	        		                      target: that
-	        		                    , action: function () {
-			            					if (DigiWebApp.SettingsController.featureAvailable('404')) {
-			            						DigiWebApp.NavigationController.backToButtonDashboardPageFlipTransition();
-			            					} else {
-			    		        				DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
-			            					}
-	        		                    }
-	        		                }
-	        		            }
-	        		        });
-	                    }
-	                }
-	            }
-	        });    	
-        } else {
-        	DigiWebApp.ApplicationController.DigiLoaderView.hide();
-        }
-		
-    }
 
 });
 
@@ -9341,6 +9250,97 @@ DigiWebApp.ApplicationController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: AnwesenheitslisteController
+// ==========================================================================
+//var-checked
+DigiWebApp.AnwesenheitslisteController = M.Controller.extend({
+
+	  items: null
+	
+	, init: function(isFirstLoad) {
+		//console.log("Anwesenheitsliste: showing Loader");		
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('AnwesenheitslisteLaden'));
+		var that = DigiWebApp.AnwesenheitslisteController;
+		if (that.items === null) {
+			DigiWebApp.RequestController.getDatabaseServer(DigiWebApp.AnwesenheitslisteController.initWithServer, isFirstLoad);
+		} else {
+			DigiWebApp.AnwesenheitslisteController.initWithServer(isFirstLoad);
+		}
+	}
+
+    , initWithServer: function(isFirstLoad) {
+    	var that = DigiWebApp.AnwesenheitslisteController;
+		if (that.items === null) {
+
+			//console.log("Anwesenheitsliste: find --> request");		
+			DigiWebApp.Anwesenheitsliste.find({
+	              urlParams: {}
+	            , callbacks: {
+	                success: {
+	                      action: function(records) {
+	                        if(records && records.length === 0) {
+		            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                    		//console.log("Anwesenheitsliste: error length==0");		
+	            		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	            		              title: M.I18N.l('error')
+	            		            , message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden')
+	            		            , callbacks: {
+	            		                confirm: {
+	            		                      target: that
+	            		                    , action: function () {
+				            					if (DigiWebApp.SettingsController.featureAvailable('404')) {
+				            						DigiWebApp.NavigationController.backToButtonDashboardPageFlipTransition();
+				            					} else {
+			        		        				DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
+				            					}
+	            		                    }
+	            		                }
+	            		            }
+	            		        });
+	                        } else {
+	                    		//console.log("Anwesenheitsliste: success");		
+	                        	DigiWebApp.AnwesenheitslisteController.set('items', records);
+		            			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                        }
+	                    }
+	                }
+	                , error: {
+	                    action: function(request, error) {
+	        				DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	                		//console.log("Anwesenheitsliste: error request failed");		
+	        		        DigiWebApp.ApplicationController.nativeAlertDialogView({
+	        		              title: M.I18N.l('error')
+	        		            , message: M.I18N.l('AnwesenheitslisteKonnteNichtGeladenWerden')
+	        		            , callbacks: {
+	        		                confirm: {
+	        		                      target: that
+	        		                    , action: function () {
+			            					if (DigiWebApp.SettingsController.featureAvailable('404')) {
+			            						DigiWebApp.NavigationController.backToButtonDashboardPageFlipTransition();
+			            					} else {
+			    		        				DigiWebApp.NavigationController.backToDashboardPageFlipTransition();
+			            					}
+	        		                    }
+	        		                }
+	        		            }
+	        		        });
+	                    }
+	                }
+	            }
+	        });    	
+        } else {
+        	DigiWebApp.ApplicationController.DigiLoaderView.hide();
+        }
+		
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: AudioController
 // ==========================================================================
 // manuell var-checked
@@ -10942,186 +10942,6 @@ DigiWebApp.BautagebuchDatenuebertragungController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: BautagebuchEinstellungenController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
-
-	  settings: {
-		// Vorgabewerte (werden zur Laufzeit überschrieben)
-		  startUhrzeit: "08:00"
-		, inStundenBuchen: NO
-		, inStundenBuchenItem: [{
-	        value: 'inStundenBuchen'
-	      , label: M.I18N.l('BautagebuchInStundenBuchen')
-	      , isSelected: NO
-		}]
-		, falscheZeitenIgnorieren: NO
-		, falscheZeitenIgnorierenItem: [{
-	        value: 'falscheZeitenIgnorieren'
-	      , label: M.I18N.l('falscheZeitenIgnorieren')
-	      , isSelected: NO
-		}]
-		, positionVorselektieren: NO
-		, positionVorselektierenItem: [{
-	        value: 'positionVorselektieren'
-	      , label: M.I18N.l('positionVorselektieren')
-	      , isSelected: NO
-		}]
-		, alleMitarbeiterVorselektiert: NO
-		, alleMitarbeiterVorselektiertItem: [{
-	        value: 'alleMitarbeiterVorselektiert'
-	      , label: M.I18N.l('alleMitarbeiterVorselektiert')
-	      , isSelected: NO
-		}]
-		, minutenSchritte: 5
-		, minutenSchritteItem: [
-    	          {
-    		        value: '1'
-    		      , label: '1'
-    		      , isSelected: NO
-    			}
-      	        , {
-    		        value: '5'
-    		      , label: '5'
-    		      , isSelected: YES
-    			}
-    	        , {
-    		        value: '10'
-    		      , label: '10'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '15'
-    		      , label: '15'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '20'
-    		      , label: '20'
-    		      , isSelected: NO
-    			}
-    	        , {
-    		        value: '30'
-    		      , label: '30'
-    		      , isSelected: NO
-    			}
-        ]
-	}
-
-	, init: function(isFirstLoad) {
-		var that = this;
-		that.load();
-	}
-
-	, lastPage: null
-	
-	, load: function() {
-		var that = this;
-
-		// set defaults for content-binding
-		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
-		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
-		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
-		that.set("settings.falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
-		that.set("settings.falscheZeitenIgnorierenItem", that.settings.falscheZeitenIgnorierenItem);
-		that.set("settings.positionVorselektieren", that.settings.positionVorselektieren);
-		that.set("settings.positionVorselektierenItem", that.settings.positionVorselektierenItem);
-		that.set("settings.alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
-		that.set("settings.alleMitarbeiterVorselektiertItem", that.settings.alleMitarbeiterVorselektiertItem);
-		that.set("settings.minutenSchritte", that.settings.minutenSchritte);
-		that.set("settings.minutenSchritteItem", that.settings.minutenSchritteItem);
-		
-		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
-			// erstelle Record mit Vorgabewerten
-			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
-				  startUhrzeit: that.settings.startUhrzeit
-				, inStundenBuchen: that.settings.inStundenBuchen
-				, falscheZeitenIgnorieren: that.settings.falscheZeitenIgnorieren
-				, positionVorselektieren: that.settings.positionVorselektieren
-				, minutenSchritte: that.settings.minutenSchritte
-				, alleMitarbeiterVorselektiert: that.settings.alleMitarbeiterVorselektiert
-			});
-			rec.save();
-		} else {
-			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-			that.set("settings.startUhrzeit", rec.get("startUhrzeit"));
-			if (typeof(rec.get("inStundenBuchen")) !== "undefined") {
-				that.set("settings.inStundenBuchen", rec.get("inStundenBuchen"));
-				that.set("settings.inStundenBuchenItem", [{
-			        value: 'inStundenBuchen'
-			      , label: M.I18N.l('BautagebuchInStundenBuchen')
-			      , isSelected: rec.get("inStundenBuchen")
-				}]);
-			}
-			if (typeof(rec.get("falscheZeitenIgnorieren")) !== "undefined") {
-				that.set("settings.falscheZeitenIgnorieren", rec.get("falscheZeitenIgnorieren"));
-				that.set("settings.falscheZeitenIgnorierenItem", [{
-			        value: 'falscheZeitenIgnorieren'
-			      , label: M.I18N.l('falscheZeitenIgnorieren')
-			      , isSelected: rec.get("falscheZeitenIgnorieren")
-				}]);
-			}
-			if (typeof(rec.get("positionVorselektieren")) !== "undefined") {
-				that.set("settings.positionVorselektieren", rec.get("positionVorselektieren"));
-				that.set("settings.positionVorselektierenItem", [{
-			        value: 'positionVorselektieren'
-			      , label: M.I18N.l('positionVorselektieren')
-			      , isSelected: rec.get("positionVorselektieren")
-				}]);
-			}
-			if (typeof(rec.get("alleMitarbeiterVorselektiert")) !== "undefined") {
-				that.set("settings.alleMitarbeiterVorselektiert", rec.get("alleMitarbeiterVorselektiert"));
-				that.set("settings.alleMitarbeiterVorselektiertItem", [{
-			        value: 'alleMitarbeiterVorselektiert'
-			      , label: M.I18N.l('alleMitarbeiterVorselektiert')
-			      , isSelected: rec.get("alleMitarbeiterVorselektiert")
-				}]);
-			}
-			if (typeof(rec.get("minutenSchritte")) !== "undefined") {
-				that.set("settings.minutenSchritte", rec.get("minutenSchritte"));
-				var myItems = _.map(that.settings.minutenSchritteItem, function(n) {
-					n.isSelected = NO;
-					if (parseIntRadixTen(n.value) == parseIntRadixTen(rec.get("minutenSchritte"))) {
-						n.isSelected = YES;
-					}
-					return n;
-				});
-				that.set("settings.minutenSchritteItem", myItems);
-			}
-		}
-	}
-	
-	, save: function() {
-		var that = this;
-		
-		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
-		rec.set("startUhrzeit", that.settings.startUhrzeit);
-		rec.set("inStundenBuchen", that.settings.inStundenBuchen);
-		rec.set("falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
-		rec.set("positionVorselektieren", that.settings.positionVorselektieren);
-		rec.set("alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
-		rec.set("minutenSchritte", that.settings.minutenSchritte);
-		rec.save();
-		
-		//M.ViewManager.setCurrentPage(that.lastPage)
-	}
-
-	, setStartUhrzeit: function() {
-  		if (DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit) {
-  		    $('#' + DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value
-                = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[0], 10).padLeft(2, "0");
-  		    $('#' + DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value
-                = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[1], 10).padLeft(2, "0");
-  		}
-	}
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: BautagebuchMainController
 // ==========================================================================
 // manuell var-checked
@@ -11392,6 +11212,186 @@ DigiWebApp.BautagebuchMainController = M.Controller.extend({
                 
 	}
 
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: BautagebuchEinstellungenController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.BautagebuchEinstellungenController = M.Controller.extend({
+
+	  settings: {
+		// Vorgabewerte (werden zur Laufzeit überschrieben)
+		  startUhrzeit: "08:00"
+		, inStundenBuchen: NO
+		, inStundenBuchenItem: [{
+	        value: 'inStundenBuchen'
+	      , label: M.I18N.l('BautagebuchInStundenBuchen')
+	      , isSelected: NO
+		}]
+		, falscheZeitenIgnorieren: NO
+		, falscheZeitenIgnorierenItem: [{
+	        value: 'falscheZeitenIgnorieren'
+	      , label: M.I18N.l('falscheZeitenIgnorieren')
+	      , isSelected: NO
+		}]
+		, positionVorselektieren: NO
+		, positionVorselektierenItem: [{
+	        value: 'positionVorselektieren'
+	      , label: M.I18N.l('positionVorselektieren')
+	      , isSelected: NO
+		}]
+		, alleMitarbeiterVorselektiert: NO
+		, alleMitarbeiterVorselektiertItem: [{
+	        value: 'alleMitarbeiterVorselektiert'
+	      , label: M.I18N.l('alleMitarbeiterVorselektiert')
+	      , isSelected: NO
+		}]
+		, minutenSchritte: 5
+		, minutenSchritteItem: [
+    	          {
+    		        value: '1'
+    		      , label: '1'
+    		      , isSelected: NO
+    			}
+      	        , {
+    		        value: '5'
+    		      , label: '5'
+    		      , isSelected: YES
+    			}
+    	        , {
+    		        value: '10'
+    		      , label: '10'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '15'
+    		      , label: '15'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '20'
+    		      , label: '20'
+    		      , isSelected: NO
+    			}
+    	        , {
+    		        value: '30'
+    		      , label: '30'
+    		      , isSelected: NO
+    			}
+        ]
+	}
+
+	, init: function(isFirstLoad) {
+		var that = this;
+		that.load();
+	}
+
+	, lastPage: null
+	
+	, load: function() {
+		var that = this;
+
+		// set defaults for content-binding
+		that.set("settings.startUhrzeit", that.settings.startUhrzeit);
+		that.set("settings.inStundenBuchen", that.settings.inStundenBuchen);
+		that.set("settings.inStundenBuchenItem", that.settings.inStundenBuchenItem);
+		that.set("settings.falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
+		that.set("settings.falscheZeitenIgnorierenItem", that.settings.falscheZeitenIgnorierenItem);
+		that.set("settings.positionVorselektieren", that.settings.positionVorselektieren);
+		that.set("settings.positionVorselektierenItem", that.settings.positionVorselektierenItem);
+		that.set("settings.alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
+		that.set("settings.alleMitarbeiterVorselektiertItem", that.settings.alleMitarbeiterVorselektiertItem);
+		that.set("settings.minutenSchritte", that.settings.minutenSchritte);
+		that.set("settings.minutenSchritteItem", that.settings.minutenSchritteItem);
+		
+		if (DigiWebApp.BautagebuchEinstellungen.find().length === 0) {
+			// erstelle Record mit Vorgabewerten
+			var rec = DigiWebApp.BautagebuchEinstellungen.createRecord({
+				  startUhrzeit: that.settings.startUhrzeit
+				, inStundenBuchen: that.settings.inStundenBuchen
+				, falscheZeitenIgnorieren: that.settings.falscheZeitenIgnorieren
+				, positionVorselektieren: that.settings.positionVorselektieren
+				, minutenSchritte: that.settings.minutenSchritte
+				, alleMitarbeiterVorselektiert: that.settings.alleMitarbeiterVorselektiert
+			});
+			rec.save();
+		} else {
+			var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+			that.set("settings.startUhrzeit", rec.get("startUhrzeit"));
+			if (typeof(rec.get("inStundenBuchen")) !== "undefined") {
+				that.set("settings.inStundenBuchen", rec.get("inStundenBuchen"));
+				that.set("settings.inStundenBuchenItem", [{
+			        value: 'inStundenBuchen'
+			      , label: M.I18N.l('BautagebuchInStundenBuchen')
+			      , isSelected: rec.get("inStundenBuchen")
+				}]);
+			}
+			if (typeof(rec.get("falscheZeitenIgnorieren")) !== "undefined") {
+				that.set("settings.falscheZeitenIgnorieren", rec.get("falscheZeitenIgnorieren"));
+				that.set("settings.falscheZeitenIgnorierenItem", [{
+			        value: 'falscheZeitenIgnorieren'
+			      , label: M.I18N.l('falscheZeitenIgnorieren')
+			      , isSelected: rec.get("falscheZeitenIgnorieren")
+				}]);
+			}
+			if (typeof(rec.get("positionVorselektieren")) !== "undefined") {
+				that.set("settings.positionVorselektieren", rec.get("positionVorselektieren"));
+				that.set("settings.positionVorselektierenItem", [{
+			        value: 'positionVorselektieren'
+			      , label: M.I18N.l('positionVorselektieren')
+			      , isSelected: rec.get("positionVorselektieren")
+				}]);
+			}
+			if (typeof(rec.get("alleMitarbeiterVorselektiert")) !== "undefined") {
+				that.set("settings.alleMitarbeiterVorselektiert", rec.get("alleMitarbeiterVorselektiert"));
+				that.set("settings.alleMitarbeiterVorselektiertItem", [{
+			        value: 'alleMitarbeiterVorselektiert'
+			      , label: M.I18N.l('alleMitarbeiterVorselektiert')
+			      , isSelected: rec.get("alleMitarbeiterVorselektiert")
+				}]);
+			}
+			if (typeof(rec.get("minutenSchritte")) !== "undefined") {
+				that.set("settings.minutenSchritte", rec.get("minutenSchritte"));
+				var myItems = _.map(that.settings.minutenSchritteItem, function(n) {
+					n.isSelected = NO;
+					if (parseIntRadixTen(n.value) == parseIntRadixTen(rec.get("minutenSchritte"))) {
+						n.isSelected = YES;
+					}
+					return n;
+				});
+				that.set("settings.minutenSchritteItem", myItems);
+			}
+		}
+	}
+	
+	, save: function() {
+		var that = this;
+		
+		var rec = DigiWebApp.BautagebuchEinstellungen.find()[0];
+		rec.set("startUhrzeit", that.settings.startUhrzeit);
+		rec.set("inStundenBuchen", that.settings.inStundenBuchen);
+		rec.set("falscheZeitenIgnorieren", that.settings.falscheZeitenIgnorieren);
+		rec.set("positionVorselektieren", that.settings.positionVorselektieren);
+		rec.set("alleMitarbeiterVorselektiert", that.settings.alleMitarbeiterVorselektiert);
+		rec.set("minutenSchritte", that.settings.minutenSchritte);
+		rec.save();
+		
+		//M.ViewManager.setCurrentPage(that.lastPage)
+	}
+
+	, setStartUhrzeit: function() {
+  		if (DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit) {
+  		    $('#' + DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.stundeFeld.id)[0].value
+                = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[0], 10).padLeft(2, "0");
+  		    $('#' + DigiWebApp.BautagebuchEinstellungenPage.content.startUhrzeitContainer.startUhrzeitGrid.minuteFeld.id)[0].value
+                = parseIntRadixTen(DigiWebApp.BautagebuchEinstellungenController.settings.startUhrzeit.split(":")[1], 10).padLeft(2, "0");
+  		}
+	}
 });
 
 // ==========================================================================
@@ -13348,359 +13348,6 @@ DigiWebApp.BautagebuchZeitenListeController = M.Controller.extend({
 		
 		DigiWebApp.NavigationController.toBautagebuchZeitenDetailsPageTransition();
 		$('#' + DigiWebApp.BautagebuchZeitenDetailsPage.header.delButton.id).hide();
-	}
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: BautagebuchZusammenfassungController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
-
-	  item: null // model itself
-
-	, lastTimestampDatatransfer: null
-	  
-	, bautagesberichtId: null
-	
-	, projektleiterId: null // in model
-	, projektleiterList: null // runtime
-	  
-	, mitarbeiterIds: null // in model
-	, mitarbeiterList: null // runtime
-	, mitarbeiterListSelected: null // runtime
-	
-	, datum: null // in model
-	
-	, auftragsId: null // in model
-	, auftragsName: null // in model
-	, auftraegeList: null // runtime
-	
-	, positionenList: null // runtime (auftraegeComboBox-change)
-	
-	, latitude: null
-	, longitude: null
-	
-	, wetter: null // in model
-	, setWetter: function(wetterObject) {
-		var that = this;
-		if (typeof(wetterObject) === "undefined") {
-			return NO;
-		} else {
-			that.set("wetter", JSON.parse(JSON.stringify(wetterObject)));
-			return YES;
-		}
-	}
-	
-	, startUhrzeit: null
-		
-	, ZeitbuchungenPerMitarbeiterList: []
-				
-	, init: function(isFirstLoad) {
-		//var that = this;
-		if (isFirstLoad) {
-		}
-		
-		// geladene dauer-zeitbuchungen in von/bis-zeitbuchungen umrechnen:
-	}
-	
-	, load: function(myItem, readOnly) {
-		var that = this;
-				
-		that.set("item", myItem); 
-		
-		that.set("bautagesberichtId", myItem.get('id'));
-		
-		that.set("datum", myItem.get("datum"));
-		that.set("projektleiterId", myItem.get("projektleiterId"));
-		that.set("auftragsId", myItem.get("orderId"));
-		that.set("auftragsName", myItem.get("orderName"));
-		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
-		that.set("startUhrzeit", myItem.get("startUhrzeit"));
-
-		that.setWetter(DigiWebApp.BautagebuchMainController.wetterDefaults);
-		that.set("wetter.temperatur", myItem.get("temperatur"));
-		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
-		that.set("wetter.bewoelkung", myItem.get("bewoelkung"));
-		that.set("wetter.niederschlag", myItem.get("niederschlag"));
-		that.set("wetter.wind", myItem.get("wind"));
-		that.set("wetter.wechselhaft", myItem.get("wechselhaft"));
-		that.set("wetter.wechselhaftItem", [{
-	        value: 'wechselhaft'
-	      , label: M.I18N.l('BautagebuchWechselhaft')
-	      , isSelected: myItem.get("wechselhaft")
-		}]);		
-		that.setPositionen(myItem.get("orderId"));
-		
-		that.set("ZeitbuchungenPerMitarbeiterList", that.getZeitbuchungenPerMitarbeiterList());
-	}
-
-	, save: function(successcallback, errorcallback) {
-		var that = this;
-			
-		if (that.item.saveSorted()) {		
-		    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
-                DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) === "function") successcallback();
-			return true;
-		} else {
-			if (typeof(errorcallback) === "function") errorcallback();
-			return false;
-		}
-	}
-	
-	, deleteBautagesbericht: function(successcallback, errorcallback) {
-		var that = this;
-		if (that.item.deleteSorted()) {
-		    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
-                DigiWebApp.BautagebuchBautagesbericht.findSorted());
-			if (typeof(successcallback) === "function") successcallback();
-			return true;
-		} else {
-			if (typeof(errorcallback) === "function") errorcallback();
-			return false;
-		}
-	}
-
-	, finish: function(successcallback, errorcallback) {
-		var that = this;
-
-		that.item.set("abgeschlossen", YES);
-		if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
-			that.berechneVonBis(YES);
-		} else {
-			that.setzeTimestamps(YES);
-		}
-
-		var unterschriftString = "";
-    	// Freischaltung 405: Unterschrift
-		if ((DigiWebApp.SettingsController.featureAvailable('405'))
-            && (typeof window.requestFileSystem !== "undefined")
-            && DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI) {
-		    //unterschriftImageString 
-            //= DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureImage();
-    		unterschriftString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureString();
-		    //var unterschriftRawValue 
-            //= $('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.signatureform.signaturecanvas.id).val();
-    	
-			//console.log(DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI);
-			//console.log(unterschriftImageString);
-    		that.item.set('fileType', DigiWebApp.ApplicationController.CONSTTextFiletype);
-    		that.item.saveToFile(unterschriftString, function(){
-    			
-    		    that.item.set("unterschrift_breite",
-                    DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasWidth);
-    		    that.item.set("unterschrift_hoehe",
-                    DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasHeight);
-
-    			if (that.save()) {
-    			    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
-                        DigiWebApp.BautagebuchBautagesbericht.findSorted());
-    				if (typeof(successcallback) === "function") successcallback();
-    				return true;
-    			} else {
-    				if (typeof(errorcallback) === "function") errorcallback();
-    				return false;
-    			}
-    		});
-		} else {
-			if (that.save()) {
-			    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
-                    DigiWebApp.BautagebuchBautagesbericht.findSorted());
-				if (typeof(successcallback) === "function") successcallback();
-				return true;
-			} else {
-				if (typeof(errorcallback) === "function") errorcallback();
-				return false;
-			}
-		}
-	}
-
-	, setPositionen: function(auftragsId) {
-		//var that = this;
-		if (typeof(auftragsId) === "undefined") {
-			return false;
-		} else {
-			// verfügbare Positionen kopieren und ausgewähltes selektieren
-		    var positionenArray = _.map(DigiWebApp.Position.findSorted(), function(pos) {
-		    	if ( typeof(pos) === "undefined" ) {
-		    		console.log("UNDEFINED Position");
-		    	} else {
-		    		if (parseIntRadixTen(pos.get('orderId')) === parseIntRadixTen(auftragsId)) {
-		    			var obj = { label: pos.get('name'), value: pos.get('id'), isSelected: NO };
-		    			return obj;
-		    		}
-		    	}
-		    });
-		    positionenArray = _.compact(positionenArray);
-		    if (positionenArray.length == 1) {
-		    	positionenArray[0].isSelected = YES;
-		    }
-			DigiWebApp.BautagebuchBautagesberichtDetailsController.set("positionenList", positionenArray);
-		}
-	}
-	
-	, berechneVonBis: function(saveit) {
-		var that = this;
-		var result = [];
-		var letztesBisArr = [];
-		letztesBisArr["0"] = D8.create(
-            DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
-            + " " + DigiWebApp.BautagebuchBautagesberichtDetailsController.startUhrzeit);
-		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
-            { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } });
-		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
-            return parseIntRadixTen(z.get('_createdAt'));
-        });
-		var letztesBis = letztesBisArr[0];
-		_.each(relevanteZeitbuchungenSorted, function(m) {
-
-			// höchstes letztesBis per Mitarbeiter suchen
-			var letztesBis = letztesBisArr["0"];
-			_.each(JSON.parse(m.get('mitarbeiterIds')), function(mId){
-				if (typeof(letztesBisArr["" + mId]) != "undefined") {
-					if (letztesBisArr["" + mId].getTimestamp() > letztesBis.getTimestamp()) {
-						letztesBis = letztesBisArr["" + mId];
-					}
-				}
-			});
-
-			m.set("von", letztesBis.format("HH:MM"));
-			m.set("timeStampStart", letztesBis.getTimestamp());
-			var dauer = m.get("dauer");
-			
-			var naechstesBis = letztesBis.addHours(parseIntRadixTen(
-                dauer.split(":")[0])).addMinutes(parseIntRadixTen(dauer.split(":")[1]));
-			letztesBis = naechstesBis;
-			
-			// letztesBis für alle MAs dieser Zeitbuchung setzen
-			_.each(JSON.parse(m.get('mitarbeiterIds')), function(mId) {
-				letztesBisArr["" + mId] = letztesBis;
-			});
-			
-			//console.log("bis", letztesBis.format("HH:MM"));
-			m.set("bis", letztesBis.format("HH:MM"));
-			m.set("timeStampEnd", letztesBis.getTimestamp());
-			if (typeof saveit !== "undefined" && parseBool(saveit)) {
-				m.saveSorted();
-			}
-			result.push(m);
-		});
-		var resultSorted = _.sortBy(result , function(z) {
-            return parseIntRadixTen(z.get('von'));
-        });
-		return resultSorted;
-	}
-	
-	, setzeTimestamps: function(saveit) {
-		var that = this;
-		var result = [];
-		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
-            { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } });
-		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
-            return parseIntRadixTen(z.get('_createdAt'));
-        });
-
-		_.each(relevanteZeitbuchungenSorted, function(m) {
-
-		    m.set("timeStampStart", D8.create(
-                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
-                + " "
-                + m.get("von"))
-                .getTimestamp());
-		    m.set("timeStampEnd", D8.create(
-                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
-                + " "
-                + m.get("bis"))
-                .getTimestamp());
-
-			if (typeof saveit !== "undefined" && parseBool(saveit)) {
-				m.saveSorted();
-			}
-			result.push(m);
-			
-		});
-		
-		var resultSorted = _.sortBy(result , function(z) {
-            return parseIntRadixTen(z.get('von'));
-        });
-		
-		return resultSorted;
-	}
-
-	, getZeitbuchungenPerMitarbeiterList: function() {
-		var that = this;
-		var MAList = [];
-		var zeitbuchungenList = [];
-		if (parseBool(that.item.get("abgeschlossen"))
-            || !DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
-			// Zeitbuchungen wurden bereits berechnet oder es wird nicht in Stunden gebucht (sondern mit Von/Bis)
-		    var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
-                { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } }); 
-			zeitbuchungenList = _.sortBy(relevanteZeitbuchungen , function(z) {
-			    return parseIntRadixTen(D8.create(
-                    DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('datum')
-                    + " "
-                    + z.get("von"))
-                    .getTimestamp());
-	        });
-		} else {
-			zeitbuchungenList = that.berechneVonBis();
-		}
-		_.each(zeitbuchungenList, function(m) {
-			  var zeitbuchungMAIds = JSON.parse(m.get("mitarbeiterIds"));
-			  _.each(zeitbuchungMAIds, function(el) {
-			      var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find(
-                      { query: { identifier: 'id', operator: '=', value: el } })[0];
-	        		if (typeof myMitarbeiter !== "undefined") {
-		        		var found = NO;
-	        			_.each(MAList, function(MAListEntry) {
-	        				if (MAListEntry.get("id") === myMitarbeiter.get("id")) {
-	        					found = YES;
-	        				}
-	        			});
-	        			if (found === NO) {
-	        				MAList.push(myMitarbeiter);
-	        			}
-		        	}
-			  });
-		});
-		var result = [];
-		_.each(MAList, function(el) {
-			var items = [];
-			var mySumme = D8.create(
-                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum") + " 00:00");
-			_.each(zeitbuchungenList, function(zeitbuch) {
-				   var maIds = JSON.parse(zeitbuch.get("mitarbeiterIds"));
-				   _.each(maIds, function(maId) {
-					   	if (maId === el.get("id")) {
-				    	  // benutze diese Zeitbuchung
-					   	    mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0])
-                                .addMinutes(zeitbuch.get("dauer").split(":")[1]);
-					   		var zeitbuchItem = {
-					   				vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
-					   			, handOrderName: zeitbuch.get("handOrderName")
-					   			, positionName: zeitbuch.get("positionName")
-					   			, activityName: zeitbuch.get("activityName")
-                                , remark: zeitbuch.get("remark")
-					   			, mitarbeiterId: maId
-					   			, modelId: zeitbuch.m_id
-					   		};
-					   		items.push(zeitbuchItem);
-				      	}
-				   });
-			});
-			var maItem = {
-			    "label": el.vollername() + ": " + mySumme.format("HH:MM") + "h",
-			    "items": items
-			};
-			result.push(maItem);
-		});
-		return result;
 	}
 });
 
@@ -16212,6 +15859,359 @@ DigiWebApp.BookingController = M.Controller.extend({
 			try{that.startBrowserBookingNotificationObject.close();}catch(e){}
 			try{pluginObj.notification.local.cancel('4712');}catch(e){}
 		}
+	}
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: BautagebuchZusammenfassungController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.BautagebuchZusammenfassungController = M.Controller.extend({
+
+	  item: null // model itself
+
+	, lastTimestampDatatransfer: null
+	  
+	, bautagesberichtId: null
+	
+	, projektleiterId: null // in model
+	, projektleiterList: null // runtime
+	  
+	, mitarbeiterIds: null // in model
+	, mitarbeiterList: null // runtime
+	, mitarbeiterListSelected: null // runtime
+	
+	, datum: null // in model
+	
+	, auftragsId: null // in model
+	, auftragsName: null // in model
+	, auftraegeList: null // runtime
+	
+	, positionenList: null // runtime (auftraegeComboBox-change)
+	
+	, latitude: null
+	, longitude: null
+	
+	, wetter: null // in model
+	, setWetter: function(wetterObject) {
+		var that = this;
+		if (typeof(wetterObject) === "undefined") {
+			return NO;
+		} else {
+			that.set("wetter", JSON.parse(JSON.stringify(wetterObject)));
+			return YES;
+		}
+	}
+	
+	, startUhrzeit: null
+		
+	, ZeitbuchungenPerMitarbeiterList: []
+				
+	, init: function(isFirstLoad) {
+		//var that = this;
+		if (isFirstLoad) {
+		}
+		
+		// geladene dauer-zeitbuchungen in von/bis-zeitbuchungen umrechnen:
+	}
+	
+	, load: function(myItem, readOnly) {
+		var that = this;
+				
+		that.set("item", myItem); 
+		
+		that.set("bautagesberichtId", myItem.get('id'));
+		
+		that.set("datum", myItem.get("datum"));
+		that.set("projektleiterId", myItem.get("projektleiterId"));
+		that.set("auftragsId", myItem.get("orderId"));
+		that.set("auftragsName", myItem.get("orderName"));
+		that.set("mitarbeiterIds", myItem.get("selektierteMitarbeiter"));
+		that.set("startUhrzeit", myItem.get("startUhrzeit"));
+
+		that.setWetter(DigiWebApp.BautagebuchMainController.wetterDefaults);
+		that.set("wetter.temperatur", myItem.get("temperatur"));
+		that.set("wetter.luftfeuchtigkeit", myItem.get("luftfeuchtigkeit"));
+		that.set("wetter.bewoelkung", myItem.get("bewoelkung"));
+		that.set("wetter.niederschlag", myItem.get("niederschlag"));
+		that.set("wetter.wind", myItem.get("wind"));
+		that.set("wetter.wechselhaft", myItem.get("wechselhaft"));
+		that.set("wetter.wechselhaftItem", [{
+	        value: 'wechselhaft'
+	      , label: M.I18N.l('BautagebuchWechselhaft')
+	      , isSelected: myItem.get("wechselhaft")
+		}]);		
+		that.setPositionen(myItem.get("orderId"));
+		
+		that.set("ZeitbuchungenPerMitarbeiterList", that.getZeitbuchungenPerMitarbeiterList());
+	}
+
+	, save: function(successcallback, errorcallback) {
+		var that = this;
+			
+		if (that.item.saveSorted()) {		
+		    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
+                DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			if (typeof(successcallback) === "function") successcallback();
+			return true;
+		} else {
+			if (typeof(errorcallback) === "function") errorcallback();
+			return false;
+		}
+	}
+	
+	, deleteBautagesbericht: function(successcallback, errorcallback) {
+		var that = this;
+		if (that.item.deleteSorted()) {
+		    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
+                DigiWebApp.BautagebuchBautagesbericht.findSorted());
+			if (typeof(successcallback) === "function") successcallback();
+			return true;
+		} else {
+			if (typeof(errorcallback) === "function") errorcallback();
+			return false;
+		}
+	}
+
+	, finish: function(successcallback, errorcallback) {
+		var that = this;
+
+		that.item.set("abgeschlossen", YES);
+		if (DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
+			that.berechneVonBis(YES);
+		} else {
+			that.setzeTimestamps(YES);
+		}
+
+		var unterschriftString = "";
+    	// Freischaltung 405: Unterschrift
+		if ((DigiWebApp.SettingsController.featureAvailable('405'))
+            && (typeof window.requestFileSystem !== "undefined")
+            && DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI) {
+		    //unterschriftImageString 
+            //= DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureImage();
+    		unterschriftString = DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI.getSignatureString();
+		    //var unterschriftRawValue 
+            //= $('#' + DigiWebApp.BautagebuchZusammenfassungPage.content.signature.signatureform.signaturecanvas.id).val();
+    	
+			//console.log(DigiWebApp.BautagebuchZusammenfassungPage.signaturePadAPI);
+			//console.log(unterschriftImageString);
+    		that.item.set('fileType', DigiWebApp.ApplicationController.CONSTTextFiletype);
+    		that.item.saveToFile(unterschriftString, function(){
+    			
+    		    that.item.set("unterschrift_breite",
+                    DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasWidth);
+    		    that.item.set("unterschrift_hoehe",
+                    DigiWebApp.BautagebuchZusammenfassungPage.content.container.signature.signatureform.signaturecanvas.canvasHeight);
+
+    			if (that.save()) {
+    			    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
+                        DigiWebApp.BautagebuchBautagesbericht.findSorted());
+    				if (typeof(successcallback) === "function") successcallback();
+    				return true;
+    			} else {
+    				if (typeof(errorcallback) === "function") errorcallback();
+    				return false;
+    			}
+    		});
+		} else {
+			if (that.save()) {
+			    DigiWebApp.BautagebuchBautagesberichteListeController.set("items",
+                    DigiWebApp.BautagebuchBautagesbericht.findSorted());
+				if (typeof(successcallback) === "function") successcallback();
+				return true;
+			} else {
+				if (typeof(errorcallback) === "function") errorcallback();
+				return false;
+			}
+		}
+	}
+
+	, setPositionen: function(auftragsId) {
+		//var that = this;
+		if (typeof(auftragsId) === "undefined") {
+			return false;
+		} else {
+			// verfügbare Positionen kopieren und ausgewähltes selektieren
+		    var positionenArray = _.map(DigiWebApp.Position.findSorted(), function(pos) {
+		    	if ( typeof(pos) === "undefined" ) {
+		    		console.log("UNDEFINED Position");
+		    	} else {
+		    		if (parseIntRadixTen(pos.get('orderId')) === parseIntRadixTen(auftragsId)) {
+		    			var obj = { label: pos.get('name'), value: pos.get('id'), isSelected: NO };
+		    			return obj;
+		    		}
+		    	}
+		    });
+		    positionenArray = _.compact(positionenArray);
+		    if (positionenArray.length == 1) {
+		    	positionenArray[0].isSelected = YES;
+		    }
+			DigiWebApp.BautagebuchBautagesberichtDetailsController.set("positionenList", positionenArray);
+		}
+	}
+	
+	, berechneVonBis: function(saveit) {
+		var that = this;
+		var result = [];
+		var letztesBisArr = [];
+		letztesBisArr["0"] = D8.create(
+            DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
+            + " " + DigiWebApp.BautagebuchBautagesberichtDetailsController.startUhrzeit);
+		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
+            { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } });
+		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
+            return parseIntRadixTen(z.get('_createdAt'));
+        });
+		var letztesBis = letztesBisArr[0];
+		_.each(relevanteZeitbuchungenSorted, function(m) {
+
+			// höchstes letztesBis per Mitarbeiter suchen
+			var letztesBis = letztesBisArr["0"];
+			_.each(JSON.parse(m.get('mitarbeiterIds')), function(mId){
+				if (typeof(letztesBisArr["" + mId]) != "undefined") {
+					if (letztesBisArr["" + mId].getTimestamp() > letztesBis.getTimestamp()) {
+						letztesBis = letztesBisArr["" + mId];
+					}
+				}
+			});
+
+			m.set("von", letztesBis.format("HH:MM"));
+			m.set("timeStampStart", letztesBis.getTimestamp());
+			var dauer = m.get("dauer");
+			
+			var naechstesBis = letztesBis.addHours(parseIntRadixTen(
+                dauer.split(":")[0])).addMinutes(parseIntRadixTen(dauer.split(":")[1]));
+			letztesBis = naechstesBis;
+			
+			// letztesBis für alle MAs dieser Zeitbuchung setzen
+			_.each(JSON.parse(m.get('mitarbeiterIds')), function(mId) {
+				letztesBisArr["" + mId] = letztesBis;
+			});
+			
+			//console.log("bis", letztesBis.format("HH:MM"));
+			m.set("bis", letztesBis.format("HH:MM"));
+			m.set("timeStampEnd", letztesBis.getTimestamp());
+			if (typeof saveit !== "undefined" && parseBool(saveit)) {
+				m.saveSorted();
+			}
+			result.push(m);
+		});
+		var resultSorted = _.sortBy(result , function(z) {
+            return parseIntRadixTen(z.get('von'));
+        });
+		return resultSorted;
+	}
+	
+	, setzeTimestamps: function(saveit) {
+		var that = this;
+		var result = [];
+		var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
+            { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } });
+		var relevanteZeitbuchungenSorted = _.sortBy(relevanteZeitbuchungen , function(z) {
+            return parseIntRadixTen(z.get('_createdAt'));
+        });
+
+		_.each(relevanteZeitbuchungenSorted, function(m) {
+
+		    m.set("timeStampStart", D8.create(
+                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
+                + " "
+                + m.get("von"))
+                .getTimestamp());
+		    m.set("timeStampEnd", D8.create(
+                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum")
+                + " "
+                + m.get("bis"))
+                .getTimestamp());
+
+			if (typeof saveit !== "undefined" && parseBool(saveit)) {
+				m.saveSorted();
+			}
+			result.push(m);
+			
+		});
+		
+		var resultSorted = _.sortBy(result , function(z) {
+            return parseIntRadixTen(z.get('von'));
+        });
+		
+		return resultSorted;
+	}
+
+	, getZeitbuchungenPerMitarbeiterList: function() {
+		var that = this;
+		var MAList = [];
+		var zeitbuchungenList = [];
+		if (parseBool(that.item.get("abgeschlossen"))
+            || !DigiWebApp.BautagebuchEinstellungen.find()[0].get("inStundenBuchen")) {
+			// Zeitbuchungen wurden bereits berechnet oder es wird nicht in Stunden gebucht (sondern mit Von/Bis)
+		    var relevanteZeitbuchungen = DigiWebApp.BautagebuchZeitbuchung.find(
+                { query: { identifier: 'bautagesberichtId', operator: '=', value: that.bautagesberichtId } }); 
+			zeitbuchungenList = _.sortBy(relevanteZeitbuchungen , function(z) {
+			    return parseIntRadixTen(D8.create(
+                    DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get('datum')
+                    + " "
+                    + z.get("von"))
+                    .getTimestamp());
+	        });
+		} else {
+			zeitbuchungenList = that.berechneVonBis();
+		}
+		_.each(zeitbuchungenList, function(m) {
+			  var zeitbuchungMAIds = JSON.parse(m.get("mitarbeiterIds"));
+			  _.each(zeitbuchungMAIds, function(el) {
+			      var myMitarbeiter = DigiWebApp.BautagebuchMitarbeiter.find(
+                      { query: { identifier: 'id', operator: '=', value: el } })[0];
+	        		if (typeof myMitarbeiter !== "undefined") {
+		        		var found = NO;
+	        			_.each(MAList, function(MAListEntry) {
+	        				if (MAListEntry.get("id") === myMitarbeiter.get("id")) {
+	        					found = YES;
+	        				}
+	        			});
+	        			if (found === NO) {
+	        				MAList.push(myMitarbeiter);
+	        			}
+		        	}
+			  });
+		});
+		var result = [];
+		_.each(MAList, function(el) {
+			var items = [];
+			var mySumme = D8.create(
+                DigiWebApp.BautagebuchBautagesberichtDetailsController.item.get("datum") + " 00:00");
+			_.each(zeitbuchungenList, function(zeitbuch) {
+				   var maIds = JSON.parse(zeitbuch.get("mitarbeiterIds"));
+				   _.each(maIds, function(maId) {
+					   	if (maId === el.get("id")) {
+				    	  // benutze diese Zeitbuchung
+					   	    mySumme = mySumme.addHours(zeitbuch.get("dauer").split(":")[0])
+                                .addMinutes(zeitbuch.get("dauer").split(":")[1]);
+					   		var zeitbuchItem = {
+					   				vonbisdauer : zeitbuch.get("von") + " - " + zeitbuch.get("bis") + " (" + zeitbuch.get("dauer") + "h)"
+					   			, handOrderName: zeitbuch.get("handOrderName")
+					   			, positionName: zeitbuch.get("positionName")
+					   			, activityName: zeitbuch.get("activityName")
+                                , remark: zeitbuch.get("remark")
+					   			, mitarbeiterId: maId
+					   			, modelId: zeitbuch.m_id
+					   		};
+					   		items.push(zeitbuchItem);
+				      	}
+				   });
+			});
+			var maItem = {
+			    "label": el.vollername() + ": " + mySumme.format("HH:MM") + "h",
+			    "items": items
+			};
+			result.push(maItem);
+		});
+		return result;
 	}
 });
 
@@ -20273,601 +20273,6 @@ DigiWebApp.JSONDatenuebertragungController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: MediaListController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.MediaListController = M.Controller.extend({
-
-    /* mediafiles */
-      items: null
-
-//    /* Aktionen um neue MediaFiles zu erzeugen */
-//    , actions: null
-
-    , latestId: null
-    
-    , lastTimestampDatatransfer: null
-
-    /*
-    * Which files do we have to display?
-    */
-    , init: function(isFirstLoad) {
-		var that = DigiWebApp.MediaListController;
-		var items = [];
-        if (isFirstLoad) {
-            /* do something here, when page is loaded the first time. */
-        }
-        /* do something, for any other load. */
-        items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
-            return parseIntRadixTen(mediafile.get('timeStamp'));
-        });
-        that.set('items', items.reverse());
-
-//        if (DigiWebApp.MediaListPage.needsUpdate) {
-//            var actions = [];
-//                        
-//            // Start::TakePicture (400)
-//            if (DigiWebApp.SettingsController.featureAvailable('400')) {
-//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
-//            	actions.push({
-//                      label: M.I18N.l('takePicture')
-//                    , icon: 'icon_takePicture.png'
-//                    , id: 'foto'
-//                });
-//            }
-//            // End::TakePicture
-//
-//            // Start::RecordAudio (401)
-//            if (DigiWebApp.SettingsController.featureAvailable('401')) {
-//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
-//            	actions.push({
-//                      label: M.I18N.l('recordAudio')
-//                    , icon: 'icon_recordAudio.png'
-//                    , id: 'audio'
-//                });
-//            }
-//            // End::RecordAudio
-
-//        	actions.push({
-//                  label: M.I18N.l('uploadMediaFiles')
-//                , icon: 'icon_dataTransfer.png'
-//                , id: 'uploadMediaFiles'
-//            });
-//
-//        	that.set('actions', actions);
-//            DigiWebApp.MediaListPage.needsUpdate = false;
-
-    		var myMedien = DigiWebApp.MediaFile.find();
-    		if (myMedien.length == 0) {
-    			$('#' + DigiWebApp.MediaListPage.uebertragenButton.id).hide();
-    			$('#' + DigiWebApp.MediaListPage.newButton.id).show();
-    		} else {
-    			$('#' + DigiWebApp.MediaListPage.uebertragenButton.id).show();
-    			$('#' + DigiWebApp.MediaListPage.newButton.id).hide();
-    		}
-//        }
-
-        var list;
-
-        if (typeof(DigiWebApp.app.pages.mediaListPage) != "undefined") {
-
-	        try {
-		        list = M.ViewManager.getView('mediaListPage', 'mediafiles');
-		        if (list) {
-		            $('#' + list.id).find('li').each(function() {
-		                $(this).removeClass('selected');
-		            });
-		        }
-			} catch(e2) { trackError(e2); }
-	
-	        
-//	        try {
-//		        list = M.ViewManager.getView('mediaListPage', 'actionslist');
-//		        if (list) {
-//		            $('#' + list.id).find('li').each(function() {
-//		                $(this).removeClass('selected');
-//		            });
-//		        }
-//	        } catch(e2) { trackError(e2); }
-
-        }
-        
-		DigiWebApp.ApplicationController.DigiLoaderView.hide();
-
-	}
-
-	, itemSelected: function(id, m_id) {
-		try{DigiWebApp.ApplicationController.vibrate();}catch(e2s){} 
-        if (this.latestId) {
-            $('#' + this.latestId).removeClass('selected');
-        }
-        $('#' + id).addClass('selected');
-
-        this.latestId = id;
-
-        if (m_id && typeof(this[m_id]) === 'function') {
-            this[m_id]();
-        }
-    }
-
-	, neu: function() {
-		var that = DigiWebApp.MediaListController;
-//    	M.DialogView.actionSheet({
-//	          title: M.I18N.l('newMedia')
-//	        , cancelButtonValue: M.I18N.l('cancel')
-//	        //, otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
-//	        //, otherButtonTags: ["audio", "photo", "video", "other"]
-//	        , otherButtonValues: [M.I18N.l('photo')]
-//	        , otherButtonTags: ["photo"]
-//	        , callbacks: {
-//  				  other: {action: function(buttonTag) {
-//	  			    switch(buttonTag) {
-//		    		        case 'audio':
-//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-//		    		                title: M.I18N.l('notImplemented')
-//		    		              , message: M.I18N.l('notImplementedMsg')
-//		    		            });
-//		    		        	/*if (DigiWebApp.SettingsController.featureAvailable('401')) {
-//		    		        		that.audio();
-//		    		        	} else {
-//		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
-//			    		                title: M.I18N.l('notActivated')
-//			    		              , message: M.I18N.l('notActivatedMsg')
-//			    		            });
-//		    		        	}*/
-//		    		            break;
-//		    		        case 'photo':
-		    		        	if (DigiWebApp.SettingsController.featureAvailable('400')) {
-		    		        		that.foto();
-		    		        	} else {
-		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
-			    		                title: M.I18N.l('notActivated')
-			    		              , message: M.I18N.l('notActivatedMsg')
-			    		            });
-		    		        	}
-//		    		            break;
-//		    		        case 'video':
-//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-//		    		                title: M.I18N.l('notImplemented')
-//		    		              , message: M.I18N.l('notImplementedMsg')
-//		    		            });
-//		    		            break;
-//		    		        case 'other':
-//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-//		    		                title: M.I18N.l('notImplemented')
-//		    		              , message: M.I18N.l('notImplementedMsg')
-//		    		            });
-//		    		            break;
-//		    		        default:
-//		    		            console.log("unknonw ButtonTag");
-//		    		            break;
-//	  			    }
-//	  			}}
-//  			, cancel: {action: function() {
-//  				//console.log(M.I18N.l('cancel'));
-//  			}}
-//  		}
-//	    });
-	
-	}
-
-    , foto: function() {
-		var that = this;
-    	M.DialogView.actionSheet({
-	          title: M.I18N.l('takePicture')
-	        , cancelButtonValue: M.I18N.l('cancel')
-	        , otherButtonValues: [M.I18N.l('library'),M.I18N.l('camera')]
-	        , otherButtonTags: ["library", "camera"]
-	        , callbacks: {
-				  other: {action: function(buttonTag) {
-
-    					switch(buttonTag) {
-		    		        case 'library':
-		    		        	
-		    		        	// unterscheiden: auf Gerät oder im Browser?
-		    		        	if ( typeof navigator.camera !== 'undefined' 
-		    	        		  && typeof navigator.camera.getPicture !== 'undefined') {
-		    		        		
-		    		        		// auf Geraet:
-		        					
-		    		        		var myEncodingQuality = parseIntRadixTen(DigiWebApp.SettingsController.defaultsettings.get("pictureEncodingQuality"));
-		    			    		var myEncodingQualitySetting = DigiWebApp.SettingsController.getSetting('pictureEncodingQuality');
-		    			    		if (parseIntRadixTen(myEncodingQualitySetting) > 9) {
-		    			    			myEncodingQuality = parseIntRadixTen(myEncodingQualitySetting);
-		    			    		}
-		    			    		var myEncodingType = navigator.camera.EncodingType.JPEG;
-		    			    		if (DigiWebApp.SettingsController.getSetting('pictureEncodingType') == "PNG") {
-		    			    			myEncodingType = navigator.camera.EncodingType.PNG;
-		    			    		} 
-		    			    		var myAllowEdit = parseBool(DigiWebApp.SettingsController.getSetting('pictureAllowEdit'));
-
-		    			    		navigator.camera.getPicture(
-	    		        				  function(imgData) {
-	    		        				    	//alert("success");
-	    		        					  if (imgData.indexOf("data:") === 0) {
-					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
-	    		        					  } else {
-					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.getImageFiletype() + ',' + imgData);
-	    		        					  }
-	    		        					  DigiWebApp.CameraController.set("fileType", DigiWebApp.ApplicationController.getImageFiletype());
-	    		        					  DigiWebApp.NavigationController.toCameraPageTransition();
-	    		        				}
-	    		        				, function(err) {
-				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
-				    		        		DigiWebApp.CameraController.set("fileType", null);
-					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-					    		                title: M.I18N.l('error')
-					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
-					    		            });	    		        					
-	    		        				}
-	    		        				, {
-	    		        					  quality: myEncodingQuality
-	    		     	    				, allowEdit: myAllowEdit
-	    		     	    				, destinationType : navigator.camera.DestinationType.DATA_URL
-	    		     	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
-	    		     	    				//, destinationType: navigator.camera.DestinationType.NATIVE_URI
-	    		     	    				, encodingType: myEncodingType
-	    		     	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
-	    		     	    				, mediaType: navigator.camera.MediaType.PICTURE
-	    		     	    				, saveToPhotoAlbum: false
-	    		        				}
-		    		        		);
-		    		        		
-		    		        	} else {
-		    		        	
-			    		        	// im Browser:
-			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData, fileName) {
-				    		        	if (imgData !== null) {
-				    		        		  DigiWebApp.CameraController.set("loadedFileName", fileName);
-				    		        		  var myFileType = ""; //DigiWebApp.ApplicationController.getImageFiletype();
-				    		        		  var tmp = fileName;
-				    		        		  var i = 0;
-				    		        		  while (i !== -1) {
-				    		        			  tmp = tmp.substr(i + 1);
-				    		        			  i = tmp.indexOf(".");
-				    		        		  }
-				    		        		  tmp = tmp.toLowerCase();
-				    		        		  switch (tmp) {
-				    		        		  	case "jpg":
-						    		        		  // filetype zum MIME-Type vervollständigen
-						    		        		  myFileType = "image/jpeg";
-				    		        		  		break;
-				    		        		  	case "jpeg":
-						    		        		  // filetype zum MIME-Type vervollständigen
-						    		        		  myFileType = "image/" + tmp;
-				    		        		  		break;
-				    		        		  	case "png":
-						    		        		  // filetype zum MIME-Type vervollständigen
-						    		        		  myFileType = "image/" + tmp;
-				    		        		  		break;
-				    		        		  	case "bmp":
-						    		        		  // filetype zum MIME-Type vervollständigen
-						    		        		  myFileType = "image/" + tmp;
-				    		        		  		break;
-				    		        		  	default:
-				    		        		  		break;
-				    		        		  }
-				    		        		  switch (myFileType) {
-				    		        		  	case "":
-						    		        		DigiWebApp.CameraController.set("loadedPicture", null);
-						    		        		DigiWebApp.CameraController.set("fileType", null);
-							    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-							    		                title: M.I18N.l('error')
-							    		              , message: M.I18N.l('noPicLoaded')
-							    		            });
-				    		        		  		break;
-				    		        		  	default:
-				    		        		  		DigiWebApp.CameraController.set("fileType", myFileType);
-			    		        					if (imgData.indexOf("data:") === 0) {
-			    		        						DigiWebApp.CameraController.set("loadedPicture", imgData);
-			    		        					} else {
-							    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + myFileType + ',' + imgData);
-			    		        					}
-			    		        					DigiWebApp.NavigationController.toCameraPageTransition();
-			    		        					break;
-				    		        		  }
-				    		        	} else {
-				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
-				    		        		DigiWebApp.CameraController.set("fileType", null);
-					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-					    		                title: M.I18N.l('error')
-					    		              , message: M.I18N.l('noPicLoaded')
-					    		            });
-				    		        	}
-			    		        	});
-			    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
-		    		        	}
-		    		        	
-		    		            break;
-		    		        case 'camera':
-		    		        	if (       typeof navigator.camera !== 'undefined' 
-				    	        		&& typeof navigator.camera.getPicture !== 'undefined'
-		    		            	) {
-		    		        			DigiWebApp.CameraController.set("loadedPicture", null);
-		    		        			DigiWebApp.NavigationController.toCameraPageTransition();
-		    		        	} else {
-			    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
-			    		                title: M.I18N.l('error')
-			    		              , message: M.I18N.l('noCamera')
-			    		            });
-		    		        	}
-		    		            break;
-		    		        default:
-		    		            console.log("unknonw ButtonTag");
-		    		            break;
-	  			    }
-	  			}}
-			, cancel: {action: function() {
-				//console.log(M.I18N.l('cancel'));
-			}}
-		}
-	    });
-
-    }
-
-    , audio: function() {
-        DigiWebApp.NavigationController.toAudioPageTransition();
-    }
-    
-    , uploadMediaFiles: function() {
-    	var that = DigiWebApp.MediaListController;
-    	var startTransfer = NO;
-    	if (that.lastTimestampDatatransfer !== null) {
-    		var timestampNow = D8.now().getTimestamp();
-    		if (timestampNow - that.lastTimestampDatatransfer > parseIntRadixTen(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
-    			startTransfer = YES;
-    		} else {
-    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
-    		}
-    	}
-    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
-    		that.doUploadMediaFiles();
-    	}
-    }
-    
-    , doUploadMediaFiles: function() {
-
-		var that = DigiWebApp.MediaListController;
-		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
-		
-		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
-
-		var successCallback = function() {
-			//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('cleanMediaFiles'));
-			DigiWebApp.MediaListController.init();
-			//DigiWebApp.MediaFile.deleteAll(DigiWebApp.MediaListController.init);
-		};
-		
-		var errorCallback = function(err) {
-			trackError(err);
-			DigiWebApp.MediaListController.init();
-			DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		};
-		
-		var proceed = function(mediaFiles) {
-			
-			if (mediaFiles.length !== 0) {
-				
-				var mediaFilesLength = mediaFiles.length;
-		    	var mediaFilesIndex = 0;
-		    	var done = false;
-
-		    	//_.each(mediaFiles, function(el) {
-		    	if (mediaFiles.length > 0) {
-		    	    var el = mediaFiles[0];
-		    	
-		    		var items = [];
-					var rec = JSON.parse(JSON.stringify(el)); // clone to new Object
-					if (rec.record.handOrderId !== null && rec.record.handOrderId !== "0") {
-						rec.record.orderId = null;
-					}
-					items.push(rec.record);
-					
-					var myMediaListToSend = {"medien": items};
-					
-					writeToLog('sending mediaFile ' + rec.record.fileName);
-	    			
-    				var mindestMedienTimeout = 300000; // 5 min
-    				var myTimeout = DigiWebApp.SettingsController.getSetting('WebserviceTimeOut');
-    				if (parseIntRadixTen(DigiWebApp.SettingsController.getSetting('WebserviceTimeOut')) < mindestMedienTimeout) {
-    					myTimeout = mindestMedienTimeout;
-    				}
-    				
-					var sendObj = {
-						  data: myMediaListToSend
-						, webservice: "medien"
-						, loaderText: M.I18N.l('sendeMedien')
-						, successCallback: function(data2, msg, request) {
-							var newMediaFiles = [];
-					    	_.each(mediaFiles, function(mf) {
-					            if (mf.m_id == el.m_id) {
-									writeToLog('lösche mediaFile ' + mf.record.fileName, function(){
-						            	var delFunc = function() {
-						            		mf.del();
-							                var items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
-							                    return parseIntRadixTen(mediafile.get('timeStamp'));
-							                });
-							                that.init();
-						            	}
-						            	mf.deleteFile(delFunc, delFunc);
-							    		mediaFilesIndex = mediaFilesIndex + 1;
-									});
-					            } else {
-					            	newMediaFiles.push(mf);
-					            }
-					        });
-//							if ( mediaFilesIndex === mediaFilesLength && done === false) {
-//								// last mediaFile sent
-//					    		writeToLog('sending last mediaFile done (with file)');
-//			    				done = true;
-//			    				successCallback();
-//							}
-					    	if (newMediaFiles.length > 0) {
-								proceed(newMediaFiles);
-					    	} else {
-					    		writeToLog('sending last mediaFile done (with file)');
-			    				done = true;
-			    				successCallback();
-					    	}
-						}
-						, errorCallback: function(xhr, err) {
-//							if ( mediaFilesIndex === mediaFilesLength && done === false) {
-//								// last mediaFile sent (failed)
-//								writeToLog('last mediaFile done (sending last file failed)');
-//			    				done = true;
-//			    				successCallback();
-//							}
-							var newMediaFiles = [];
-					    	_.each(mediaFiles, function(mf) {
-					            if (mf.m_id != el.m_id) {
-					            	newMediaFiles.push(mf);
-					            }
-					        });
-					    	if (newMediaFiles.length > 0) {
-								proceed(newMediaFiles);
-					    	} else {
-								writeToLog('sending mediaFile failed: ' + err);
-			    				done = true;
-			    				successCallback();
-					    	}
-						}
-						//, additionalQueryParameter:
-						, timeout: myTimeout
-						, omitLoaderHide: true
-					};
-					DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-							
-		        //});
-		    	}
-
-// Alte Variante: alles auf einmal senden
-//				var items = [];
-//				
-//				_.each(mediaFiles, function(mf){
-//					var rec = JSON.parse(JSON.stringify(mf)); // clone to new Object
-//					if (rec.record.handOrderId !== null && rec.record.handOrderId !== "0") {
-//						rec.record.orderId = null;
-//					}
-//					items.push(rec.record);
-//				});
-//				
-//				var data = {"medien": items};
-//				
-//				var internalSuccessCallback = function(data2, msg, request) {
-//					// verarbeite empfangene Daten
-//					console.log("sendeMedien Status: " + request.status);
-//					// weiter in der Verarbeitungskette
-//					successCallback();
-//								
-//				};
-//				var sendObj = {
-//						  data: data
-//						, webservice: "medien"
-//						, loaderText: M.I18N.l('sendeMedien')
-//						, successCallback: internalSuccessCallback
-//						, errorCallback: errorCallback
-//						//, additionalQueryParameter:
-//						, timeout: 60000
-//				};
-//				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
-		    	
-			} else {
-				// no files to send
-
-				// weiter in der Verarbeitungskette
-				successCallback();
-			}
-    	};
-
-		var mediaFiles = DigiWebApp.MediaFile.find();
-		var medieFilesFuerProceed = [];
-		var mediaFilesLength = mediaFiles.length;
-    	var mediaFilesIndex = 0;
-    	var done = false;
-    	
-    	if (mediaFilesLength !== 0) { 
-	    	_.each(mediaFiles, function(el) {
-	    			    		
-    			if (el.hasFileName()) {
-
-        			writeToLog('loading mediaFile ' + el.get('fileName'));
-
-        			el.readFromFile(function(fileContent) {
-						//console.log("fileContent: " + fileContent);
-						if (fileContent && (fileContent !== "")) {
-					    	_.each(mediaFiles, function(mf) {
-					            if (mf.m_id == el.m_id) {
-					            	mf.set("data", fileContent);
-						    		mediaFilesIndex = mediaFilesIndex + 1;
-						    		medieFilesFuerProceed.push(mf);
-						    		writeToLog('mediaFile ' + mf.get('fileName') + ' loaded (' + mediaFilesIndex + ')');
-					            }
-					        });
-						}
-						if ( mediaFilesIndex === mediaFilesLength && done === false) {
-							// last mediaFile loaded
-							writeToLog('last mediaFile done (with file)');
-		    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
-		    				done = true;
-		    				proceed(medieFilesFuerProceed);
-						}
-					}, function() {
-				        var myContFunc = function() {
-				    		mediaFilesIndex = mediaFilesIndex + 1;
-							if ( mediaFilesIndex === mediaFilesLength && done === false) {
-								// last mediaFile loaded
-								writeToLog('last mediaFile done (last file load failed)');
-			    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			    				done = true;
-			    				proceed(medieFilesFuerProceed);
-							}
-						}
-						trackError('loading mediaFile ' + el.get('fileName') + ' failed!');
-				        DigiWebApp.ApplicationController.nativeConfirmDialogView({
-				              title: M.I18N.l('error')
-				            , message: M.I18N.l('loadingFileFailed') + " (DIGIWebAppData/" + el.get('fileName') + ")" 
-				            , callbacks: {
-				                  confirm: {
-				                    action: function() {
-										writeToLog('lösche mediaFile ' + el.get('fileName'));
-				        				el.del();
-				        				myContFunc();
-				        			}
-				                }
-				        		, cancel: {
-				                    action: function() {
-				        				myContFunc();
-				        			}
-				                }
-				            }
-				        });
-					});
-    			} else {
-		    		mediaFilesIndex = mediaFilesIndex + 1;
-	    			// this mediaFile has no file
-					if ( mediaFilesIndex === mediaFilesLength && done === false) {
-						// last mediaFile loaded
-						writeToLog('last mediaFile done (no file)');
-	    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
-	    				done = true;
-	    				proceed(medieFilesFuerProceed);
-					}
-	    		}
-	        });
-    	} else {
-    		//console.log('no mediafiles');
-			//DigiWebApp.ApplicationController.DigiLoaderView.hide();
-			proceed(medieFilesFuerProceed);
-    	}
-    }
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: NavigationController
 // ==========================================================================
 // manuell var-checked
@@ -21666,6 +21071,601 @@ DigiWebApp.NavigationController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: MediaListController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.MediaListController = M.Controller.extend({
+
+    /* mediafiles */
+      items: null
+
+//    /* Aktionen um neue MediaFiles zu erzeugen */
+//    , actions: null
+
+    , latestId: null
+    
+    , lastTimestampDatatransfer: null
+
+    /*
+    * Which files do we have to display?
+    */
+    , init: function(isFirstLoad) {
+		var that = DigiWebApp.MediaListController;
+		var items = [];
+        if (isFirstLoad) {
+            /* do something here, when page is loaded the first time. */
+        }
+        /* do something, for any other load. */
+        items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
+            return parseIntRadixTen(mediafile.get('timeStamp'));
+        });
+        that.set('items', items.reverse());
+
+//        if (DigiWebApp.MediaListPage.needsUpdate) {
+//            var actions = [];
+//                        
+//            // Start::TakePicture (400)
+//            if (DigiWebApp.SettingsController.featureAvailable('400')) {
+//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 400 (TakePicture)");
+//            	actions.push({
+//                      label: M.I18N.l('takePicture')
+//                    , icon: 'icon_takePicture.png'
+//                    , id: 'foto'
+//                });
+//            }
+//            // End::TakePicture
+//
+//            // Start::RecordAudio (401)
+//            if (DigiWebApp.SettingsController.featureAvailable('401')) {
+//            	//if (DigiWebApp.SettingsController.globalDebugMode) console.log("enabling Feature 401 (RecordAudio)");
+//            	actions.push({
+//                      label: M.I18N.l('recordAudio')
+//                    , icon: 'icon_recordAudio.png'
+//                    , id: 'audio'
+//                });
+//            }
+//            // End::RecordAudio
+
+//        	actions.push({
+//                  label: M.I18N.l('uploadMediaFiles')
+//                , icon: 'icon_dataTransfer.png'
+//                , id: 'uploadMediaFiles'
+//            });
+//
+//        	that.set('actions', actions);
+//            DigiWebApp.MediaListPage.needsUpdate = false;
+
+    		var myMedien = DigiWebApp.MediaFile.find();
+    		if (myMedien.length == 0) {
+    			$('#' + DigiWebApp.MediaListPage.uebertragenButton.id).hide();
+    			$('#' + DigiWebApp.MediaListPage.newButton.id).show();
+    		} else {
+    			$('#' + DigiWebApp.MediaListPage.uebertragenButton.id).show();
+    			$('#' + DigiWebApp.MediaListPage.newButton.id).hide();
+    		}
+//        }
+
+        var list;
+
+        if (typeof(DigiWebApp.app.pages.mediaListPage) != "undefined") {
+
+	        try {
+		        list = M.ViewManager.getView('mediaListPage', 'mediafiles');
+		        if (list) {
+		            $('#' + list.id).find('li').each(function() {
+		                $(this).removeClass('selected');
+		            });
+		        }
+			} catch(e2) { trackError(e2); }
+	
+	        
+//	        try {
+//		        list = M.ViewManager.getView('mediaListPage', 'actionslist');
+//		        if (list) {
+//		            $('#' + list.id).find('li').each(function() {
+//		                $(this).removeClass('selected');
+//		            });
+//		        }
+//	        } catch(e2) { trackError(e2); }
+
+        }
+        
+		DigiWebApp.ApplicationController.DigiLoaderView.hide();
+
+	}
+
+	, itemSelected: function(id, m_id) {
+		try{DigiWebApp.ApplicationController.vibrate();}catch(e2s){} 
+        if (this.latestId) {
+            $('#' + this.latestId).removeClass('selected');
+        }
+        $('#' + id).addClass('selected');
+
+        this.latestId = id;
+
+        if (m_id && typeof(this[m_id]) === 'function') {
+            this[m_id]();
+        }
+    }
+
+	, neu: function() {
+		var that = DigiWebApp.MediaListController;
+//    	M.DialogView.actionSheet({
+//	          title: M.I18N.l('newMedia')
+//	        , cancelButtonValue: M.I18N.l('cancel')
+//	        //, otherButtonValues: [M.I18N.l('audio'),M.I18N.l('photo'),M.I18N.l('video'),M.I18N.l('other')]
+//	        //, otherButtonTags: ["audio", "photo", "video", "other"]
+//	        , otherButtonValues: [M.I18N.l('photo')]
+//	        , otherButtonTags: ["photo"]
+//	        , callbacks: {
+//  				  other: {action: function(buttonTag) {
+//	  			    switch(buttonTag) {
+//		    		        case 'audio':
+//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//		    		                title: M.I18N.l('notImplemented')
+//		    		              , message: M.I18N.l('notImplementedMsg')
+//		    		            });
+//		    		        	/*if (DigiWebApp.SettingsController.featureAvailable('401')) {
+//		    		        		that.audio();
+//		    		        	} else {
+//		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+//			    		                title: M.I18N.l('notActivated')
+//			    		              , message: M.I18N.l('notActivatedMsg')
+//			    		            });
+//		    		        	}*/
+//		    		            break;
+//		    		        case 'photo':
+		    		        	if (DigiWebApp.SettingsController.featureAvailable('400')) {
+		    		        		that.foto();
+		    		        	} else {
+		    		        		DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		                title: M.I18N.l('notActivated')
+			    		              , message: M.I18N.l('notActivatedMsg')
+			    		            });
+		    		        	}
+//		    		            break;
+//		    		        case 'video':
+//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//		    		                title: M.I18N.l('notImplemented')
+//		    		              , message: M.I18N.l('notImplementedMsg')
+//		    		            });
+//		    		            break;
+//		    		        case 'other':
+//		    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+//		    		                title: M.I18N.l('notImplemented')
+//		    		              , message: M.I18N.l('notImplementedMsg')
+//		    		            });
+//		    		            break;
+//		    		        default:
+//		    		            console.log("unknonw ButtonTag");
+//		    		            break;
+//	  			    }
+//	  			}}
+//  			, cancel: {action: function() {
+//  				//console.log(M.I18N.l('cancel'));
+//  			}}
+//  		}
+//	    });
+	
+	}
+
+    , foto: function() {
+		var that = this;
+    	M.DialogView.actionSheet({
+	          title: M.I18N.l('takePicture')
+	        , cancelButtonValue: M.I18N.l('cancel')
+	        , otherButtonValues: [M.I18N.l('library'),M.I18N.l('camera')]
+	        , otherButtonTags: ["library", "camera"]
+	        , callbacks: {
+				  other: {action: function(buttonTag) {
+
+    					switch(buttonTag) {
+		    		        case 'library':
+		    		        	
+		    		        	// unterscheiden: auf Gerät oder im Browser?
+		    		        	if ( typeof navigator.camera !== 'undefined' 
+		    	        		  && typeof navigator.camera.getPicture !== 'undefined') {
+		    		        		
+		    		        		// auf Geraet:
+		        					
+		    		        		var myEncodingQuality = parseIntRadixTen(DigiWebApp.SettingsController.defaultsettings.get("pictureEncodingQuality"));
+		    			    		var myEncodingQualitySetting = DigiWebApp.SettingsController.getSetting('pictureEncodingQuality');
+		    			    		if (parseIntRadixTen(myEncodingQualitySetting) > 9) {
+		    			    			myEncodingQuality = parseIntRadixTen(myEncodingQualitySetting);
+		    			    		}
+		    			    		var myEncodingType = navigator.camera.EncodingType.JPEG;
+		    			    		if (DigiWebApp.SettingsController.getSetting('pictureEncodingType') == "PNG") {
+		    			    			myEncodingType = navigator.camera.EncodingType.PNG;
+		    			    		} 
+		    			    		var myAllowEdit = parseBool(DigiWebApp.SettingsController.getSetting('pictureAllowEdit'));
+
+		    			    		navigator.camera.getPicture(
+	    		        				  function(imgData) {
+	    		        				    	//alert("success");
+	    		        					  if (imgData.indexOf("data:") === 0) {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", imgData);
+	    		        					  } else {
+					    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + DigiWebApp.ApplicationController.getImageFiletype() + ',' + imgData);
+	    		        					  }
+	    		        					  DigiWebApp.CameraController.set("fileType", DigiWebApp.ApplicationController.getImageFiletype());
+	    		        					  DigiWebApp.NavigationController.toCameraPageTransition();
+	    		        				}
+	    		        				, function(err) {
+				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+				    		        		DigiWebApp.CameraController.set("fileType", null);
+					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					    		                title: M.I18N.l('error')
+					    		              , message: M.I18N.l('noPicLoaded') + ": " + err
+					    		            });	    		        					
+	    		        				}
+	    		        				, {
+	    		        					  quality: myEncodingQuality
+	    		     	    				, allowEdit: myAllowEdit
+	    		     	    				, destinationType : navigator.camera.DestinationType.DATA_URL
+	    		     	    				//, destinationType: navigator.camera.DestinationType.FILE_URI
+	    		     	    				//, destinationType: navigator.camera.DestinationType.NATIVE_URI
+	    		     	    				, encodingType: myEncodingType
+	    		     	    				, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY 
+	    		     	    				, mediaType: navigator.camera.MediaType.PICTURE
+	    		     	    				, saveToPhotoAlbum: false
+	    		        				}
+		    		        		);
+		    		        		
+		    		        	} else {
+		    		        	
+			    		        	// im Browser:
+			    		        	DigiWebApp.FileChooserPage.set("successCallback", function(imgData, fileName) {
+				    		        	if (imgData !== null) {
+				    		        		  DigiWebApp.CameraController.set("loadedFileName", fileName);
+				    		        		  var myFileType = ""; //DigiWebApp.ApplicationController.getImageFiletype();
+				    		        		  var tmp = fileName;
+				    		        		  var i = 0;
+				    		        		  while (i !== -1) {
+				    		        			  tmp = tmp.substr(i + 1);
+				    		        			  i = tmp.indexOf(".");
+				    		        		  }
+				    		        		  tmp = tmp.toLowerCase();
+				    		        		  switch (tmp) {
+				    		        		  	case "jpg":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/jpeg";
+				    		        		  		break;
+				    		        		  	case "jpeg":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	case "png":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	case "bmp":
+						    		        		  // filetype zum MIME-Type vervollständigen
+						    		        		  myFileType = "image/" + tmp;
+				    		        		  		break;
+				    		        		  	default:
+				    		        		  		break;
+				    		        		  }
+				    		        		  switch (myFileType) {
+				    		        		  	case "":
+						    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+						    		        		DigiWebApp.CameraController.set("fileType", null);
+							    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+							    		                title: M.I18N.l('error')
+							    		              , message: M.I18N.l('noPicLoaded')
+							    		            });
+				    		        		  		break;
+				    		        		  	default:
+				    		        		  		DigiWebApp.CameraController.set("fileType", myFileType);
+			    		        					if (imgData.indexOf("data:") === 0) {
+			    		        						DigiWebApp.CameraController.set("loadedPicture", imgData);
+			    		        					} else {
+							    		        		DigiWebApp.CameraController.set("loadedPicture", 'data:' + myFileType + ',' + imgData);
+			    		        					}
+			    		        					DigiWebApp.NavigationController.toCameraPageTransition();
+			    		        					break;
+				    		        		  }
+				    		        	} else {
+				    		        		DigiWebApp.CameraController.set("loadedPicture", null);
+				    		        		DigiWebApp.CameraController.set("fileType", null);
+					    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+					    		                title: M.I18N.l('error')
+					    		              , message: M.I18N.l('noPicLoaded')
+					    		            });
+				    		        	}
+			    		        	});
+			    		        	DigiWebApp.NavigationController.toFileChooserPageTransition();
+		    		        	}
+		    		        	
+		    		            break;
+		    		        case 'camera':
+		    		        	if (       typeof navigator.camera !== 'undefined' 
+				    	        		&& typeof navigator.camera.getPicture !== 'undefined'
+		    		            	) {
+		    		        			DigiWebApp.CameraController.set("loadedPicture", null);
+		    		        			DigiWebApp.NavigationController.toCameraPageTransition();
+		    		        	} else {
+			    		            DigiWebApp.ApplicationController.nativeAlertDialogView({
+			    		                title: M.I18N.l('error')
+			    		              , message: M.I18N.l('noCamera')
+			    		            });
+		    		        	}
+		    		            break;
+		    		        default:
+		    		            console.log("unknonw ButtonTag");
+		    		            break;
+	  			    }
+	  			}}
+			, cancel: {action: function() {
+				//console.log(M.I18N.l('cancel'));
+			}}
+		}
+	    });
+
+    }
+
+    , audio: function() {
+        DigiWebApp.NavigationController.toAudioPageTransition();
+    }
+    
+    , uploadMediaFiles: function() {
+    	var that = DigiWebApp.MediaListController;
+    	var startTransfer = NO;
+    	if (that.lastTimestampDatatransfer !== null) {
+    		var timestampNow = D8.now().getTimestamp();
+    		if (timestampNow - that.lastTimestampDatatransfer > parseIntRadixTen(DigiWebApp.SettingsController.getSetting('datatransfer_min_delay'))) {
+    			startTransfer = YES;
+    		} else {
+    			// evtl. Fehlermeldung, dass noch eine Datenübertragung läuft bzw. nur alle 30 Sekunden eine Datenübertragung gestartet werden darf
+    		}
+    	}
+    	if (startTransfer === YES || that.lastTimestampDatatransfer === null) {
+    		that.doUploadMediaFiles();
+    	}
+    }
+    
+    , doUploadMediaFiles: function() {
+
+		var that = DigiWebApp.MediaListController;
+		that.set("lastTimestampDatatransfer", D8.now().getTimestamp());
+		
+		DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('loadMediaFiles'));
+
+		var successCallback = function() {
+			//DigiWebApp.ApplicationController.DigiLoaderView.show(M.I18N.l('cleanMediaFiles'));
+			DigiWebApp.MediaListController.init();
+			//DigiWebApp.MediaFile.deleteAll(DigiWebApp.MediaListController.init);
+		};
+		
+		var errorCallback = function(err) {
+			trackError(err);
+			DigiWebApp.MediaListController.init();
+			DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		};
+		
+		var proceed = function(mediaFiles) {
+			
+			if (mediaFiles.length !== 0) {
+				
+				var mediaFilesLength = mediaFiles.length;
+		    	var mediaFilesIndex = 0;
+		    	var done = false;
+
+		    	//_.each(mediaFiles, function(el) {
+		    	if (mediaFiles.length > 0) {
+		    	    var el = mediaFiles[0];
+		    	
+		    		var items = [];
+					var rec = JSON.parse(JSON.stringify(el)); // clone to new Object
+					if (rec.record.handOrderId !== null && rec.record.handOrderId !== "0") {
+						rec.record.orderId = null;
+					}
+					items.push(rec.record);
+					
+					var myMediaListToSend = {"medien": items};
+					
+					writeToLog('sending mediaFile ' + rec.record.fileName);
+	    			
+    				var mindestMedienTimeout = 300000; // 5 min
+    				var myTimeout = DigiWebApp.SettingsController.getSetting('WebserviceTimeOut');
+    				if (parseIntRadixTen(DigiWebApp.SettingsController.getSetting('WebserviceTimeOut')) < mindestMedienTimeout) {
+    					myTimeout = mindestMedienTimeout;
+    				}
+    				
+					var sendObj = {
+						  data: myMediaListToSend
+						, webservice: "medien"
+						, loaderText: M.I18N.l('sendeMedien')
+						, successCallback: function(data2, msg, request) {
+							var newMediaFiles = [];
+					    	_.each(mediaFiles, function(mf) {
+					            if (mf.m_id == el.m_id) {
+									writeToLog('lösche mediaFile ' + mf.record.fileName, function(){
+						            	var delFunc = function() {
+						            		mf.del();
+							                var items = _.sortBy(DigiWebApp.MediaFile.find(), function(mediafile) {
+							                    return parseIntRadixTen(mediafile.get('timeStamp'));
+							                });
+							                that.init();
+						            	}
+						            	mf.deleteFile(delFunc, delFunc);
+							    		mediaFilesIndex = mediaFilesIndex + 1;
+									});
+					            } else {
+					            	newMediaFiles.push(mf);
+					            }
+					        });
+//							if ( mediaFilesIndex === mediaFilesLength && done === false) {
+//								// last mediaFile sent
+//					    		writeToLog('sending last mediaFile done (with file)');
+//			    				done = true;
+//			    				successCallback();
+//							}
+					    	if (newMediaFiles.length > 0) {
+								proceed(newMediaFiles);
+					    	} else {
+					    		writeToLog('sending last mediaFile done (with file)');
+			    				done = true;
+			    				successCallback();
+					    	}
+						}
+						, errorCallback: function(xhr, err) {
+//							if ( mediaFilesIndex === mediaFilesLength && done === false) {
+//								// last mediaFile sent (failed)
+//								writeToLog('last mediaFile done (sending last file failed)');
+//			    				done = true;
+//			    				successCallback();
+//							}
+							var newMediaFiles = [];
+					    	_.each(mediaFiles, function(mf) {
+					            if (mf.m_id != el.m_id) {
+					            	newMediaFiles.push(mf);
+					            }
+					        });
+					    	if (newMediaFiles.length > 0) {
+								proceed(newMediaFiles);
+					    	} else {
+								writeToLog('sending mediaFile failed: ' + err);
+			    				done = true;
+			    				successCallback();
+					    	}
+						}
+						//, additionalQueryParameter:
+						, timeout: myTimeout
+						, omitLoaderHide: true
+					};
+					DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+							
+		        //});
+		    	}
+
+// Alte Variante: alles auf einmal senden
+//				var items = [];
+//				
+//				_.each(mediaFiles, function(mf){
+//					var rec = JSON.parse(JSON.stringify(mf)); // clone to new Object
+//					if (rec.record.handOrderId !== null && rec.record.handOrderId !== "0") {
+//						rec.record.orderId = null;
+//					}
+//					items.push(rec.record);
+//				});
+//				
+//				var data = {"medien": items};
+//				
+//				var internalSuccessCallback = function(data2, msg, request) {
+//					// verarbeite empfangene Daten
+//					console.log("sendeMedien Status: " + request.status);
+//					// weiter in der Verarbeitungskette
+//					successCallback();
+//								
+//				};
+//				var sendObj = {
+//						  data: data
+//						, webservice: "medien"
+//						, loaderText: M.I18N.l('sendeMedien')
+//						, successCallback: internalSuccessCallback
+//						, errorCallback: errorCallback
+//						//, additionalQueryParameter:
+//						, timeout: 60000
+//				};
+//				DigiWebApp.JSONDatenuebertragungController.sendData(sendObj);
+		    	
+			} else {
+				// no files to send
+
+				// weiter in der Verarbeitungskette
+				successCallback();
+			}
+    	};
+
+		var mediaFiles = DigiWebApp.MediaFile.find();
+		var medieFilesFuerProceed = [];
+		var mediaFilesLength = mediaFiles.length;
+    	var mediaFilesIndex = 0;
+    	var done = false;
+    	
+    	if (mediaFilesLength !== 0) { 
+	    	_.each(mediaFiles, function(el) {
+	    			    		
+    			if (el.hasFileName()) {
+
+        			writeToLog('loading mediaFile ' + el.get('fileName'));
+
+        			el.readFromFile(function(fileContent) {
+						//console.log("fileContent: " + fileContent);
+						if (fileContent && (fileContent !== "")) {
+					    	_.each(mediaFiles, function(mf) {
+					            if (mf.m_id == el.m_id) {
+					            	mf.set("data", fileContent);
+						    		mediaFilesIndex = mediaFilesIndex + 1;
+						    		medieFilesFuerProceed.push(mf);
+						    		writeToLog('mediaFile ' + mf.get('fileName') + ' loaded (' + mediaFilesIndex + ')');
+					            }
+					        });
+						}
+						if ( mediaFilesIndex === mediaFilesLength && done === false) {
+							// last mediaFile loaded
+							writeToLog('last mediaFile done (with file)');
+		    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
+		    				done = true;
+		    				proceed(medieFilesFuerProceed);
+						}
+					}, function() {
+				        var myContFunc = function() {
+				    		mediaFilesIndex = mediaFilesIndex + 1;
+							if ( mediaFilesIndex === mediaFilesLength && done === false) {
+								// last mediaFile loaded
+								writeToLog('last mediaFile done (last file load failed)');
+			    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			    				done = true;
+			    				proceed(medieFilesFuerProceed);
+							}
+						}
+						trackError('loading mediaFile ' + el.get('fileName') + ' failed!');
+				        DigiWebApp.ApplicationController.nativeConfirmDialogView({
+				              title: M.I18N.l('error')
+				            , message: M.I18N.l('loadingFileFailed') + " (DIGIWebAppData/" + el.get('fileName') + ")" 
+				            , callbacks: {
+				                  confirm: {
+				                    action: function() {
+										writeToLog('lösche mediaFile ' + el.get('fileName'));
+				        				el.del();
+				        				myContFunc();
+				        			}
+				                }
+				        		, cancel: {
+				                    action: function() {
+				        				myContFunc();
+				        			}
+				                }
+				            }
+				        });
+					});
+    			} else {
+		    		mediaFilesIndex = mediaFilesIndex + 1;
+	    			// this mediaFile has no file
+					if ( mediaFilesIndex === mediaFilesLength && done === false) {
+						// last mediaFile loaded
+						writeToLog('last mediaFile done (no file)');
+	    				//DigiWebApp.ApplicationController.DigiLoaderView.hide();
+	    				done = true;
+	    				proceed(medieFilesFuerProceed);
+					}
+	    		}
+	        });
+    	} else {
+    		//console.log('no mediafiles');
+			//DigiWebApp.ApplicationController.DigiLoaderView.hide();
+			proceed(medieFilesFuerProceed);
+    	}
+    }
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: OrderDetailsController
 // ==========================================================================
 // manuell var-checked
@@ -22244,6 +22244,32 @@ DigiWebApp.OrderInfoController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
+// Controller: RequestController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.RequestController = M.Controller.extend({
+
+//	  GatewayServer: 'primary.digi-gateway.de'
+//	, GatewayPool: 'pool.digi-gateway.de'
+//	, DatabaseServer: null
+//	, DatabaseServerTimestamp: null
+    
+      softwareVersion: 7173
+
+    , getDatabaseServer: function(myFunc, obj) {
+    	
+    	return DigiWebApp.JSONDatenuebertragungController.empfangeUrl(function(){
+    		myFunc(obj);
+    	});
+    	
+    }
+    
+});
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
 // Controller: OrderListController
 // ==========================================================================
 
@@ -22532,27 +22558,180 @@ DigiWebApp.OrderListController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: RequestController
+// Controller: RoteAmpelController
 // ==========================================================================
 // manuell var-checked
-DigiWebApp.RequestController = M.Controller.extend({
 
-//	  GatewayServer: 'primary.digi-gateway.de'
-//	, GatewayPool: 'pool.digi-gateway.de'
-//	, DatabaseServer: null
-//	, DatabaseServerTimestamp: null
+DigiWebApp.RoteAmpelController = M.Controller.extend({
+
+	// arrays for selection lists
+      orders: null
+    , positions: null
     
-      softwareVersion: 7172
+    , activeOrder: null
+    , activePosition: null
 
-    , getDatabaseServer: function(myFunc, obj) {
-    	
-    	return DigiWebApp.JSONDatenuebertragungController.empfangeUrl(function(){
-    		myFunc(obj);
-    	});
-    	
+    , data: null
+
+	, init: function() {
+		DigiWebApp.RoteAmpelController.set('activeOrder', null);
+		DigiWebApp.RoteAmpelController.set('activePosition', null);
+
+        // we need to check handOrders also
+		var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
+        var positions = DigiWebApp.Position.findSorted();
+        
+        var itemSelected = NO;
+        var orderArray;
+        var positionArray;
+        if (!DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+	        orderArray = _.map(orders, function(order) {
+	        	if (!(order)) {
+		            return null;
+		        }
+	            var obj =  { label: order.get('name'), value: order.get('id') };
+	            if ( DigiWebApp.BookingController.currentBooking !== null ) {
+	            	if (    (obj.value === DigiWebApp.BookingController.currentBooking.get('orderId'))
+	            		 || (obj.value === DigiWebApp.BookingController.currentBooking.get('handOrderId'))
+	            	   )
+	            	{
+	            		obj.isSelected = YES;
+	            		itemSelected = YES;
+	            		DigiWebApp.RoteAmpelController.set('activeOrder', [order]);
+	            	}
+	            }
+	            return obj;
+	        });
+	        orderArray = _.compact(orderArray);
+	        // "Bitte wählen" zur Auswahlliste hinzufügen
+	        if (itemSelected === NO) {
+	            orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        }
+	        
+	        itemSelected = NO;
+	        positionArray = _.map(positions, function(pos) {
+	        	if (!(pos)) {
+		            return null;
+		        }
+	        	if (DigiWebApp.RoteAmpelController.activeOrder !== null) {
+	        		if (pos.get('orderId') !== DigiWebApp.RoteAmpelController.activeOrder[0].get('id')) {
+	        			return null;
+	        		}
+	        	} else {
+	        		return null;
+	        	}
+	            var obj = { label: pos.get('name'), value: pos.get('id') };
+	           	if ( DigiWebApp.BookingController.currentBooking !== null ) {
+	            	if (obj.value === DigiWebApp.BookingController.currentBooking.get('positionId')) {
+	            		obj.isSelected = YES;
+	            		itemSelected = YES;
+	            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
+	            	}
+	            }
+	        	return obj;
+	        });
+	        positionArray = _.compact(positionArray);
+	        // "Bitte wählen" zur Auswahlliste hinzufügen
+	        if (itemSelected === NO) {
+	            positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        }
+        } else {
+	        orderArray = _.map(orders, function(order) {
+	        	if (!(order)) {
+		            return null;
+		        }
+	            var obj =  { label: order.get('name'), value: order.get('id') };
+            	if (obj.value === M.ViewManager.getView('bookingPage', 'order').getSelection()) {
+            		obj.isSelected = YES;
+            		itemSelected = YES;
+            		DigiWebApp.RoteAmpelController.set('activeOrder', [order]);
+            	}
+	            return obj;
+	        });
+	        orderArray = _.compact(orderArray);
+	        // "Bitte wählen" zur Auswahlliste hinzufügen
+	        if (itemSelected === NO) {
+	            orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        }
+	        
+	        itemSelected = NO;
+	        positionArray = _.map(positions, function(pos) {
+	        	if (!(pos)) {
+		            return null;
+		        }
+	        	if (DigiWebApp.RoteAmpelController.activeOrder !== null) {
+	        		if (pos.get('orderId') !== DigiWebApp.RoteAmpelController.activeOrder[0].get('id')) {
+	        			return null;
+	        		}
+	        	} else {
+	        		return null;
+	        	}
+	            var obj = { label: pos.get('name'), value: pos.get('id') };
+            	if (obj.value === M.ViewManager.getView('bookingPage', 'position').getSelection()) {
+            		obj.isSelected = YES;
+            		itemSelected = YES;
+            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
+            	}
+	        	return obj;
+	        });
+	        positionArray = _.compact(positionArray);
+	        // push "Bitte wählen Option"
+	        if (itemSelected === NO) {
+	            positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
+	        }
+        }
+
+        // set selection arrays to start content binding process
+        this.set('orders', orderArray);
+        this.set('positions', positionArray);
+        
+        // Bugfix 2108: Rename in order to be consistent with DSO
+        if (DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
+  		  DigiWebApp.ApplicationController.dtc6AktivRenameHelper(
+              DigiWebApp.RoteAmpelPage.content.order.id, M.I18N.l('dtc6Ordner'));
+  		  DigiWebApp.ApplicationController.dtc6AktivRenameHelper(
+              DigiWebApp.RoteAmpelPage.content.position.id, M.I18N.l('dtc6Auftrag'));
+        }
+
+        // Specific height of input field
+   		M.ViewManager.getView('roteAmpelPage', 'dataInput').setCssProperty("height", "100px");
+	}
+
+    , setPositions: function() {
+        var orderId = M.ViewManager.getView('roteAmpelPage', 'order').getSelection(YES).value;
+        if (!orderId) {
+            return;
+        }
+        var positions = DigiWebApp.Position.findSorted();
+
+        var i = 0;
+        positions = _.map(positions, function(pos) {
+        	if (!(pos)) {
+	            return null;
+	        }
+            if (parseIntRadixTen(pos.get('orderId')) === parseIntRadixTen(orderId)) {
+                var obj = { label: pos.get('name'), value: pos.get('id') };
+                if (i === 0) {
+                    obj.isSelected = YES;
+            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
+                }
+                i += 1;
+                return obj;
+            }
+            return null;
+        });
+        positions = _.compact(positions);/* remove falsy values from positions with _.compact() */
+
+        if (positions.length < 1) {
+            positions.push({label: M.I18N.l('noData'), value: '0'});
+            DigiWebApp.RoteAmpelController.set('activePosition', null);
+        }
+
+        M.ViewManager.getView('roteAmpelPage', 'position').resetSelection();
+        this.set('positions', positions);
     }
-    
 });
+
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
 // Generated with: Espresso 
@@ -22740,6 +22919,748 @@ DigiWebApp.ScholppBookingController = M.Controller.extend({
 		var arbeitsendeButton = $('#' + DigiWebApp.BookingPageWithIconsScholpp.content.unterbrechung_pause_arbeitsende_ButtonGrid.arbeitsendeButtonGrid.button.id)[0];
 		arbeitsendeButton.classList.add("buttonSelected");
 	}
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// Controller: SelectionController
+// ==========================================================================
+// manuell var-checked
+DigiWebApp.SelectionController = M.Controller.extend({
+
+    // arrays for selection lists
+      orders: null
+    , positions: null
+    , activities: null
+    
+    , selections: {
+          order: null
+        , position: null
+        , activity: null
+        , uebernachtungskennzeichenScholpp: null
+        , spesenkennzeichenScholpp: null
+    }
+
+    // use selection that has been made by hand
+    , useSelections: NO
+
+    // show hand order at first position, only set to YES by HandOrderController
+    , showHandOrderFirst: NO
+
+    , updateNachUebertragung: false
+
+    , uebernachtungskennzeichenScholpp: null
+    
+    , spesenkennzeichenScholpp: null
+    
+    , setSelectionByPreviousSelection: function() {
+        var that = this;
+		
+        if (inDebug()) writeToLog('setSelectionByPreviousSelection entry');
+
+        var mySelection = JSON.parse(JSON.stringify(that.selections));
+        
+		this.setOrders(mySelection.order, mySelection.position, mySelection.activity, NO);
+        
+        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
+		if (DigiWebApp.SettingsController.featureAvailable('419')) {
+		    // TODO: Fehler in der folgenden Codezeile wenn die FS 419 aktiv ist:
+            // Exception TypeError: Object #<Object> has no method 'get'
+            var uebernachtungAuswahl = mySelection.get('uebernachtungAuswahl');
+            uebernachtungAuswahl = that.setScholppButtons(uebernachtungAuswahl, YES);
+            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
+		}
+
+        that.updateNachUebertragung = false;
+      }
+
+    , setSelectionWithCurrentHandOrderFirst: function() {
+        var that = this;
+
+        if (inDebug()) writeToLog('setSelectionWithCurrentHandOrderFirst entry');
+
+        this.setOrders(0, 0, 0, YES);
+
+        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+            var uebernachtungAuswahl = that.setScholppButtons(null, NO);
+            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
+		}
+    	
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+        	DigiWebApp.ScholppBookingController.resetButtons();    		
+    	}
+
+        that.updateNachUebertragung = false;
+    }
+    
+    , setSelectionByCurrentBooking: function() {
+        var that = this;
+
+        if (inDebug()) writeToLog('setSelectionByCurrentBooking entry');
+
+        var booking = DigiWebApp.BookingController.currentBooking;
+        
+        // get the ids from the current booking
+        var orderId = (booking.get('orderId') == "0" ? 0 : booking.get('orderId')) || booking.get('handOrderId'); // we need to check handOrders also
+        var positionId = booking.get('positionId');
+        var activityId = booking.get('activityId');
+        
+        that.setOrders(orderId, positionId, activityId, YES);
+
+        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
+        if (DigiWebApp.SettingsController.featureAvailable('419')) {
+            var uebernachtungAuswahl = booking.get('uebernachtungAuswahl');
+            uebernachtungAuswahl = that.setScholppButtons(uebernachtungAuswahl, YES, YES);
+            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
+		}
+
+        that.updateNachUebertragung = false;
+    }
+    
+    , setUebernachtungskennzeichenScholpp: function(uebernachtungAuswahl) {
+        var that = this;
+        // Siehe DB-Tabelle SonderbuchungseigenschaftVorgabe: 6 = "- -"
+    	if (typeof(uebernachtungAuswahl) == "undefined") uebernachtungAuswahl = 6;
+        /**
+         * Scholpp-Spesen: Übernachtungskennzeichen 
+         */
+        var itemSelected = NO;
+        var uebernachtungskennzeichenScholppArray = _.map(that.uebernachtungskennzeichenScholpp, function(ueK) {
+        	if (typeof(ueK) === "undefined") {
+        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
+        	} else {        	
+        		var obj = { label: ueK.label, value: ueK.value };
+        		if (parseIntRadixTen(obj.value) == uebernachtungAuswahl) {
+        			obj.isSelected = YES;
+        			itemSelected = YES;
+        		}
+                return obj;
+        	}
+        });
+        uebernachtungskennzeichenScholppArray = _.compact(uebernachtungskennzeichenScholppArray);
+        that.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
+        //TODO: Würde man den Aufruf dieser Methode vor setOrders() machen, dann wäre das folgende
+        // saveSelection() überflüssig, denn es wird auch in setActivities() aufgerufen:
+        that.saveSelection();
+    }
+    
+    , setScholppButtons: function (uebernachtungAuswahl, withSetArbeitsende, withSetToSix) {
+    	var that = this;
+
+    	if (typeof(withSetArbeitsende) == "undefined") withSetArbeitsende = true;
+    	if (typeof(withSetToSix) == "undefined") withSetToSix = true;
+    	
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    	    DigiWebApp.ScholppBookingController.resetButtons();
+
+    		var activitySelection = that.getSelectedActivityItem(YES);
+    		if (!DigiWebApp.BookingController.currentBooking) activitySelection = null;
+    		if (typeof(activitySelection) !== "undefined" && activitySelection != null) {
+	    		var activitySelected = _.find(DigiWebApp.Activity.find(), function(a) {
+			         return (parseIntRadixTen(a.get("id")) === activitySelection.value);
+			    });
+    		    //var activitySelected = DigiWebApp.Activity.find(
+	    		//{query:{identifier: 'id', operator: '=', value: activitySelection.value}})[0];
+	    		if (!activitySelected) {
+	    			DigiWebApp.ScholppBookingController.selectArbeitsende();
+	    		} else {
+		    		var activityName = activitySelected.get("name");
+		    		if (activityName.indexOf("Reisezeit") >= 0 || activityName.indexOf("Fahrzeit") >= 0) {
+		    			DigiWebApp.ScholppBookingController.selectFahrzeit();
+		    		} else if (activityName.indexOf("Arbeitszeit") >= 0) {
+		    			if (withSetToSix) uebernachtungAuswahl = "6";
+		    			DigiWebApp.ScholppBookingController.selectArbeitszeit();
+		    		} else if (activityName.indexOf("Unterbrechung") >= 0) {
+		    			if (withSetToSix) uebernachtungAuswahl = "6";
+		    			DigiWebApp.ScholppBookingController.selectUnterbrechung();
+		    		} else if (activityName.indexOf("Pause") >= 0) {
+		    			if (withSetToSix) uebernachtungAuswahl = "6";
+		    			DigiWebApp.ScholppBookingController.selectPause();
+		    		} else {
+		    			if (withSetToSix) uebernachtungAuswahl = "6";
+		    			if (withSetArbeitsende) DigiWebApp.ScholppBookingController.selectArbeitsende();
+		    		}
+	    		}
+    		} else {
+    			if (withSetToSix) uebernachtungAuswahl = "6";
+    			if (withSetArbeitsende) DigiWebApp.ScholppBookingController.selectArbeitsende();
+    		}
+    	}
+        return uebernachtungAuswahl;
+    }
+
+    , setOrders: function(orderId, positionId, activityId, canUseCurrentBooking) {
+    	var that = this;
+
+    	if (inDebug()) writeToLog('setOrders(orderId=' + orderId + ', positionId=' + positionId
+            + ', activityId=' + activityId + ", canUseCurrentBooking=" + canUseCurrentBooking);
+
+    	if (orderId && orderId == that.getSelectedOrderItem()
+                && that.updateNachUebertragung === false
+        ) {
+	        return that.updatePositions(positionId, activityId, canUseCurrentBooking);
+	    }
+        if (!orderId && orderId != 0) {
+            orderId = that.getSelectedOrderItem();
+        }
+        if (!orderId) {
+            orderId = 0;
+        }
+
+        // Handaufträge müssen auch geprüft werden
+        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
+
+        // Ohne diese Freischaltungen wird nur der Positionen-Webservice benutzt, der keine
+        // Ordner ohne Aufträge liefert - in dem Fall können wir uns die langsame Filterung
+        // sparen.
+        // Freischaltung 429: mehrstufige Auftragsauswahl
+        // Freischaltung 430: Handpositionen
+        if (DigiWebApp.SettingsController.featureAvailable("429")
+			|| DigiWebApp.SettingsController.featureAvailable("430")
+        ) {
+            // Ordner filtern: nur solche mit auswählbaren Elementen
+            orders = _.filter(orders, function(o) {
+                return o.hasPositions(YES, NO) || o.name == DigiWebApp.HandOrder.name;
+            });
+        }
+
+          // orderId auf einen auswählbaren Wert zurücksetzen
+    	if (!_.contains(_.pluck(_.pluck(orders, 'record'), 'id'), orderId)) {
+    		orderId = 0;
+    	}
+
+        var orderArray = [];
+        if (orders.length == 0) {
+        	orderArray.push( { label: M.I18N.l('noData'), value: '0' } );
+        } else {
+	        var itemSelected = NO;
+	        orderArray = _.map(orders, function(obj) {
+	        	if (obj) {
+		            return { label: obj.get('name'), value: obj.get('id') };
+	        	}
+	        });
+	        orderArray = _.compact(orderArray);
+	        if (orderArray.length == 1) {
+		        // Wenn es nur einen Ordner gibt, dann diesen automatisch auswählen
+	        	orderId = orderArray[0].value;
+	        } else {
+	        	// Freischaltung 416 "Tätigkeits-Icons auf dem Buchen-Screen (Scholpp only)"
+		        if (DigiWebApp.SettingsController.featureAvailable('416')) {
+		        	// Scholpp-spezifisch: Eintrag "Auftrag" hinzufügen
+		        	orderArray.push( { label: M.I18N.l('order'), value: '0', isSelected: NO } );
+		        } else {
+			        // Eintrag "Bitte wählen" hinzufügen
+		        	orderArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: NO } );
+		        }
+	        }
+	        orderArray = _.map(orderArray, function(item) {
+	        	if (item) {
+		            item.isSelected = (item.value == orderId);
+		            return item;
+	        	}
+	        });
+        }
+        
+        if (inDebug()) writeToLog('setOrders, orderArray.length=' + orderArray.length);
+        
+        // set selection arrays to start content binding process
+        that.set('orders', orderArray);
+        
+        return that.updatePositions(positionId, activityId, canUseCurrentBooking);
+    }
+
+    , updatePositions: function(positionId, activityId, canUseCurrentBooking) {
+    	var that = this;
+    	
+    	var mySelectionObj = that.getSelectedOrderItem(YES);
+        var isHandauftrag = NO;
+    	if (hasValue(mySelectionObj)) {
+    	    isHandauftrag = (mySelectionObj.label == mySelectionObj.value || isGUID(mySelectionObj.value));
+    	}
+
+        DigiWebApp.BookingPage.doHideShowPositionCombobox(!isHandauftrag);
+		
+		if (!isHandauftrag) {
+		    return that.setPositions(positionId, activityId, canUseCurrentBooking);
+		} else {
+			// Sicherstellen dass beim Handauftrag nicht parallel ein Auftrag gesetzt ist
+		    that.setSelectedPosition(0, canUseCurrentBooking);
+			
+			M.ViewManager.getView('bookingPage', 'orderButton').setValue(mySelectionObj.label);
+			return that.setActivities(YES, canUseCurrentBooking, activityId);
+		}
+    }
+
+    , setPositions: function(positionId, activityId, canUseCurrentBooking) {
+    	var that = this;
+
+    	if (inDebug()) writeToLog('setPositions(positionId=' + positionId
+            + ', activityId=' + activityId + ", canUseCurrentBooking=" + canUseCurrentBooking);
+
+    	if (hasValue(positionId) && positionId == that.getSelectedPositionItem()
+                 && that.updateNachUebertragung === false
+        ) {
+            // alle "verknüpften Elemente" ebenfalls aktualisieren
+            that.setSelectedPosition(that.getSelectedPosition(), canUseCurrentBooking);
+            return that.setActivities(YES, canUseCurrentBooking, activityId);
+        }
+        if (!positionId && positionId != 0) {
+            positionId = that.getSelectedPositionItem();
+        }
+        if (!positionId) {
+            positionId = 0;
+        }
+
+        var orderId = that.getSelectedOrderItem();
+        if (!orderId) {
+            return;
+        }
+    	
+        if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+    	}
+        
+    	// Freischaltung 406 "Auftragsinfo"
+        if (DigiWebApp.SettingsController.featureAvailable('406') && DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+            // TODO: Fehler in der folgenden Zeile auf iPhone oder xCover 3: 
+            // window.onerror: Uncaught TypeError: Cannot call method 'getSelection' of null
+            // Kann es sein, dass die orderInfoPage noch nicht geladen ist?
+			if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
+				DigiWebApp.OrderInfoController.init();
+			}
+			M.ViewManager.getView('orderInfoPage', 'order').setSelection(orderId);
+			DigiWebApp.OrderInfoController.setPositions();
+			DigiWebApp.OrderInfoController.setItem();
+		}
+
+        if (typeof(DigiWebApp.HandOrder.getById(orderId)) != "undefined") {
+            return that.setActivities(YES, canUseCurrentBooking, activityId);
+        }
+        var positions = DigiWebApp.Position.getByVaterId(orderId);
+
+        // positionId auf einen auswählbaren Wert zurücksetzen
+    	if (!_.contains(_.pluck(_.pluck(positions, 'record'), 'id'), positionId)) {
+    		positionId = 0;
+    	}
+
+    	var positionsArray = [];
+        if (positions.length == 0) {
+        	positionsArray.push( { label: M.I18N.l('selectSomething'), value: '0' } );
+        } else {
+	        positionsArray = _.map(positions, function(obj) {
+	        	if (obj) {
+		            return { label: obj.get('name'), value: obj.get('id') };
+	        	}
+	        });
+	        positionsArray = _.compact(positionsArray);
+	        
+	        // Falls nichts gesetzt dann ersten Auftrag in der Liste automatisch auswählen
+	        if (!hasValue(positionId) || positionId == 0) {
+	        	positionId = positionsArray[0].value;
+	        }
+        }
+        
+    	positionsArray = _.map(positionsArray, function(item) {
+        	if (item) {
+	            item.isSelected = (parseIntRadixTen(item.value) == parseIntRadixTen(positionId));
+	            return item;
+        	}
+        });
+        
+        if (inDebug()) writeToLog('setPositions, positionsArray.length=' + positionsArray.length);
+
+        that.set('positions', positionsArray);
+        
+        // alle "verknüpften Elemente" ebenfalls aktualisieren
+        that.setSelectedPosition(that.getSelectedPosition(), canUseCurrentBooking);
+
+        return that.setActivities(YES, canUseCurrentBooking, activityId);
+    }
+
+    , setActivities: function(checkForWorkPlan, canUseCurrentBooking, activityId) {
+    	var that = this;
+    	
+    	if (activityId && activityId == that.getSelectedActivityItem()
+                && that.updateNachUebertragung === false
+        ) {
+	        return;
+	    }
+
+    	if (inDebug()) writeToLog('setActivities(checkForWorkPlan=' + checkForWorkPlan
+            + ', canUseCurrentBooking=' + canUseCurrentBooking + ', activityId=' + activityId);
+
+    	var posId = that.getSelectedPositionItem();
+    	var orderId = that.getSelectedOrderItem();
+    	var activities = [];
+    	if (posId) {
+
+    	    // Freischaltung 406 "Auftragsinfo"
+			if (DigiWebApp.SettingsController.featureAvailable('406') 
+			 && DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
+				if (typeof(M.ViewManager.getView('orderInfoPage', 'position').getSelection()) === "undefined") {
+					DigiWebApp.OrderInfoController.init();
+				}
+				M.ViewManager.getView('orderInfoPage', 'position').setSelection(posId);
+				DigiWebApp.OrderInfoController.setItem();
+			}
+	
+	        var workPlans = []; 
+	        _.each(DigiWebApp.WorkPlan.find(),function(wp){
+	        	if (wp.get("id") == posId) workPlans.push(wp);
+	        });
+	
+	        // Wenn ein Arbeitsplan exisitiert dann nur die Leistungen verwenden die im Arbeitsplan sind.
+	        if (workPlans.length === 1) {
+	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
+	        } else {
+	            activities = DigiWebApp.SelectionController.getActivities();
+	        }
+        } else {
+            activities = DigiWebApp.SelectionController.getActivities();
+        }
+        // Bei Änderungen in der Buchungs-Selektion wird versucht die aktuell gebuchte Leistung 
+        // ausgewählt zu lassen, es sei denn diese Leistung ist in der aktuellen Selektion nicht 
+        // enthalten. Bei erneuter Selektionsänderung wird erneut versucht die aktuell gebuchte 
+    	// Leistung zu setzen.
+        if (canUseCurrentBooking
+            && typeof(DigiWebApp.BookingController.currentBooking) !== "undefined" 
+		    && DigiWebApp.BookingController.currentBooking  !== null
+		    && !activityId 
+		    && activityId != 0
+		) { 
+        	activityId = DigiWebApp.BookingController.currentBooking.get('activityId');
+    	}
+        
+        // Vorher ausgewählte Leistung übernehmen sofern keine explizit gesetzt werden soll.
+        if (!activityId && activityId != 0) {
+            activityId = that.getSelectedActivityItem();
+        }
+        
+        // activityId auf einen auswählbaren Wert zurücksetzen
+    	if (!activityId || !_.contains(_.pluck(_.pluck(activities, 'record'), 'id'), activityId)) {
+    		activityId = 0;
+    	}
+
+        var activitiesArray = [];
+        if (activities.length == 0) {
+        	activitiesArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: YES } );
+        } else {
+	        var itemSelected = NO;
+	        activitiesArray = _.map(activities, function(obj) {
+	        	if (obj) {
+		            return { label: obj.get('name'), value: obj.get('id') };
+	        	}
+	        });
+	        activitiesArray = _.compact(activitiesArray);
+	        // Erste Leistung auswählen wenn ein Ordner/Auftrag und keine Leistung gesetzt ist, 
+	        // sonst "Bitte wählen" durch activityId = 0
+	        if (orderId != "0" && (!hasValue(activityId) || activityId == 0)) {
+	        	activityId = activitiesArray[0].value;
+	        }
+	        itemSelected = NO;
+	        activitiesArray = _.map(activitiesArray, function(item) {
+	        	if (item) {
+		            item.isSelected = (parseIntRadixTen(item.value) == parseIntRadixTen(activityId));
+		            if (item.isSelected) itemSelected = YES;
+		            return item;
+	        	}
+	        });
+	        if (!itemSelected) {
+	        	activitiesArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: YES } );
+	        }
+        }
+        
+        if (inDebug()) writeToLog('setActivities, activitiesArray.length=' + activitiesArray.length);
+        
+        // set selection arrays to start content binding process
+        if (typeof (DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            //TODO Beim folgenden Aufruf gibt es den Fehler
+            //window.onerror: Uncaught TypeError: Cannot set property 'selectedIndex' of null 
+            //M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
+            that.set('activities', activitiesArray);
+            DigiWebApp.ScholppBookingController.resetButtons();
+    	} else {
+            that.set('activities', activitiesArray);
+    	}
+    	that.saveSelection();
+		
+        return;
+    }
+
+    // Auswahl initialisieren. Falls es keine frühere Auswahl gibt, "Bitte wählen" anzeigen, 
+    // ansonsten den Buchen-Screen unangetastet lassen.
+    , initSelection: function() {
+       var that = this;
+
+       if (that.getSelectedOrder() == null)
+       {
+           if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+               M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+               M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+           }
+           that.set('orders', []);
+           that.set('positions', []);
+           that.set('activities', []);
+           that.setOrders(0, 0, 0, YES);
+       }
+    }
+
+    , resetSelection: function() {
+    	var that = this;
+    	try {
+        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
+        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
+        	}
+    		M.ViewManager.getView(that.getPageToUse(), 'order').resetSelection();
+    		M.ViewManager.getView(that.getPageToUse(), 'position').resetSelection();
+    		M.ViewManager.getView(that.getPageToUse(), 'activity').resetSelection();
+    		M.ViewManager.getView('bookingPage', 'orderButton').setValue(M.I18N.l('selectSomething'));
+    	} catch(e4) { 
+    		//trackError(e4);
+    	}
+    }
+
+    , isOrderSelected: function() {
+    	var that = this;
+    	var orderObj = that.getSelectedOrderItem(YES);
+        if (orderObj && orderObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+
+    , isPositionSelected: function() {
+    	var that = this;
+    	var posObj = that.getSelectedPositionItem(YES);
+        if (posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+
+    , isActivitySelected: function() {
+    	var that = this;
+    	var actObj = that.getSelectedActivityItem(YES);
+        if (actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+
+    , saveSelection: function() {
+    	var that = this;
+    	
+    	var uebernachtungskennzeichenScholppValue = null;
+    	var spesenkennzeichenScholppValue = null;
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+            uebernachtungskennzeichenScholppValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection();
+            spesenkennzeichenScholppValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'spesenkennzeichen').getSelection();
+    	}
+    	that.selections.uebernachtungskennzeichenScholpp = uebernachtungskennzeichenScholppValue;
+    	that.selections.spesenkennzeichenScholpp = spesenkennzeichenScholppValue;
+
+    	that.selections.order = that.getSelectedOrderItem();
+    	that.selections.position = that.getSelectedPositionItem();
+    	that.selections.activity = that.getSelectedActivityItem();
+
+        //if (!DigiWebApp.SelectionController.showHandOrderFirst) that.useSelections = YES;
+    }
+    
+    , getActivities: function(queryobj) {
+    	var activities;
+    	if (queryobj) {
+    		activities = DigiWebApp.Activity.find(queryobj);
+    	} else {
+    		activities = DigiWebApp.Activity.findSorted();
+    	}
+    	activities = _.map(activities, function(acti) {
+    		if (acti) { 
+		    	if(parseIntRadixTen(acti.get("positionId")) === 1) {
+		            // normale Tätigkeit
+		            return acti;
+		         } else {
+		            // Tätigkeit nur bei Arbeitsplan
+		            return null;
+		         }
+    		}
+    	});
+    	activities = _.compact(activities);
+    	return activities;
+    }
+
+    , getActivitiesFromWorkplan: function(workplan) {
+        var actIds = workplan.get('activityIds').split(',');
+        var activities = [];
+        if (actIds && actIds.length > 0) {
+        	var alleTaetigkeiten = DigiWebApp.Activity.find(); 
+            for (var i = 0; i < actIds.length; i++) {
+//                activities.push(_.first(DigiWebApp.Activity.find({ query: {
+//                    identifier: 'id', 
+//                    operator: '=', 
+//                    value: actIds[i] 
+//                }})));
+            	var taet = _.find(alleTaetigkeiten, function(t) {
+	                 return parseIntRadixTen(t.get("id")) === parseIntRadixTen(actIds[i])
+	            });
+            	if (taet) activities.push(taet);
+            }
+        }
+        if (parseIntRadixTen(workplan.get("workplanType")) === 1) {
+        	// only those activities which are bound to employee
+            activities = _.map(activities, function(act) {
+            	if ( typeof(act) === "undefined" ) {
+            		console.log("UNDEFINED ACTIVITY");
+            		return null;
+            	} else {
+        			var zugeordnet = NO;
+            		var allActivities = DigiWebApp.Activity.findSorted();
+            		_.each(allActivities, function(acti) {
+            			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
+            			if (act.get("id") === acti.get("id") && parseIntRadixTen(acti.get("positionId")) === 1) {
+            				zugeordnet = YES;
+            			}
+            		});
+        			if (zugeordnet) {
+        				return act;
+        			} else {
+        				return null;	
+        			}
+            	}
+            });
+        }
+        activities = _.compact(activities);
+        return activities;
+    }
+    
+    , getSelectedOrder: function() {
+    	var that = this;
+    	var orderId;
+    	var results = [];
+        var orderObj = that.getSelectedOrderItem(YES);
+        if (orderObj) {
+        	orderId = orderObj.value;
+        	results = _.filter(DigiWebApp.Order.find(), function(o) {
+        		return (o.get("id") == orderId);
+        	});
+        }
+    	return results.length > 0 ? results[0] : null; 
+    }
+    
+    , getSelectedOrderItem: function(returnObject) {
+    	var that = this;
+        return M.ViewManager.getView(that.getPageToUse(), 'order').getSelection(returnObject);
+    }
+    
+    , setSelectedOrder: function (order, canUseCurrentBooking) {
+    	var that = this;
+    	var orderId = 0;
+    	if (order && typeof(order) == "object") {
+    		orderId = order.get("id");
+    	}
+		if (order && that.getSelectedOrderItem() != orderId) {
+		    return that.setOrders(orderId, null, null, canUseCurrentBooking);
+		}
+    }
+    
+    , getSelectedPosition: function() {
+    	var that = this;
+    	var posId;
+    	var results = [];
+        var posObj = that.getSelectedPositionItem(YES);
+        if (posObj) {
+        	posId = posObj.value;
+        	results = _.filter(DigiWebApp.Position.find(), function(o) {
+        		return (o.get("id") == posId);
+        	});
+        }
+    	return results.length > 0 ? results[0] : null; 
+    }
+    
+    , getSelectedPositionItem: function(returnObject) {
+    	var that = this;
+        return M.ViewManager.getView(that.getPageToUse(), 'position').getSelection(returnObject);
+    }
+    
+    , setSelectedPosition: function(pos, canUseCurrentBooking) {
+    	var that = this;
+
+    	var posId = 0;
+    	var orderId = that.getSelectedOrderItem();
+    	var buttonLabel = M.I18N.l('selectSomething');
+    	if (pos && typeof(pos) == "object") {
+    		posId = pos.get("id");
+    		orderId = pos.get("orderId");
+    		if (posId != 0) buttonLabel = pos.get("name");
+    	}
+		
+		M.ViewManager.getView('bookingPage', 'orderButton').setValue(buttonLabel);
+
+		if (that.getSelectedOrderItem() != orderId) {
+			return that.setOrders(orderId, posId, null, canUseCurrentBooking);
+		}
+		if (pos && that.getSelectedPositionItem() != posId) {
+		    return that.setPositions(posId, canUseCurrentBooking);
+		}
+    }
+    
+    , getSelectedActivity: function() {
+    	var that = this;
+    	var actId;
+    	var results = [];
+    	var actObj = that.getSelectedActivityItem(YES);
+        if (actObj) {
+        	actId = actObj.value;
+        	results = _.filter(DigiWebApp.Activity.find(), function(o) {
+        		return (o.get("id") == actId);
+        	});
+        }
+    	return results.length > 0 ? results[0] : null; 
+    }
+    
+    , getSelectedActivityItem: function(returnObject) {
+    	var that = this;
+        return M.ViewManager.getView(that.getPageToUse(), 'activity').getSelection(returnObject);
+    }
+    
+    // Wird nirgends benutzt
+    //, setSelectedActivity: function(act) {
+    //	var that = this;
+
+    //	var actId = 0;
+    //	var posId = that.getSelectedPositionItem();
+    //	var orderId = that.getSelectedOrderItem();
+    //	if (act && typeof(act) == "object") {
+    //		actId = act.get("id");
+    //	}
+
+	//	if (that.getSelectedOrderItem() != orderId) {
+	//		return that.setOrders(orderId, posId, actId);
+	//	}
+	//	if (that.getSelectedPositionItem() != posId) {
+	//		return that.setPositions(posId, actId);
+	//	}
+	//	if (act && that.getSelectedActivityItem() != actId) {
+	//		return that.setActivities(YES, actId);
+	//	}
+    //}
+    
+    , getPageToUse: function() {
+    	var pageToUse = 'bookingPage';
+    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
+    		pageToUse = 'bookingPageWithIconsScholpp';
+    	}
+    	return pageToUse;
+    }
+
 });
 
 // ==========================================================================
@@ -25282,748 +26203,6 @@ DigiWebApp.SettingsController = M.Controller.extend({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// Controller: SelectionController
-// ==========================================================================
-// manuell var-checked
-DigiWebApp.SelectionController = M.Controller.extend({
-
-    // arrays for selection lists
-      orders: null
-    , positions: null
-    , activities: null
-    
-    , selections: {
-          order: null
-        , position: null
-        , activity: null
-        , uebernachtungskennzeichenScholpp: null
-        , spesenkennzeichenScholpp: null
-    }
-
-    // use selection that has been made by hand
-    , useSelections: NO
-
-    // show hand order at first position, only set to YES by HandOrderController
-    , showHandOrderFirst: NO
-
-    , updateNachUebertragung: false
-
-    , uebernachtungskennzeichenScholpp: null
-    
-    , spesenkennzeichenScholpp: null
-    
-    , setSelectionByPreviousSelection: function() {
-        var that = this;
-		
-        if (inDebug()) writeToLog('setSelectionByPreviousSelection entry');
-
-        var mySelection = JSON.parse(JSON.stringify(that.selections));
-        
-		this.setOrders(mySelection.order, mySelection.position, mySelection.activity, NO);
-        
-        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
-		if (DigiWebApp.SettingsController.featureAvailable('419')) {
-		    // TODO: Fehler in der folgenden Codezeile wenn die FS 419 aktiv ist:
-            // Exception TypeError: Object #<Object> has no method 'get'
-            var uebernachtungAuswahl = mySelection.get('uebernachtungAuswahl');
-            uebernachtungAuswahl = that.setScholppButtons(uebernachtungAuswahl, YES);
-            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
-		}
-
-        that.updateNachUebertragung = false;
-      }
-
-    , setSelectionWithCurrentHandOrderFirst: function() {
-        var that = this;
-
-        if (inDebug()) writeToLog('setSelectionWithCurrentHandOrderFirst entry');
-
-        this.setOrders(0, 0, 0, YES);
-
-        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
-        if (DigiWebApp.SettingsController.featureAvailable('419')) {
-            var uebernachtungAuswahl = that.setScholppButtons(null, NO);
-            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
-		}
-    	
-    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-        	DigiWebApp.ScholppBookingController.resetButtons();    		
-    	}
-
-        that.updateNachUebertragung = false;
-    }
-    
-    , setSelectionByCurrentBooking: function() {
-        var that = this;
-
-        if (inDebug()) writeToLog('setSelectionByCurrentBooking entry');
-
-        var booking = DigiWebApp.BookingController.currentBooking;
-        
-        // get the ids from the current booking
-        var orderId = (booking.get('orderId') == "0" ? 0 : booking.get('orderId')) || booking.get('handOrderId'); // we need to check handOrders also
-        var positionId = booking.get('positionId');
-        var activityId = booking.get('activityId');
-        
-        that.setOrders(orderId, positionId, activityId, YES);
-
-        // Freischaltung 419 "Scholpp-Spesen und Scholpp-Kartendienst-Message"
-        if (DigiWebApp.SettingsController.featureAvailable('419')) {
-            var uebernachtungAuswahl = booking.get('uebernachtungAuswahl');
-            uebernachtungAuswahl = that.setScholppButtons(uebernachtungAuswahl, YES, YES);
-            that.setUebernachtungskennzeichenScholpp(uebernachtungAuswahl);
-		}
-
-        that.updateNachUebertragung = false;
-    }
-    
-    , setUebernachtungskennzeichenScholpp: function(uebernachtungAuswahl) {
-        var that = this;
-        // Siehe DB-Tabelle SonderbuchungseigenschaftVorgabe: 6 = "- -"
-    	if (typeof(uebernachtungAuswahl) == "undefined") uebernachtungAuswahl = 6;
-        /**
-         * Scholpp-Spesen: Übernachtungskennzeichen 
-         */
-        var itemSelected = NO;
-        var uebernachtungskennzeichenScholppArray = _.map(that.uebernachtungskennzeichenScholpp, function(ueK) {
-        	if (typeof(ueK) === "undefined") {
-        		console.log("UNDEFINED uebernachtungskennzeichenScholpp");
-        	} else {        	
-        		var obj = { label: ueK.label, value: ueK.value };
-        		if (parseIntRadixTen(obj.value) == uebernachtungAuswahl) {
-        			obj.isSelected = YES;
-        			itemSelected = YES;
-        		}
-                return obj;
-        	}
-        });
-        uebernachtungskennzeichenScholppArray = _.compact(uebernachtungskennzeichenScholppArray);
-        that.set('uebernachtungskennzeichenScholpp', uebernachtungskennzeichenScholppArray);
-        //TODO: Würde man den Aufruf dieser Methode vor setOrders() machen, dann wäre das folgende
-        // saveSelection() überflüssig, denn es wird auch in setActivities() aufgerufen:
-        that.saveSelection();
-    }
-    
-    , setScholppButtons: function (uebernachtungAuswahl, withSetArbeitsende, withSetToSix) {
-    	var that = this;
-
-    	if (typeof(withSetArbeitsende) == "undefined") withSetArbeitsende = true;
-    	if (typeof(withSetToSix) == "undefined") withSetToSix = true;
-    	
-    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-    	    DigiWebApp.ScholppBookingController.resetButtons();
-
-    		var activitySelection = that.getSelectedActivityItem(YES);
-    		if (!DigiWebApp.BookingController.currentBooking) activitySelection = null;
-    		if (typeof(activitySelection) !== "undefined" && activitySelection != null) {
-	    		var activitySelected = _.find(DigiWebApp.Activity.find(), function(a) {
-			         return (parseIntRadixTen(a.get("id")) === activitySelection.value);
-			    });
-    		    //var activitySelected = DigiWebApp.Activity.find(
-	    		//{query:{identifier: 'id', operator: '=', value: activitySelection.value}})[0];
-	    		if (!activitySelected) {
-	    			DigiWebApp.ScholppBookingController.selectArbeitsende();
-	    		} else {
-		    		var activityName = activitySelected.get("name");
-		    		if (activityName.indexOf("Reisezeit") >= 0 || activityName.indexOf("Fahrzeit") >= 0) {
-		    			DigiWebApp.ScholppBookingController.selectFahrzeit();
-		    		} else if (activityName.indexOf("Arbeitszeit") >= 0) {
-		    			if (withSetToSix) uebernachtungAuswahl = "6";
-		    			DigiWebApp.ScholppBookingController.selectArbeitszeit();
-		    		} else if (activityName.indexOf("Unterbrechung") >= 0) {
-		    			if (withSetToSix) uebernachtungAuswahl = "6";
-		    			DigiWebApp.ScholppBookingController.selectUnterbrechung();
-		    		} else if (activityName.indexOf("Pause") >= 0) {
-		    			if (withSetToSix) uebernachtungAuswahl = "6";
-		    			DigiWebApp.ScholppBookingController.selectPause();
-		    		} else {
-		    			if (withSetToSix) uebernachtungAuswahl = "6";
-		    			if (withSetArbeitsende) DigiWebApp.ScholppBookingController.selectArbeitsende();
-		    		}
-	    		}
-    		} else {
-    			if (withSetToSix) uebernachtungAuswahl = "6";
-    			if (withSetArbeitsende) DigiWebApp.ScholppBookingController.selectArbeitsende();
-    		}
-    	}
-        return uebernachtungAuswahl;
-    }
-
-    , setOrders: function(orderId, positionId, activityId, canUseCurrentBooking) {
-    	var that = this;
-
-    	if (inDebug()) writeToLog('setOrders(orderId=' + orderId + ', positionId=' + positionId
-            + ', activityId=' + activityId + ", canUseCurrentBooking=" + canUseCurrentBooking);
-
-    	if (orderId && orderId == that.getSelectedOrderItem()
-                && that.updateNachUebertragung === false
-        ) {
-	        return that.updatePositions(positionId, activityId, canUseCurrentBooking);
-	    }
-        if (!orderId && orderId != 0) {
-            orderId = that.getSelectedOrderItem();
-        }
-        if (!orderId) {
-            orderId = 0;
-        }
-
-        // Handaufträge müssen auch geprüft werden
-        var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
-
-        // Ohne diese Freischaltungen wird nur der Positionen-Webservice benutzt, der keine
-        // Ordner ohne Aufträge liefert - in dem Fall können wir uns die langsame Filterung
-        // sparen.
-        // Freischaltung 429: mehrstufige Auftragsauswahl
-        // Freischaltung 430: Handpositionen
-        if (DigiWebApp.SettingsController.featureAvailable("429")
-			|| DigiWebApp.SettingsController.featureAvailable("430")
-        ) {
-            // Ordner filtern: nur solche mit auswählbaren Elementen
-            orders = _.filter(orders, function(o) {
-                return o.hasPositions(YES, NO) || o.name == DigiWebApp.HandOrder.name;
-            });
-        }
-
-          // orderId auf einen auswählbaren Wert zurücksetzen
-    	if (!_.contains(_.pluck(_.pluck(orders, 'record'), 'id'), orderId)) {
-    		orderId = 0;
-    	}
-
-        var orderArray = [];
-        if (orders.length == 0) {
-        	orderArray.push( { label: M.I18N.l('noData'), value: '0' } );
-        } else {
-	        var itemSelected = NO;
-	        orderArray = _.map(orders, function(obj) {
-	        	if (obj) {
-		            return { label: obj.get('name'), value: obj.get('id') };
-	        	}
-	        });
-	        orderArray = _.compact(orderArray);
-	        if (orderArray.length == 1) {
-		        // Wenn es nur einen Ordner gibt, dann diesen automatisch auswählen
-	        	orderId = orderArray[0].value;
-	        } else {
-	        	// Freischaltung 416 "Tätigkeits-Icons auf dem Buchen-Screen (Scholpp only)"
-		        if (DigiWebApp.SettingsController.featureAvailable('416')) {
-		        	// Scholpp-spezifisch: Eintrag "Auftrag" hinzufügen
-		        	orderArray.push( { label: M.I18N.l('order'), value: '0', isSelected: NO } );
-		        } else {
-			        // Eintrag "Bitte wählen" hinzufügen
-		        	orderArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: NO } );
-		        }
-	        }
-	        orderArray = _.map(orderArray, function(item) {
-	        	if (item) {
-		            item.isSelected = (item.value == orderId);
-		            return item;
-	        	}
-	        });
-        }
-        
-        if (inDebug()) writeToLog('setOrders, orderArray.length=' + orderArray.length);
-        
-        // set selection arrays to start content binding process
-        that.set('orders', orderArray);
-        
-        return that.updatePositions(positionId, activityId, canUseCurrentBooking);
-    }
-
-    , updatePositions: function(positionId, activityId, canUseCurrentBooking) {
-    	var that = this;
-    	
-    	var mySelectionObj = that.getSelectedOrderItem(YES);
-        var isHandauftrag = NO;
-    	if (hasValue(mySelectionObj)) {
-    	    isHandauftrag = (mySelectionObj.label == mySelectionObj.value || isGUID(mySelectionObj.value));
-    	}
-
-        DigiWebApp.BookingPage.doHideShowPositionCombobox(!isHandauftrag);
-		
-		if (!isHandauftrag) {
-		    return that.setPositions(positionId, activityId, canUseCurrentBooking);
-		} else {
-			// Sicherstellen dass beim Handauftrag nicht parallel ein Auftrag gesetzt ist
-		    that.setSelectedPosition(0, canUseCurrentBooking);
-			
-			M.ViewManager.getView('bookingPage', 'orderButton').setValue(mySelectionObj.label);
-			return that.setActivities(YES, canUseCurrentBooking, activityId);
-		}
-    }
-
-    , setPositions: function(positionId, activityId, canUseCurrentBooking) {
-    	var that = this;
-
-    	if (inDebug()) writeToLog('setPositions(positionId=' + positionId
-            + ', activityId=' + activityId + ", canUseCurrentBooking=" + canUseCurrentBooking);
-
-    	if (hasValue(positionId) && positionId == that.getSelectedPositionItem()
-                 && that.updateNachUebertragung === false
-        ) {
-            // alle "verknüpften Elemente" ebenfalls aktualisieren
-            that.setSelectedPosition(that.getSelectedPosition(), canUseCurrentBooking);
-            return that.setActivities(YES, canUseCurrentBooking, activityId);
-        }
-        if (!positionId && positionId != 0) {
-            positionId = that.getSelectedPositionItem();
-        }
-        if (!positionId) {
-            positionId = 0;
-        }
-
-        var orderId = that.getSelectedOrderItem();
-        if (!orderId) {
-            return;
-        }
-    	
-        if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-    		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
-    	}
-        
-    	// Freischaltung 406 "Auftragsinfo"
-        if (DigiWebApp.SettingsController.featureAvailable('406') && DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-            // TODO: Fehler in der folgenden Zeile auf iPhone oder xCover 3: 
-            // window.onerror: Uncaught TypeError: Cannot call method 'getSelection' of null
-            // Kann es sein, dass die orderInfoPage noch nicht geladen ist?
-			if (typeof(M.ViewManager.getView('orderInfoPage', 'order').getSelection()) === "undefined") {
-				DigiWebApp.OrderInfoController.init();
-			}
-			M.ViewManager.getView('orderInfoPage', 'order').setSelection(orderId);
-			DigiWebApp.OrderInfoController.setPositions();
-			DigiWebApp.OrderInfoController.setItem();
-		}
-
-        if (typeof(DigiWebApp.HandOrder.getById(orderId)) != "undefined") {
-            return that.setActivities(YES, canUseCurrentBooking, activityId);
-        }
-        var positions = DigiWebApp.Position.getByVaterId(orderId);
-
-        // positionId auf einen auswählbaren Wert zurücksetzen
-    	if (!_.contains(_.pluck(_.pluck(positions, 'record'), 'id'), positionId)) {
-    		positionId = 0;
-    	}
-
-    	var positionsArray = [];
-        if (positions.length == 0) {
-        	positionsArray.push( { label: M.I18N.l('selectSomething'), value: '0' } );
-        } else {
-	        positionsArray = _.map(positions, function(obj) {
-	        	if (obj) {
-		            return { label: obj.get('name'), value: obj.get('id') };
-	        	}
-	        });
-	        positionsArray = _.compact(positionsArray);
-	        
-	        // Falls nichts gesetzt dann ersten Auftrag in der Liste automatisch auswählen
-	        if (!hasValue(positionId) || positionId == 0) {
-	        	positionId = positionsArray[0].value;
-	        }
-        }
-        
-    	positionsArray = _.map(positionsArray, function(item) {
-        	if (item) {
-	            item.isSelected = (parseIntRadixTen(item.value) == parseIntRadixTen(positionId));
-	            return item;
-        	}
-        });
-        
-        if (inDebug()) writeToLog('setPositions, positionsArray.length=' + positionsArray.length);
-
-        that.set('positions', positionsArray);
-        
-        // alle "verknüpften Elemente" ebenfalls aktualisieren
-        that.setSelectedPosition(that.getSelectedPosition(), canUseCurrentBooking);
-
-        return that.setActivities(YES, canUseCurrentBooking, activityId);
-    }
-
-    , setActivities: function(checkForWorkPlan, canUseCurrentBooking, activityId) {
-    	var that = this;
-    	
-    	if (activityId && activityId == that.getSelectedActivityItem()
-                && that.updateNachUebertragung === false
-        ) {
-	        return;
-	    }
-
-    	if (inDebug()) writeToLog('setActivities(checkForWorkPlan=' + checkForWorkPlan
-            + ', canUseCurrentBooking=' + canUseCurrentBooking + ', activityId=' + activityId);
-
-    	var posId = that.getSelectedPositionItem();
-    	var orderId = that.getSelectedOrderItem();
-    	var activities = [];
-    	if (posId) {
-
-    	    // Freischaltung 406 "Auftragsinfo"
-			if (DigiWebApp.SettingsController.featureAvailable('406') 
-			 && DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-				if (typeof(M.ViewManager.getView('orderInfoPage', 'position').getSelection()) === "undefined") {
-					DigiWebApp.OrderInfoController.init();
-				}
-				M.ViewManager.getView('orderInfoPage', 'position').setSelection(posId);
-				DigiWebApp.OrderInfoController.setItem();
-			}
-	
-	        var workPlans = []; 
-	        _.each(DigiWebApp.WorkPlan.find(),function(wp){
-	        	if (wp.get("id") == posId) workPlans.push(wp);
-	        });
-	
-	        // Wenn ein Arbeitsplan exisitiert dann nur die Leistungen verwenden die im Arbeitsplan sind.
-	        if (workPlans.length === 1) {
-	            activities = DigiWebApp.SelectionController.getActivitiesFromWorkplan(workPlans[0]);
-	        } else {
-	            activities = DigiWebApp.SelectionController.getActivities();
-	        }
-        } else {
-            activities = DigiWebApp.SelectionController.getActivities();
-        }
-        // Bei Änderungen in der Buchungs-Selektion wird versucht die aktuell gebuchte Leistung 
-        // ausgewählt zu lassen, es sei denn diese Leistung ist in der aktuellen Selektion nicht 
-        // enthalten. Bei erneuter Selektionsänderung wird erneut versucht die aktuell gebuchte 
-    	// Leistung zu setzen.
-        if (canUseCurrentBooking
-            && typeof(DigiWebApp.BookingController.currentBooking) !== "undefined" 
-		    && DigiWebApp.BookingController.currentBooking  !== null
-		    && !activityId 
-		    && activityId != 0
-		) { 
-        	activityId = DigiWebApp.BookingController.currentBooking.get('activityId');
-    	}
-        
-        // Vorher ausgewählte Leistung übernehmen sofern keine explizit gesetzt werden soll.
-        if (!activityId && activityId != 0) {
-            activityId = that.getSelectedActivityItem();
-        }
-        
-        // activityId auf einen auswählbaren Wert zurücksetzen
-    	if (!activityId || !_.contains(_.pluck(_.pluck(activities, 'record'), 'id'), activityId)) {
-    		activityId = 0;
-    	}
-
-        var activitiesArray = [];
-        if (activities.length == 0) {
-        	activitiesArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: YES } );
-        } else {
-	        var itemSelected = NO;
-	        activitiesArray = _.map(activities, function(obj) {
-	        	if (obj) {
-		            return { label: obj.get('name'), value: obj.get('id') };
-	        	}
-	        });
-	        activitiesArray = _.compact(activitiesArray);
-	        // Erste Leistung auswählen wenn ein Ordner/Auftrag und keine Leistung gesetzt ist, 
-	        // sonst "Bitte wählen" durch activityId = 0
-	        if (orderId != "0" && (!hasValue(activityId) || activityId == 0)) {
-	        	activityId = activitiesArray[0].value;
-	        }
-	        itemSelected = NO;
-	        activitiesArray = _.map(activitiesArray, function(item) {
-	        	if (item) {
-		            item.isSelected = (parseIntRadixTen(item.value) == parseIntRadixTen(activityId));
-		            if (item.isSelected) itemSelected = YES;
-		            return item;
-	        	}
-	        });
-	        if (!itemSelected) {
-	        	activitiesArray.push( { label: M.I18N.l('selectSomething'), value: '0', isSelected: YES } );
-	        }
-        }
-        
-        if (inDebug()) writeToLog('setActivities, activitiesArray.length=' + activitiesArray.length);
-        
-        // set selection arrays to start content binding process
-        if (typeof (DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-            //TODO Beim folgenden Aufruf gibt es den Fehler
-            //window.onerror: Uncaught TypeError: Cannot set property 'selectedIndex' of null 
-            //M.ViewManager.getView('bookingPageWithIconsScholpp', 'activity').resetSelection();
-            that.set('activities', activitiesArray);
-            DigiWebApp.ScholppBookingController.resetButtons();
-    	} else {
-            that.set('activities', activitiesArray);
-    	}
-    	that.saveSelection();
-		
-        return;
-    }
-
-    // Auswahl initialisieren. Falls es keine frühere Auswahl gibt, "Bitte wählen" anzeigen, 
-    // ansonsten den Buchen-Screen unangetastet lassen.
-    , initSelection: function() {
-       var that = this;
-
-       if (that.getSelectedOrder() == null)
-       {
-           if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-               M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-               M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
-           }
-           that.set('orders', []);
-           that.set('positions', []);
-           that.set('activities', []);
-           that.setOrders(0, 0, 0, YES);
-       }
-    }
-
-    , resetSelection: function() {
-    	var that = this;
-    	try {
-        	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').resetSelection();
-        		M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').setSelection('6');
-        	}
-    		M.ViewManager.getView(that.getPageToUse(), 'order').resetSelection();
-    		M.ViewManager.getView(that.getPageToUse(), 'position').resetSelection();
-    		M.ViewManager.getView(that.getPageToUse(), 'activity').resetSelection();
-    		M.ViewManager.getView('bookingPage', 'orderButton').setValue(M.I18N.l('selectSomething'));
-    	} catch(e4) { 
-    		//trackError(e4);
-    	}
-    }
-
-    , isOrderSelected: function() {
-    	var that = this;
-    	var orderObj = that.getSelectedOrderItem(YES);
-        if (orderObj && orderObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-
-    , isPositionSelected: function() {
-    	var that = this;
-    	var posObj = that.getSelectedPositionItem(YES);
-        if (posObj && posObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-
-    , isActivitySelected: function() {
-    	var that = this;
-    	var actObj = that.getSelectedActivityItem(YES);
-        if (actObj && actObj.value != "0") { // 'Bitte wählen' is not allowed to be chosen
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-
-    , saveSelection: function() {
-    	var that = this;
-    	
-    	var uebernachtungskennzeichenScholppValue = null;
-    	var spesenkennzeichenScholppValue = null;
-    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-            uebernachtungskennzeichenScholppValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'uebernachtungskennzeichen').getSelection();
-            spesenkennzeichenScholppValue = M.ViewManager.getView('bookingPageWithIconsScholpp', 'spesenkennzeichen').getSelection();
-    	}
-    	that.selections.uebernachtungskennzeichenScholpp = uebernachtungskennzeichenScholppValue;
-    	that.selections.spesenkennzeichenScholpp = spesenkennzeichenScholppValue;
-
-    	that.selections.order = that.getSelectedOrderItem();
-    	that.selections.position = that.getSelectedPositionItem();
-    	that.selections.activity = that.getSelectedActivityItem();
-
-        //if (!DigiWebApp.SelectionController.showHandOrderFirst) that.useSelections = YES;
-    }
-    
-    , getActivities: function(queryobj) {
-    	var activities;
-    	if (queryobj) {
-    		activities = DigiWebApp.Activity.find(queryobj);
-    	} else {
-    		activities = DigiWebApp.Activity.findSorted();
-    	}
-    	activities = _.map(activities, function(acti) {
-    		if (acti) { 
-		    	if(parseIntRadixTen(acti.get("positionId")) === 1) {
-		            // normale Tätigkeit
-		            return acti;
-		         } else {
-		            // Tätigkeit nur bei Arbeitsplan
-		            return null;
-		         }
-    		}
-    	});
-    	activities = _.compact(activities);
-    	return activities;
-    }
-
-    , getActivitiesFromWorkplan: function(workplan) {
-        var actIds = workplan.get('activityIds').split(',');
-        var activities = [];
-        if (actIds && actIds.length > 0) {
-        	var alleTaetigkeiten = DigiWebApp.Activity.find(); 
-            for (var i = 0; i < actIds.length; i++) {
-//                activities.push(_.first(DigiWebApp.Activity.find({ query: {
-//                    identifier: 'id', 
-//                    operator: '=', 
-//                    value: actIds[i] 
-//                }})));
-            	var taet = _.find(alleTaetigkeiten, function(t) {
-	                 return parseIntRadixTen(t.get("id")) === parseIntRadixTen(actIds[i])
-	            });
-            	if (taet) activities.push(taet);
-            }
-        }
-        if (parseIntRadixTen(workplan.get("workplanType")) === 1) {
-        	// only those activities which are bound to employee
-            activities = _.map(activities, function(act) {
-            	if ( typeof(act) === "undefined" ) {
-            		console.log("UNDEFINED ACTIVITY");
-            		return null;
-            	} else {
-        			var zugeordnet = NO;
-            		var allActivities = DigiWebApp.Activity.findSorted();
-            		_.each(allActivities, function(acti) {
-            			// herausfinden, ob diese Tätigkeit dem Mitarbeiter zugeordnet ist.
-            			if (act.get("id") === acti.get("id") && parseIntRadixTen(acti.get("positionId")) === 1) {
-            				zugeordnet = YES;
-            			}
-            		});
-        			if (zugeordnet) {
-        				return act;
-        			} else {
-        				return null;	
-        			}
-            	}
-            });
-        }
-        activities = _.compact(activities);
-        return activities;
-    }
-    
-    , getSelectedOrder: function() {
-    	var that = this;
-    	var orderId;
-    	var results = [];
-        var orderObj = that.getSelectedOrderItem(YES);
-        if (orderObj) {
-        	orderId = orderObj.value;
-        	results = _.filter(DigiWebApp.Order.find(), function(o) {
-        		return (o.get("id") == orderId);
-        	});
-        }
-    	return results.length > 0 ? results[0] : null; 
-    }
-    
-    , getSelectedOrderItem: function(returnObject) {
-    	var that = this;
-        return M.ViewManager.getView(that.getPageToUse(), 'order').getSelection(returnObject);
-    }
-    
-    , setSelectedOrder: function (order, canUseCurrentBooking) {
-    	var that = this;
-    	var orderId = 0;
-    	if (order && typeof(order) == "object") {
-    		orderId = order.get("id");
-    	}
-		if (order && that.getSelectedOrderItem() != orderId) {
-		    return that.setOrders(orderId, null, null, canUseCurrentBooking);
-		}
-    }
-    
-    , getSelectedPosition: function() {
-    	var that = this;
-    	var posId;
-    	var results = [];
-        var posObj = that.getSelectedPositionItem(YES);
-        if (posObj) {
-        	posId = posObj.value;
-        	results = _.filter(DigiWebApp.Position.find(), function(o) {
-        		return (o.get("id") == posId);
-        	});
-        }
-    	return results.length > 0 ? results[0] : null; 
-    }
-    
-    , getSelectedPositionItem: function(returnObject) {
-    	var that = this;
-        return M.ViewManager.getView(that.getPageToUse(), 'position').getSelection(returnObject);
-    }
-    
-    , setSelectedPosition: function(pos, canUseCurrentBooking) {
-    	var that = this;
-
-    	var posId = 0;
-    	var orderId = that.getSelectedOrderItem();
-    	var buttonLabel = M.I18N.l('selectSomething');
-    	if (pos && typeof(pos) == "object") {
-    		posId = pos.get("id");
-    		orderId = pos.get("orderId");
-    		if (posId != 0) buttonLabel = pos.get("name");
-    	}
-		
-		M.ViewManager.getView('bookingPage', 'orderButton').setValue(buttonLabel);
-
-		if (that.getSelectedOrderItem() != orderId) {
-			return that.setOrders(orderId, posId, null, canUseCurrentBooking);
-		}
-		if (pos && that.getSelectedPositionItem() != posId) {
-		    return that.setPositions(posId, canUseCurrentBooking);
-		}
-    }
-    
-    , getSelectedActivity: function() {
-    	var that = this;
-    	var actId;
-    	var results = [];
-    	var actObj = that.getSelectedActivityItem(YES);
-        if (actObj) {
-        	actId = actObj.value;
-        	results = _.filter(DigiWebApp.Activity.find(), function(o) {
-        		return (o.get("id") == actId);
-        	});
-        }
-    	return results.length > 0 ? results[0] : null; 
-    }
-    
-    , getSelectedActivityItem: function(returnObject) {
-    	var that = this;
-        return M.ViewManager.getView(that.getPageToUse(), 'activity').getSelection(returnObject);
-    }
-    
-    // Wird nirgends benutzt
-    //, setSelectedActivity: function(act) {
-    //	var that = this;
-
-    //	var actId = 0;
-    //	var posId = that.getSelectedPositionItem();
-    //	var orderId = that.getSelectedOrderItem();
-    //	if (act && typeof(act) == "object") {
-    //		actId = act.get("id");
-    //	}
-
-	//	if (that.getSelectedOrderItem() != orderId) {
-	//		return that.setOrders(orderId, posId, actId);
-	//	}
-	//	if (that.getSelectedPositionItem() != posId) {
-	//		return that.setPositions(posId, actId);
-	//	}
-	//	if (act && that.getSelectedActivityItem() != actId) {
-	//		return that.setActivities(YES, actId);
-	//	}
-    //}
-    
-    , getPageToUse: function() {
-    	var pageToUse = 'bookingPage';
-    	if (typeof(DigiWebAppOrdinaryDesign.bookingPageWithIconsScholpp) !== "undefined") {
-    		pageToUse = 'bookingPageWithIconsScholpp';
-    	}
-    	return pageToUse;
-    }
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // Controller: StudieChecklisteController
 // ==========================================================================
 // manuell var-checked
@@ -26049,185 +26228,6 @@ DigiWebApp.StudieChecklisteController = M.Controller.extend({
 
     }
 
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// Controller: RoteAmpelController
-// ==========================================================================
-// manuell var-checked
-
-DigiWebApp.RoteAmpelController = M.Controller.extend({
-
-	// arrays for selection lists
-      orders: null
-    , positions: null
-    
-    , activeOrder: null
-    , activePosition: null
-
-    , data: null
-
-	, init: function() {
-		DigiWebApp.RoteAmpelController.set('activeOrder', null);
-		DigiWebApp.RoteAmpelController.set('activePosition', null);
-
-        // we need to check handOrders also
-		var orders = DigiWebApp.HandOrder.findSorted().concat(DigiWebApp.Order.findSorted());
-        var positions = DigiWebApp.Position.findSorted();
-        
-        var itemSelected = NO;
-        var orderArray;
-        var positionArray;
-        if (!DigiWebApp.SettingsController.getSetting("auftragsDetailsKoppeln")) {
-	        orderArray = _.map(orders, function(order) {
-	        	if (!(order)) {
-		            return null;
-		        }
-	            var obj =  { label: order.get('name'), value: order.get('id') };
-	            if ( DigiWebApp.BookingController.currentBooking !== null ) {
-	            	if (    (obj.value === DigiWebApp.BookingController.currentBooking.get('orderId'))
-	            		 || (obj.value === DigiWebApp.BookingController.currentBooking.get('handOrderId'))
-	            	   )
-	            	{
-	            		obj.isSelected = YES;
-	            		itemSelected = YES;
-	            		DigiWebApp.RoteAmpelController.set('activeOrder', [order]);
-	            	}
-	            }
-	            return obj;
-	        });
-	        orderArray = _.compact(orderArray);
-	        // "Bitte wählen" zur Auswahlliste hinzufügen
-	        if (itemSelected === NO) {
-	            orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
-	        }
-	        
-	        itemSelected = NO;
-	        positionArray = _.map(positions, function(pos) {
-	        	if (!(pos)) {
-		            return null;
-		        }
-	        	if (DigiWebApp.RoteAmpelController.activeOrder !== null) {
-	        		if (pos.get('orderId') !== DigiWebApp.RoteAmpelController.activeOrder[0].get('id')) {
-	        			return null;
-	        		}
-	        	} else {
-	        		return null;
-	        	}
-	            var obj = { label: pos.get('name'), value: pos.get('id') };
-	           	if ( DigiWebApp.BookingController.currentBooking !== null ) {
-	            	if (obj.value === DigiWebApp.BookingController.currentBooking.get('positionId')) {
-	            		obj.isSelected = YES;
-	            		itemSelected = YES;
-	            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
-	            	}
-	            }
-	        	return obj;
-	        });
-	        positionArray = _.compact(positionArray);
-	        // "Bitte wählen" zur Auswahlliste hinzufügen
-	        if (itemSelected === NO) {
-	            positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
-	        }
-        } else {
-	        orderArray = _.map(orders, function(order) {
-	        	if (!(order)) {
-		            return null;
-		        }
-	            var obj =  { label: order.get('name'), value: order.get('id') };
-            	if (obj.value === M.ViewManager.getView('bookingPage', 'order').getSelection()) {
-            		obj.isSelected = YES;
-            		itemSelected = YES;
-            		DigiWebApp.RoteAmpelController.set('activeOrder', [order]);
-            	}
-	            return obj;
-	        });
-	        orderArray = _.compact(orderArray);
-	        // "Bitte wählen" zur Auswahlliste hinzufügen
-	        if (itemSelected === NO) {
-	            orderArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
-	        }
-	        
-	        itemSelected = NO;
-	        positionArray = _.map(positions, function(pos) {
-	        	if (!(pos)) {
-		            return null;
-		        }
-	        	if (DigiWebApp.RoteAmpelController.activeOrder !== null) {
-	        		if (pos.get('orderId') !== DigiWebApp.RoteAmpelController.activeOrder[0].get('id')) {
-	        			return null;
-	        		}
-	        	} else {
-	        		return null;
-	        	}
-	            var obj = { label: pos.get('name'), value: pos.get('id') };
-            	if (obj.value === M.ViewManager.getView('bookingPage', 'position').getSelection()) {
-            		obj.isSelected = YES;
-            		itemSelected = YES;
-            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
-            	}
-	        	return obj;
-	        });
-	        positionArray = _.compact(positionArray);
-	        // push "Bitte wählen Option"
-	        if (itemSelected === NO) {
-	            positionArray.push({label: M.I18N.l('selectSomething'), value: '0', isSelected:!itemSelected});
-	        }
-        }
-
-        // set selection arrays to start content binding process
-        this.set('orders', orderArray);
-        this.set('positions', positionArray);
-        
-        // Bugfix 2108: Rename in order to be consistent with DSO
-        if (DigiWebApp.SettingsController.getSetting('DTC6aktiv')) {
-  		  DigiWebApp.ApplicationController.dtc6AktivRenameHelper(
-              DigiWebApp.RoteAmpelPage.content.order.id, M.I18N.l('dtc6Ordner'));
-  		  DigiWebApp.ApplicationController.dtc6AktivRenameHelper(
-              DigiWebApp.RoteAmpelPage.content.position.id, M.I18N.l('dtc6Auftrag'));
-        }
-
-        // Specific height of input field
-   		M.ViewManager.getView('roteAmpelPage', 'dataInput').setCssProperty("height", "100px");
-	}
-
-    , setPositions: function() {
-        var orderId = M.ViewManager.getView('roteAmpelPage', 'order').getSelection(YES).value;
-        if (!orderId) {
-            return;
-        }
-        var positions = DigiWebApp.Position.findSorted();
-
-        var i = 0;
-        positions = _.map(positions, function(pos) {
-        	if (!(pos)) {
-	            return null;
-	        }
-            if (parseIntRadixTen(pos.get('orderId')) === parseIntRadixTen(orderId)) {
-                var obj = { label: pos.get('name'), value: pos.get('id') };
-                if (i === 0) {
-                    obj.isSelected = YES;
-            		DigiWebApp.RoteAmpelController.set('activePosition', [pos]);
-                }
-                i += 1;
-                return obj;
-            }
-            return null;
-        });
-        positions = _.compact(positions);/* remove falsy values from positions with _.compact() */
-
-        if (positions.length < 1) {
-            positions.push({label: M.I18N.l('noData'), value: '0'});
-            DigiWebApp.RoteAmpelController.set('activePosition', null);
-        }
-
-        M.ViewManager.getView('roteAmpelPage', 'position').resetSelection();
-        this.set('positions', positions);
-    }
 });
 
 // ==========================================================================
@@ -36470,137 +36470,6 @@ DigiWebApp.OrderInfoPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: OrderListTemplateView
-// ==========================================================================
-
-DigiWebApp.OrderListTemplateView = M.ListItemView.design({
-
-      isSelectable: NO
-
-    , childViews: 'icon label'
-    	
-    , cssClass: 'orderListEntry'
-
-    , events: {
-        tap: {
-            target: DigiWebApp.OrderListController,
-            action: 'itemSelected'
-        }
-    }
-
-    , icon: M.ImageView.design({
-    	  cssClass: 'unselectable'
-        , computedValue: {
-            valuePattern: '<%= icon %>'
-            , operation: function(v) {
-                return 'theme/images/' + v;
-            }
-        }
-    })
-
-    , label: M.LabelView.design({
-    	  cssClass: 'unselectable'
-        , computedValue: {
-	          valuePattern: '<%= label %>'
-	        , operation: function(v) {
-//    			if (v == M.I18N.l('diesenOrdnerVerwenden')) {
-//    				console.log(v);
-//    			}
-	            return v;
-	        }
-	    }
-    })
-
-});
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: OrderListPage
-// ==========================================================================
-
-m_require('app/views/OrderListTemplateView.js');
-
-DigiWebApp.OrderListPage = M.PageView.design({
-
-    childViews: 'header content'
-
-    , cssClass: 'orderListPage unselectable'
-
-    , events: {
-		  pagebeforeshow: {
-            //target: DigiWebApp.DashboardController,
-            //action: 'init'
-			action: function() {
-				//console.log("DigiWebApp.OrderListPage.pagebeforeshow");
-			}
-        }
-        , pageshow: {
-        	action: function() {
-				//console.log("DigiWebApp.OrderListPage.pageshow");
-        	}
-        }
-    }
-    
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title newButton'
-        , cssClass: 'header unselectable'
-        , isFixed: YES
-        , title: M.LabelView.design({
-              value: M.I18N.l('order')
-            , anchorLocation: M.CENTER
-        })
-        , backButton: M.ButtonView.design({
-            value: M.I18N.l('back')
-          , icon: 'arrow-l'
-          , anchorLocation: M.LEFT
-          , events: {
-              tap: {
-                  //  target: DigiWebApp.NavigationController
-                  //, action: 'backToBautagebuchZeitenListePageTransition'
-      			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e8){} 
-      				DigiWebApp.OrderListController.errorHandler();
-      			}
-              }
-          }
-        })
-        , newButton: M.ButtonView.design({
-            value: M.I18N.l('neu')
-          , icon: 'new'
-          , anchorLocation: M.RIGHT
-          , cssClass: 'green_background'
-          , events: {
-              tap: {
-	              target: DigiWebApp.OrderListController
-	            , action: 'toHandOrderPage'
-              }
-          }
-      })
-    })
-
-    , content: M.ScrollView.design({
-
-        childViews: 'list'
-
-        , list: M.ListView.design({
-            contentBinding: {
-                target: DigiWebApp.OrderListController,
-                property: 'items'
-            }
-            , listItemTemplateView: DigiWebApp.OrderListTemplateView
-        })
-    })
-
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: RoteAmpelPage
 // ==========================================================================
 
@@ -36789,6 +36658,137 @@ DigiWebApp.RoteAmpelPage = M.PageView.design({
         })
     })
 });
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: OrderListTemplateView
+// ==========================================================================
+
+DigiWebApp.OrderListTemplateView = M.ListItemView.design({
+
+      isSelectable: NO
+
+    , childViews: 'icon label'
+    	
+    , cssClass: 'orderListEntry'
+
+    , events: {
+        tap: {
+            target: DigiWebApp.OrderListController,
+            action: 'itemSelected'
+        }
+    }
+
+    , icon: M.ImageView.design({
+    	  cssClass: 'unselectable'
+        , computedValue: {
+            valuePattern: '<%= icon %>'
+            , operation: function(v) {
+                return 'theme/images/' + v;
+            }
+        }
+    })
+
+    , label: M.LabelView.design({
+    	  cssClass: 'unselectable'
+        , computedValue: {
+	          valuePattern: '<%= label %>'
+	        , operation: function(v) {
+//    			if (v == M.I18N.l('diesenOrdnerVerwenden')) {
+//    				console.log(v);
+//    			}
+	            return v;
+	        }
+	    }
+    })
+
+});
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: OrderListPage
+// ==========================================================================
+
+m_require('app/views/OrderListTemplateView.js');
+
+DigiWebApp.OrderListPage = M.PageView.design({
+
+    childViews: 'header content'
+
+    , cssClass: 'orderListPage unselectable'
+
+    , events: {
+		  pagebeforeshow: {
+            //target: DigiWebApp.DashboardController,
+            //action: 'init'
+			action: function() {
+				//console.log("DigiWebApp.OrderListPage.pagebeforeshow");
+			}
+        }
+        , pageshow: {
+        	action: function() {
+				//console.log("DigiWebApp.OrderListPage.pageshow");
+        	}
+        }
+    }
+    
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title newButton'
+        , cssClass: 'header unselectable'
+        , isFixed: YES
+        , title: M.LabelView.design({
+              value: M.I18N.l('order')
+            , anchorLocation: M.CENTER
+        })
+        , backButton: M.ButtonView.design({
+            value: M.I18N.l('back')
+          , icon: 'arrow-l'
+          , anchorLocation: M.LEFT
+          , events: {
+              tap: {
+                  //  target: DigiWebApp.NavigationController
+                  //, action: 'backToBautagebuchZeitenListePageTransition'
+      			action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e8){} 
+      				DigiWebApp.OrderListController.errorHandler();
+      			}
+              }
+          }
+        })
+        , newButton: M.ButtonView.design({
+            value: M.I18N.l('neu')
+          , icon: 'new'
+          , anchorLocation: M.RIGHT
+          , cssClass: 'green_background'
+          , events: {
+              tap: {
+	              target: DigiWebApp.OrderListController
+	            , action: 'toHandOrderPage'
+              }
+          }
+      })
+    })
+
+    , content: M.ScrollView.design({
+
+        childViews: 'list'
+
+        , list: M.ListView.design({
+            contentBinding: {
+                target: DigiWebApp.OrderListController,
+                property: 'items'
+            }
+            , listItemTemplateView: DigiWebApp.OrderListTemplateView
+        })
+    })
+
+});
+
 
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
@@ -37157,6 +37157,163 @@ DigiWebApp.SplashViewPage = M.PageView.design({
             }
         })
     })
+});
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: StudieChecklisteTemplateView
+// ==========================================================================
+
+DigiWebApp.StudieChecklisteTemplateView = M.DigiListItemView.design({
+
+      isSelectable: NO
+
+    , childViews: 'comboBoxView'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+
+			}
+        }
+    }
+
+	, label: M.LabelView.design({
+          cssClass: 'unselectable'
+        , computedValue: {
+              valuePattern: '<%= label %>'
+            //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
+            , operation: function(v) {
+				return v;
+            }
+        }
+    })
+
+	, comboBox: M.LabelView.design({
+          cssClass: 'unselectable'
+        , computedValue: {
+              valuePattern: '<%= comboBox %>'
+            //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
+            , operation: function(v) {
+				if (v && typeof(v) === "object" && v.length > 0) {
+					// comboBoxView befüllen und anzeigen
+					DigiWebApp.StudieChecklisteController.set("t1", $(this));
+					DigiWebApp.StudieChecklisteController.set("t2", this);
+				} else {
+					// comboBoxView verstecken
+					console.log(this);
+				}
+				return '';
+            }
+        }
+    })
+
+    , comboBoxView: M.DigiSelectionListView.design({
+              selectionMode: M.SINGLE_SELECTION_DIALOG
+            , initialText: M.I18N.l('noData')
+            , applyTheme: NO
+            , computedValue: {
+		        valuePattern: '<%= comboBox %>'
+		      //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
+		      , operation: function(v) {
+//					if (v && typeof(v) === "object" && v.length > 0) {
+//						// comboBoxView befüllen und anzeigen
+//						DigiWebApp.StudieChecklisteController.set("t1", $(this));
+//						DigiWebApp.StudieChecklisteController.set("t2", this);
+//					} else {
+//						// comboBoxView verstecken
+//						console.log(this);
+//					}
+    				console.log(v);
+					return v;
+		      }
+		  }
+
+//            , contentBinding: {
+//			        target: DigiWebApp.StudieChecklisteController
+//			      , property: 'listData'
+//			  }
+//			  , events: {
+//			      change: {
+//			            target: DigiWebApp.StudieChecklisteController
+//			          , action: function() {
+//			              //this.setPositions();
+//			          }
+//			      }
+//			      , tap: {
+//						action: function() {
+//			      		try{DigiWebApp.ApplicationController.vibrate();}catch(e){}
+//						}
+//			      }
+//			  }
+    })
+
+});
+
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: StudieChecklistePage
+// ==========================================================================
+
+m_require('app/views/StudieChecklisteTemplateView');
+
+DigiWebApp.StudieChecklistePage = M.PageView.design({
+
+    /* Use the 'events' property to bind events like 'pageshow' */
+      events: {
+		pagebeforeshow: {
+            target: DigiWebApp.StudieChecklisteController,
+            action: 'init'
+        }
+    }
+
+    , childViews: 'header content'
+
+    , cssClass: 'studieChecklistePage'
+
+    , header: M.ToolbarView.design({
+          childViews: 'backButton title'
+        , cssClass: 'header'
+        , isFixed: YES
+        , backButton: M.ButtonView.design({
+              value: M.I18N.l('back')
+            , icon: 'arrow-l'
+            , anchorLocation: M.LEFT
+            , events: {
+                tap: {
+                      target: DigiWebApp.NavigationController
+                      , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
+                }
+            }
+        })
+        , title: M.LabelView.design({
+              value: M.I18N.l('settings')
+            , anchorLocation: M.CENTER
+        })
+        , anchorLocation: M.TOP
+    })
+
+    , content: M.ScrollView.design({
+          childViews: 'list'
+        
+              , list: M.DigiListView.design({
+                  contentBinding: {
+                      target: DigiWebApp.StudieChecklisteController
+                    , property: 'listData'
+                }
+                , listItemTemplateView: DigiWebApp.StudieChecklisteTemplateView
+            })
+    })
+    
 });
 
 
@@ -38501,7 +38658,7 @@ DigiWebApp.InfoPage = M.PageView.design({
         })
 
         , buildLabel: M.LabelView.design({
-              value: 'Build: 7172'
+              value: 'Build: 7173'
             , cssClass: 'infoLabel marginBottom25 unselectable'
         })
 
@@ -39181,163 +39338,6 @@ DigiWebApp.SettingsPage = M.PageView.design({
     	
     , tabBar: DigiWebApp.TabBar
 
-});
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: StudieChecklisteTemplateView
-// ==========================================================================
-
-DigiWebApp.StudieChecklisteTemplateView = M.DigiListItemView.design({
-
-      isSelectable: NO
-
-    , childViews: 'comboBoxView'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-
-			}
-        }
-    }
-
-	, label: M.LabelView.design({
-          cssClass: 'unselectable'
-        , computedValue: {
-              valuePattern: '<%= label %>'
-            //  value: '01.01.2011, 08:00 - 08:20 Uhr, 0:20 h'
-            , operation: function(v) {
-				return v;
-            }
-        }
-    })
-
-	, comboBox: M.LabelView.design({
-          cssClass: 'unselectable'
-        , computedValue: {
-              valuePattern: '<%= comboBox %>'
-            //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
-            , operation: function(v) {
-				if (v && typeof(v) === "object" && v.length > 0) {
-					// comboBoxView befüllen und anzeigen
-					DigiWebApp.StudieChecklisteController.set("t1", $(this));
-					DigiWebApp.StudieChecklisteController.set("t2", this);
-				} else {
-					// comboBoxView verstecken
-					console.log(this);
-				}
-				return '';
-            }
-        }
-    })
-
-    , comboBoxView: M.DigiSelectionListView.design({
-              selectionMode: M.SINGLE_SELECTION_DIALOG
-            , initialText: M.I18N.l('noData')
-            , applyTheme: NO
-            , computedValue: {
-		        valuePattern: '<%= comboBox %>'
-		      //  value: [{label: "eintrag 1", value: 1},{label: "eintrag 2", value: 2}]
-		      , operation: function(v) {
-//					if (v && typeof(v) === "object" && v.length > 0) {
-//						// comboBoxView befüllen und anzeigen
-//						DigiWebApp.StudieChecklisteController.set("t1", $(this));
-//						DigiWebApp.StudieChecklisteController.set("t2", this);
-//					} else {
-//						// comboBoxView verstecken
-//						console.log(this);
-//					}
-    				console.log(v);
-					return v;
-		      }
-		  }
-
-//            , contentBinding: {
-//			        target: DigiWebApp.StudieChecklisteController
-//			      , property: 'listData'
-//			  }
-//			  , events: {
-//			      change: {
-//			            target: DigiWebApp.StudieChecklisteController
-//			          , action: function() {
-//			              //this.setPositions();
-//			          }
-//			      }
-//			      , tap: {
-//						action: function() {
-//			      		try{DigiWebApp.ApplicationController.vibrate();}catch(e){}
-//						}
-//			      }
-//			  }
-    })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
-// View: StudieChecklistePage
-// ==========================================================================
-
-m_require('app/views/StudieChecklisteTemplateView');
-
-DigiWebApp.StudieChecklistePage = M.PageView.design({
-
-    /* Use the 'events' property to bind events like 'pageshow' */
-      events: {
-		pagebeforeshow: {
-            target: DigiWebApp.StudieChecklisteController,
-            action: 'init'
-        }
-    }
-
-    , childViews: 'header content'
-
-    , cssClass: 'studieChecklistePage'
-
-    , header: M.ToolbarView.design({
-          childViews: 'backButton title'
-        , cssClass: 'header'
-        , isFixed: YES
-        , backButton: M.ButtonView.design({
-              value: M.I18N.l('back')
-            , icon: 'arrow-l'
-            , anchorLocation: M.LEFT
-            , events: {
-                tap: {
-                      target: DigiWebApp.NavigationController
-                      , action: function() {try{DigiWebApp.ApplicationController.vibrate();}catch(e2){} this.backToDashboardPage();}
-                }
-            }
-        })
-        , title: M.LabelView.design({
-              value: M.I18N.l('settings')
-            , anchorLocation: M.CENTER
-        })
-        , anchorLocation: M.TOP
-    })
-
-    , content: M.ScrollView.design({
-          childViews: 'list'
-        
-              , list: M.DigiListView.design({
-                  contentBinding: {
-                      target: DigiWebApp.StudieChecklisteController
-                    , property: 'listData'
-                }
-                , listItemTemplateView: DigiWebApp.StudieChecklisteTemplateView
-            })
-    })
-    
 });
 
 
@@ -40978,72 +40978,6 @@ DigiWebApp.EditTimeDataPage = M.PageView.design({
 // Generated with: Espresso 
 //
 // Project: DigiWebApp
-// View: TimeDataSentDaysTemplateView
-// ==========================================================================
-
-DigiWebApp.TimeDataSentDaysTemplateView = M.ListItemView.design({
-
-      isSelectable: YES
-
-    , childViews: 'tagLabel'
-
-    , events: {
-        tap: {
-			action: function(id, m_id) {
-
-//			    var view = M.ViewManager.getViewById(id);
-//			    var mitarbeiter_modelId = view.modelId;
-//			    var doShow = NO;
-//			    _.each(DigiWebApp.BookingController.timeDataSentDays, function(timeDataSentDay) {
-//					if (timeDataSentDay.m_id === mitarbeiter_modelId) {
-//						if (AnwesenheitslisteItem.get("datum") !== "-") {
-//							DigiWebApp.ZeitbuchungenController.set('datum', AnwesenheitslisteItem.get("datum"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', AnwesenheitslisteItem.get("mitarbeiterId"));
-//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', AnwesenheitslisteItem.get("nameVorname"));
-//							doShow = YES;
-//						}
-//					}
-//				});
-//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
-
-				var doShow = NO;
-				_.each(DigiWebApp.BookingController.timeDataSentDays, function(day) {
-					if (day.m_id === m_id) {
-//						DigiWebApp.BookingController.dayToDisplay = day;
-						DigiWebApp.ZeitbuchungenController.set('datum', day.get('tagLabel').substring(4));
-						var settings = DigiWebApp.Settings.find()[0];
-						DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', settings.get("mitarbeiterId"));
-						DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', settings.get("mitarbeiterNachname") + ", " + settings.get("mitarbeiterVorname"));
-						DigiWebApp.ZeitbuchungenController.set('backFunction', DigiWebApp.NavigationController.backToTimeDataPage);
-						doShow = YES;
-					}
-				});
-				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
-//				DigiWebApp.NavigationController.toTimeDataArchivePageTransition();
-
-			}
-        }
-    }
-
-    , tagLabel: M.LabelView.design({
-          cssClass: 'tagLabel unselectable'
-        , computedValue: {
-              valuePattern: '<%= tagLabel %>'
-            , operation: function(v) {
-                	return M.I18N.l('archivedTimeDataOf') + ' ' +v;
-            }
-        }
-    })
-
-});
-
-
-
-// ==========================================================================
-// The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso 
-//
-// Project: DigiWebApp
 // View: TimeDataSentTemplateView
 // ==========================================================================
 
@@ -41469,6 +41403,72 @@ DigiWebApp.TimeDataArchivePage = M.PageView.design({
     })
 
 });
+
+
+// ==========================================================================
+// The M-Project - Mobile HTML5 Application Framework
+// Generated with: Espresso 
+//
+// Project: DigiWebApp
+// View: TimeDataSentDaysTemplateView
+// ==========================================================================
+
+DigiWebApp.TimeDataSentDaysTemplateView = M.ListItemView.design({
+
+      isSelectable: YES
+
+    , childViews: 'tagLabel'
+
+    , events: {
+        tap: {
+			action: function(id, m_id) {
+
+//			    var view = M.ViewManager.getViewById(id);
+//			    var mitarbeiter_modelId = view.modelId;
+//			    var doShow = NO;
+//			    _.each(DigiWebApp.BookingController.timeDataSentDays, function(timeDataSentDay) {
+//					if (timeDataSentDay.m_id === mitarbeiter_modelId) {
+//						if (AnwesenheitslisteItem.get("datum") !== "-") {
+//							DigiWebApp.ZeitbuchungenController.set('datum', AnwesenheitslisteItem.get("datum"));
+//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', AnwesenheitslisteItem.get("mitarbeiterId"));
+//							DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', AnwesenheitslisteItem.get("nameVorname"));
+//							doShow = YES;
+//						}
+//					}
+//				});
+//				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+
+				var doShow = NO;
+				_.each(DigiWebApp.BookingController.timeDataSentDays, function(day) {
+					if (day.m_id === m_id) {
+//						DigiWebApp.BookingController.dayToDisplay = day;
+						DigiWebApp.ZeitbuchungenController.set('datum', day.get('tagLabel').substring(4));
+						var settings = DigiWebApp.Settings.find()[0];
+						DigiWebApp.ZeitbuchungenController.set('mitarbeiterID', settings.get("mitarbeiterId"));
+						DigiWebApp.ZeitbuchungenController.set('mitarbeiterNameVorname', settings.get("mitarbeiterNachname") + ", " + settings.get("mitarbeiterVorname"));
+						DigiWebApp.ZeitbuchungenController.set('backFunction', DigiWebApp.NavigationController.backToTimeDataPage);
+						doShow = YES;
+					}
+				});
+				if (doShow === YES) DigiWebApp.NavigationController.toZeitbuchungenPageTransition();
+//				DigiWebApp.NavigationController.toTimeDataArchivePageTransition();
+
+			}
+        }
+    }
+
+    , tagLabel: M.LabelView.design({
+          cssClass: 'tagLabel unselectable'
+        , computedValue: {
+              valuePattern: '<%= tagLabel %>'
+            , operation: function(v) {
+                	return M.I18N.l('archivedTimeDataOf') + ' ' +v;
+            }
+        }
+    })
+
+});
+
 
 
 // ==========================================================================
