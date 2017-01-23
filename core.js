@@ -541,843 +541,6 @@ M.Request = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.05.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.DeviceSwitch defines a prototype for using device specific objects within
- * an application developed with The M-Project.
- *
- * @extends M.Object
- */
-M.DeviceSwitch = M.Object.extend(
-/** @scope M.DeviceSwitch.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DeviceSwitch',
-
-    /**
-     * The name of the current device.
-     *
-     * @type String
-     */
-    device: null,
-
-    /**
-     * This method returns the specialized string for the given key based on
-     * the current device/environment.
-     *
-     * @param {String} key The key to the specialized string.
-     * @returns {String} The specialized string based on the current device/environment.
-     */
-    s: function(key) {
-        return this.specialize(key);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @returns {String} The localizes string based on the current application language.
-     */
-    specialize: function(key) {
-        if(!this.device) {
-            M.Logger.log('No device specified!', M.ERR);
-            return null;
-        }
-
-        if(this[this.device] && this[this.device][key]) {
-            return this[this.device][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
-            return null;
-        }
-    }
-
-});
-
-M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for being offline.
- *
- * @type String
- */
-M.OFFLINE = 'offline';
-
-/**
- * A constant value for being online.
- *
- * @type String
- */
-M.ONLINE = 'online';
-
-/**
- * A constant value for portrait orientation mode.
- *
- * @type String
- */
-M.PORTRAIT_TOP = 0;
-
-/**
- * A constant value for inverse portrait orientation mode.
- *
- * @type String
- */
-M.PORTRAIT_BOTTOM = 180;
-
-/**
- * A constant value for landscape right orientation mode.
- *
- * @type String
- */
-M.LANDSCAPE_RIGHT = -90;
-
-/**
- * A constant value for landscape left orientation mode.
- *
- * @type String
- */
-M.LANDSCAPE_LEFT = 90;
-
-/**
- * @class
- *
- * M.Environment encapsulates methods to retrieve information about the
- * environment, like browser used, platform, user agent (based on navigator
- * object) or whether or not the device is online (determined via an ajax
- * request).
- *
- * @extends M.Object
- */
-M.Environment = M.Object.extend(
-/** @scope M.Environment.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Environment',
-
-    /**
-     * This property contains a custom configuration of the awesome modernizr
-     * library We currently only use this for detecting supported input types
-     * of the browser.
-     *
-     * @private
-     * @type Object
-     */
-    modernizr: {
-        inputtypes: (function(props){var docElement=document.documentElement;var inputs={};var smile=":)";var inputElem=document.createElement("input");for(var i=0,bool,inputElemType,defaultView,len=props.length;i<len;i++){inputElem.setAttribute("type",inputElemType=props[i]);bool=inputElem.type!=="text";if(bool){inputElem.value=smile;inputElem.style.cssText="position:absolute;visibility:hidden;";if(/^range$/.test(inputElemType)&&inputElem.style.WebkitAppearance!==undefined){docElement.appendChild(inputElem);defaultView=document.defaultView;bool=defaultView.getComputedStyle&&defaultView.getComputedStyle(inputElem,null).WebkitAppearance!=="textfield"&&inputElem.offsetHeight!==0;docElement.removeChild(inputElem)}else if(/^(search|tel)$/.test(inputElemType)){}else if(/^(url|email)$/.test(inputElemType)){bool=inputElem.checkValidity&&inputElem.checkValidity()===false;}else if(/^color$/.test(inputElemType)){docElement.appendChild(inputElem);bool=inputElem.value!=smile;docElement.removeChild(inputElem)}else{bool=inputElem.value!=smile}}inputs[props[i]]=!!bool;}return inputs})("search tel url email datetime date month week time datetime-local number range color".split(" ")),
-        inputattributes: (function( props ) { var docElement=document.documentElement;var attrs={};var smile=":)";var inputElem=document.createElement("input"); for ( var i = 0, len = props.length; i < len; i++ ) { attrs[ props[i] ] = !!(props[i] in inputElem); } if (attrs.list){ attrs.list = !!(document.createElement('datalist') && window.HTMLDataListElement); } return attrs; })('autocomplete autofocus list placeholder max min multiple pattern required step'.split(' '))
-    },
-
-    /**
-     * Checks the connection status by sending an ajax request
-     * and waiting for the response to decide whether online or offline.
-     *
-     * The callback is called when the request returns successful or times out. The parameter to callback is a
-     * string saying either offline or online.
-     *
-     * @param {Object} callback The object, consisting of target and action, defining the callback.
-     * @param {String} url Optional. The request url. When not given, a request is made to http://www.google.de/images/logos/ps_logo2.png.
-     */
-    getConnectionStatus: function(callback, url){
-        url = url ? url : 'http://www.google.de/images/logos/ps_logo2.png';
-        var that = this;
-        var image = M.ImageView.design({
-            value: url,
-            events: {
-                load: {
-                    action: function(id) {
-                        var image = M.ViewManager.getViewById(id);
-                        image.destroy();
-                        if(callback && M.EventDispatcher.checkHandler(callback, 'online')){
-                            that.bindToCaller(callback.target, callback.action, M.ONLINE)();
-                        }
-                    }
-                },
-                error: {
-                    action: function(id) {
-                        var image = M.ViewManager.getViewById(id);
-                        image.destroy();
-                        if(callback && M.EventDispatcher.checkHandler(callback, 'offline')){
-                            that.bindToCaller(callback.target, callback.action, M.OFFLINE)();
-                        }
-                    }
-                }
-            }
-        });
-        $('body').append(image.render());
-        image.registerEvents();
-    },
-
-    /**
-     * Returns the userAgent as received from navigator object.
-     * E.g. "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7"
-     *
-     * @returns {String} The user agent.
-     */
-    getUserAgent: function() {
-        return navigator.userAgent;
-    },
-
-    /**
-     * Returns the platform as received from navigator object.
-     * E.g. "MacIntel"
-     *
-     * @returns {String} The user's platform.
-     */
-    getPlatform: function() {
-        return navigator.platform;
-    },
-
-    /**
-     * Returns the currently available width and height of the browser window
-     * as an array:
-     *
-     * 0 -> width
-     * 1 -> height
-     *
-     * @returns {Array} The width and height of the user's browser window.
-     */
-    getSize: function() {
-        var viewportWidth;
-        var viewportHeight;
-
-        if(typeof window.innerWidth != 'undefined') {
-            viewportWidth = window.innerWidth,
-            viewportHeight = window.innerHeight
-        } else if(typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
-            viewportWidth = document.documentElement.clientWidth,
-            viewportHeight = document.documentElement.clientHeight
-        } else {
-            viewportWidth = document.getElementsByTagName('body')[0].clientWidth,
-            viewportHeight = document.getElementsByTagName('body')[0].clientHeight
-        }
-
-        return [viewportWidth, viewportHeight];
-    },
-
-    /**
-     * Returns the currently available width of the browser window.
-     *
-     * @returns {Number} The width of the user's browser window.
-     */
-    getWidth: function() {
-        return this.getSize()[0];
-    },
-
-    /**
-     * Returns the currently available height of the browser window.
-     *
-     * @returns {Number} The height of the user's browser window.
-     */
-    getHeight: function() {
-        return this.getSize()[1];
-    },
-
-    /**
-     * Returns the total size of the page/document, means not only the area of the browser window.
-     *
-     * 0 -> width
-     * 1 -> height
-     *
-     * @returns {Array} The width and height of the document.
-     */
-    getTotalSize: function() {
-        return [this.getTotalWidth(), this.getTotalHeight()];
-    },
-
-    /**
-     * Returns the total width of the page/document, means not only the area of the browser window.
-     * Uses jQuery.
-     *
-     * @returns {Number} The total width of the document.
-     */
-    getTotalWidth: function() {
-        return $(document).width();
-    },
-
-    /**
-     * Returns the total height of the page/document, means not only the area of the browser window.
-     * Uses jQuery.
-     *
-     * @returns {Number} The total height of the document.
-     */
-    getTotalHeight: function() {
-        return $(document).height();
-    },
-
-    /**
-     * This method returns the device's current orientation, depending on whether
-     * or not the device is capable of detecting the current orientation. If the
-     * device is unable to detect the current orientation, this method will return
-     * NO.
-     *
-     * Possible return values are:
-     *
-     *   - M.PORTRAIT
-     *   - M.LANDSCAPE_LEFT
-     *   - M.LANDSCAPE_RIGHT
-     *
-     * @return {Number|Boolean} The orientation type as a constant value. (If the orientation can not be detected: NO.)
-     */
-    getOrientation: function() {
-        switch(window.orientation) {
-            case 0:
-                return M.PORTRAIT_TOP;
-            case false:
-                return M.PORTRAIT_BOTTOM;
-            case 90:
-                return M.LANDSCAPE_LEFT;
-            case -90:
-                return M.LANDSCAPE_RIGHT;
-            default:
-                M.Logger.log('This device does not support orientation detection.', M.WARN);
-                return NO;
-        }
-    },
-
-    /**
-     * This method checks if the browser supports a certain input type specified with
-     * HTML5. This check is based on Modernizr. For further information abbout the
-     * input types, take a look at the W3C spec:
-     * http://dev.w3.org/html5/spec/Overview.html#states-of-the-type-attribute
-     *
-     * @param {String} inputTye The HTML5 input type to be checked.
-     * @return {Boolean} A flag telling you if the input type is supported or not.
-     */
-    supportsInputType: function(inputType) {
-        if(this.modernizr.inputtypes && this.modernizr.inputtypes[inputType] === YES) {
-            return YES;
-        }
-        return NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2012
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines methods for preloading images.
- *
- * @extends M.Object
- */
-M.ImagePreloader = M.Object.extend(
-/** @scope M.ImagePreloader.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImagePreloader',
-
-    images: null,
-
-    refId: '',
-
-    bodyDOM: null,
-
-    loadCounter: 0,
-
-    init: function(obj) {
-        obj.refId = obj.refId || M.UniqueId.uuid();
-        obj.bodyDOM = $('body');
-
-        return this.extend(obj);
-    },
-
-    preload: function() {
-        var that = this;
-        if(this.images && this.images.length > 0) {
-            _.each(this.images, function(i) {
-                window.setTimeout(function() {
-                    that.preloadSingleImage(i);
-                }, 1);
-            });
-        }
-    },
-
-    preloadSingleImage: function(image) {
-        var imageView = M.ImageView.design({
-            value: image,
-            cssClass: 'tmp-image-preloading',
-            events: {
-                load: {
-                    target: this,
-                    action: 'loadSingle'
-                },
-                error: {
-                    target: this,
-                    action: 'error'
-                }
-            }
-        });
-
-        this.bodyDOM.append(imageView.render());
-        imageView.registerEvents();
-    },
-
-    loadSingle: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call load event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
-            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    error: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call error event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
-            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    finish: function() {
-        /* doublecheck */
-        if(this.loadCounter !== this.images.length) {
-            return;
-        }
-
-        /* call finish event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
-            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      24.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.Location defines a prototype for a location object. It is mainly used by
- * the M.LocationManager and contains properties like latitude and longitude,
- * that specify the retrieved location.
- *
- * @extends M.Object
- */
-M.Location = M.Object.extend(
-/** @scope M.Location.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Location',
-
-    /**
-     * The latitude of this location.
-     *
-     * @type Number
-     */
-    latitude: null,
-
-    /**
-     * The longitude of this location.
-     *
-     * @type Number
-     */
-    longitude: null,
-
-    /**
-     * The date this location was retrieved.
-     *
-     * @type M.Date
-     */
-    date: null,
-
-    /**
-     * This property specifies the location's accuracy in meters.
-     *
-     * @type Number
-     */
-    accuracy: null,
-
-    /**
-     * This property contains a reference to the object, that called the
-     * update() of this location. This reference is needed for calling back
-     * to the defined success and error callbacks.
-     *
-     * @private
-     * @type Object
-     */
-    caller: null,
-
-    /**
-     * This method contains a reference to the specified success callback
-     * method.
-     *
-     * @type Function
-     */
-    onUpdateSuccess: null,
-
-    /**
-     * This method contains a reference to the specified error callback
-     * method.
-     *
-     * @type Function
-     */
-    onUpdateError: null,
-
-    /**
-     * This method initializes an M.Location object with the passed latitude
-     * and longitude parameters. This method can be used to manually create
-     * an M.Location object if the position is already known.
-     *
-     * To create an M.Location object with the user's current position, you
-     * will have to use the M.LocationManager, respectively its getLocation()
-     * method.
-     *
-     * Nevertheless you can use this method to initialiy create an M.Location
-     * object with a specified location and then later use its update() method
-     * to retrieve the real and current location of the user / device.
-     *
-     * @param {Number} latitude The latitude of the location.
-     * @param {Number} longitude The longitude of the location.
-     */
-    init: function(latitude, longitude) {
-        return this.extend({
-            latitude: latitude,
-            longitude: longitude
-        });
-    },
-
-    /**
-     * This method is used to automatically update the location. Since this
-     * is an asyncrhonous process, you have to specify two callback methods
-     * in case of success or error. additionally you can pass along options
-     * to configure the retrieving process.
-     *
-     * For further information about the parameters, check out getLocation()
-     * in M.LocationManager since this method is called out of update().
-     *
-     * If the update was successful, the properties of the location object
-     * are updated and your specified callback is called (without parameter).
-     *
-     * If the update goes wrong, your specified error callback is called with
-     * the error message as its only parameter. The error message will be one
-     * of the following constant string values:
-     *   - PERMISSION_DENIED
-     *   - POSITION_UNAVAILABLE
-     *   - TIMEOUT
-     *   - UNKNOWN_ERROR
-     *   - NOT_SUPPORTED
-     *
-     * @param {Object} caller The object, calling this function.
-     * @param {Object} onSuccess The success callback.
-     * @param {Object} onError The error callback.
-     * @param {Object} options The options for retrieving a location.
-     */
-    update: function(caller, onSuccess, onError, options) {
-        this.caller = caller;
-        this.onUpdateSuccess = onSuccess;
-        this.onUpdateError = onError;
-        
-        M.LocationManager.getLocation(this, this.onUpdateSuccessInternal, this.onUpdateErrorInternal, options);
-    },
-
-    /**
-     * This method is called automatically as the success callback of the
-     * update(). After updating this location object, the external success
-     * callback is called.
-     *
-     * @param {Object} position The position object of the Geolocation API.
-     */
-    onUpdateSuccessInternal: function(position) {
-        if(position && position.coords) {
-            this.latitude = position.coords.latitude;
-            this.longitude = position.coords.longitude;
-            this.date = M.Date.now();
-
-            if(this.caller) {
-                if(this.onUpdateSuccess) {
-                    this.bindToCaller(this.caller, this.onUpdateSuccess)();
-                } else {
-                    M.Logger.log('No success callback specified for update() of M.Location.', M.INFO);
-                }
-            } else {
-                M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
-            }
-        } else {
-            M.Logger.log('An internal error occured while retrieving the position.', M.ERR);
-        }
-    },
-
-    /**
-     * This method is called automatically as the error callback of the
-     * update(). After updating this location object, the external error
-     * callback is called.
-     *
-     * @param {Object} position The error that occurred.
-     */
-    onUpdateErrorInternal: function(error) {
-        if(this.caller) {
-            if(this.onUpdateError) {
-                this.bindToCaller(this.caller, this.onUpdateError, error)();
-            } else {
-                M.Logger.log('No error callback specified for update() of M.Location.', M.INFO);
-            }
-        } else {
-            M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -1937,6 +1100,843 @@ M.Date = M.Object.extend(
      */
     toJSON: function() {
         return String(this.date);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.05.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.DeviceSwitch defines a prototype for using device specific objects within
+ * an application developed with The M-Project.
+ *
+ * @extends M.Object
+ */
+M.DeviceSwitch = M.Object.extend(
+/** @scope M.DeviceSwitch.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DeviceSwitch',
+
+    /**
+     * The name of the current device.
+     *
+     * @type String
+     */
+    device: null,
+
+    /**
+     * This method returns the specialized string for the given key based on
+     * the current device/environment.
+     *
+     * @param {String} key The key to the specialized string.
+     * @returns {String} The specialized string based on the current device/environment.
+     */
+    s: function(key) {
+        return this.specialize(key);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @returns {String} The localizes string based on the current application language.
+     */
+    specialize: function(key) {
+        if(!this.device) {
+            M.Logger.log('No device specified!', M.ERR);
+            return null;
+        }
+
+        if(this[this.device] && this[this.device][key]) {
+            return this[this.device][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
+            return null;
+        }
+    }
+
+});
+
+M.DS = M.DeviceSwitch;
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for being offline.
+ *
+ * @type String
+ */
+M.OFFLINE = 'offline';
+
+/**
+ * A constant value for being online.
+ *
+ * @type String
+ */
+M.ONLINE = 'online';
+
+/**
+ * A constant value for portrait orientation mode.
+ *
+ * @type String
+ */
+M.PORTRAIT_TOP = 0;
+
+/**
+ * A constant value for inverse portrait orientation mode.
+ *
+ * @type String
+ */
+M.PORTRAIT_BOTTOM = 180;
+
+/**
+ * A constant value for landscape right orientation mode.
+ *
+ * @type String
+ */
+M.LANDSCAPE_RIGHT = -90;
+
+/**
+ * A constant value for landscape left orientation mode.
+ *
+ * @type String
+ */
+M.LANDSCAPE_LEFT = 90;
+
+/**
+ * @class
+ *
+ * M.Environment encapsulates methods to retrieve information about the
+ * environment, like browser used, platform, user agent (based on navigator
+ * object) or whether or not the device is online (determined via an ajax
+ * request).
+ *
+ * @extends M.Object
+ */
+M.Environment = M.Object.extend(
+/** @scope M.Environment.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Environment',
+
+    /**
+     * This property contains a custom configuration of the awesome modernizr
+     * library We currently only use this for detecting supported input types
+     * of the browser.
+     *
+     * @private
+     * @type Object
+     */
+    modernizr: {
+        inputtypes: (function(props){var docElement=document.documentElement;var inputs={};var smile=":)";var inputElem=document.createElement("input");for(var i=0,bool,inputElemType,defaultView,len=props.length;i<len;i++){inputElem.setAttribute("type",inputElemType=props[i]);bool=inputElem.type!=="text";if(bool){inputElem.value=smile;inputElem.style.cssText="position:absolute;visibility:hidden;";if(/^range$/.test(inputElemType)&&inputElem.style.WebkitAppearance!==undefined){docElement.appendChild(inputElem);defaultView=document.defaultView;bool=defaultView.getComputedStyle&&defaultView.getComputedStyle(inputElem,null).WebkitAppearance!=="textfield"&&inputElem.offsetHeight!==0;docElement.removeChild(inputElem)}else if(/^(search|tel)$/.test(inputElemType)){}else if(/^(url|email)$/.test(inputElemType)){bool=inputElem.checkValidity&&inputElem.checkValidity()===false;}else if(/^color$/.test(inputElemType)){docElement.appendChild(inputElem);bool=inputElem.value!=smile;docElement.removeChild(inputElem)}else{bool=inputElem.value!=smile}}inputs[props[i]]=!!bool;}return inputs})("search tel url email datetime date month week time datetime-local number range color".split(" ")),
+        inputattributes: (function( props ) { var docElement=document.documentElement;var attrs={};var smile=":)";var inputElem=document.createElement("input"); for ( var i = 0, len = props.length; i < len; i++ ) { attrs[ props[i] ] = !!(props[i] in inputElem); } if (attrs.list){ attrs.list = !!(document.createElement('datalist') && window.HTMLDataListElement); } return attrs; })('autocomplete autofocus list placeholder max min multiple pattern required step'.split(' '))
+    },
+
+    /**
+     * Checks the connection status by sending an ajax request
+     * and waiting for the response to decide whether online or offline.
+     *
+     * The callback is called when the request returns successful or times out. The parameter to callback is a
+     * string saying either offline or online.
+     *
+     * @param {Object} callback The object, consisting of target and action, defining the callback.
+     * @param {String} url Optional. The request url. When not given, a request is made to http://www.google.de/images/logos/ps_logo2.png.
+     */
+    getConnectionStatus: function(callback, url){
+        url = url ? url : 'http://www.google.de/images/logos/ps_logo2.png';
+        var that = this;
+        var image = M.ImageView.design({
+            value: url,
+            events: {
+                load: {
+                    action: function(id) {
+                        var image = M.ViewManager.getViewById(id);
+                        image.destroy();
+                        if(callback && M.EventDispatcher.checkHandler(callback, 'online')){
+                            that.bindToCaller(callback.target, callback.action, M.ONLINE)();
+                        }
+                    }
+                },
+                error: {
+                    action: function(id) {
+                        var image = M.ViewManager.getViewById(id);
+                        image.destroy();
+                        if(callback && M.EventDispatcher.checkHandler(callback, 'offline')){
+                            that.bindToCaller(callback.target, callback.action, M.OFFLINE)();
+                        }
+                    }
+                }
+            }
+        });
+        $('body').append(image.render());
+        image.registerEvents();
+    },
+
+    /**
+     * Returns the userAgent as received from navigator object.
+     * E.g. "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7"
+     *
+     * @returns {String} The user agent.
+     */
+    getUserAgent: function() {
+        return navigator.userAgent;
+    },
+
+    /**
+     * Returns the platform as received from navigator object.
+     * E.g. "MacIntel"
+     *
+     * @returns {String} The user's platform.
+     */
+    getPlatform: function() {
+        return navigator.platform;
+    },
+
+    /**
+     * Returns the currently available width and height of the browser window
+     * as an array:
+     *
+     * 0 -> width
+     * 1 -> height
+     *
+     * @returns {Array} The width and height of the user's browser window.
+     */
+    getSize: function() {
+        var viewportWidth;
+        var viewportHeight;
+
+        if(typeof window.innerWidth != 'undefined') {
+            viewportWidth = window.innerWidth,
+            viewportHeight = window.innerHeight
+        } else if(typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
+            viewportWidth = document.documentElement.clientWidth,
+            viewportHeight = document.documentElement.clientHeight
+        } else {
+            viewportWidth = document.getElementsByTagName('body')[0].clientWidth,
+            viewportHeight = document.getElementsByTagName('body')[0].clientHeight
+        }
+
+        return [viewportWidth, viewportHeight];
+    },
+
+    /**
+     * Returns the currently available width of the browser window.
+     *
+     * @returns {Number} The width of the user's browser window.
+     */
+    getWidth: function() {
+        return this.getSize()[0];
+    },
+
+    /**
+     * Returns the currently available height of the browser window.
+     *
+     * @returns {Number} The height of the user's browser window.
+     */
+    getHeight: function() {
+        return this.getSize()[1];
+    },
+
+    /**
+     * Returns the total size of the page/document, means not only the area of the browser window.
+     *
+     * 0 -> width
+     * 1 -> height
+     *
+     * @returns {Array} The width and height of the document.
+     */
+    getTotalSize: function() {
+        return [this.getTotalWidth(), this.getTotalHeight()];
+    },
+
+    /**
+     * Returns the total width of the page/document, means not only the area of the browser window.
+     * Uses jQuery.
+     *
+     * @returns {Number} The total width of the document.
+     */
+    getTotalWidth: function() {
+        return $(document).width();
+    },
+
+    /**
+     * Returns the total height of the page/document, means not only the area of the browser window.
+     * Uses jQuery.
+     *
+     * @returns {Number} The total height of the document.
+     */
+    getTotalHeight: function() {
+        return $(document).height();
+    },
+
+    /**
+     * This method returns the device's current orientation, depending on whether
+     * or not the device is capable of detecting the current orientation. If the
+     * device is unable to detect the current orientation, this method will return
+     * NO.
+     *
+     * Possible return values are:
+     *
+     *   - M.PORTRAIT
+     *   - M.LANDSCAPE_LEFT
+     *   - M.LANDSCAPE_RIGHT
+     *
+     * @return {Number|Boolean} The orientation type as a constant value. (If the orientation can not be detected: NO.)
+     */
+    getOrientation: function() {
+        switch(window.orientation) {
+            case 0:
+                return M.PORTRAIT_TOP;
+            case false:
+                return M.PORTRAIT_BOTTOM;
+            case 90:
+                return M.LANDSCAPE_LEFT;
+            case -90:
+                return M.LANDSCAPE_RIGHT;
+            default:
+                M.Logger.log('This device does not support orientation detection.', M.WARN);
+                return NO;
+        }
+    },
+
+    /**
+     * This method checks if the browser supports a certain input type specified with
+     * HTML5. This check is based on Modernizr. For further information abbout the
+     * input types, take a look at the W3C spec:
+     * http://dev.w3.org/html5/spec/Overview.html#states-of-the-type-attribute
+     *
+     * @param {String} inputTye The HTML5 input type to be checked.
+     * @return {Boolean} A flag telling you if the input type is supported or not.
+     */
+    supportsInputType: function(inputType) {
+        if(this.modernizr.inputtypes && this.modernizr.inputtypes[inputType] === YES) {
+            return YES;
+        }
+        return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2012
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines methods for preloading images.
+ *
+ * @extends M.Object
+ */
+M.ImagePreloader = M.Object.extend(
+/** @scope M.ImagePreloader.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImagePreloader',
+
+    images: null,
+
+    refId: '',
+
+    bodyDOM: null,
+
+    loadCounter: 0,
+
+    init: function(obj) {
+        obj.refId = obj.refId || M.UniqueId.uuid();
+        obj.bodyDOM = $('body');
+
+        return this.extend(obj);
+    },
+
+    preload: function() {
+        var that = this;
+        if(this.images && this.images.length > 0) {
+            _.each(this.images, function(i) {
+                window.setTimeout(function() {
+                    that.preloadSingleImage(i);
+                }, 1);
+            });
+        }
+    },
+
+    preloadSingleImage: function(image) {
+        var imageView = M.ImageView.design({
+            value: image,
+            cssClass: 'tmp-image-preloading',
+            events: {
+                load: {
+                    target: this,
+                    action: 'loadSingle'
+                },
+                error: {
+                    target: this,
+                    action: 'error'
+                }
+            }
+        });
+
+        this.bodyDOM.append(imageView.render());
+        imageView.registerEvents();
+    },
+
+    loadSingle: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call load event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
+            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    error: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call error event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
+            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    finish: function() {
+        /* doublecheck */
+        if(this.loadCounter !== this.images.length) {
+            return;
+        }
+
+        /* call finish event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
+            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      24.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.Location defines a prototype for a location object. It is mainly used by
+ * the M.LocationManager and contains properties like latitude and longitude,
+ * that specify the retrieved location.
+ *
+ * @extends M.Object
+ */
+M.Location = M.Object.extend(
+/** @scope M.Location.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Location',
+
+    /**
+     * The latitude of this location.
+     *
+     * @type Number
+     */
+    latitude: null,
+
+    /**
+     * The longitude of this location.
+     *
+     * @type Number
+     */
+    longitude: null,
+
+    /**
+     * The date this location was retrieved.
+     *
+     * @type M.Date
+     */
+    date: null,
+
+    /**
+     * This property specifies the location's accuracy in meters.
+     *
+     * @type Number
+     */
+    accuracy: null,
+
+    /**
+     * This property contains a reference to the object, that called the
+     * update() of this location. This reference is needed for calling back
+     * to the defined success and error callbacks.
+     *
+     * @private
+     * @type Object
+     */
+    caller: null,
+
+    /**
+     * This method contains a reference to the specified success callback
+     * method.
+     *
+     * @type Function
+     */
+    onUpdateSuccess: null,
+
+    /**
+     * This method contains a reference to the specified error callback
+     * method.
+     *
+     * @type Function
+     */
+    onUpdateError: null,
+
+    /**
+     * This method initializes an M.Location object with the passed latitude
+     * and longitude parameters. This method can be used to manually create
+     * an M.Location object if the position is already known.
+     *
+     * To create an M.Location object with the user's current position, you
+     * will have to use the M.LocationManager, respectively its getLocation()
+     * method.
+     *
+     * Nevertheless you can use this method to initialiy create an M.Location
+     * object with a specified location and then later use its update() method
+     * to retrieve the real and current location of the user / device.
+     *
+     * @param {Number} latitude The latitude of the location.
+     * @param {Number} longitude The longitude of the location.
+     */
+    init: function(latitude, longitude) {
+        return this.extend({
+            latitude: latitude,
+            longitude: longitude
+        });
+    },
+
+    /**
+     * This method is used to automatically update the location. Since this
+     * is an asyncrhonous process, you have to specify two callback methods
+     * in case of success or error. additionally you can pass along options
+     * to configure the retrieving process.
+     *
+     * For further information about the parameters, check out getLocation()
+     * in M.LocationManager since this method is called out of update().
+     *
+     * If the update was successful, the properties of the location object
+     * are updated and your specified callback is called (without parameter).
+     *
+     * If the update goes wrong, your specified error callback is called with
+     * the error message as its only parameter. The error message will be one
+     * of the following constant string values:
+     *   - PERMISSION_DENIED
+     *   - POSITION_UNAVAILABLE
+     *   - TIMEOUT
+     *   - UNKNOWN_ERROR
+     *   - NOT_SUPPORTED
+     *
+     * @param {Object} caller The object, calling this function.
+     * @param {Object} onSuccess The success callback.
+     * @param {Object} onError The error callback.
+     * @param {Object} options The options for retrieving a location.
+     */
+    update: function(caller, onSuccess, onError, options) {
+        this.caller = caller;
+        this.onUpdateSuccess = onSuccess;
+        this.onUpdateError = onError;
+        
+        M.LocationManager.getLocation(this, this.onUpdateSuccessInternal, this.onUpdateErrorInternal, options);
+    },
+
+    /**
+     * This method is called automatically as the success callback of the
+     * update(). After updating this location object, the external success
+     * callback is called.
+     *
+     * @param {Object} position The position object of the Geolocation API.
+     */
+    onUpdateSuccessInternal: function(position) {
+        if(position && position.coords) {
+            this.latitude = position.coords.latitude;
+            this.longitude = position.coords.longitude;
+            this.date = M.Date.now();
+
+            if(this.caller) {
+                if(this.onUpdateSuccess) {
+                    this.bindToCaller(this.caller, this.onUpdateSuccess)();
+                } else {
+                    M.Logger.log('No success callback specified for update() of M.Location.', M.INFO);
+                }
+            } else {
+                M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
+            }
+        } else {
+            M.Logger.log('An internal error occured while retrieving the position.', M.ERR);
+        }
+    },
+
+    /**
+     * This method is called automatically as the error callback of the
+     * update(). After updating this location object, the external error
+     * callback is called.
+     *
+     * @param {Object} position The error that occurred.
+     */
+    onUpdateErrorInternal: function(error) {
+        if(this.caller) {
+            if(this.onUpdateError) {
+                this.bindToCaller(this.caller, this.onUpdateError, error)();
+            } else {
+                M.Logger.log('No error callback specified for update() of M.Location.', M.INFO);
+            }
+        } else {
+            M.Logger.log('No caller specified for update() of M.Location.', M.WARN);
+        }
     }
 
 });
@@ -3937,130 +3937,6 @@ M.DataProvider = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      18.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * M.ModelAttribute encapsulates all meta information about a model record's property:
- * * is it required?
- * * what data type is it of? (important for mapping to relational database schemas)
- * * what validators shall be applied
- * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
- * Each ModelAttribute is saved with the record properties name as key.
- * That means:
- *
- * model.record[propA] is the value of the property.
- * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
- *
- * @extends M.Object
- */
-M.ModelAttribute = M.Object.extend(
-/** @scope M.ModelAttribute.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ModelAttribute',
-
-    /**
-     * The data type for the model record property.
-     * Extremely important e.g. to map model to relational database table.
-     *
-     * @type String
-     */
-    dataType: null,
-
-    /**
-     * Indicates whether this property is required to be set before persisting.
-     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
-     * 
-     * @type Boolean
-     */
-    isRequired: NO,
-
-    /**
-     * Indicates whether an update has been performed on this property with the set method or not.
-     * @type Boolean
-     */
-    isUpdated: NO,
-
-    /**
-     * Array containing all validators for this model record property.
-     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
-     * @type Object
-     */
-    validators: null,
-
-    /**
-     * Record properties that define references have their referenced entity saved here.
-     * @type Object
-     */
-    refEntity: null,
-
-    /**
-     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
-     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
-     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
-     */
-    validate: function(obj) {
-        var isValid = YES;
-        for (var i in this.validators) {
-            if(!this.validators[i].validate(obj)) {
-               isValid = NO; 
-            }
-        }
-        return isValid;
-    }
-});
-
-//
-// CLASS METHODS
-//
-
-/**
- * Returns a model attribute.
- *
- * @param dataType The data type of the attribute: e.g. String 
- * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
- * @returns {Object} {@link M.ModelAttribute} object
- */
-M.ModelAttribute.attr = function(dataType, opts) {
-    //console.log('attr in model_attribute');
-    if (!opts) {
-        opts = {};
-    }
-    if (!opts.dataType) {
-        opts.dataType = dataType || 'String';
-    }
-
-    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
-    if (!opts.validators && opts.isRequired) {
-        opts.validators = [];
-    }
-
-    /* if model attribute is required, presence validator is automatically inserted */
-    if (opts.isRequired) {
-        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
-        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
-            opts.validators.push(M.PresenceValidator);
-        }
-    }
-    return this.extend(opts);
-};
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4321,6 +4197,130 @@ M.DataProviderHybrid = M.Object.extend(
         }
     }
 });
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      18.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * M.ModelAttribute encapsulates all meta information about a model record's property:
+ * * is it required?
+ * * what data type is it of? (important for mapping to relational database schemas)
+ * * what validators shall be applied
+ * All M.ModelAttributes for a model record are saved under {@link M.Model#__meta} property of a model.
+ * Each ModelAttribute is saved with the record properties name as key.
+ * That means:
+ *
+ * model.record[propA] is the value of the property.
+ * model.__meta[propA] is the {@link M.ModelAttribute} object for the record property.
+ *
+ * @extends M.Object
+ */
+M.ModelAttribute = M.Object.extend(
+/** @scope M.ModelAttribute.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ModelAttribute',
+
+    /**
+     * The data type for the model record property.
+     * Extremely important e.g. to map model to relational database table.
+     *
+     * @type String
+     */
+    dataType: null,
+
+    /**
+     * Indicates whether this property is required to be set before persisting.
+     * If YES, then automatically @link M.PresenceValidator is added to the property, to check the presence.
+     * 
+     * @type Boolean
+     */
+    isRequired: NO,
+
+    /**
+     * Indicates whether an update has been performed on this property with the set method or not.
+     * @type Boolean
+     */
+    isUpdated: NO,
+
+    /**
+     * Array containing all validators for this model record property.
+     * E.g. [@link M.PresenceValidator, @link M.NumberValidator]
+     * @type Object
+     */
+    validators: null,
+
+    /**
+     * Record properties that define references have their referenced entity saved here.
+     * @type Object
+     */
+    refEntity: null,
+
+    /**
+     * Iterates over validators array and calls validate on each validator with the param object passed to the validator.
+     * @param {Object} obj The parameter object containing the model id, the record as M.ModelAttribute object and the value of the property.
+     * @returns {Boolean} Indicates wheter the property is valid (YES|true) or invalid (NO|false).
+     */
+    validate: function(obj) {
+        var isValid = YES;
+        for (var i in this.validators) {
+            if(!this.validators[i].validate(obj)) {
+               isValid = NO; 
+            }
+        }
+        return isValid;
+    }
+});
+
+//
+// CLASS METHODS
+//
+
+/**
+ * Returns a model attribute.
+ *
+ * @param dataType The data type of the attribute: e.g. String 
+ * @param opts options for the attribute, such as defaultValue, isRequired flag, etc. ...
+ * @returns {Object} {@link M.ModelAttribute} object
+ */
+M.ModelAttribute.attr = function(dataType, opts) {
+    //console.log('attr in model_attribute');
+    if (!opts) {
+        opts = {};
+    }
+    if (!opts.dataType) {
+        opts.dataType = dataType || 'String';
+    }
+
+    /* if validators array is not set and attribute is required, define validators as an empty array, (this is for adding M.PresenceValidator automatically */
+    if (!opts.validators && opts.isRequired) {
+        opts.validators = [];
+    }
+
+    /* if model attribute is required, presence validator is automatically inserted */
+    if (opts.isRequired) {
+        /* check if custom presence validator has been added to validators array, if not add the presence validator*/
+        if( _.select(opts.validators, function(v){return v.type === 'M.PresenceValidator'}).length === 0) {
+            opts.validators.push(M.PresenceValidator);
+        }
+    }
+    return this.extend(opts);
+};
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5270,43 +5270,6 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      20.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
- *
- * @extends M.DataProvider
- */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
 // Date:      15.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5628,6 +5591,43 @@ M.DataProviderLocalStorage = M.DataProvider.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      20.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      02.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5913,58 +5913,72 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a String if it represents a valid e-mail adress.
+ * Validates if it represents a minus number. Works with numbers and strings containing just a number.
  *
  * @extends M.Validator
  */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
+M.NotMinusValidator = M.Validator.extend(
+/** @scope M.NotMinusValidator.prototype */ {
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NotMinusValidator',
 
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+    /**
+     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
+     * if string value is checked if ^prefixed with a minus sign ( - ).
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
 
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
+       if(typeof(obj.value) === 'number') {
+           if(obj.value < 0) {
+               var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
 
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
+       if(typeof(obj.value) === 'string') {
+           var pattern = /-/;
+           if(this.pattern.exec(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6049,89 +6063,6 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates if it represents a minus number. Works with numbers and strings containing just a number.
- *
- * @extends M.Validator
- */
-M.NotMinusValidator = M.Validator.extend(
-/** @scope M.NotMinusValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.NotMinusValidator',
-
-    /**
-     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
-     * if string value is checked if ^prefixed with a minus sign ( - ).
-     *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-
-       if(typeof(obj.value) === 'number') {
-           if(obj.value < 0) {
-               var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-
-       if(typeof(obj.value) === 'string') {
-           var pattern = /-/;
-           if(this.pattern.exec(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
-    }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
  * Validates a string if it matches a phone number pattern.
  *
  * @extends M.Validator
@@ -6186,6 +6117,75 @@ M.PhoneValidator = M.Validator.extend(
         return NO;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
