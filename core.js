@@ -541,6 +541,81 @@ M.Request = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      03.05.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.DeviceSwitch defines a prototype for using device specific objects within
+ * an application developed with The M-Project.
+ *
+ * @extends M.Object
+ */
+M.DeviceSwitch = M.Object.extend(
+/** @scope M.DeviceSwitch.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DeviceSwitch',
+
+    /**
+     * The name of the current device.
+     *
+     * @type String
+     */
+    device: null,
+
+    /**
+     * This method returns the specialized string for the given key based on
+     * the current device/environment.
+     *
+     * @param {String} key The key to the specialized string.
+     * @returns {String} The specialized string based on the current device/environment.
+     */
+    s: function(key) {
+        return this.specialize(key);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @returns {String} The localizes string based on the current application language.
+     */
+    specialize: function(key) {
+        if(!this.device) {
+            M.Logger.log('No device specified!', M.ERR);
+            return null;
+        }
+
+        if(this[this.device] && this[this.device][key]) {
+            return this[this.device][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
+            return null;
+        }
+    }
+
+});
+
+M.DS = M.DeviceSwitch;
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -1107,353 +1182,6 @@ M.Date = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * A constant value for being offline.
- *
- * @type String
- */
-M.OFFLINE = 'offline';
-
-/**
- * A constant value for being online.
- *
- * @type String
- */
-M.ONLINE = 'online';
-
-/**
- * A constant value for portrait orientation mode.
- *
- * @type String
- */
-M.PORTRAIT_TOP = 0;
-
-/**
- * A constant value for inverse portrait orientation mode.
- *
- * @type String
- */
-M.PORTRAIT_BOTTOM = 180;
-
-/**
- * A constant value for landscape right orientation mode.
- *
- * @type String
- */
-M.LANDSCAPE_RIGHT = -90;
-
-/**
- * A constant value for landscape left orientation mode.
- *
- * @type String
- */
-M.LANDSCAPE_LEFT = 90;
-
-/**
- * @class
- *
- * M.Environment encapsulates methods to retrieve information about the
- * environment, like browser used, platform, user agent (based on navigator
- * object) or whether or not the device is online (determined via an ajax
- * request).
- *
- * @extends M.Object
- */
-M.Environment = M.Object.extend(
-/** @scope M.Environment.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Environment',
-
-    /**
-     * This property contains a custom configuration of the awesome modernizr
-     * library We currently only use this for detecting supported input types
-     * of the browser.
-     *
-     * @private
-     * @type Object
-     */
-    modernizr: {
-        inputtypes: (function(props){var docElement=document.documentElement;var inputs={};var smile=":)";var inputElem=document.createElement("input");for(var i=0,bool,inputElemType,defaultView,len=props.length;i<len;i++){inputElem.setAttribute("type",inputElemType=props[i]);bool=inputElem.type!=="text";if(bool){inputElem.value=smile;inputElem.style.cssText="position:absolute;visibility:hidden;";if(/^range$/.test(inputElemType)&&inputElem.style.WebkitAppearance!==undefined){docElement.appendChild(inputElem);defaultView=document.defaultView;bool=defaultView.getComputedStyle&&defaultView.getComputedStyle(inputElem,null).WebkitAppearance!=="textfield"&&inputElem.offsetHeight!==0;docElement.removeChild(inputElem)}else if(/^(search|tel)$/.test(inputElemType)){}else if(/^(url|email)$/.test(inputElemType)){bool=inputElem.checkValidity&&inputElem.checkValidity()===false;}else if(/^color$/.test(inputElemType)){docElement.appendChild(inputElem);bool=inputElem.value!=smile;docElement.removeChild(inputElem)}else{bool=inputElem.value!=smile}}inputs[props[i]]=!!bool;}return inputs})("search tel url email datetime date month week time datetime-local number range color".split(" ")),
-        inputattributes: (function( props ) { var docElement=document.documentElement;var attrs={};var smile=":)";var inputElem=document.createElement("input"); for ( var i = 0, len = props.length; i < len; i++ ) { attrs[ props[i] ] = !!(props[i] in inputElem); } if (attrs.list){ attrs.list = !!(document.createElement('datalist') && window.HTMLDataListElement); } return attrs; })('autocomplete autofocus list placeholder max min multiple pattern required step'.split(' '))
-    },
-
-    /**
-     * Checks the connection status by sending an ajax request
-     * and waiting for the response to decide whether online or offline.
-     *
-     * The callback is called when the request returns successful or times out. The parameter to callback is a
-     * string saying either offline or online.
-     *
-     * @param {Object} callback The object, consisting of target and action, defining the callback.
-     * @param {String} url Optional. The request url. When not given, a request is made to http://www.google.de/images/logos/ps_logo2.png.
-     */
-    getConnectionStatus: function(callback, url){
-        url = url ? url : 'http://www.google.de/images/logos/ps_logo2.png';
-        var that = this;
-        var image = M.ImageView.design({
-            value: url,
-            events: {
-                load: {
-                    action: function(id) {
-                        var image = M.ViewManager.getViewById(id);
-                        image.destroy();
-                        if(callback && M.EventDispatcher.checkHandler(callback, 'online')){
-                            that.bindToCaller(callback.target, callback.action, M.ONLINE)();
-                        }
-                    }
-                },
-                error: {
-                    action: function(id) {
-                        var image = M.ViewManager.getViewById(id);
-                        image.destroy();
-                        if(callback && M.EventDispatcher.checkHandler(callback, 'offline')){
-                            that.bindToCaller(callback.target, callback.action, M.OFFLINE)();
-                        }
-                    }
-                }
-            }
-        });
-        $('body').append(image.render());
-        image.registerEvents();
-    },
-
-    /**
-     * Returns the userAgent as received from navigator object.
-     * E.g. "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7"
-     *
-     * @returns {String} The user agent.
-     */
-    getUserAgent: function() {
-        return navigator.userAgent;
-    },
-
-    /**
-     * Returns the platform as received from navigator object.
-     * E.g. "MacIntel"
-     *
-     * @returns {String} The user's platform.
-     */
-    getPlatform: function() {
-        return navigator.platform;
-    },
-
-    /**
-     * Returns the currently available width and height of the browser window
-     * as an array:
-     *
-     * 0 -> width
-     * 1 -> height
-     *
-     * @returns {Array} The width and height of the user's browser window.
-     */
-    getSize: function() {
-        var viewportWidth;
-        var viewportHeight;
-
-        if(typeof window.innerWidth != 'undefined') {
-            viewportWidth = window.innerWidth,
-            viewportHeight = window.innerHeight
-        } else if(typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
-            viewportWidth = document.documentElement.clientWidth,
-            viewportHeight = document.documentElement.clientHeight
-        } else {
-            viewportWidth = document.getElementsByTagName('body')[0].clientWidth,
-            viewportHeight = document.getElementsByTagName('body')[0].clientHeight
-        }
-
-        return [viewportWidth, viewportHeight];
-    },
-
-    /**
-     * Returns the currently available width of the browser window.
-     *
-     * @returns {Number} The width of the user's browser window.
-     */
-    getWidth: function() {
-        return this.getSize()[0];
-    },
-
-    /**
-     * Returns the currently available height of the browser window.
-     *
-     * @returns {Number} The height of the user's browser window.
-     */
-    getHeight: function() {
-        return this.getSize()[1];
-    },
-
-    /**
-     * Returns the total size of the page/document, means not only the area of the browser window.
-     *
-     * 0 -> width
-     * 1 -> height
-     *
-     * @returns {Array} The width and height of the document.
-     */
-    getTotalSize: function() {
-        return [this.getTotalWidth(), this.getTotalHeight()];
-    },
-
-    /**
-     * Returns the total width of the page/document, means not only the area of the browser window.
-     * Uses jQuery.
-     *
-     * @returns {Number} The total width of the document.
-     */
-    getTotalWidth: function() {
-        return $(document).width();
-    },
-
-    /**
-     * Returns the total height of the page/document, means not only the area of the browser window.
-     * Uses jQuery.
-     *
-     * @returns {Number} The total height of the document.
-     */
-    getTotalHeight: function() {
-        return $(document).height();
-    },
-
-    /**
-     * This method returns the device's current orientation, depending on whether
-     * or not the device is capable of detecting the current orientation. If the
-     * device is unable to detect the current orientation, this method will return
-     * NO.
-     *
-     * Possible return values are:
-     *
-     *   - M.PORTRAIT
-     *   - M.LANDSCAPE_LEFT
-     *   - M.LANDSCAPE_RIGHT
-     *
-     * @return {Number|Boolean} The orientation type as a constant value. (If the orientation can not be detected: NO.)
-     */
-    getOrientation: function() {
-        switch(window.orientation) {
-            case 0:
-                return M.PORTRAIT_TOP;
-            case false:
-                return M.PORTRAIT_BOTTOM;
-            case 90:
-                return M.LANDSCAPE_LEFT;
-            case -90:
-                return M.LANDSCAPE_RIGHT;
-            default:
-                M.Logger.log('This device does not support orientation detection.', M.WARN);
-                return NO;
-        }
-    },
-
-    /**
-     * This method checks if the browser supports a certain input type specified with
-     * HTML5. This check is based on Modernizr. For further information abbout the
-     * input types, take a look at the W3C spec:
-     * http://dev.w3.org/html5/spec/Overview.html#states-of-the-type-attribute
-     *
-     * @param {String} inputTye The HTML5 input type to be checked.
-     * @return {Boolean} A flag telling you if the input type is supported or not.
-     */
-    supportsInputType: function(inputType) {
-        if(this.modernizr.inputtypes && this.modernizr.inputtypes[inputType] === YES) {
-            return YES;
-        }
-        return NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      03.05.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.DeviceSwitch defines a prototype for using device specific objects within
- * an application developed with The M-Project.
- *
- * @extends M.Object
- */
-M.DeviceSwitch = M.Object.extend(
-/** @scope M.DeviceSwitch.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DeviceSwitch',
-
-    /**
-     * The name of the current device.
-     *
-     * @type String
-     */
-    device: null,
-
-    /**
-     * This method returns the specialized string for the given key based on
-     * the current device/environment.
-     *
-     * @param {String} key The key to the specialized string.
-     * @returns {String} The specialized string based on the current device/environment.
-     */
-    s: function(key) {
-        return this.specialize(key);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @returns {String} The localizes string based on the current application language.
-     */
-    specialize: function(key) {
-        if(!this.device) {
-            M.Logger.log('No device specified!', M.ERR);
-            return null;
-        }
-
-        if(this[this.device] && this[this.device][key]) {
-            return this[this.device][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for device \'' + this.device + '\'.', M.WARN);
-            return null;
-        }
-    }
-
-});
-
-M.DS = M.DeviceSwitch;
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      29.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1754,6 +1482,278 @@ M.ImagePreloader = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * A constant value for being offline.
+ *
+ * @type String
+ */
+M.OFFLINE = 'offline';
+
+/**
+ * A constant value for being online.
+ *
+ * @type String
+ */
+M.ONLINE = 'online';
+
+/**
+ * A constant value for portrait orientation mode.
+ *
+ * @type String
+ */
+M.PORTRAIT_TOP = 0;
+
+/**
+ * A constant value for inverse portrait orientation mode.
+ *
+ * @type String
+ */
+M.PORTRAIT_BOTTOM = 180;
+
+/**
+ * A constant value for landscape right orientation mode.
+ *
+ * @type String
+ */
+M.LANDSCAPE_RIGHT = -90;
+
+/**
+ * A constant value for landscape left orientation mode.
+ *
+ * @type String
+ */
+M.LANDSCAPE_LEFT = 90;
+
+/**
+ * @class
+ *
+ * M.Environment encapsulates methods to retrieve information about the
+ * environment, like browser used, platform, user agent (based on navigator
+ * object) or whether or not the device is online (determined via an ajax
+ * request).
+ *
+ * @extends M.Object
+ */
+M.Environment = M.Object.extend(
+/** @scope M.Environment.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Environment',
+
+    /**
+     * This property contains a custom configuration of the awesome modernizr
+     * library We currently only use this for detecting supported input types
+     * of the browser.
+     *
+     * @private
+     * @type Object
+     */
+    modernizr: {
+        inputtypes: (function(props){var docElement=document.documentElement;var inputs={};var smile=":)";var inputElem=document.createElement("input");for(var i=0,bool,inputElemType,defaultView,len=props.length;i<len;i++){inputElem.setAttribute("type",inputElemType=props[i]);bool=inputElem.type!=="text";if(bool){inputElem.value=smile;inputElem.style.cssText="position:absolute;visibility:hidden;";if(/^range$/.test(inputElemType)&&inputElem.style.WebkitAppearance!==undefined){docElement.appendChild(inputElem);defaultView=document.defaultView;bool=defaultView.getComputedStyle&&defaultView.getComputedStyle(inputElem,null).WebkitAppearance!=="textfield"&&inputElem.offsetHeight!==0;docElement.removeChild(inputElem)}else if(/^(search|tel)$/.test(inputElemType)){}else if(/^(url|email)$/.test(inputElemType)){bool=inputElem.checkValidity&&inputElem.checkValidity()===false;}else if(/^color$/.test(inputElemType)){docElement.appendChild(inputElem);bool=inputElem.value!=smile;docElement.removeChild(inputElem)}else{bool=inputElem.value!=smile}}inputs[props[i]]=!!bool;}return inputs})("search tel url email datetime date month week time datetime-local number range color".split(" ")),
+        inputattributes: (function( props ) { var docElement=document.documentElement;var attrs={};var smile=":)";var inputElem=document.createElement("input"); for ( var i = 0, len = props.length; i < len; i++ ) { attrs[ props[i] ] = !!(props[i] in inputElem); } if (attrs.list){ attrs.list = !!(document.createElement('datalist') && window.HTMLDataListElement); } return attrs; })('autocomplete autofocus list placeholder max min multiple pattern required step'.split(' '))
+    },
+
+    /**
+     * Checks the connection status by sending an ajax request
+     * and waiting for the response to decide whether online or offline.
+     *
+     * The callback is called when the request returns successful or times out. The parameter to callback is a
+     * string saying either offline or online.
+     *
+     * @param {Object} callback The object, consisting of target and action, defining the callback.
+     * @param {String} url Optional. The request url. When not given, a request is made to http://www.google.de/images/logos/ps_logo2.png.
+     */
+    getConnectionStatus: function(callback, url){
+        url = url ? url : 'http://www.google.de/images/logos/ps_logo2.png';
+        var that = this;
+        var image = M.ImageView.design({
+            value: url,
+            events: {
+                load: {
+                    action: function(id) {
+                        var image = M.ViewManager.getViewById(id);
+                        image.destroy();
+                        if(callback && M.EventDispatcher.checkHandler(callback, 'online')){
+                            that.bindToCaller(callback.target, callback.action, M.ONLINE)();
+                        }
+                    }
+                },
+                error: {
+                    action: function(id) {
+                        var image = M.ViewManager.getViewById(id);
+                        image.destroy();
+                        if(callback && M.EventDispatcher.checkHandler(callback, 'offline')){
+                            that.bindToCaller(callback.target, callback.action, M.OFFLINE)();
+                        }
+                    }
+                }
+            }
+        });
+        $('body').append(image.render());
+        image.registerEvents();
+    },
+
+    /**
+     * Returns the userAgent as received from navigator object.
+     * E.g. "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7"
+     *
+     * @returns {String} The user agent.
+     */
+    getUserAgent: function() {
+        return navigator.userAgent;
+    },
+
+    /**
+     * Returns the platform as received from navigator object.
+     * E.g. "MacIntel"
+     *
+     * @returns {String} The user's platform.
+     */
+    getPlatform: function() {
+        return navigator.platform;
+    },
+
+    /**
+     * Returns the currently available width and height of the browser window
+     * as an array:
+     *
+     * 0 -> width
+     * 1 -> height
+     *
+     * @returns {Array} The width and height of the user's browser window.
+     */
+    getSize: function() {
+        var viewportWidth;
+        var viewportHeight;
+
+        if(typeof window.innerWidth != 'undefined') {
+            viewportWidth = window.innerWidth,
+            viewportHeight = window.innerHeight
+        } else if(typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
+            viewportWidth = document.documentElement.clientWidth,
+            viewportHeight = document.documentElement.clientHeight
+        } else {
+            viewportWidth = document.getElementsByTagName('body')[0].clientWidth,
+            viewportHeight = document.getElementsByTagName('body')[0].clientHeight
+        }
+
+        return [viewportWidth, viewportHeight];
+    },
+
+    /**
+     * Returns the currently available width of the browser window.
+     *
+     * @returns {Number} The width of the user's browser window.
+     */
+    getWidth: function() {
+        return this.getSize()[0];
+    },
+
+    /**
+     * Returns the currently available height of the browser window.
+     *
+     * @returns {Number} The height of the user's browser window.
+     */
+    getHeight: function() {
+        return this.getSize()[1];
+    },
+
+    /**
+     * Returns the total size of the page/document, means not only the area of the browser window.
+     *
+     * 0 -> width
+     * 1 -> height
+     *
+     * @returns {Array} The width and height of the document.
+     */
+    getTotalSize: function() {
+        return [this.getTotalWidth(), this.getTotalHeight()];
+    },
+
+    /**
+     * Returns the total width of the page/document, means not only the area of the browser window.
+     * Uses jQuery.
+     *
+     * @returns {Number} The total width of the document.
+     */
+    getTotalWidth: function() {
+        return $(document).width();
+    },
+
+    /**
+     * Returns the total height of the page/document, means not only the area of the browser window.
+     * Uses jQuery.
+     *
+     * @returns {Number} The total height of the document.
+     */
+    getTotalHeight: function() {
+        return $(document).height();
+    },
+
+    /**
+     * This method returns the device's current orientation, depending on whether
+     * or not the device is capable of detecting the current orientation. If the
+     * device is unable to detect the current orientation, this method will return
+     * NO.
+     *
+     * Possible return values are:
+     *
+     *   - M.PORTRAIT
+     *   - M.LANDSCAPE_LEFT
+     *   - M.LANDSCAPE_RIGHT
+     *
+     * @return {Number|Boolean} The orientation type as a constant value. (If the orientation can not be detected: NO.)
+     */
+    getOrientation: function() {
+        switch(window.orientation) {
+            case 0:
+                return M.PORTRAIT_TOP;
+            case false:
+                return M.PORTRAIT_BOTTOM;
+            case 90:
+                return M.LANDSCAPE_LEFT;
+            case -90:
+                return M.LANDSCAPE_RIGHT;
+            default:
+                M.Logger.log('This device does not support orientation detection.', M.WARN);
+                return NO;
+        }
+    },
+
+    /**
+     * This method checks if the browser supports a certain input type specified with
+     * HTML5. This check is based on Modernizr. For further information abbout the
+     * input types, take a look at the W3C spec:
+     * http://dev.w3.org/html5/spec/Overview.html#states-of-the-type-attribute
+     *
+     * @param {String} inputTye The HTML5 input type to be checked.
+     * @return {Boolean} A flag telling you if the input type is supported or not.
+     */
+    supportsInputType: function(inputType) {
+        if(this.modernizr.inputtypes && this.modernizr.inputtypes[inputType] === YES) {
+            return YES;
+        }
+        return NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      24.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1942,6 +1942,140 @@ M.Location = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * The string builder is a utility object to join multiple strings to one single string.
+ *
+ * @extends M.Object
+ */
+M.StringBuilder = M.Object.extend(
+/** @scope M.StringBuilder.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.StringBuilder',
+
+    /**
+     * An array containing all strings used within this string builder.
+     *
+     * @type Array
+     */
+    strings: null,
+
+    /**
+     * This method appends the given string, 'value', to its internal list of strings. With
+     * an additional parameter 'count', you can force this method to add the string multiple
+     * times.
+     *
+     * @param {String} value The value of the string to be added.
+     * @param {Number} count The number to specify how many times the string will be added.
+     * @returns {Boolean} The result of this operation: success/YES, error/NO.
+     */
+    append: function (value, count) {
+        count = typeof(count) === 'number' ? count : 1;
+        if (value) {
+            for(var i = 1; i <= count; i++) {
+                this.strings.push(value);
+            }
+            return YES;
+        }
+    },
+
+    /**
+     * This method clears the string builders internal string list.
+     */
+    clear: function () {
+        this.strings.length = 0;
+    },
+
+    /**
+     * This method returns a single string, consisting of all previously appended strings. They
+     * are concatenated in the order they were appended to the string builder.
+     *
+     * @returns {String} The concatenated string of all appended strings.
+     */
+    toString: function () {
+        return this.strings.join("");
+    },
+
+    /**
+     * This method creates a new string builder instance.
+     *
+     * @param {String} str The initial string for this string builder.
+     */
+    create: function(str) {
+        var stringBuilder = this.extend({
+            strings: []
+        });
+        stringBuilder.append(str);
+        
+        return stringBuilder;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+// Returns a unique identifier
+
+m_require('core/foundation/object.js');
+
+M.UniqueId = M.Object.extend({
+    uuid: function(len, radix) {
+        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = [];
+        //len = len ? len : 32; 
+        radix = radix || chars.length;
+        var i;
+
+        if (len) {
+            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+        } else {
+            // rfc4122, version 4 form
+            var r;
+
+            // rfc4122 requires these characters
+            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+            uuid[14] = '4';
+
+            // Fill in random data.  At i==19 set the high bits of clock sequence as
+            // per rfc4122, sec. 4.1.5
+            for (i = 0; i < 36; i++) {
+                if (!uuid[i]) {
+                    r = 0 | Math.random() * 16;
+                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+                }
+            }
+        }
+        return uuid.join('');
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -2091,140 +2225,6 @@ M.Math = M.Object.extend(
         return nearestNumber;
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * The string builder is a utility object to join multiple strings to one single string.
- *
- * @extends M.Object
- */
-M.StringBuilder = M.Object.extend(
-/** @scope M.StringBuilder.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.StringBuilder',
-
-    /**
-     * An array containing all strings used within this string builder.
-     *
-     * @type Array
-     */
-    strings: null,
-
-    /**
-     * This method appends the given string, 'value', to its internal list of strings. With
-     * an additional parameter 'count', you can force this method to add the string multiple
-     * times.
-     *
-     * @param {String} value The value of the string to be added.
-     * @param {Number} count The number to specify how many times the string will be added.
-     * @returns {Boolean} The result of this operation: success/YES, error/NO.
-     */
-    append: function (value, count) {
-        count = typeof(count) === 'number' ? count : 1;
-        if (value) {
-            for(var i = 1; i <= count; i++) {
-                this.strings.push(value);
-            }
-            return YES;
-        }
-    },
-
-    /**
-     * This method clears the string builders internal string list.
-     */
-    clear: function () {
-        this.strings.length = 0;
-    },
-
-    /**
-     * This method returns a single string, consisting of all previously appended strings. They
-     * are concatenated in the order they were appended to the string builder.
-     *
-     * @returns {String} The concatenated string of all appended strings.
-     */
-    toString: function () {
-        return this.strings.join("");
-    },
-
-    /**
-     * This method creates a new string builder instance.
-     *
-     * @param {String} str The initial string for this string builder.
-     */
-    create: function(str) {
-        var stringBuilder = this.extend({
-            strings: []
-        });
-        stringBuilder.append(str);
-        
-        return stringBuilder;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-// Returns a unique identifier
-
-m_require('core/foundation/object.js');
-
-M.UniqueId = M.Object.extend({
-    uuid: function(len, radix) {
-        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uuid = [];
-        //len = len ? len : 32; 
-        radix = radix || chars.length;
-        var i;
-
-        if (len) {
-            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
-        } else {
-            // rfc4122, version 4 form
-            var r;
-
-            // rfc4122 requires these characters
-            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-            uuid[14] = '4';
-
-            // Fill in random data.  At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
-            for (i = 0; i < 36; i++) {
-                if (!uuid[i]) {
-                    r = 0 | Math.random() * 16;
-                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-                }
-            }
-        }
-        return uuid.join('');
-    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -3862,6 +3862,80 @@ M.DataConsumer = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      28.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * Wraps access to any defined data source and is the only interface for a model to
+ * access this data.
+ *
+ * @extends M.Object
+ */
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DataProvider',
+
+    /**
+     * Indicates whether data provider operates asynchronously or not.
+     *
+     * @type Boolean
+     */
+    isAsync: NO,
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    find: function(query) {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    save: function() {
+        
+    },
+
+    /**
+     * Interface method.
+     * Implemented by specific data provider.
+     */
+    del: function() {
+
+    },
+
+    /**
+     * Checks if object has certain property.
+     *
+     * @param {obj} obj The object to check.
+     * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
+     */
+    check: function(obj, prop) {
+       return obj[prop] ? YES : NO;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      25.02.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5108,80 +5182,6 @@ M.Model = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      28.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * Wraps access to any defined data source and is the only interface for a model to
- * access this data.
- *
- * @extends M.Object
- */
-M.DataProvider = M.Object.extend(
-/** @scope M.DataProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DataProvider',
-
-    /**
-     * Indicates whether data provider operates asynchronously or not.
-     *
-     * @type Boolean
-     */
-    isAsync: NO,
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    find: function(query) {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    save: function() {
-        
-    },
-
-    /**
-     * Interface method.
-     * Implemented by specific data provider.
-     */
-    del: function() {
-
-    },
-
-    /**
-     * Checks if object has certain property.
-     *
-     * @param {obj} obj The object to check.
-     * @param {String} prop The property to check for.
-     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
-     */
-    check: function(obj, prop) {
-       return obj[prop] ? YES : NO;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      29.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5270,84 +5270,541 @@ M.Observable = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      22.11.2010
+// Date:      20.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/datastore/validator.js')
+m_require('core/datastore/data_provider.js');
 
 /**
  * @class
  *
- * Validates if it represents a minus number. Works with numbers and strings containing just a number.
+ * To be used when no data provider needed for model.
+ * Prints warning messages when calling CRUD functions.
  *
- * @extends M.Validator
+ * @extends M.DataProvider
  */
-M.NotMinusValidator = M.Validator.extend(
-/** @scope M.NotMinusValidator.prototype */ {
+M.DataProviderDummy = M.DataProvider.extend(
+/** @scope M.DummyProvider.prototype */ {
+
+    find: function() {
+        M.Logger.log('DummyProvider does not support find().', M.WARN);
+    },
+
+    save: function() {
+        M.Logger.log('DummyProvider does not support save().', M.WARN);
+    },
+
+    del: function() {
+        M.Logger.log('DummyProvider does not support del().', M.WARN);
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      15.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to LocalStorage (in-browser key value store).
+ * LocalStorage is an in-browser key-value store to persist data.
+ * This data provider persists model records as JSON strings with their name and id as key.
+ * When fetching these strings from storage, their automatically converted in their corresponding model records.
+ *
+ * Operates synchronous.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderLocalStorage = M.DataProvider.extend(
+    /** @scope M.DataProviderLocalStorage.prototype */ {
 
     /**
      * The type of this object.
-     *
      * @type String
      */
-    type: 'M.NotMinusValidator',
+    type:'M.DataProviderLocalStorage',
 
     /**
-     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
-     * if string value is checked if ^prefixed with a minus sign ( - ).
+     * Saves a model record to the local storage
+     * The key is the model record's name combined with id, value is stringified object
+     * e.g.
+     * Note_123 => '{ text: 'buy some food' }'
      *
-     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     * @param {Object} that (is a model).
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
      */
-    validate: function(obj) {
+    save:function (obj) {
+        try {
+            //console.log(obj);
+            /* add m_id to saved object */
+            /*var a = JSON.stringify(obj.model.record).split('{', 2);
+             a[2] = a[1];
+             a[1] = '"m_id":' + obj.model.m_id + ',';
+             a[0] = '{';
+             var value = a.join('');*/
+            var value = JSON.stringify(obj.model.record);
+        	if ((typeof logSave != "undefined") && logSave) {
+        		writeToLog("saving '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "': " + value);
+        	}
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
+            return YES;
+        } catch (e) {
+            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
+            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
+            return NO;
+        }
 
-       if(typeof(obj.value) === 'number') {
-           if(obj.value < 0) {
-               var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
-                    }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
+    },
 
-       if(typeof(obj.value) === 'string') {
-           var pattern = /-/;
-           if(this.pattern.exec(obj.value)) {
-                var err = M.Error.extend({
-                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
-                    code: M.ERR_VALIDATION_NOTMINUS,
-                    errObj: {
-                        msg: obj.value + ' is a minus value. This is not allowed.',
-                        modelId: obj.modelId,
-                        property: obj.property,
-                        viewId: obj.viewId,
-                        validator: 'NUMBER',
-                        onSuccess: obj.onSuccess,
-                        onError: obj.onError
+    /**
+     * deletes a model from the local storage
+     * key defines which one to delete
+     * e.g. key: 'Note_123'
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     */
+    del:function (obj) {
+        try {
+            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
+            	if ((typeof logDelete != "undefined") && logDelete) {
+            		writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
+            	}
+                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
+                obj.model.recordManager.remove(obj.model.m_id);
+                return YES;
+            }
+            return NO;
+        } catch (e) {
+            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
+            return NO;
+        }
+    },
+
+    /**
+     * Finds all models of type defined by modelName that match a key or a simple query.
+     * A simple query example: 'price < 2.21'
+     * Right now, no AND or OR joins possible, just one query constraint.
+     *
+     * If no query is passed, all models are returned by calling findAll()
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
+     * @throws Exception when query tries to compare two different data types
+     */
+    find:function (obj) {
+        if (obj.key) {
+            var record = this.findByKey(obj);
+            if (!record) {
+                return NO;
+            }
+            /*construct new model record with the saved id*/
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
+            var m_id = reg && reg[1] ? reg[1] : null;
+            if (!m_id) {
+                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
+                return NO;
+            }
+            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+            return m;
+        }
+
+        if (obj.query) {
+            var q = obj.query;
+            var missing = [];
+            if (!q.identifier) {
+                missing.push('identifier');
+            }
+            if (!q.operator) {
+                missing.push('operator');
+            }
+            if (q.value === undefined || q.value === null) {
+                missing.push('value');
+            }
+
+            if (missing.length > 0) {
+                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
+                return [];
+            }
+
+            var ident = q.identifier;
+            var op = q.operator;
+            var val = q.value;
+
+            var res = this.findAll(obj);
+
+            // check if query is correct in respect of data types
+            if(res && res.length > 0) {
+                var o = res[0];
+                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
+					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
+						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
+                }
+            }
+
+            switch (op) {
+                case '=':
+
+                    res = _.select(res, function (o) {
+                        return o.record[ident] === val;
+                    });
+                    break;
+
+                case '~=': // => includes (works only on strings)
+
+                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
+                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
                     }
-               });
-               this.validationErrors.push(err);
-               return NO;
-           }
-           return YES;
-       }
+                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
+                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
+
+                    for(var i in metaChars) {
+                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
+                    }
+
+                    // replace whitespaces with regex equivalent
+                    val = val.replace(/\s/g, '\\s');
+
+                    var regex = new RegExp(val);
+
+                    res = _.select(res, function(o) {
+                        return regex.test(o.record[ident]);
+                    });
+
+                    break;
+
+                case '!=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] !== val;
+                    });
+                    break;
+                case '<':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] < val;
+                    });
+                    break;
+                case '>':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] > val;
+                    });
+                    break;
+                case '<=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] <= val;
+                    });
+                    break;
+                case '>=':
+                    res = _.select(res, function (o) {
+                        return o.record[ident] >= val;
+                    });
+                    break;
+                default:
+                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
+                    res = [];
+                    break;
+
+            }
+
+            return res;
+
+        } else { /* if no query is passed, all models for modelName shall be returned */
+            return this.findAll(obj);
+        }
+    },
+
+    /**
+     * Finds a record identified by the key.
+     *
+     * @param {Object} The param object containing e.g. the query or the key.
+     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
+     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
+     * parameter passed.
+     */
+    findByKey:function (obj) {
+        if (obj.key) {
+
+            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
+            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
+            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
+
+            if (localStorage.getItem(obj.key)) { // if key is available
+                return this.buildRecord(obj.key, obj)
+            } else {
+                return NO;
+            }
+        }
+        M.Logger.log("Please provide a key.", M.WARN);
+        return NO;
+    },
+
+    /**
+     * Returns all models defined by modelName.
+     *
+     * Models are saved with key: Modelname_ID, e.g. Note_123
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
+     */
+    findAll:function (obj) {
+        var result = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
+
+                /*construct new model record with the saved m_id*/
+                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
+                var m_id = reg && reg[1] ? reg[1] : null;
+                if (!m_id) {
+                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
+                    continue; // if m_id does not exist, continue with next record element
+                }
+                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
+
+                result.push(m);
+            }
+        }
+        return result;
+    },
+
+    /**
+     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
+     * Means: check whether resulting object's properties have the data type define by their model attribute object.
+     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
+     * 'Date' set for this property.
+     *
+     * @param {String} key The key to fetch the element from LocalStorage
+     * @param {Object} obj The param object, includes model
+     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
+     */
+    buildRecord:function (key, obj) {
+        var record = JSON.parse(localStorage.getItem(key));
+        for (var i in record) {
+            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
+                switch (obj.model.__meta[i].dataType) {
+                    case 'Date':
+                        record[i] = M.Date.create(record[i]);
+                        break;
+                }
+            }
+        }
+        return record;
+    },
+
+    /**
+     * Returns all keys for model defined by modelName.
+     *
+     * @param {Object} obj The param obj, includes model
+     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
+     */
+    allKeys:function (obj) {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i)
+            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
+            if (regexResult) {
+                keys.push(k);
+            }
+        }
+        return keys;
     }
+
 });
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/data_provider.js');
+
+/**
+ * @class
+ *
+ * Encapsulates access to a remote storage, a json based web service.
+ *
+ * @extends M.DataProvider
+ */
+M.DataProviderRemoteStorage = M.DataProvider.extend(
+/** @scope M.RemoteStorageProvider.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.DataProviderRemoteStorage',
+
+    /**
+     * The type of this object.
+     * @type Object
+     */
+    config: null,
+
+    /* CRUD methods */
+
+    save: function(obj) {
+
+        var config = this.config[obj.model.name];
+        var result = null;
+        var dataResult = null;
+
+        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
+
+            dataResult = config.create.map(obj.model.record);
+
+            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
+
+        } else { // make an update request
+
+            dataResult = config.update.map(obj.model.record);
+
+            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
+
+            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
+                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
+            });
+        }
+
+    },
+
+    del: function(obj) {
+        var config = this.config[obj.model.name];
+        var delUrl = config.del.url(obj.model.get('ID'));
+        delUrl = config.url + delUrl;
+
+        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
+            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
+        });
+    },
+
+    find: function(obj) {
+        var config = this.config[obj.model.name];
+
+        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
+        readUrl = config.url + readUrl;
+
+        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
+
+    },
+
+    createModelsFromResult: function(data, callback, obj) {
+        var result = [];
+        var config = this.config[obj.model.name];
+        if(_.isArray(data)) {
+            for(var i in data) {
+                var res = data[i];
+                /* create model  record from result by first map with given mapper function before passing
+                 * to createRecord
+                 */
+                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
+            }
+        } else if(typeof(data) === 'object') {
+            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
+        }
+        callback(result);
+    },
+
+    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
+        var that = this;
+        var config = this.config[obj.model.name];
+
+        M.Request.init({
+            url: url,
+            method: type,
+            isJSON: YES,
+            contentType: 'application/JSON',
+            data: data ? data : null,
+            onSuccess: function(data, msg, xhr) {
+
+                /*
+                * delete from record manager if delete request was made.
+                */
+                if(opType === 'delete') {
+                    obj.model.recordManager.remove(obj.model.m_id);
+                }
+
+                /*
+                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
+                */
+                if(opType === 'create') {
+                    if(config.create.receiveIdentifier) {
+                        config.create.receiveIdentifier(data, obj.model);
+                    } else {
+                        M.Logger.log('No ID receiving operation defined.');
+                    }
+                }
+
+                /*
+                * call callback
+                */
+                if(obj.onSuccess) {
+                    if(obj.onSuccess.target && obj.onSuccess.action) {
+                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
+                        if(opType === 'read') {
+                            that.createModelsFromResult(data, obj.onSuccess, obj);
+                        } else {
+                            obj.onSuccess();
+                        }
+                    } else if(typeof(obj.onSuccess) === 'function') {
+                        that.createModelsFromResult(data, obj.onSuccess, obj);
+                    }
+
+                }else {
+                    M.Logger.log('No success callback given.', M.WARN);
+                }
+            },
+            onError: function(xhr, msg) {
+
+                var err = M.Error.extend({
+                    code: M.ERR_CONNECTION,
+                    msg: msg
+                });
+
+                if(obj.onError && typeof(obj.onError) === 'function') {
+                    obj.onError(err);
+                }
+                if(obj.onError && obj.onError.target && obj.onError.action) {
+                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
+                    obj.onError();
+                } else if (typeof(obj.onError) !== 'function') {
+                    M.Logger.log('No error callback given.', M.WARN);
+                }
+            },
+            beforeSend: beforeSend ? beforeSend : null
+        }).send();
+    },
+
+    /**
+     * creates a new data provider instance with the passed configuration parameters
+     * @param obj
+     */
+    configure: function(obj) {
+        console.log('configure() called.');
+        // maybe some value checking
+        return this.extend({
+            config:obj
+        });
+    }
+
+}); 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -5508,6 +5965,89 @@ M.EmailValidator = M.Validator.extend(
         return NO;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates if it represents a minus number. Works with numbers and strings containing just a number.
+ *
+ * @extends M.Validator
+ */
+M.NotMinusValidator = M.Validator.extend(
+/** @scope M.NotMinusValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.NotMinusValidator',
+
+    /**
+     * Validation method. Distinguishes between type of value: number or string. Both possible. If number value is checked if less than zero,
+     * if string value is checked if ^prefixed with a minus sign ( - ).
+     *
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+
+       if(typeof(obj.value) === 'number') {
+           if(obj.value < 0) {
+               var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+
+       if(typeof(obj.value) === 'string') {
+           var pattern = /-/;
+           if(this.pattern.exec(obj.value)) {
+                var err = M.Error.extend({
+                    msg: this.msg ? this.msg : obj.value + ' is a minus value. This is not allowed.',
+                    code: M.ERR_VALIDATION_NOTMINUS,
+                    errObj: {
+                        msg: obj.value + ' is a minus value. This is not allowed.',
+                        modelId: obj.modelId,
+                        property: obj.property,
+                        viewId: obj.viewId,
+                        validator: 'NUMBER',
+                        onSuccess: obj.onSuccess,
+                        onError: obj.onError
+                    }
+               });
+               this.validationErrors.push(err);
+               return NO;
+           }
+           return YES;
+       }
+    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5788,130 +6328,6 @@ M.UrlValidator = M.Validator.extend(
         });
         this.validationErrors.push(err);
         return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/model.js');
-
-/**
- * @class
- *
- * The root object for RecordManager.
- *
- * A RecordManager is used by a controllers and is an interface that makes it easy for him to
- * handle his model records.
- *
- * @extends M.Object
- */
-M.RecordManager = M.Object.extend(
-/** @scope M.RecordManager.prototype */ { 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.RecordManager',
-
-    /**
-     * Array containing all currently loaded records.
-     *
-     * @type Object
-     */
-    records: [],
-
-    /**
-     * Add the given model to the modelList.
-     *
-     * @param {Object} record
-     */
-    add: function(record) {
-        this.records.push(record);
-    },
-
-    /**
-     * Concats an array if records to the records array.
-     *
-     * @param {Object} record
-     */
-    addMany: function(arrOfRecords) {
-
-        if(_.isArray(arrOfRecords)){
-            this.records = this.records.concat(arrOfRecords);
-
-        } else if(arrOfRecords.type === 'M.Model') {
-            this.add(arrOfRecords);
-        }
-
-    },
-
-    /**
-     * Resets record list 
-     */
-    removeAll: function() {
-        this.records.length = 0;
-    },
-
-    /**
-     * Deletes a model record from the record array
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    remove: function(m_id) {
-
-        if(!m_id) {
-            M.Logger.log('No id given.', M.WARN);
-            return;
-        }
-
-        var rec = this.getRecordById(m_id);
-
-        if(rec) {
-            this.records = _.select(this.records, function(r){
-                return r.m_id !== rec.m_id;
-            });
-        }
-
-        delete rec;
-    },
-
-    /**
-    * Returns a record from the record array identified by the interal model id.
-    * @param {Number} m_id The internal model id of the model record.
-    * @deprecated
-    */
-    getRecordForId: function(m_id) {
-        return this.getRecordById(m_id);
-    },
-
-    /**
-     * Returns a record from the record array identified by the interal model id.
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    getRecordById: function(m_id) {
-        var record = _.detect(this.records, function(r){
-            return r.m_id === m_id;
-        });
-        return record;
-    },
-
-    /**
-     * Debug method to print out all content from the records array to the console.
-     */
-    dumpRecords: function() {
-        _.each(this.records, function(rec){
-            //console.log(rec.m_id);
-            console.log(rec);
-        });
     }
     
 });
@@ -6722,541 +7138,125 @@ M.View = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
-// Date:      20.12.2010
+// Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/datastore/data_provider.js');
+m_require('core/foundation/model.js');
 
 /**
  * @class
  *
- * To be used when no data provider needed for model.
- * Prints warning messages when calling CRUD functions.
+ * The root object for RecordManager.
  *
- * @extends M.DataProvider
+ * A RecordManager is used by a controllers and is an interface that makes it easy for him to
+ * handle his model records.
+ *
+ * @extends M.Object
  */
-M.DataProviderDummy = M.DataProvider.extend(
-/** @scope M.DummyProvider.prototype */ {
-
-    find: function() {
-        M.Logger.log('DummyProvider does not support find().', M.WARN);
-    },
-
-    save: function() {
-        M.Logger.log('DummyProvider does not support save().', M.WARN);
-    },
-
-    del: function() {
-        M.Logger.log('DummyProvider does not support del().', M.WARN);
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      15.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to LocalStorage (in-browser key value store).
- * LocalStorage is an in-browser key-value store to persist data.
- * This data provider persists model records as JSON strings with their name and id as key.
- * When fetching these strings from storage, their automatically converted in their corresponding model records.
- *
- * Operates synchronous.
- *
- * @extends M.DataProvider
- */
-M.DataProviderLocalStorage = M.DataProvider.extend(
-    /** @scope M.DataProviderLocalStorage.prototype */ {
-
+M.RecordManager = M.Object.extend(
+/** @scope M.RecordManager.prototype */ { 
     /**
      * The type of this object.
+     *
      * @type String
      */
-    type:'M.DataProviderLocalStorage',
+    type: 'M.RecordManager',
 
     /**
-     * Saves a model record to the local storage
-     * The key is the model record's name combined with id, value is stringified object
-     * e.g.
-     * Note_123 => '{ text: 'buy some food' }'
+     * Array containing all currently loaded records.
      *
-     * @param {Object} that (is a model).
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     * @type Object
      */
-    save:function (obj) {
-        try {
-            //console.log(obj);
-            /* add m_id to saved object */
-            /*var a = JSON.stringify(obj.model.record).split('{', 2);
-             a[2] = a[1];
-             a[1] = '"m_id":' + obj.model.m_id + ',';
-             a[0] = '{';
-             var value = a.join('');*/
-            var value = JSON.stringify(obj.model.record);
-        	if ((typeof logSave != "undefined") && logSave) {
-        		writeToLog("saving '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "': " + value);
-        	}
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id, value);
-            return YES;
-        } catch (e) {
-            M.Logger.log('Error saving ' + obj.model.record + ' to localStorage with key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + this.m_id, M.WARN);
-            M.Logger.log('Error ' + e.code + ', ' + e.name + ': ' + e.message);
-            return NO;
+    records: [],
+
+    /**
+     * Add the given model to the modelList.
+     *
+     * @param {Object} record
+     */
+    add: function(record) {
+        this.records.push(record);
+    },
+
+    /**
+     * Concats an array if records to the records array.
+     *
+     * @param {Object} record
+     */
+    addMany: function(arrOfRecords) {
+
+        if(_.isArray(arrOfRecords)){
+            this.records = this.records.concat(arrOfRecords);
+
+        } else if(arrOfRecords.type === 'M.Model') {
+            this.add(arrOfRecords);
         }
 
     },
 
     /**
-     * deletes a model from the local storage
-     * key defines which one to delete
-     * e.g. key: 'Note_123'
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Boolean} Boolean indicating whether save was successful (YES|true) or not (NO|false).
+     * Resets record list 
      */
-    del:function (obj) {
-        try {
-            if (localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id)) { // check if key-value pair exists
-            	if ((typeof logDelete != "undefined") && logDelete) {
-            		writeToLog("deleting '" + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + "'");
-            	}
-                localStorage.removeItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id);
-                obj.model.recordManager.remove(obj.model.m_id);
-                return YES;
-            }
-            return NO;
-        } catch (e) {
-            M.Logger.log('Error removing key: ' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.model.m_id + ' from localStorage', M.WARN);
-            return NO;
-        }
+    removeAll: function() {
+        this.records.length = 0;
     },
 
     /**
-     * Finds all models of type defined by modelName that match a key or a simple query.
-     * A simple query example: 'price < 2.21'
-     * Right now, no AND or OR joins possible, just one query constraint.
-     *
-     * If no query is passed, all models are returned by calling findAll()
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object if find is done with a key, an array of objects when a query is given or no parameter passed.
-     * @throws Exception when query tries to compare two different data types
+     * Deletes a model record from the record array
+     * @param {Number} m_id The internal model id of the model record.
      */
-    find:function (obj) {
-        if (obj.key) {
-            var record = this.findByKey(obj);
-            if (!record) {
-                return NO;
-            }
-            /*construct new model record with the saved id*/
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(obj.key);
-            var m_id = reg && reg[1] ? reg[1] : null;
-            if (!m_id) {
-                M.Logger.log('retrieved model has no valid key: ' + obj.key, M.ERR);
-                return NO;
-            }
-            var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-            return m;
+    remove: function(m_id) {
+
+        if(!m_id) {
+            M.Logger.log('No id given.', M.WARN);
+            return;
         }
 
-        if (obj.query) {
-            var q = obj.query;
-            var missing = [];
-            if (!q.identifier) {
-                missing.push('identifier');
-            }
-            if (!q.operator) {
-                missing.push('operator');
-            }
-            if (q.value === undefined || q.value === null) {
-                missing.push('value');
-            }
+        var rec = this.getRecordById(m_id);
 
-            if (missing.length > 0) {
-                M.Logger.log('Wrong query format:', missing.join(', '), ' is/are missing.', M.WARN);
-                return [];
-            }
-
-            var ident = q.identifier;
-            var op = q.operator;
-            var val = q.value;
-
-            var res = this.findAll(obj);
-
-            // check if query is correct in respect of data types
-            if(res && res.length > 0) {
-                var o = res[0];
-                if (typeof(o.record[ident]) != o.__meta[ident].dataType.toLowerCase()) {
-					if(!(o.__meta[ident].dataType.toLowerCase() == "reference" && typeof(o.record[ident]) == "string"))
-						throw 'Query: "' + ident + op + val + '" tries to compare ' + typeof(o.record[ident]) + ' with ' + o.__meta[ident].dataType.toLowerCase() + '.';
-                }
-            }
-
-            switch (op) {
-                case '=':
-
-                    res = _.select(res, function (o) {
-                        return o.record[ident] === val;
-                    });
-                    break;
-
-                case '~=': // => includes (works only on strings)
-
-                    if(obj.model.__meta[ident].dataType.toLowerCase() !== 'string') {
-                        throw 'Query: Operator "~=" only works on string properties. Property "' + ident + '" is of type ' + obj.model.__meta[ident].dataType.toLowerCase() + '.';
-                    }
-                    // escape all meta regex meta characters: \, *, +, ?, |, {, [, (,), ^, $,., # and space
-                    var metaChars = ['\\\\', '\\*', '\\+', '\\?', '\\|', '\\{', '\\}', '\\[', '\\]', '\\(', '\\)', '\\^', '\\$', '\\.', '\\#'];
-
-                    for(var i in metaChars) {
-                        val = val.replace(new RegExp(metaChars[i], 'g'), '\\' + metaChars[i].substring(1,2));
-                    }
-
-                    // replace whitespaces with regex equivalent
-                    val = val.replace(/\s/g, '\\s');
-
-                    var regex = new RegExp(val);
-
-                    res = _.select(res, function(o) {
-                        return regex.test(o.record[ident]);
-                    });
-
-                    break;
-
-                case '!=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] !== val;
-                    });
-                    break;
-                case '<':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] < val;
-                    });
-                    break;
-                case '>':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] > val;
-                    });
-                    break;
-                case '<=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] <= val;
-                    });
-                    break;
-                case '>=':
-                    res = _.select(res, function (o) {
-                        return o.record[ident] >= val;
-                    });
-                    break;
-                default:
-                    M.Logger.log('Query has unknown operator: ' + op, M.WARN);
-                    res = [];
-                    break;
-
-            }
-
-            return res;
-
-        } else { /* if no query is passed, all models for modelName shall be returned */
-            return this.findAll(obj);
+        if(rec) {
+            this.records = _.select(this.records, function(r){
+                return r.m_id !== rec.m_id;
+            });
         }
+
+        delete rec;
     },
 
     /**
-     * Finds a record identified by the key.
-     *
-     * @param {Object} The param object containing e.g. the query or the key.
-     * @returns {Object|Boolean} Returns an object identified by key, correctly built as a model record by calling
-     * or a boolean (NO|false) if no key is given or the key does not exist in LocalStorage.
-     * parameter passed.
-     */
-    findByKey:function (obj) {
-        if (obj.key) {
-
-            var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX);
-            /* assume that if key starts with local storage prefix, correct key is given, other wise construct it and key might be m_id */
-            obj.key = reg.test(obj.key) ? obj.key : M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_' + obj.key;
-
-            if (localStorage.getItem(obj.key)) { // if key is available
-                return this.buildRecord(obj.key, obj)
-            } else {
-                return NO;
-            }
-        }
-        M.Logger.log("Please provide a key.", M.WARN);
-        return NO;
+    * Returns a record from the record array identified by the interal model id.
+    * @param {Number} m_id The internal model id of the model record.
+    * @deprecated
+    */
+    getRecordForId: function(m_id) {
+        return this.getRecordById(m_id);
     },
 
     /**
-     * Returns all models defined by modelName.
-     *
-     * Models are saved with key: Modelname_ID, e.g. Note_123
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} The array of fetched objects/model records. If no records the array is empty.
+     * Returns a record from the record array identified by the interal model id.
+     * @param {Number} m_id The internal model id of the model record.
      */
-    findAll:function (obj) {
-        var result = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i);
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                var record = this.buildRecord(k, obj);//JSON.parse(localStorage.getItem(k));
-
-                /*construct new model record with the saved m_id*/
-                var reg = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_([0-9a-zA-Z]+)$').exec(k);
-                var m_id = reg && reg[1] ? reg[1] : null;
-                if (!m_id) {
-                    M.Logger.log('Model Record m_id not correct: ' + m_id, M.ERR);
-                    continue; // if m_id does not exist, continue with next record element
-                }
-                var m = obj.model.createRecord($.extend(record, {m_id:m_id, state:M.STATE_VALID}));
-
-                result.push(m);
-            }
-        }
-        return result;
-    },
-
-    /**
-     * Fetches a record from LocalStorage and checks whether automatic parsing by JSON.parse set the elements right.
-     * Means: check whether resulting object's properties have the data type define by their model attribute object.
-     * E.g. String containing a date is automatically transfered into a M.Date object when the model attribute has the data type
-     * 'Date' set for this property.
-     *
-     * @param {String} key The key to fetch the element from LocalStorage
-     * @param {Object} obj The param object, includes model
-     * @returns {Object} record The record object. Includes all model record properties with correctly set data types.
-     */
-    buildRecord:function (key, obj) {
-        var record = JSON.parse(localStorage.getItem(key));
-        for (var i in record) {
-            if (obj.model.__meta[i] && typeof(record[i]) !== obj.model.__meta[i].dataType.toLowerCase()) {
-                switch (obj.model.__meta[i].dataType) {
-                    case 'Date':
-                        record[i] = M.Date.create(record[i]);
-                        break;
-                }
-            }
-        }
+    getRecordById: function(m_id) {
+        var record = _.detect(this.records, function(r){
+            return r.m_id === m_id;
+        });
         return record;
     },
 
     /**
-     * Returns all keys for model defined by modelName.
-     *
-     * @param {Object} obj The param obj, includes model
-     * @returns {Object} keys All keys for model records in LocalStorage for a certain model identified by the model's name.
+     * Debug method to print out all content from the records array to the console.
      */
-    allKeys:function (obj) {
-        var keys = [];
-        for (var i = 0; i < localStorage.length; i++) {
-            var k = localStorage.key(i)
-            regexResult = new RegExp('^' + M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + obj.model.name + '_').exec(k);
-            if (regexResult) {
-                keys.push(k);
-            }
-        }
-        return keys;
+    dumpRecords: function() {
+        _.each(this.records, function(rec){
+            //console.log(rec.m_id);
+            console.log(rec);
+        });
     }
-
+    
 });
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/data_provider.js');
-
-/**
- * @class
- *
- * Encapsulates access to a remote storage, a json based web service.
- *
- * @extends M.DataProvider
- */
-M.DataProviderRemoteStorage = M.DataProvider.extend(
-/** @scope M.RemoteStorageProvider.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.DataProviderRemoteStorage',
-
-    /**
-     * The type of this object.
-     * @type Object
-     */
-    config: null,
-
-    /* CRUD methods */
-
-    save: function(obj) {
-
-        var config = this.config[obj.model.name];
-        var result = null;
-        var dataResult = null;
-
-        if(obj.model.state === M.STATE_NEW) {   /* if the model is new we need to make a create request, if not new then we make an update request */
-
-            dataResult = config.create.map(obj.model.record);
-
-            this.remoteQuery('create', config.url + config.create.url(obj.model.get('ID')), config.create.httpMethod, dataResult, obj, null);
-
-        } else { // make an update request
-
-            dataResult = config.update.map(obj.model.record);
-
-            var updateUrl = config.url + config.update.url(obj.model.get('ID'));
-
-            this.remoteQuery('update', updateUrl, config.update.httpMethod, dataResult, obj, function(xhr) {
-                  xhr.setRequestHeader("X-Http-Method-Override", config.update.httpMethod);
-            });
-        }
-
-    },
-
-    del: function(obj) {
-        var config = this.config[obj.model.name];
-        var delUrl = config.del.url(obj.model.get('ID'));
-        delUrl = config.url + delUrl;
-
-        this.remoteQuery('delete', delUrl, config.del.httpMethod, null, obj,  function(xhr) {
-            xhr.setRequestHeader("X-Http-Method-Override", config.del.httpMethod);
-        });
-    },
-
-    find: function(obj) {
-        var config = this.config[obj.model.name];
-
-        var readUrl = obj.ID ? config.read.url.one(obj.ID) : config.read.url.all();
-        readUrl = config.url + readUrl;
-
-        this.remoteQuery('read', readUrl, config.read.httpMethod, null, obj);
-
-    },
-
-    createModelsFromResult: function(data, callback, obj) {
-        var result = [];
-        var config = this.config[obj.model.name];
-        if(_.isArray(data)) {
-            for(var i in data) {
-                var res = data[i];
-                /* create model  record from result by first map with given mapper function before passing
-                 * to createRecord
-                 */
-                result.push(obj.model.createRecord($.extend(config.read.map(res), {state: M.STATE_VALID})));
-            }
-        } else if(typeof(data) === 'object') {
-            result.push(obj.model.createRecord($.extend(config.read.map(data), {state: M.STATE_VALID})));
-        }
-        callback(result);
-    },
-
-    remoteQuery: function(opType, url, type, data, obj, beforeSend) {
-        var that = this;
-        var config = this.config[obj.model.name];
-
-        M.Request.init({
-            url: url,
-            method: type,
-            isJSON: YES,
-            contentType: 'application/JSON',
-            data: data ? data : null,
-            onSuccess: function(data, msg, xhr) {
-
-                /*
-                * delete from record manager if delete request was made.
-                */
-                if(opType === 'delete') {
-                    obj.model.recordManager.remove(obj.model.m_id);
-                }
-
-                /*
-                * call the receiveIdentifier method if provided, that sets the ID for the newly created model
-                */
-                if(opType === 'create') {
-                    if(config.create.receiveIdentifier) {
-                        config.create.receiveIdentifier(data, obj.model);
-                    } else {
-                        M.Logger.log('No ID receiving operation defined.');
-                    }
-                }
-
-                /*
-                * call callback
-                */
-                if(obj.onSuccess) {
-                    if(obj.onSuccess.target && obj.onSuccess.action) {
-                        obj.onSuccess = that.bindToCaller(obj.onSuccess.target, obj.onSuccess.target[obj.onSuccess.action], [data]);
-                        if(opType === 'read') {
-                            that.createModelsFromResult(data, obj.onSuccess, obj);
-                        } else {
-                            obj.onSuccess();
-                        }
-                    } else if(typeof(obj.onSuccess) === 'function') {
-                        that.createModelsFromResult(data, obj.onSuccess, obj);
-                    }
-
-                }else {
-                    M.Logger.log('No success callback given.', M.WARN);
-                }
-            },
-            onError: function(xhr, msg) {
-
-                var err = M.Error.extend({
-                    code: M.ERR_CONNECTION,
-                    msg: msg
-                });
-
-                if(obj.onError && typeof(obj.onError) === 'function') {
-                    obj.onError(err);
-                }
-                if(obj.onError && obj.onError.target && obj.onError.action) {
-                    obj.onError = this.bindToCaller(obj.onError.target, obj.onError.target[obj.onError.action], err);
-                    obj.onError();
-                } else if (typeof(obj.onError) !== 'function') {
-                    M.Logger.log('No error callback given.', M.WARN);
-                }
-            },
-            beforeSend: beforeSend ? beforeSend : null
-        }).send();
-    },
-
-    /**
-     * creates a new data provider instance with the passed configuration parameters
-     * @param obj
-     */
-    configure: function(obj) {
-        console.log('configure() called.');
-        // maybe some value checking
-        return this.extend({
-            config:obj
-        });
-    }
-
-}); 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
