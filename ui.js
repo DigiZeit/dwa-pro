@@ -994,6 +994,131 @@ M.ButtonGroupView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
 // Date:      10.04.12
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -1590,131 +1715,6 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
 // Date:      10.04.12
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -1867,6 +1867,126 @@ M.ContainerView = M.View.extend(
         var html = '';
         if(this.cssClass) {
             html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard itm view contains an icon and a label and can be used as the only
+ * kind of childviews for a dashboard view.
+ *
+ * @extends M.View
+ */
+M.DashboardItemView = M.View.extend(
+/** @scope M.DashboardItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardItemView',
+
+    /**
+     * The path/url to the dashboard item's icon.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * The label for the dashboard item. If no label is specified, the value will be
+     * displayed instead.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
+
+    /**
+     * Renders a dashboard item.
+     *
+     * @private
+     * @returns {String} The dashboard item view's html representation.
+     */
+    render: function() {
+        //this.computeValue();
+
+        /* reset html property */
+        this.html = '';
+
+        if(!this.icon) {
+            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
+            return this.html;
+        }
+
+        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
+
+        /* add image */
+        var image = M.ImageView.design({
+            value: this.icon
+        });
+        this.html += image.render();
+
+        /* add label */
+        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            taphold: {
+                target: this.parentView,
+                action: 'editDashboard'
+            },
+            tap: {
+                target: this.parentView,
+                action: 'dispatchTapEvent'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard item.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
         }
         return html;
     }
@@ -2403,126 +2523,6 @@ M.DashboardView = M.View.extend(
         var html = '';
         if(this.cssClass) {
             html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard itm view contains an icon and a label and can be used as the only
- * kind of childviews for a dashboard view.
- *
- * @extends M.View
- */
-M.DashboardItemView = M.View.extend(
-/** @scope M.DashboardItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardItemView',
-
-    /**
-     * The path/url to the dashboard item's icon.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * The label for the dashboard item. If no label is specified, the value will be
-     * displayed instead.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
-
-    /**
-     * Renders a dashboard item.
-     *
-     * @private
-     * @returns {String} The dashboard item view's html representation.
-     */
-    render: function() {
-        //this.computeValue();
-
-        /* reset html property */
-        this.html = '';
-
-        if(!this.icon) {
-            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
-            return this.html;
-        }
-
-        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
-
-        /* add image */
-        var image = M.ImageView.design({
-            value: this.icon
-        });
-        this.html += image.render();
-
-        /* add label */
-        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            taphold: {
-                target: this.parentView,
-                action: 'editDashboard'
-            },
-            tap: {
-                target: this.parentView,
-                action: 'dispatchTapEvent'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard item.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
         }
         return html;
     }
@@ -3636,6 +3636,120 @@ m_require('ui/dialog.js');
 /**
  * @class
  *
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
+ *
+ * @extends M.DialogView
+ */
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.AlertDialogView',
+
+    /**
+     * The default title of an alert dialog.
+     *
+     * @type String
+     */
+    title: 'Alert',
+
+    /**
+     * The default message of an alert dialog.
+     *
+     * @type String
+     */
+    message: '',
+
+    /**
+     * Determines whether the alert dialog gets a default ok button.
+     *
+     * @type Boolean
+     */
+    hasConfirmButton: YES,
+
+    /**
+     * Determines the value of the button, means the text label on it.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an alert dialog as a pop up
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
+     */
+    render: function() {
+        this.html = '<div class="tmp-dialog-background"></div>';
+        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+        this.html += '<div class="tmp-dialog-content">';
+        this.html += this.message;
+        this.html +='</div>';
+        var button;
+        if(this.hasConfirmButton) {
+            this.html += '<div class="tmp-dialog-footer">';
+            var that = this;
+            button = M.ButtonView.design({
+                value: this.confirmButtonValue,
+                dataTheme: 'b tmp-dialog-smallerbtn',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            });
+            this.html += button.render();
+            this.html += '</div>';
+        }
+        this.html += '</div>';
+
+        $('body').append(this.html);
+        if(button.type) {
+            button.registerEvents();
+            button.theme();
+        }
+    },
+
+    handleCallback: function() {
+        this.hide();
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
+            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
  * This is the prototype for any confirm dialog view. It is derived from M.DialogView
  * and mainly used for implementing a confirm dialog view specific render method.
  *
@@ -3765,114 +3879,130 @@ M.ConfirmDialogView = M.DialogView.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      23.11.2010
+// Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('ui/dialog.js');
-
 /**
  * @class
  *
- * This is the prototype for any alert dialog view. It is derived from M.DialogView
- * and mainly used for implementing a alert dialog view specific render method.
- *
- * @extends M.DialogView
+ * M.FormViews is the prototype of a form view, a container like view for grouping
+ * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
+ * validation of input views. There is no visible representation of an M.FormView,
+ * it is only used to ease the validation process and its accessing out of a
+ * controller.
+ * 
+ * @extends M.View
  */
-M.AlertDialogView = M.DialogView.extend(
-/** @scope M.AlertDialogView.prototype */ {
+M.FormView = M.View.extend(
+/** @scope M.FormView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.AlertDialogView',
+    type: 'M.FormView',
 
     /**
-     * The default title of an alert dialog.
-     *
-     * @type String
-     */
-    title: 'Alert',
-
-    /**
-     * The default message of an alert dialog.
-     *
-     * @type String
-     */
-    message: '',
-
-    /**
-     * Determines whether the alert dialog gets a default ok button.
+     * Determines whether to automatically show an alert dialog view out of the showError method
+     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
+     * dialog view once the showError method is called.
      *
      * @type Boolean
      */
-    hasConfirmButton: YES,
+    showAlertDialogOnError: YES,
 
     /**
-     * Determines the value of the button, means the text label on it.
+     * The title of the alert view that comes up automatically if the validation fails, depending
+     * one the 'showAlertOnError' property.
      *
      * @type String
      */
-    confirmButtonValue: 'Ok',
+     alertTitle: 'Validation Error(s)',
 
     /**
-     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     * This method triggers the validate() on all child views, respectively on their validators. If
+     * a validation error occurs, the showErrors() will be called.
      *
-     * @type Object
+     * @returns {Boolean} The result of the validation process: valid or not.
      */
-    callbacks: null,
-
-    /**
-     * Renders an alert dialog as a pop up
-     *
-     * @private
-     * @returns {String} The alert dialog view's html representation.
-     */
-    render: function() {
-        this.html = '<div class="tmp-dialog-background"></div>';
-        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-        this.html += '<div class="tmp-dialog-content">';
-        this.html += this.message;
-        this.html +='</div>';
-        var button;
-        if(this.hasConfirmButton) {
-            this.html += '<div class="tmp-dialog-footer">';
-            var that = this;
-            button = M.ButtonView.design({
-                value: this.confirmButtonValue,
-                dataTheme: 'b tmp-dialog-smallerbtn',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            });
-            this.html += button.render();
-            this.html += '</div>';
+    validate: function() {
+        var ids = this.getIds();
+        for(var name in ids) {
+            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
+                delete ids[name];
+            }
         }
-        this.html += '</div>';
 
-        $('body').append(this.html);
-        if(button.type) {
-            button.registerEvents();
-            button.theme();
+        var isValid = YES;
+        M.Validator.clearErrorBuffer();
+
+        for(var name in ids) {
+            var view = M.ViewManager.getViewById(ids[name]);
+            if(view && view.validators) {
+                if(view.cssClassOnError) {
+                    view.removeCssClass(view.cssClassOnError);
+                }
+
+                _.each(view.validators, function(validator) {
+                    if(!validator.validate(view, name)) {
+                        isValid = NO;
+                    }
+                });
+            }
+        }
+
+        if(!isValid) {
+            this.showErrors();
+        }
+
+        return isValid;
+    },
+
+    /**
+     * This method adds a css class specified by the cssClassOnError property to any
+     * view that caused a validation error and has this property specified.
+     *
+     * If the showAlertDialogOnError property is set to YES, a alert dialog view
+     * is display additionally, presenting the error messages of all invalid views.
+     */
+    showErrors: function() {
+        var errors = '';
+        _.each(M.Validator.validationErrors, function(error) {
+            if(error && error.errObj) {
+                var view = M.ViewManager.getViewById(error.errObj.viewId);
+                if(view && view.cssClassOnError) {
+                    view.addCssClass(view.cssClassOnError);
+                }
+                errors += '<li>' + error.msg + '</li>';
+            }
+        });
+
+        if(this.showAlertDialogOnError) {
+            M.DialogView.alert({
+                title: this.alertTitle,
+                message: errors
+            });
         }
     },
 
-    handleCallback: function() {
-        this.hide();
-        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
-            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
-        }
+    /**
+     * This method is a wrapper of M.View's clearValues() method.
+     */
+    clearForm: function() {
+        this.clearValues();
+    },
+
+    /**
+     * This method is a wrapper of M.View's getValues() method.
+     */
+    getFormValues: function() {
+        return this.getValues();
     }
 
 });
@@ -4170,136 +4300,6 @@ M.ImageView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.FormViews is the prototype of a form view, a container like view for grouping
- * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
- * validation of input views. There is no visible representation of an M.FormView,
- * it is only used to ease the validation process and its accessing out of a
- * controller.
- * 
- * @extends M.View
- */
-M.FormView = M.View.extend(
-/** @scope M.FormView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.FormView',
-
-    /**
-     * Determines whether to automatically show an alert dialog view out of the showError method
-     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
-     * dialog view once the showError method is called.
-     *
-     * @type Boolean
-     */
-    showAlertDialogOnError: YES,
-
-    /**
-     * The title of the alert view that comes up automatically if the validation fails, depending
-     * one the 'showAlertOnError' property.
-     *
-     * @type String
-     */
-     alertTitle: 'Validation Error(s)',
-
-    /**
-     * This method triggers the validate() on all child views, respectively on their validators. If
-     * a validation error occurs, the showErrors() will be called.
-     *
-     * @returns {Boolean} The result of the validation process: valid or not.
-     */
-    validate: function() {
-        var ids = this.getIds();
-        for(var name in ids) {
-            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
-                delete ids[name];
-            }
-        }
-
-        var isValid = YES;
-        M.Validator.clearErrorBuffer();
-
-        for(var name in ids) {
-            var view = M.ViewManager.getViewById(ids[name]);
-            if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
-                _.each(view.validators, function(validator) {
-                    if(!validator.validate(view, name)) {
-                        isValid = NO;
-                    }
-                });
-            }
-        }
-
-        if(!isValid) {
-            this.showErrors();
-        }
-
-        return isValid;
-    },
-
-    /**
-     * This method adds a css class specified by the cssClassOnError property to any
-     * view that caused a validation error and has this property specified.
-     *
-     * If the showAlertDialogOnError property is set to YES, a alert dialog view
-     * is display additionally, presenting the error messages of all invalid views.
-     */
-    showErrors: function() {
-        var errors = '';
-        _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
-            }
-        });
-
-        if(this.showAlertDialogOnError) {
-            M.DialogView.alert({
-                title: this.alertTitle,
-                message: errors
-            });
-        }
-    },
-
-    /**
-     * This method is a wrapper of M.View's clearValues() method.
-     */
-    clearForm: function() {
-        this.clearValues();
-    },
-
-    /**
-     * This method is a wrapper of M.View's getValues() method.
-     */
-    getFormValues: function() {
-        return this.getValues();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4458,6 +4458,125 @@ M.LabelView = M.View.extend(
         this.renderUpdate();
     }
 
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.12.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
+ *
+ * @extends M.View
+ */
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LoaderView',
+
+    /**
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
+     *
+     * @type Number
+     */
+    refCount: 0,
+
+    /**
+     * This property can be used to specify the default title of a loader.
+     *
+     * @type String
+     */
+    defaultTitle: 'loading',
+            
+    /**
+     * This method initializes the loader by loading it once.
+     *
+     * @private 
+     */
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
+        }
+    },
+
+    /**
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
+     *
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     */
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
+    },
+
+    /**
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
+     */
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
+    },
+
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
+        } else {
+            this.refCount--;
+        }
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
+        }
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5062,125 +5181,6 @@ M.MapView = M.View.extend(
         this.markers = [];
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.12.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
- *
- * @extends M.View
- */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LoaderView',
-
-    /**
-     * This property states whether the loader has already been initialized or not.
-     *
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property counts the loader calls to show
-     *
-     * @type Number
-     */
-    refCount: 0,
-
-    /**
-     * This property can be used to specify the default title of a loader.
-     *
-     * @type String
-     */
-    defaultTitle: 'loading',
-            
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
-        }
-    },
-
-    /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
-     *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
-     */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
-        }
-    },
-
-    /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
-     */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
-    },
-
-    /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
-     */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
-        }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
-        }
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
