@@ -1713,63 +1713,6 @@ this.maxScrollX?this.maxScrollX:this.x,this.y=this.y>this.minScrollY?this.minScr
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      10.04.12
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A carousel item view is the one and only valid sub view of a carousel view. It basically
- * serves as a container that allows you to put anything into such an element. Simply
- * apply as much child views as you like and let this view (in combination with the carousel)
- * take care of the rest.
- *
- * @extends M.View
- */
-M.CarouselItemView = M.View.extend(
-/** @scope M.CarouselItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CarouselItemView',
-
-    /**
-     * This property can be used to specify a tag, that is independent from the carousel
-     * item's content. This allows you to identify a carousel item e.g. within the callback
-     * of the carousel's change event.
-     *
-     * @type String
-     */
-    tag: null,
-
-    /**
-     * This method renders a carousel item and its content with an li element as the
-     * surrounding element.
-     *
-     * @private
-     * @returns {String} The carousel item view's html representation.
-     */
-    render: function() {
-        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
-
-        this.renderChildViews();
-
-        this.html += '</li>';
-
-        return this.html;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1869,6 +1812,63 @@ M.ContainerView = M.View.extend(
             html += ' class="' + this.cssClass + '"';
         }
         return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      10.04.12
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A carousel item view is the one and only valid sub view of a carousel view. It basically
+ * serves as a container that allows you to put anything into such an element. Simply
+ * apply as much child views as you like and let this view (in combination with the carousel)
+ * take care of the rest.
+ *
+ * @extends M.View
+ */
+M.CarouselItemView = M.View.extend(
+/** @scope M.CarouselItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CarouselItemView',
+
+    /**
+     * This property can be used to specify a tag, that is independent from the carousel
+     * item's content. This allows you to identify a carousel item e.g. within the callback
+     * of the carousel's change event.
+     *
+     * @type String
+     */
+    tag: null,
+
+    /**
+     * This method renders a carousel item and its content with an li element as the
+     * surrounding element.
+     *
+     * @private
+     * @returns {String} The carousel item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '" class="tmp-carousel-item">';
+
+        this.renderChildViews();
+
+        this.html += '</li>';
+
+        return this.html;
     }
 
 });
@@ -3409,6 +3409,120 @@ M.DialogView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      23.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('ui/dialog.js');
+
+/**
+ * @class
+ *
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
+ *
+ * @extends M.DialogView
+ */
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.AlertDialogView',
+
+    /**
+     * The default title of an alert dialog.
+     *
+     * @type String
+     */
+    title: 'Alert',
+
+    /**
+     * The default message of an alert dialog.
+     *
+     * @type String
+     */
+    message: '',
+
+    /**
+     * Determines whether the alert dialog gets a default ok button.
+     *
+     * @type Boolean
+     */
+    hasConfirmButton: YES,
+
+    /**
+     * Determines the value of the button, means the text label on it.
+     *
+     * @type String
+     */
+    confirmButtonValue: 'Ok',
+
+    /**
+     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
+     *
+     * @type Object
+     */
+    callbacks: null,
+
+    /**
+     * Renders an alert dialog as a pop up
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
+     */
+    render: function() {
+        this.html = '<div class="tmp-dialog-background"></div>';
+        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
+        this.html += '<div class="tmp-dialog-header">';
+        this.html += this.title ? this.title : '';
+        this.html +='</div>';
+        this.html += '<div class="tmp-dialog-content">';
+        this.html += this.message;
+        this.html +='</div>';
+        var button;
+        if(this.hasConfirmButton) {
+            this.html += '<div class="tmp-dialog-footer">';
+            var that = this;
+            button = M.ButtonView.design({
+                value: this.confirmButtonValue,
+                dataTheme: 'b tmp-dialog-smallerbtn',
+                events: {
+                    tap: {
+                        target: that,
+                        action: 'handleCallback'
+                    }
+                }
+            });
+            this.html += button.render();
+            this.html += '</div>';
+        }
+        this.html += '</div>';
+
+        $('body').append(this.html);
+        if(button.type) {
+            button.registerEvents();
+            button.theme();
+        }
+    },
+
+    handleCallback: function() {
+        this.hide();
+        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
+            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      23.11.2010
@@ -3620,120 +3734,6 @@ M.ActionSheetDialogView = M.DialogView.extend(
             this.bindToCaller(this.callbacks[buttonType].target, this.callbacks[buttonType].action, button.tag)();
         }
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      23.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('ui/dialog.js');
-
-/**
- * @class
- *
- * This is the prototype for any alert dialog view. It is derived from M.DialogView
- * and mainly used for implementing a alert dialog view specific render method.
- *
- * @extends M.DialogView
- */
-M.AlertDialogView = M.DialogView.extend(
-/** @scope M.AlertDialogView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.AlertDialogView',
-
-    /**
-     * The default title of an alert dialog.
-     *
-     * @type String
-     */
-    title: 'Alert',
-
-    /**
-     * The default message of an alert dialog.
-     *
-     * @type String
-     */
-    message: '',
-
-    /**
-     * Determines whether the alert dialog gets a default ok button.
-     *
-     * @type Boolean
-     */
-    hasConfirmButton: YES,
-
-    /**
-     * Determines the value of the button, means the text label on it.
-     *
-     * @type String
-     */
-    confirmButtonValue: 'Ok',
-
-    /**
-     * If set, contains the dialog's callback in a sub object named 'confirm' or as a function named confirm.
-     *
-     * @type Object
-     */
-    callbacks: null,
-
-    /**
-     * Renders an alert dialog as a pop up
-     *
-     * @private
-     * @returns {String} The alert dialog view's html representation.
-     */
-    render: function() {
-        this.html = '<div class="tmp-dialog-background"></div>';
-        this.html += '<div id="' + this.id + '" class="tmp-dialog">';
-        this.html += '<div class="tmp-dialog-header">';
-        this.html += this.title ? this.title : '';
-        this.html +='</div>';
-        this.html += '<div class="tmp-dialog-content">';
-        this.html += this.message;
-        this.html +='</div>';
-        var button;
-        if(this.hasConfirmButton) {
-            this.html += '<div class="tmp-dialog-footer">';
-            var that = this;
-            button = M.ButtonView.design({
-                value: this.confirmButtonValue,
-                dataTheme: 'b tmp-dialog-smallerbtn',
-                events: {
-                    tap: {
-                        target: that,
-                        action: 'handleCallback'
-                    }
-                }
-            });
-            this.html += button.render();
-            this.html += '</div>';
-        }
-        this.html += '</div>';
-
-        $('body').append(this.html);
-        if(button.type) {
-            button.registerEvents();
-            button.theme();
-        }
-    },
-
-    handleCallback: function() {
-        this.hide();
-        if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.confirm)){
-            this.bindToCaller(this.callbacks.confirm.target, this.callbacks.confirm.action)();
-        }
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -4018,6 +4018,127 @@ M.FormView = M.View.extend(
 // ==========================================================================
 
 /**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
  * A constant value for a two column layout of a grid view.
  *
  * @type String
@@ -4169,127 +4290,6 @@ M.GridView = M.View.extend(
         if(this.layout) {
             var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
             return html;
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
- * @extends M.View
- */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImageView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
-
-    /**
-     * Renders an image view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The image view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
         }
     }
 
@@ -5454,349 +5454,6 @@ M.MapMarkerView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
- * M.Application. A page is the container view for all other views.
- *
- * @extends M.View
- */
-M.PageView = M.View.extend(
-/** @scope M.PageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PageView',
-
-    /**
-     * States whether a page is loaded the first time or not. It is automatically set to NO
-     * once the page was first loaded.
-     *
-     * @type Boolean
-     */
-    isFirstLoad: YES,
-
-    /**
-     * Indicates whether the page has a tab bar or not.
-     *
-     * @type Boolean
-     */
-    hasTabBarView: NO,
-
-    /**
-     * The page's tab bar.
-     *
-     * @type M.TabBarView
-     */
-    tabBarView: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
-
-    /**
-     * This property is used to specify a view's internal events and their corresponding actions. If
-     * there are external handlers specified for the same event, the internal handler is called first.
-     *
-     * @type Object
-     */
-    internalEvents: null,
-
-    /**
-     * An associative array containing all list views used in this page. The key for a list view is
-     * its id. We do this to have direct access to a list view, so we can reset its selected item
-     * once the page was hidden.
-     *
-     * @type Object
-     */
-    listList: null,
-
-    /**
-     * This property contains the page's current orientation. This property is only used internally!
-     *
-     * @private
-     * @type Number
-     */
-    orientation: null,
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The page view's html representation.
-     */
-    render: function() {
-        /* store the currently rendered page as a reference for use in child views */
-        M.ViewManager.currentlyRenderedPage = this;
-        
-        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        this.writeToDOM();
-        this.theme();
-        this.registerEvents();
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for page views and its
-     * internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            pagebeforeshow: {
-                target: this,
-                action: 'pageWillLoad'
-            },
-            pageshow: {
-                target: this,
-                action: 'pageDidLoad'
-            },
-            pagebeforehide: {
-                target: this,
-                action: 'pageWillHide'
-            },
-            pagehide: {
-                target: this,
-                action: 'pageDidHide'
-            },
-            orientationdidchange: {
-                target: this,
-                action: 'orientationDidChange'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method writes the view's html string into the DOM. M.Page is the only view that does
-     * that. All other views just deliver their html representation to a page view.
-     */
-    writeToDOM: function() {
-    	if (restartOnBlackBerry) {
-    		if (document.readyState === "loading") {
-    			document.write(this.html);
-    		} else if (typeof($(this.html)[0]) !== undefined) {
-    			// append only if the page-id isn't already in the body 
-    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
-    				$('body').append(this.html);
-    			}
-    		}
-		} else {
-			document.write(this.html);
-		}
-    },
-
-    /**
-     * This method is called right before the page is loaded. If a beforeLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillLoad: function(id, event, nextEvent) {
-        /* initialize the tabbar */
-        if(M.Application.isFirstLoad) {
-            M.Application.isFirstLoad = NO;
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage && currentPage.hasTabBarView) {
-                var tabBarView = currentPage.tabBarView;
-
-                if(tabBarView.childViews) {
-                    var childViews = tabBarView.getChildViewsAsArray();
-                    for(var i in childViews) {
-                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
-                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* initialize the loader for later use (if not already done) */
-        if(M.LoaderView) {
-            M.LoaderView.initialize();
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-            var that = this;
-            window.setTimeout(function() {
-                $(that).controlgroup();
-            }, 1);
-        });
-
-        /* reset the page's title */
-        document.title = M.Application.name;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was loaded. If a onLoad-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidLoad: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-
-        /* call controlgroup plugin on any such element on the page */
-//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
-//            $(this).controlgroup();
-//        });
-
-        this.isFirstLoad = NO;
-    },
-
-    /**
-     * This method is called right before the page is hidden. If a beforeHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageWillHide: function(id, event, nextEvent) {
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the page was hidden. If a onHide-action is defined
-     * for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    pageDidHide: function(id, event, nextEvent) {
-        /* if there is a list on the page, reset it: deactivate possible active list items */
-        if(this.listList) {
-            _.each(this.listList, function(list) {
-                list.resetActiveListItem();
-            });
-        }
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
-        }
-    },
-
-    /**
-     * This method is called right after the device's orientation did change. If a action for
-     * orientationdidchange is defined for the page, it is now called.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    orientationDidChange: function(id, event, nextEvent) {
-        /* get the orientation */
-        var orientation = M.Environment.getOrientation();
-        
-        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
-        if(orientation === this.orientation) {
-            return;
-        }
-
-        /* auto-reposition opened dialogs */
-        $('.tmp-dialog').each(function() {
-            var id = $(this).attr('id');
-            var dialog = M.ViewManager.getViewById(id);
-            var dialogDOM = $(this);
-            window.setTimeout(function() {
-                dialog.positionDialog(dialogDOM);
-                dialog.positionBackground($('.tmp-dialog-background'));
-            }, 500);
-        });
-
-        /* auto-reposition carousels */
-        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
-            var carousel = M.ViewManager.getViewById($(this).attr('id'));
-            carousel.orientationDidChange();
-        });
-
-        /* set the current orientation */
-        this.orientation = orientation;
-
-        /* delegate event to external handler, if specified */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        $('#' + this.id).page();
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the page.
-     *
-     * @private
-     * @returns {String} The page's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            if(!html) {
-                html += ' class="';
-            }
-            html += this.cssClass;
-        }
-        if(html) {
-            html += '"';
-        }
-        return html;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      02.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -6248,6 +5905,412 @@ M.PanelView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.PageView is the prototype of any page. It is the seconds 'highest' view, right after
+ * M.Application. A page is the container view for all other views.
+ *
+ * @extends M.View
+ */
+M.PageView = M.View.extend(
+/** @scope M.PageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PageView',
+
+    /**
+     * States whether a page is loaded the first time or not. It is automatically set to NO
+     * once the page was first loaded.
+     *
+     * @type Boolean
+     */
+    isFirstLoad: YES,
+
+    /**
+     * Indicates whether the page has a tab bar or not.
+     *
+     * @type Boolean
+     */
+    hasTabBarView: NO,
+
+    /**
+     * The page's tab bar.
+     *
+     * @type M.TabBarView
+     */
+    tabBarView: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['pagebeforeshow', 'pageshow', 'pagebeforehide', 'pagehide', 'orientationdidchange'],
+
+    /**
+     * This property is used to specify a view's internal events and their corresponding actions. If
+     * there are external handlers specified for the same event, the internal handler is called first.
+     *
+     * @type Object
+     */
+    internalEvents: null,
+
+    /**
+     * An associative array containing all list views used in this page. The key for a list view is
+     * its id. We do this to have direct access to a list view, so we can reset its selected item
+     * once the page was hidden.
+     *
+     * @type Object
+     */
+    listList: null,
+
+    /**
+     * This property contains the page's current orientation. This property is only used internally!
+     *
+     * @private
+     * @type Number
+     */
+    orientation: null,
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The page view's html representation.
+     */
+    render: function() {
+        /* store the currently rendered page as a reference for use in child views */
+        M.ViewManager.currentlyRenderedPage = this;
+        
+        this.html = '<div id="' + this.id + '" data-role="page"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
+        this.registerEvents();
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for page views and its
+     * internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            pagebeforeshow: {
+                target: this,
+                action: 'pageWillLoad'
+            },
+            pageshow: {
+                target: this,
+                action: 'pageDidLoad'
+            },
+            pagebeforehide: {
+                target: this,
+                action: 'pageWillHide'
+            },
+            pagehide: {
+                target: this,
+                action: 'pageDidHide'
+            },
+            orientationdidchange: {
+                target: this,
+                action: 'orientationDidChange'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method writes the view's html string into the DOM. M.Page is the only view that does
+     * that. All other views just deliver their html representation to a page view.
+     */
+    writeToDOM: function() {
+    	if (restartOnBlackBerry) {
+    		if (document.readyState === "loading") {
+    			document.write(this.html);
+    		} else if (typeof($(this.html)[0]) !== undefined) {
+    			// append only if the page-id isn't already in the body 
+    			if (document.body.innerHTML.indexOf($(this.html)[0].id) === -1) {
+    				$('body').append(this.html);
+    			}
+    		}
+		} else {
+			document.write(this.html);
+		}
+    },
+
+    /**
+     * This method is called right before the page is loaded. If a beforeLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillLoad: function(id, event, nextEvent) {
+        /* initialize the tabbar */
+        if(M.Application.isFirstLoad) {
+            M.Application.isFirstLoad = NO;
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage && currentPage.hasTabBarView) {
+                var tabBarView = currentPage.tabBarView;
+
+                if(tabBarView.childViews) {
+                    var childViews = tabBarView.getChildViewsAsArray();
+                    for(var i in childViews) {
+                        if(M.ViewManager.getPage(tabBarView[childViews[i]].page).id === currentPage.id) {
+                            tabBarView.setActiveTab(tabBarView[childViews[i]]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* initialize the loader for later use (if not already done) */
+        if(M.LoaderView) {
+            M.LoaderView.initialize();
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+            var that = this;
+            window.setTimeout(function() {
+                $(that).controlgroup();
+            }, 1);
+        });
+
+        /* reset the page's title */
+        document.title = M.Application.name;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was loaded. If a onLoad-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidLoad: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+
+        /* call controlgroup plugin on any such element on the page */
+//        $('#' + id).find('[data-role="controlgroup"]').each(function() {
+//            $(this).controlgroup();
+//        });
+
+        this.isFirstLoad = NO;
+    },
+
+    /**
+     * This method is called right before the page is hidden. If a beforeHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageWillHide: function(id, event, nextEvent) {
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the page was hidden. If a onHide-action is defined
+     * for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    pageDidHide: function(id, event, nextEvent) {
+        /* if there is a list on the page, reset it: deactivate possible active list items */
+        if(this.listList) {
+            _.each(this.listList, function(list) {
+                list.resetActiveListItem();
+            });
+        }
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.isFirstLoad]);
+        }
+    },
+
+    /**
+     * This method is called right after the device's orientation did change. If a action for
+     * orientationdidchange is defined for the page, it is now called.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    orientationDidChange: function(id, event, nextEvent) {
+        /* get the orientation */
+        var orientation = M.Environment.getOrientation();
+        
+        /* filter event duplicates (can happen due to event delegation in bootstraping.js) */
+        if(orientation === this.orientation) {
+            return;
+        }
+
+        /* auto-reposition opened dialogs */
+        $('.tmp-dialog').each(function() {
+            var id = $(this).attr('id');
+            var dialog = M.ViewManager.getViewById(id);
+            var dialogDOM = $(this);
+            window.setTimeout(function() {
+                dialog.positionDialog(dialogDOM);
+                dialog.positionBackground($('.tmp-dialog-background'));
+            }, 500);
+        });
+
+        /* auto-reposition carousels */
+        $('#' + this.id + ' .tmp-carousel-wrapper').each(function() {
+            var carousel = M.ViewManager.getViewById($(this).attr('id'));
+            carousel.orientationDidChange();
+        });
+
+        /* set the current orientation */
+        this.orientation = orientation;
+
+        /* delegate event to external handler, if specified */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [M.Environment.getOrientation()]);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the page and call the theme() of
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the page.
+     *
+     * @private
+     * @returns {String} The page's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            if(!html) {
+                html += ' class="';
+            }
+            html += this.cssClass;
+        }
+        if(html) {
+            html += '"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -6450,69 +6513,6 @@ M.PopoverView = M.View.extend(
     }
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8460,254 +8460,6 @@ M.SelectionListView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.11.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
- *
- * @extends M.View
- */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SliderView',
-
-    /**
-     * This property contains the slider's value.
-     */
-    value: 0,
-
-    /**
-     * This property contains the slider's initial value.
-     *
-     * @private
-     */
-    initialValue: 0,
-
-    /**
-     * This property specifies the min value of the slider.
-     *
-     * @type Number
-     */
-    min: 0,
-
-    /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
-     *
-     * @type Boolean
-     */
-    isSliderOnly: NO,
-
-    /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
-     *
-     * @type Boolean
-     */
-    highlightLeftPart: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a slider.
-     *
-     * @private
-     * @returns {String} The slider view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
-        }
-
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
-
-        this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
-
-        return this.html;
-    },
-
-    /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
-     */
-    registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Updates a SliderView with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
-        }
-
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
-    },
-
-    /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
-     *
-     * @private
-     * @returns {String} The slider's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * Do some theming/styling once the slider was added to the DOM.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
-        }
-
-        if(!this.isEnabled) {
-            this.disable();
-        }
-    },
-
-    /**
-     * This method resets the slider to its initial value.
-     */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
-    },
-
-    /**
-     * This method disables the text field by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
-    },
-
-    /**
-     * This method enables the text field by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      16.02.2011
@@ -9146,6 +8898,254 @@ M.SplitView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.11.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
+ *
+ * @extends M.View
+ */
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SliderView',
+
+    /**
+     * This property contains the slider's value.
+     */
+    value: 0,
+
+    /**
+     * This property contains the slider's initial value.
+     *
+     * @private
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
+
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+
+        this.html += '</div>';
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
+        return this.html;
+    },
+
+    /**
+     * This method registers the change event to internally re-set the value of the
+     * slider.
+     */
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
+                }
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
+        }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the slider.
+     *
+     * @private
+     * @returns {String} The slider's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * Do some theming/styling once the slider was added to the DOM.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
+        }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -9598,6 +9598,126 @@ M.TableView = M.View.extend(
 /**
  * @class
  *
+ * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
+ * used as a child view of a tab bar view.
+ *
+ * @extends M.View
+ */
+M.TabBarItemView = M.View.extend(
+/** @scope M.TabBarItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarItemView',
+
+    /**
+     * Determines whether this TabBarItem is active or not.
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a tab bar item as a li-element inside of a parent tab bar view.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.id.lastIndexOf('_') == 1) {
+            this.id = this.id + '_' + this.parentView.usageCounter;
+        } else {
+            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
+        }
+        M.ViewManager.register(this);
+
+        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'switchPage'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method is automatically called if a tab bar item is clicked. It delegates the
+     * page switching job to M.Controller's switchToTab().
+     */
+    switchPage: function() {
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
+    	if(this.page) {
+        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
+            M.Controller.switchToTab(this);
+        } else {
+            this.parentView.setActiveTab(this);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the tab bar item.
+     *
+     * @private
+     * @returns {String} The tab bar item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.isActive) {
+            html += html != '' ? '' : ' class="';
+            html += 'ui-btn-active';
+            html += '"';
+        }
+        if(this.icon) {
+            html += ' data-icon="';
+            html += this.icon;
+            html += '" data-iconpos="top"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
  * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
  * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
  * M.TabBarView can be used the top navigation level for an application since it is always
@@ -9751,126 +9871,6 @@ M.TabBarView = M.View.extend(
 
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
- * used as a child view of a tab bar view.
- *
- * @extends M.View
- */
-M.TabBarItemView = M.View.extend(
-/** @scope M.TabBarItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarItemView',
-
-    /**
-     * Determines whether this TabBarItem is active or not.
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a tab bar item as a li-element inside of a parent tab bar view.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.id.lastIndexOf('_') == 1) {
-            this.id = this.id + '_' + this.parentView.usageCounter;
-        } else {
-            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
-        }
-        M.ViewManager.register(this);
-
-        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'switchPage'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method is automatically called if a tab bar item is clicked. It delegates the
-     * page switching job to M.Controller's switchToTab().
-     */
-    switchPage: function() {
-    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
-    	if(this.page) {
-        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
-            M.Controller.switchToTab(this);
-        } else {
-            this.parentView.setActiveTab(this);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the tab bar item.
-     *
-     * @private
-     * @returns {String} The tab bar item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.isActive) {
-            html += html != '' ? '' : ' class="';
-            html += 'ui-btn-active';
-            html += '"';
-        }
-        if(this.icon) {
-            html += ' data-icon="';
-            html += this.icon;
-            html += '" data-iconpos="top"';
-        }
-        return html;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -10666,229 +10666,6 @@ M.ToggleView = M.View.extend(
     }
 
 });
-/**
- * @class
- *
- * This defines the prototype of a toggle switch view
- *
- * General spoken it is an Boolean switch.
- *
- * @extends M.View
- */
-M.ToggleSwitchView = M.View.extend(
-    /** @scope M.ToggleSwitchView.prototype */ {
-
-        /**
-         * The type of this object.
-         *
-         * @type String
-         */
-        type:'M.ToggleSwitchView',
-
-        /**
-         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
-         *
-         * @type Boolean
-         */
-        isMini:NO,
-
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        onLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        offLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         *
-         * @default YES
-         * @type Boolean but could be anything
-         */
-
-        onValue:YES,
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         *
-         * @default NO
-         * @type Boolean but could be anything
-         */
-        offValue:NO,
-
-        /**
-         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
-         * @default YES
-         * @type Boolean
-         */
-        fieldcontain:NO,
-
-
-        /**
-         * This property specifies the recommended events for this type of view.
-         *
-         * @type Array
-         */
-        recommendedEvents: ['change'],
-
-
-        /**
-         * Renders a selection list.
-         *
-         * @private
-         * @returns {String} The toggle switch view's html representation.
-         */
-        render:function () {
-
-            this.html = '';
-            /* if there is no label put the value as label */
-            if (!this.onLabel) {
-                this.onLabel = this.onValue;
-            }
-
-            /* if there is no label put the value as label */
-            if (!this.offLabel) {
-                this.offLabel = this.offValue;
-            }
-
-            var dataRoleFieldContain = '';
-
-            /*is there is a fieldcontain defined use it*/
-            if (this.fieldcontain) {
-                dataRoleFieldContain = ' data-role="fieldcontain" ';
-            }
-
-            /*should the element be inline?*/
-            var isInline = '';
-            if (this.isInline) {
-                isInline = ' style="display: inline-block" ';
-            }
-
-            /*add the label to the view*/
-            if (this.label) {
-                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
-            }
-
-            /* build the markup as jquerymobile likes it */
-            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
-            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
-            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
-            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
-            this.html += '</select>';
-
-            this.html += '</div>';
-
-
-            /* return the markup*/
-            return this.html;
-        },
-
-        theme: function(){
-
-        },
-
-        /**
-         *
-         * add the class attribute to the HTML
-         *
-         * @return {String}
-         */
-
-        style:function () {
-            var html = ' class="';
-            if (this.cssClass) {
-                html += this.cssClass;
-            }
-            html += '" ';
-            return html;
-        },
-
-
-        /**
-         *
-         * returns the value of the selection
-         *
-         * @return {*} the value of the selection
-         */
-        getValue:function () {
-            var val = $('#' + this.id).val();
-            return val;
-        },
-
-        /**
-         *
-         * pass either the name of the option or its value to set the option and toggle the slider
-         *
-         * @param val the value to be set
-         */
-        setValue:function (val) {
-            //if the name matchs set the option to selected otherwise test the given parameter to the option value
-            var useValue = true;
-            $('#' + this.id + ' option').each(function () {
-                if ($(this).html() === val) {
-                    $(this).attr('selected', 'selected');
-                    useValue = false;
-                }
-            });
-            if (useValue) {
-                //is there an option with the paramet as value. if so then select it
-                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
-            }
-            //toggle the view
-            $('#' + this.id).slider('refresh');
-        },
-
-
-        /**
-         * sets the value of the toggle switch to onValue
-         */
-        on:function () {
-            this.setValue(this.onValue);
-        },
-
-        /**
-         * sets the value of the toggle switch to offValue
-         */
-        off:function () {
-            this.setValue(this.offValue);
-        },
-
-
-        /**
-         * enable the toggle switch view
-         */
-        enable:function () {
-            $('#' + this.id).slider('enable');
-        },
-
-
-        /**
-         * disable the toggle switch view
-         */
-        disable:function () {
-            $('#' + this.id).slider('disable');
-        }
-
-    })
-
-
-
-
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -11143,6 +10920,229 @@ M.ToolbarView = M.View.extend(
     }
     
 });
+/**
+ * @class
+ *
+ * This defines the prototype of a toggle switch view
+ *
+ * General spoken it is an Boolean switch.
+ *
+ * @extends M.View
+ */
+M.ToggleSwitchView = M.View.extend(
+    /** @scope M.ToggleSwitchView.prototype */ {
+
+        /**
+         * The type of this object.
+         *
+         * @type String
+         */
+        type:'M.ToggleSwitchView',
+
+        /**
+         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
+         *
+         * @type Boolean
+         */
+        isMini:NO,
+
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        onLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        offLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         *
+         * @default YES
+         * @type Boolean but could be anything
+         */
+
+        onValue:YES,
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         *
+         * @default NO
+         * @type Boolean but could be anything
+         */
+        offValue:NO,
+
+        /**
+         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
+         * @default YES
+         * @type Boolean
+         */
+        fieldcontain:NO,
+
+
+        /**
+         * This property specifies the recommended events for this type of view.
+         *
+         * @type Array
+         */
+        recommendedEvents: ['change'],
+
+
+        /**
+         * Renders a selection list.
+         *
+         * @private
+         * @returns {String} The toggle switch view's html representation.
+         */
+        render:function () {
+
+            this.html = '';
+            /* if there is no label put the value as label */
+            if (!this.onLabel) {
+                this.onLabel = this.onValue;
+            }
+
+            /* if there is no label put the value as label */
+            if (!this.offLabel) {
+                this.offLabel = this.offValue;
+            }
+
+            var dataRoleFieldContain = '';
+
+            /*is there is a fieldcontain defined use it*/
+            if (this.fieldcontain) {
+                dataRoleFieldContain = ' data-role="fieldcontain" ';
+            }
+
+            /*should the element be inline?*/
+            var isInline = '';
+            if (this.isInline) {
+                isInline = ' style="display: inline-block" ';
+            }
+
+            /*add the label to the view*/
+            if (this.label) {
+                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
+            }
+
+            /* build the markup as jquerymobile likes it */
+            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
+            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
+            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
+            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
+            this.html += '</select>';
+
+            this.html += '</div>';
+
+
+            /* return the markup*/
+            return this.html;
+        },
+
+        theme: function(){
+
+        },
+
+        /**
+         *
+         * add the class attribute to the HTML
+         *
+         * @return {String}
+         */
+
+        style:function () {
+            var html = ' class="';
+            if (this.cssClass) {
+                html += this.cssClass;
+            }
+            html += '" ';
+            return html;
+        },
+
+
+        /**
+         *
+         * returns the value of the selection
+         *
+         * @return {*} the value of the selection
+         */
+        getValue:function () {
+            var val = $('#' + this.id).val();
+            return val;
+        },
+
+        /**
+         *
+         * pass either the name of the option or its value to set the option and toggle the slider
+         *
+         * @param val the value to be set
+         */
+        setValue:function (val) {
+            //if the name matchs set the option to selected otherwise test the given parameter to the option value
+            var useValue = true;
+            $('#' + this.id + ' option').each(function () {
+                if ($(this).html() === val) {
+                    $(this).attr('selected', 'selected');
+                    useValue = false;
+                }
+            });
+            if (useValue) {
+                //is there an option with the paramet as value. if so then select it
+                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
+            }
+            //toggle the view
+            $('#' + this.id).slider('refresh');
+        },
+
+
+        /**
+         * sets the value of the toggle switch to onValue
+         */
+        on:function () {
+            this.setValue(this.onValue);
+        },
+
+        /**
+         * sets the value of the toggle switch to offValue
+         */
+        off:function () {
+            this.setValue(this.offValue);
+        },
+
+
+        /**
+         * enable the toggle switch view
+         */
+        enable:function () {
+            $('#' + this.id).slider('enable');
+        },
+
+
+        /**
+         * disable the toggle switch view
+         */
+        disable:function () {
+            $('#' + this.id).slider('disable');
+        }
+
+    })
+
+
+
+
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2012 panacoda GmbH. All rights reserved.
