@@ -505,131 +505,6 @@ M.ListItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      28.10.11
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This is the prototype of any canvas view. It basically renders a simple canvas
- * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
- * but mostly you will just use this view for the first rendering of the canvas
- * element and then work on the dom element itself.
- *
- * @extends M.View
- */
-M.CanvasView = M.View.extend(
-/** @scope M.CanvasView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.CanvasView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * This method simply renders a canvas view as a html canvas element.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.html = '<canvas id="' + this.id + '" ></canvas>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the canvas (e.g. with content binding).
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // nothing so far...
-    },
-
-    /**
-     * This method returns the canvas' DOM representation.
-     *
-     * @returns {Object} The canvas' DOM representation.
-     */
-    getCanvas: function() {
-        return $('#' + this.id).get(0);
-    },
-
-    /**
-     * This method returns the canvas' context.
-     *
-     * @param {String} type The context tyoe to return.
-     * @returns {Object} The canvas' context.
-     */
-    getContext: function(type) {
-        return $('#' + this.id).get(0).getContext(type);
-    },
-
-    /**
-     * This method sets the canvas' size.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setSize: function(width, height) {
-        this.setWidth(width);
-        this.setHeight(height);
-    },
-
-    /**
-     * This method sets the canvas' width.
-     *
-     * @param {Number} width The width to be applied to the canvas view.
-     */
-    setWidth: function(width) {
-        $('#' + this.id).get(0).width = width;
-    },
-
-    /**
-     * This method returns the canvas' width.
-     *
-     * @returns {Number} The canvas' width.
-     */
-    getWidth: function() {
-        return $('#' + this.id).get(0).width;
-    },
-
-    /**
-     * This method sets the canvas' height.
-     *
-     * @param {Number} height The height to be applied to the canvas view.
-     */
-    setHeight: function(height) {
-        $('#' + this.id).get(0).height = height;
-    },
-
-    /**
-     * This method returns the canvas' height.
-     *
-     * @returns {Number} The canvas' height.
-     */
-    getHeight: function() {
-        return $('#' + this.id).get(0).height;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1115,6 +990,131 @@ M.ButtonGroupView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      28.10.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This is the prototype of any canvas view. It basically renders a simple canvas
+ * tag into the DOM. Additionally it offers some wrappers for canvas-based methods,
+ * but mostly you will just use this view for the first rendering of the canvas
+ * element and then work on the dom element itself.
+ *
+ * @extends M.View
+ */
+M.CanvasView = M.View.extend(
+/** @scope M.CanvasView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.CanvasView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * This method simply renders a canvas view as a html canvas element.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.html = '<canvas id="' + this.id + '" ></canvas>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the canvas (e.g. with content binding).
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // nothing so far...
+    },
+
+    /**
+     * This method returns the canvas' DOM representation.
+     *
+     * @returns {Object} The canvas' DOM representation.
+     */
+    getCanvas: function() {
+        return $('#' + this.id).get(0);
+    },
+
+    /**
+     * This method returns the canvas' context.
+     *
+     * @param {String} type The context tyoe to return.
+     * @returns {Object} The canvas' context.
+     */
+    getContext: function(type) {
+        return $('#' + this.id).get(0).getContext(type);
+    },
+
+    /**
+     * This method sets the canvas' size.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setSize: function(width, height) {
+        this.setWidth(width);
+        this.setHeight(height);
+    },
+
+    /**
+     * This method sets the canvas' width.
+     *
+     * @param {Number} width The width to be applied to the canvas view.
+     */
+    setWidth: function(width) {
+        $('#' + this.id).get(0).width = width;
+    },
+
+    /**
+     * This method returns the canvas' width.
+     *
+     * @returns {Number} The canvas' width.
+     */
+    getWidth: function() {
+        return $('#' + this.id).get(0).width;
+    },
+
+    /**
+     * This method sets the canvas' height.
+     *
+     * @param {Number} height The height to be applied to the canvas view.
+     */
+    setHeight: function(height) {
+        $('#' + this.id).get(0).height = height;
+    },
+
+    /**
+     * This method returns the canvas' height.
+     *
+     * @returns {Number} The canvas' height.
+     */
+    getHeight: function() {
+        return $('#' + this.id).get(0).height;
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
@@ -6248,6 +6248,69 @@ M.PanelView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The defines the prototype of a scrollable content view. It should be used as a wrapper
+ * for any content that isn't part of a header or footer toolbar / tabbar.
+ *
+ * @extends M.View
+ */
+M.ScrollView = M.View.extend(
+/** @scope M.ScrollView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ScrollView',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      15.08.11
@@ -6450,69 +6513,6 @@ M.PopoverView = M.View.extend(
     }
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The defines the prototype of a scrollable content view. It should be used as a wrapper
- * for any content that isn't part of a header or footer toolbar / tabbar.
- *
- * @extends M.View
- */
-M.ScrollView = M.View.extend(
-/** @scope M.ScrollView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ScrollView',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="content"' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -8710,6 +8710,69 @@ M.SliderView = M.View.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitItemView',
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // ...
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      16.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -9148,202 +9211,6 @@ M.SplitView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
-
-    /**
-     * Triggers render() on all children.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   dominik
 // Date:      05.12.11
@@ -9584,6 +9451,139 @@ M.TableView = M.View.extend(
 
 });
 
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitToolbarView = M.View.extend(
+/** @scope M.SplitToolbarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitToolbarView',
+
+    showSelectedItemInMainHeader: YES,
+
+    showMenuButtonInPortraitMode: YES,
+
+    popover: null,
+
+    splitview: null,
+
+    /**
+     * Triggers render() on all children.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+
+        if(this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+
+            var currentToolbar = 0;
+            for(var i in childViews) { // toolbar1, toolbar 2
+                
+                var toolbar = this[childViews[i]]; //zugriff wie 
+                
+                if(toolbar && toolbar.type === 'M.ToolbarView') {
+
+                    toolbar.parentView = this;
+                    if(currentToolbar === 0) {
+
+
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
+
+
+
+                    } else if(currentToolbar === 1) {
+                        //toolbar2
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
+
+                        /* check if this is a simple toolbar so we can add the menu button */
+                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
+                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
+                            toolbar.childViews = 'menuButton label';
+
+
+
+                            var buttonLabel = this[childViews[0]].value;
+                            toolbar.menuButton = M.ButtonView.design({
+                                value: buttonLabel,
+                                icon: 'arrow-d',
+                                anchorLocation: M.LEFT,
+                                internalEvents: {
+                                    tap: {
+                                        target: this,
+                                        action: function() {
+                                           if(!this.popover) {
+                                                var content;
+                                                if(this.splitview.contentBinding) {
+                                                    content = this.splitview.value;
+                                                } else if(this.splitview.childViews) {
+                                                    var childViews = this.splitview.getChildViewsAsArray();
+                                                    content = [];
+                                                    for(var i = 0; i < childViews.length; i++) {
+                                                        content.push(this.splitview[childViews[i]]);
+                                                    }
+                                                }
+                                                var items = [];
+                                                for(var i in content) {
+                                                    items.push(content[i]);
+                                                }
+                                                this.popover = M.PopoverView.design({
+                                                    items: items,
+                                                    splitview: this.splitview
+                                                });
+                                                this.popover.show();
+                                            } else {
+                                                this.popover.renderUpdate();
+                                                this.popover.toggle();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            toolbar.label = M.LabelView.design({
+                                value: toolbar.value,
+                                anchorLocation: M.CENTER
+                            });
+
+                            toolbar.value = '';
+                        }
+                    } else {
+                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
+                        return;
+                    }
+                    this.html += toolbar.render();
+                    currentToolbar++;
+                } else {
+                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
+                }
+            }
+            return this.html;
+        }
+    }
+
+});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -9871,6 +9871,178 @@ M.TabBarItemView = M.View.extend(
         return html;
     }
     
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
+ *
+ * @extends M.View
+ */
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ToggleView',
+
+    /**
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
+     *
+     * @type Boolean
+     */
+    isInFirstState: YES,
+
+    /**
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
+     *
+     * @type Boolean
+     */
+    toggleOnClick: NO,
+
+    /**
+     * Contains a reference to the currently displayed view.
+     *
+     * @type M.View
+     */
+    currentView: null,
+
+    /**
+     * Renders a ToggleView and its child views.
+     *
+     * @private
+     * @returns {String} The toggle view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method renders one child view of the toggle view, based on the isInFirstState
+     * property: YES = first child view, NO = second child view.
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            if(childViews.length !== 2) {
+                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
+            } else {
+                for(var i in childViews) {
+                    if(this[childViews[i]]) {
+                        if(this.toggleOnClick) {
+                            this[childViews[i]].internalEvents = {
+                                vclick: {
+                                    target: this,
+                                    action: 'toggleView'
+                                }
+                            }
+                        }
+                        this[childViews[i]]._name = childViews[i];
+                        this[childViews[i]].parentView = this;
+                        
+                        this.html += '<div id="' + this.id + '_' + i + '">';
+                        this.html += this[childViews[i]].render();
+                        this.html += '</div>';
+                    }
+                }
+                this.currentView = this[childViews[0]];
+            }
+        }
+    },
+
+    /**
+     * This method toggles the child views by first emptying the toggle view's content
+     * and then rendering the next child view by calling renderUpdateChildViews().
+     */
+    toggleView: function(id, event, nextEvent) {
+        this.isInFirstState = !this.isInFirstState;
+        var currentViewIndex = this.isInFirstState ? 0 : 1;
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        $('#' + this.id + '_' + currentViewIndex).show();
+
+        /* set current view */
+        var childViews = this.getChildViewsAsArray();
+        if(this[childViews[currentViewIndex]]) {
+            this.currentView = this[childViews[currentViewIndex]];
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
+     * the view, its id or its name.
+     *
+     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
+     * done.
+     *
+     * @param {Object|String} view The corresponding view.
+     */
+    setView: function(view) {
+        if(typeof(view) === 'string') {
+            /* assume a name was given */
+            var childViews = this.getChildViewsAsArray();
+            if(_.indexOf(childViews, view) >= 0) {
+                view = this[view];
+            /* assume an id was given */
+            } else {
+                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
+            }
+        }
+
+        if(view && typeof(view) === 'object' && view.parentView === this) {
+            if(this.currentView !== view) {
+                this.toggleView();
+            }
+        } else {
+            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        if(this.currentView) {
+            this.themeChildViews();
+            var currentViewIndex = this.isInFirstState ? 0 : 1;
+
+            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        }
+    }
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -10494,178 +10666,6 @@ M.TextFieldView = M.View.extend(
 
 });
 
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
- * two child views and provides an easy mechanism to toggle between these two views. An
- * easy example would be to define two different button views that can be toggled, a more
- * complex scenario would be to define two content views (M.ScrollView) with own child views
- * and toggle between them.
- *
- * @extends M.View
- */
-M.ToggleView = M.View.extend(
-/** @scope M.ToggleView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ToggleView',
-
-    /**
-     * States whether the toggle view currently displays its first child view or its second
-     * child view.
-     *
-     * @type Boolean
-     */
-    isInFirstState: YES,
-
-    /**
-     * Determines whether to toggle the view on click. This might be useful if the child views
-     * are e.g. buttons.
-     *
-     * @type Boolean
-     */
-    toggleOnClick: NO,
-
-    /**
-     * Contains a reference to the currently displayed view.
-     *
-     * @type M.View
-     */
-    currentView: null,
-
-    /**
-     * Renders a ToggleView and its child views.
-     *
-     * @private
-     * @returns {String} The toggle view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method renders one child view of the toggle view, based on the isInFirstState
-     * property: YES = first child view, NO = second child view.
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            if(childViews.length !== 2) {
-                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
-            } else {
-                for(var i in childViews) {
-                    if(this[childViews[i]]) {
-                        if(this.toggleOnClick) {
-                            this[childViews[i]].internalEvents = {
-                                vclick: {
-                                    target: this,
-                                    action: 'toggleView'
-                                }
-                            }
-                        }
-                        this[childViews[i]]._name = childViews[i];
-                        this[childViews[i]].parentView = this;
-                        
-                        this.html += '<div id="' + this.id + '_' + i + '">';
-                        this.html += this[childViews[i]].render();
-                        this.html += '</div>';
-                    }
-                }
-                this.currentView = this[childViews[0]];
-            }
-        }
-    },
-
-    /**
-     * This method toggles the child views by first emptying the toggle view's content
-     * and then rendering the next child view by calling renderUpdateChildViews().
-     */
-    toggleView: function(id, event, nextEvent) {
-        this.isInFirstState = !this.isInFirstState;
-        var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        $('#' + this.id + '_' + currentViewIndex).show();
-
-        /* set current view */
-        var childViews = this.getChildViewsAsArray();
-        if(this[childViews[currentViewIndex]]) {
-            this.currentView = this[childViews[currentViewIndex]];
-        }
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    /**
-     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
-     * the view, its id or its name.
-     *
-     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
-     * done.
-     *
-     * @param {Object|String} view The corresponding view.
-     */
-    setView: function(view) {
-        if(typeof(view) === 'string') {
-            /* assume a name was given */
-            var childViews = this.getChildViewsAsArray();
-            if(_.indexOf(childViews, view) >= 0) {
-                view = this[view];
-            /* assume an id was given */
-            } else {
-                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
-            }
-        }
-
-        if(view && typeof(view) === 'object' && view.parentView === this) {
-            if(this.currentView !== view) {
-                this.toggleView();
-            }
-        } else {
-            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
-     * its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.currentView) {
-            this.themeChildViews();
-            var currentViewIndex = this.isInFirstState ? 0 : 1;
-
-            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        }
-    }
-
-});
 /**
  * @class
  *
