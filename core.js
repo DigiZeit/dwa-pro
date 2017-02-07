@@ -1,4 +1,53 @@
 
+(function( $ ){
+    //return the height of an element with the its margin whether it's visible or not
+    $.fn.outerMarginHeight = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var height = this.outerHeight();
+        height += parseIntRadixTen(this.css('margin-bottom'));
+        height += parseIntRadixTen(this.css('margin-top'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return height;
+
+    };
+    //return the width of an element with the its margin whether it's visible or not
+    $.fn.outerMarginWidth = function() {
+        if(!this || this.length < 1){
+            return null;
+        }
+        var page = $(this).closest('.ui-page');
+        var visible = NO;
+        var left = page.css('left');
+        if(!page.is(':visible')){
+            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
+            visible = YES;
+        }
+
+        var width = this.outerWidth();
+        width += parseIntRadixTen(this.css('margin-left'));
+        width += parseIntRadixTen(this.css('margin-right'));
+
+        if(visible){
+            page.removeClass('ui-page-active').css('left', left);
+        }
+        return width;
+
+    };
+
+})( jQuery );
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -1182,182 +1231,6 @@ M.DS = M.DeviceSwitch;
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * M.I18N defines a prototype for internationalisation and localisation within
- * The M-Project. It is used to set and get the application's language and to
- * localize any string within an application.
- *
- * @extends M.Object
- */
-M.I18N = M.Object.extend(
-/** @scope M.I18N.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.I18N',
-
-    /**
-     * The system's default language.
-     *
-     * @type String
-     */
-    defaultLanguage: 'en_us',
-
-    /**
-     * This property is used to map the navigator's language to an ISO standard
-     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
-     * support for english and german. More languages are about to come or can be
-     * added by overwriting this property.
-     *
-     * @type Object
-     */
-    languageMapper: {
-        de: 'de_de',
-        en: 'en_us'
-    },
-    
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language.
-     *
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    l: function(key, context) {
-        return this.localize(key, context);
-    },
-
-    /**
-     * This method returns the localized string for the given key based on
-     * the current language. It is internally used as a wrapper for l() for
-     * a better readability.
-     *
-     * @private
-     * @param {String} key The key to the localized string.
-     * @param {Object} context An object containing value parts for the translated string
-     * @returns {String} The localized string based on the current application language.
-     */
-    localize: function(key, context) {
-        var translation;
-        if(!M.Application.currentLanguage) {
-            M.Application.currentLanguage = this.getLanguage();
-        }
-        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
-            translation = this[M.Application.currentLanguage][key];
-        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
-            translation = this[M.Application.defaultLanguage][key];
-        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
-            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            translation = this[this.defaultLanguage][key];
-        } else {
-            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
-            return null;
-        }
-        if(context) {
-            try {
-                translation = _.template(translation, context);
-            } catch(e) {
-                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
-            }
-        }
-        return translation;
-    },
-
-    /**
-     * This method sets the applications current language and forces it to reload.
-     *
-     * @param {String} language The language to be set.
-     */
-    setLanguage: function(language) {
-        if(!this.isLanguageAvailable(language)) {
-            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
-            this.setLanguage(this.defaultLanguage);
-            return;
-        } else if(language && language === M.Application.currentLanguage) {
-            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
-            return;
-        }
-
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
-            location.href = location.protocol + '//' + location.host + location.pathname;
-        }
-    },
-
-    /**
-     * This method is used to get a language for the current user. This process is divided
-     * into three steps. If one step leads to a language, this on is returned. The steps are
-     * prioritized as follows:
-     *
-     * - get the user's language by checking his navigator
-     * - use the application's default language
-     * - use the systems's default language
-     *
-     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
-     * @returns {String} The user's language.
-     */
-    getLanguage: function(returnNavigatorLanguage) {
-        var language = null;
-
-        if(localStorage) {
-            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
-        }
-
-        if(language) {
-            return language;
-        } else if(navigator) {
-            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
-            if(regexResult && this[regexResult[0]]) {
-                return regexResult[0].toLowerCase();
-            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
-                var language = this.languageMapper[regexResult[1]];
-                return language.toLowerCase();
-            } else if(M.Application.defaultLanguage) {
-                return M.Application.defaultLanguage.toLowerCase();
-            } else {
-                return this.defaultLanguage;
-            }
-        } else {
-            return this.defaultLanguage;
-        }
-    },
-
-    /**
-     * This method checks if the passed language is available within the app or not. 
-     *
-     * @param {String} language The language to be checked.
-     * @returns {Boolean} Indicates whether the requested language is available or not.
-     */
-    isLanguageAvailable: function(language) {
-        if(this[language] && typeof(this[language]) === 'object') {
-            return true;
-        } else {
-            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
-            return false;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -1945,6 +1818,182 @@ M.Location = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      29.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * M.I18N defines a prototype for internationalisation and localisation within
+ * The M-Project. It is used to set and get the application's language and to
+ * localize any string within an application.
+ *
+ * @extends M.Object
+ */
+M.I18N = M.Object.extend(
+/** @scope M.I18N.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.I18N',
+
+    /**
+     * The system's default language.
+     *
+     * @type String
+     */
+    defaultLanguage: 'en_us',
+
+    /**
+     * This property is used to map the navigator's language to an ISO standard
+     * if necessary. E.g. 'de' will be mapped to 'de_de'. Currently we only provide
+     * support for english and german. More languages are about to come or can be
+     * added by overwriting this property.
+     *
+     * @type Object
+     */
+    languageMapper: {
+        de: 'de_de',
+        en: 'en_us'
+    },
+    
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language.
+     *
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    l: function(key, context) {
+        return this.localize(key, context);
+    },
+
+    /**
+     * This method returns the localized string for the given key based on
+     * the current language. It is internally used as a wrapper for l() for
+     * a better readability.
+     *
+     * @private
+     * @param {String} key The key to the localized string.
+     * @param {Object} context An object containing value parts for the translated string
+     * @returns {String} The localized string based on the current application language.
+     */
+    localize: function(key, context) {
+        var translation;
+        if(!M.Application.currentLanguage) {
+            M.Application.currentLanguage = this.getLanguage();
+        }
+        if(this[M.Application.currentLanguage] && this[M.Application.currentLanguage][key]) {
+            translation = this[M.Application.currentLanguage][key];
+        } else if(this[M.Application.defaultLanguage] && this[M.Application.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to default language \'' + M.Application.defaultLanguage + '\'', M.WARN);
+            translation = this[M.Application.defaultLanguage][key];
+        }  else if(this[this.defaultLanguage] && this[this.defaultLanguage][key]) {
+            M.Logger.log('Key \'' + key + '\' not defined for language \'' + M.Application.currentLanguage + '\', switched to system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            translation = this[this.defaultLanguage][key];
+        } else {
+            M.Logger.log('Key \'' + key + '\' not defined for both language \'' + M.Application.currentLanguage + '\' and the system\'s default language \'' + this.defaultLanguage + '\'', M.WARN);
+            return null;
+        }
+        if(context) {
+            try {
+                translation = _.template(translation, context);
+            } catch(e) {
+                M.Logger.log('Error in I18N: Check your context object and the translation string with key "'+ key + '". Error Message: ' + e, M.ERR);
+            }
+        }
+        return translation;
+    },
+
+    /**
+     * This method sets the applications current language and forces it to reload.
+     *
+     * @param {String} language The language to be set.
+     */
+    setLanguage: function(language) {
+        if(!this.isLanguageAvailable(language)) {
+            M.Logger.log('There is no language \'' + language + '\' specified (using default language \'' + this.defaultLanguage + '\' instead!', M.WARN);
+            this.setLanguage(this.defaultLanguage);
+            return;
+        } else if(language && language === M.Application.currentLanguage) {
+            M.Logger.log('Language \'' + language + '\' already selected', M.INFO);
+            return;
+        }
+
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang', language);
+            location.href = location.protocol + '//' + location.host + location.pathname;
+        }
+    },
+
+    /**
+     * This method is used to get a language for the current user. This process is divided
+     * into three steps. If one step leads to a language, this on is returned. The steps are
+     * prioritized as follows:
+     *
+     * - get the user's language by checking his navigator
+     * - use the application's default language
+     * - use the systems's default language
+     *
+     * @param {Boolean} returnNavigatorLanguage Specify whether to return the navigator's language even if this language is not supported by this app.
+     * @returns {String} The user's language.
+     */
+    getLanguage: function(returnNavigatorLanguage) {
+        var language = null;
+
+        if(localStorage) {
+            language = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'lang');
+        }
+
+        if(language) {
+            return language;
+        } else if(navigator) {
+            var regexResult = /([a-zA-Z]{2,3})[\s_.-]?([a-zA-Z]{2,3})?/.exec(navigator.language);
+            if(regexResult && this[regexResult[0]]) {
+                return regexResult[0].toLowerCase();
+            } else if(regexResult && regexResult[1] && this.languageMapper[regexResult[1]]) {
+                var language = this.languageMapper[regexResult[1]];
+                return language.toLowerCase();
+            } else if(M.Application.defaultLanguage) {
+                return M.Application.defaultLanguage.toLowerCase();
+            } else {
+                return this.defaultLanguage;
+            }
+        } else {
+            return this.defaultLanguage;
+        }
+    },
+
+    /**
+     * This method checks if the passed language is available within the app or not. 
+     *
+     * @param {String} language The language to be checked.
+     * @returns {Boolean} Indicates whether the requested language is available or not.
+     */
+    isLanguageAvailable: function(language) {
+        if(this[language] && typeof(this[language]) === 'object') {
+            return true;
+        } else {
+            M.Logger.log('no language \'' + language + '\' specified.', M.WARN);
+            return false;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      22.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -2094,6 +2143,52 @@ M.Math = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      04.01.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+// Returns a unique identifier
+
+m_require('core/foundation/object.js');
+
+M.UniqueId = M.Object.extend({
+    uuid: function(len, radix) {
+        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = [];
+        //len = len ? len : 32; 
+        radix = radix || chars.length;
+        var i;
+
+        if (len) {
+            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+        } else {
+            // rfc4122, version 4 form
+            var r;
+
+            // rfc4122 requires these characters
+            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+            uuid[14] = '4';
+
+            // Fill in random data.  At i==19 set the high bits of clock sequence as
+            // per rfc4122, sec. 4.1.5
+            for (i = 0; i < 36; i++) {
+                if (!uuid[i]) {
+                    r = 0 | Math.random() * 16;
+                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+                }
+            }
+        }
+        return uuid.join('');
+    }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Frank
@@ -2179,52 +2274,6 @@ M.StringBuilder = M.Object.extend(
         return stringBuilder;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-// Returns a unique identifier
-
-m_require('core/foundation/object.js');
-
-M.UniqueId = M.Object.extend({
-    uuid: function(len, radix) {
-        // based on Robert Kieffer's randomUUID.js at http://www.broofa.com
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uuid = [];
-        //len = len ? len : 32; 
-        radix = radix || chars.length;
-        var i;
-
-        if (len) {
-            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
-        } else {
-            // rfc4122, version 4 form
-            var r;
-
-            // rfc4122 requires these characters
-            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-            uuid[14] = '4';
-
-            // Fill in random data.  At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
-            for (i = 0; i < 36; i++) {
-                if (!uuid[i]) {
-                    r = 0 | Math.random() * 16;
-                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-                }
-            }
-        }
-        return uuid.join('');
-    }
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5071,6 +5120,81 @@ M.DataProviderHybrid = M.Object.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
+// Date:      19.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The prototype for every validator. All validation logic is implemented in the specific validators.
+ *
+ * @extends M.Object
+ */
+M.Validator = M.Object.extend(
+/** @scope M.Validator.prototype */ {
+
+    /**
+     * The type of this object.
+     * @type String
+     */
+    type: 'M.Validator',
+
+    /**
+     * "Class-wide" array containing error objects.
+     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
+     * 
+     * Error object represent errors that occured during validation.
+     * E.g. error object:
+     *
+     * {
+     *   msg: 'E-Mail adress not valid.',
+     *   modelId: 'Task_123',
+     *   property: 'email',
+     *   viewId: 'm_123',
+     *   validator: 'EMAIL',
+     *   onSuccess: function(){proceed();}
+     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
+     * }
+     * 
+     *
+     * @type Array|Object
+     */
+    validationErrors: [],
+
+    /**
+     * extends this.
+     *
+     * Can be used to provide a custom error msg to a validator
+     * E.g.
+     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
+     *
+     * @param obj
+     * @returns {Object} The customized validator.
+     */
+    customize: function(obj) {
+        return this.extend(obj);
+    },
+
+    /**
+     * Empties the error buffer, is done before each new validation process
+     */
+    clearErrorBuffer: function() {
+        this.validationErrors.length = 0;
+    }
+
+
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
 // Date:      18.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -5190,81 +5314,6 @@ M.ModelAttribute.attr = function(dataType, opts) {
     }
     return this.extend(opts);
 };
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      19.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The prototype for every validator. All validation logic is implemented in the specific validators.
- *
- * @extends M.Object
- */
-M.Validator = M.Object.extend(
-/** @scope M.Validator.prototype */ {
-
-    /**
-     * The type of this object.
-     * @type String
-     */
-    type: 'M.Validator',
-
-    /**
-     * "Class-wide" array containing error objects.
-     * Specific validators do NOT have an own validationErrors array, but use this one to write errors to.
-     * 
-     * Error object represent errors that occured during validation.
-     * E.g. error object:
-     *
-     * {
-     *   msg: 'E-Mail adress not valid.',
-     *   modelId: 'Task_123',
-     *   property: 'email',
-     *   viewId: 'm_123',
-     *   validator: 'EMAIL',
-     *   onSuccess: function(){proceed();}
-     *   onError: function(markTextFieldError(); console.log('email not valid')}; 
-     * }
-     * 
-     *
-     * @type Array|Object
-     */
-    validationErrors: [],
-
-    /**
-     * extends this.
-     *
-     * Can be used to provide a custom error msg to a validator
-     * E.g.
-     * M.EmailValidator.customize({msg: 'Please provide a valid e-mail adress.'});
-     *
-     * @param obj
-     * @returns {Object} The customized validator.
-     */
-    customize: function(obj) {
-        return this.extend(obj);
-    },
-
-    /**
-     * Empties the error buffer, is done before each new validation process
-     */
-    clearErrorBuffer: function() {
-        this.validationErrors.length = 0;
-    }
-
-
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -6872,6 +6921,75 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -6959,75 +7077,6 @@ M.DateValidator = M.Validator.extend(
             return YES;
         }
     }
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7788,52 +7837,3 @@ M.Application = M.Object.extend(
     }
 
 });
-(function( $ ){
-    //return the height of an element with the its margin whether it's visible or not
-    $.fn.outerMarginHeight = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var height = this.outerHeight();
-        height += parseIntRadixTen(this.css('margin-bottom'));
-        height += parseIntRadixTen(this.css('margin-top'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return height;
-
-    };
-    //return the width of an element with the its margin whether it's visible or not
-    $.fn.outerMarginWidth = function() {
-        if(!this || this.length < 1){
-            return null;
-        }
-        var page = $(this).closest('.ui-page');
-        var visible = NO;
-        var left = page.css('left');
-        if(!page.is(':visible')){
-            page.addClass('ui-page-active').css('left', -window.innerWidth*4);
-            visible = YES;
-        }
-
-        var width = this.outerWidth();
-        width += parseIntRadixTen(this.css('margin-left'));
-        width += parseIntRadixTen(this.css('margin-right'));
-
-        if(visible){
-            page.removeClass('ui-page-active').css('left', left);
-        }
-        return width;
-
-    };
-
-})( jQuery );
