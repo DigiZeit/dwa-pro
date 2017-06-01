@@ -3224,136 +3224,6 @@ M.DatePickerView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.FormViews is the prototype of a form view, a container like view for grouping
- * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
- * validation of input views. There is no visible representation of an M.FormView,
- * it is only used to ease the validation process and its accessing out of a
- * controller.
- * 
- * @extends M.View
- */
-M.FormView = M.View.extend(
-/** @scope M.FormView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.FormView',
-
-    /**
-     * Determines whether to automatically show an alert dialog view out of the showError method
-     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
-     * dialog view once the showError method is called.
-     *
-     * @type Boolean
-     */
-    showAlertDialogOnError: YES,
-
-    /**
-     * The title of the alert view that comes up automatically if the validation fails, depending
-     * one the 'showAlertOnError' property.
-     *
-     * @type String
-     */
-     alertTitle: 'Validation Error(s)',
-
-    /**
-     * This method triggers the validate() on all child views, respectively on their validators. If
-     * a validation error occurs, the showErrors() will be called.
-     *
-     * @returns {Boolean} The result of the validation process: valid or not.
-     */
-    validate: function() {
-        var ids = this.getIds();
-        for(var name in ids) {
-            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
-                delete ids[name];
-            }
-        }
-
-        var isValid = YES;
-        M.Validator.clearErrorBuffer();
-
-        for(var name in ids) {
-            var view = M.ViewManager.getViewById(ids[name]);
-            if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
-                _.each(view.validators, function(validator) {
-                    if(!validator.validate(view, name)) {
-                        isValid = NO;
-                    }
-                });
-            }
-        }
-
-        if(!isValid) {
-            this.showErrors();
-        }
-
-        return isValid;
-    },
-
-    /**
-     * This method adds a css class specified by the cssClassOnError property to any
-     * view that caused a validation error and has this property specified.
-     *
-     * If the showAlertDialogOnError property is set to YES, a alert dialog view
-     * is display additionally, presenting the error messages of all invalid views.
-     */
-    showErrors: function() {
-        var errors = '';
-        _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
-            }
-        });
-
-        if(this.showAlertDialogOnError) {
-            M.DialogView.alert({
-                title: this.alertTitle,
-                message: errors
-            });
-        }
-    },
-
-    /**
-     * This method is a wrapper of M.View's clearValues() method.
-     */
-    clearForm: function() {
-        this.clearValues();
-    },
-
-    /**
-     * This method is a wrapper of M.View's getValues() method.
-     */
-    getFormValues: function() {
-        return this.getValues();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -4003,6 +3873,136 @@ M.ConfirmDialogView = M.DialogView.extend(
         if(this.callbacks && M.EventDispatcher.checkHandler(this.callbacks.cancel)){
             this.bindToCaller(this.callbacks.cancel.target, this.callbacks.cancel.action)();
         }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.FormViews is the prototype of a form view, a container like view for grouping
+ * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
+ * validation of input views. There is no visible representation of an M.FormView,
+ * it is only used to ease the validation process and its accessing out of a
+ * controller.
+ * 
+ * @extends M.View
+ */
+M.FormView = M.View.extend(
+/** @scope M.FormView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.FormView',
+
+    /**
+     * Determines whether to automatically show an alert dialog view out of the showError method
+     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
+     * dialog view once the showError method is called.
+     *
+     * @type Boolean
+     */
+    showAlertDialogOnError: YES,
+
+    /**
+     * The title of the alert view that comes up automatically if the validation fails, depending
+     * one the 'showAlertOnError' property.
+     *
+     * @type String
+     */
+     alertTitle: 'Validation Error(s)',
+
+    /**
+     * This method triggers the validate() on all child views, respectively on their validators. If
+     * a validation error occurs, the showErrors() will be called.
+     *
+     * @returns {Boolean} The result of the validation process: valid or not.
+     */
+    validate: function() {
+        var ids = this.getIds();
+        for(var name in ids) {
+            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
+                delete ids[name];
+            }
+        }
+
+        var isValid = YES;
+        M.Validator.clearErrorBuffer();
+
+        for(var name in ids) {
+            var view = M.ViewManager.getViewById(ids[name]);
+            if(view && view.validators) {
+                if(view.cssClassOnError) {
+                    view.removeCssClass(view.cssClassOnError);
+                }
+
+                _.each(view.validators, function(validator) {
+                    if(!validator.validate(view, name)) {
+                        isValid = NO;
+                    }
+                });
+            }
+        }
+
+        if(!isValid) {
+            this.showErrors();
+        }
+
+        return isValid;
+    },
+
+    /**
+     * This method adds a css class specified by the cssClassOnError property to any
+     * view that caused a validation error and has this property specified.
+     *
+     * If the showAlertDialogOnError property is set to YES, a alert dialog view
+     * is display additionally, presenting the error messages of all invalid views.
+     */
+    showErrors: function() {
+        var errors = '';
+        _.each(M.Validator.validationErrors, function(error) {
+            if(error && error.errObj) {
+                var view = M.ViewManager.getViewById(error.errObj.viewId);
+                if(view && view.cssClassOnError) {
+                    view.addCssClass(view.cssClassOnError);
+                }
+                errors += '<li>' + error.msg + '</li>';
+            }
+        });
+
+        if(this.showAlertDialogOnError) {
+            M.DialogView.alert({
+                title: this.alertTitle,
+                message: errors
+            });
+        }
+    },
+
+    /**
+     * This method is a wrapper of M.View's clearValues() method.
+     */
+    clearForm: function() {
+        this.clearValues();
+    },
+
+    /**
+     * This method is a wrapper of M.View's getValues() method.
+     */
+    getFormValues: function() {
+        return this.getValues();
     }
 
 });
@@ -5773,6 +5773,138 @@ M.MovableLabelView = M.LabelView.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Frank
+// Date:      07.02.2013
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for the display type: overlay.
+ *
+ * @type String
+ */
+M.OVERLAY = 'OVERLAY';
+
+/**
+ * A constant value for the display type: reveal.
+ *
+ * @type String
+ */
+M.REVEAL  = 'REVEAL';
+
+/**
+ * A constant value for the display type: push.
+ *
+ * @type String
+ */
+M.PUSH    = 'PUSH';
+
+/**
+ * @class
+ *
+ * The defines the prototype of a panel view.
+ *
+ * @extends M.View
+ */
+M.PanelView = M.View.extend(
+/** @scope M.PanelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.PanelView',
+
+    /**
+    * Defines the position of the Panel. Possible values are:
+    *
+    * - M.LEFT  => appears on the left
+    * - M.RIGHT => appears on the right
+    *
+    * @type String
+    */
+    position: M.LEFT,
+
+    /**
+    * Defines the display mode of the Panel. Possible values are:
+    *
+    * - M.OVERLAY  => the panel will appear on top of the page contents
+    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
+    * - M.PUSH     => animates both the panel and page at the same time
+    *
+    * @type String
+    */
+    display:  M.REVEAL,
+
+    /**
+    * Defines the jqm theme to use.
+    *
+    * @type String
+    */
+    dataTheme: 'a',
+
+    /**
+     * Renders in three steps:
+     * 1. Rendering Opening div tag with corresponding data-role
+     * 2. Triggering render process of child views
+     * 3. Rendering closing tag
+     *
+     * @private
+     * @returns {String} The scroll view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the scroll view.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
+        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
+        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
+        return html;
+    },
+
+    /**
+     * shows the panel
+     *
+     * @public
+     */
+    open: function() {
+        $("#"+this.id).panel("open");
+    },
+
+    /**
+     * hides the panel
+     *
+     * @public
+     */
+    close: function() {
+        $("#"+this.id).panel("close");
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
@@ -6113,138 +6245,6 @@ M.PageView = M.View.extend(
         return html;
     }
     
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Frank
-// Date:      07.02.2013
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the display type: overlay.
- *
- * @type String
- */
-M.OVERLAY = 'OVERLAY';
-
-/**
- * A constant value for the display type: reveal.
- *
- * @type String
- */
-M.REVEAL  = 'REVEAL';
-
-/**
- * A constant value for the display type: push.
- *
- * @type String
- */
-M.PUSH    = 'PUSH';
-
-/**
- * @class
- *
- * The defines the prototype of a panel view.
- *
- * @extends M.View
- */
-M.PanelView = M.View.extend(
-/** @scope M.PanelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.PanelView',
-
-    /**
-    * Defines the position of the Panel. Possible values are:
-    *
-    * - M.LEFT  => appears on the left
-    * - M.RIGHT => appears on the right
-    *
-    * @type String
-    */
-    position: M.LEFT,
-
-    /**
-    * Defines the display mode of the Panel. Possible values are:
-    *
-    * - M.OVERLAY  => the panel will appear on top of the page contents
-    * - M.REVEAL   => the panel will sit under the page and reveal as the page slides away
-    * - M.PUSH     => animates both the panel and page at the same time
-    *
-    * @type String
-    */
-    display:  M.REVEAL,
-
-    /**
-    * Defines the jqm theme to use.
-    *
-    * @type String
-    */
-    dataTheme: 'a',
-
-    /**
-     * Renders in three steps:
-     * 1. Rendering Opening div tag with corresponding data-role
-     * 2. Triggering render process of child views
-     * 3. Rendering closing tag
-     *
-     * @private
-     * @returns {String} The scroll view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" data-role="panel" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Applies some style-attributes to the scroll view.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        html += this.dataTheme ? ' data-theme="' + this.dataTheme + '"' : '';
-        html += ' data-position="' + (this.position || M.LEFT).  toLowerCase() + '"';
-        html += ' data-display="'  + (this.display  || M.REVEAL).toLowerCase() + '"';
-        return html;
-    },
-
-    /**
-     * shows the panel
-     *
-     * @public
-     */
-    open: function() {
-        $("#"+this.id).panel("open");
-    },
-
-    /**
-     * hides the panel
-     *
-     * @public
-     */
-    close: function() {
-        $("#"+this.id).panel("close");
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -9598,6 +9598,126 @@ M.TableView = M.View.extend(
 /**
  * @class
  *
+ * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
+ * used as a child view of a tab bar view.
+ *
+ * @extends M.View
+ */
+M.TabBarItemView = M.View.extend(
+/** @scope M.TabBarItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TabBarItemView',
+
+    /**
+     * Determines whether this TabBarItem is active or not.
+     *
+     * @type Boolean
+     */
+    isActive: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * Renders a tab bar item as a li-element inside of a parent tab bar view.
+     *
+     * @private
+     * @returns {String} The button view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.id.lastIndexOf('_') == 1) {
+            this.id = this.id + '_' + this.parentView.usageCounter;
+        } else {
+            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
+        }
+        M.ViewManager.register(this);
+
+        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
+        
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'switchPage'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * This method is automatically called if a tab bar item is clicked. It delegates the
+     * page switching job to M.Controller's switchToTab().
+     */
+    switchPage: function() {
+    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
+    	if(this.page) {
+        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
+            M.Controller.switchToTab(this);
+        } else {
+            this.parentView.setActiveTab(this);
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the tab bar item.
+     *
+     * @private
+     * @returns {String} The tab bar item's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        if(this.isActive) {
+            html += html != '' ? '' : ' class="';
+            html += 'ui-btn-active';
+            html += '"';
+        }
+        if(this.icon) {
+            html += ' data-icon="';
+            html += this.icon;
+            html += '" data-iconpos="top"';
+        }
+        return html;
+    }
+    
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
  * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
  * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
  * M.TabBarView can be used the top navigation level for an application since it is always
@@ -9751,126 +9871,6 @@ M.TabBarView = M.View.extend(
 
     }
 
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      16.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype of any tab bar item view. An M.TabBarItemView can only be
- * used as a child view of a tab bar view.
- *
- * @extends M.View
- */
-M.TabBarItemView = M.View.extend(
-/** @scope M.TabBarItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.TabBarItemView',
-
-    /**
-     * Determines whether this TabBarItem is active or not.
-     *
-     * @type Boolean
-     */
-    isActive: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * Renders a tab bar item as a li-element inside of a parent tab bar view.
-     *
-     * @private
-     * @returns {String} The button view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.id.lastIndexOf('_') == 1) {
-            this.id = this.id + '_' + this.parentView.usageCounter;
-        } else {
-            this.id = this.id.substring(0, this.id.lastIndexOf('_')) + '_' + this.parentView.usageCounter;
-        }
-        M.ViewManager.register(this);
-
-        this.html += '<li><a id="' + this.id + '"' + this.style() + ' href="#">' + this.value + '</a></li>';
-        
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for tab bar item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'switchPage'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method is automatically called if a tab bar item is clicked. It delegates the
-     * page switching job to M.Controller's switchToTab().
-     */
-    switchPage: function() {
-    	try{DigiWebApp.ApplicationController.vibrate();}catch(e3){}
-    	if(this.page) {
-        	M.ViewManager.setCurrentPage(M.ViewManager.getPage(this.page));
-            M.Controller.switchToTab(this);
-        } else {
-            this.parentView.setActiveTab(this);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the tab bar item.
-     *
-     * @private
-     * @returns {String} The tab bar item's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        if(this.isActive) {
-            html += html != '' ? '' : ' class="';
-            html += 'ui-btn-active';
-            html += '"';
-        }
-        if(this.icon) {
-            html += ' data-icon="';
-            html += this.icon;
-            html += '" data-iconpos="top"';
-        }
-        return html;
-    }
-    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -10666,229 +10666,6 @@ M.ToggleView = M.View.extend(
     }
 
 });
-/**
- * @class
- *
- * This defines the prototype of a toggle switch view
- *
- * General spoken it is an Boolean switch.
- *
- * @extends M.View
- */
-M.ToggleSwitchView = M.View.extend(
-    /** @scope M.ToggleSwitchView.prototype */ {
-
-        /**
-         * The type of this object.
-         *
-         * @type String
-         */
-        type:'M.ToggleSwitchView',
-
-        /**
-         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
-         *
-         * @type Boolean
-         */
-        isMini:NO,
-
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        onLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         * It is set through the render function. If there is no label defined the label gets set by the value.
-         *
-         * @type String
-         */
-        offLabel:'',
-
-        /**
-         *
-         * Think of it as an boolean switch so the on value is set default to true
-         *
-         * @default YES
-         * @type Boolean but could be anything
-         */
-
-        onValue:YES,
-
-        /**
-         *
-         * Think of it as an boolean switch so the off value is set default to false
-         *
-         * @default NO
-         * @type Boolean but could be anything
-         */
-        offValue:NO,
-
-        /**
-         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
-         * @default YES
-         * @type Boolean
-         */
-        fieldcontain:NO,
-
-
-        /**
-         * This property specifies the recommended events for this type of view.
-         *
-         * @type Array
-         */
-        recommendedEvents: ['change'],
-
-
-        /**
-         * Renders a selection list.
-         *
-         * @private
-         * @returns {String} The toggle switch view's html representation.
-         */
-        render:function () {
-
-            this.html = '';
-            /* if there is no label put the value as label */
-            if (!this.onLabel) {
-                this.onLabel = this.onValue;
-            }
-
-            /* if there is no label put the value as label */
-            if (!this.offLabel) {
-                this.offLabel = this.offValue;
-            }
-
-            var dataRoleFieldContain = '';
-
-            /*is there is a fieldcontain defined use it*/
-            if (this.fieldcontain) {
-                dataRoleFieldContain = ' data-role="fieldcontain" ';
-            }
-
-            /*should the element be inline?*/
-            var isInline = '';
-            if (this.isInline) {
-                isInline = ' style="display: inline-block" ';
-            }
-
-            /*add the label to the view*/
-            if (this.label) {
-                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
-            }
-
-            /* build the markup as jquerymobile likes it */
-            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
-            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
-            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
-            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
-            this.html += '</select>';
-
-            this.html += '</div>';
-
-
-            /* return the markup*/
-            return this.html;
-        },
-
-        theme: function(){
-
-        },
-
-        /**
-         *
-         * add the class attribute to the HTML
-         *
-         * @return {String}
-         */
-
-        style:function () {
-            var html = ' class="';
-            if (this.cssClass) {
-                html += this.cssClass;
-            }
-            html += '" ';
-            return html;
-        },
-
-
-        /**
-         *
-         * returns the value of the selection
-         *
-         * @return {*} the value of the selection
-         */
-        getValue:function () {
-            var val = $('#' + this.id).val();
-            return val;
-        },
-
-        /**
-         *
-         * pass either the name of the option or its value to set the option and toggle the slider
-         *
-         * @param val the value to be set
-         */
-        setValue:function (val) {
-            //if the name matchs set the option to selected otherwise test the given parameter to the option value
-            var useValue = true;
-            $('#' + this.id + ' option').each(function () {
-                if ($(this).html() === val) {
-                    $(this).attr('selected', 'selected');
-                    useValue = false;
-                }
-            });
-            if (useValue) {
-                //is there an option with the paramet as value. if so then select it
-                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
-            }
-            //toggle the view
-            $('#' + this.id).slider('refresh');
-        },
-
-
-        /**
-         * sets the value of the toggle switch to onValue
-         */
-        on:function () {
-            this.setValue(this.onValue);
-        },
-
-        /**
-         * sets the value of the toggle switch to offValue
-         */
-        off:function () {
-            this.setValue(this.offValue);
-        },
-
-
-        /**
-         * enable the toggle switch view
-         */
-        enable:function () {
-            $('#' + this.id).slider('enable');
-        },
-
-
-        /**
-         * disable the toggle switch view
-         */
-        disable:function () {
-            $('#' + this.id).slider('disable');
-        }
-
-    })
-
-
-
-
-
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -11143,6 +10920,229 @@ M.ToolbarView = M.View.extend(
     }
     
 });
+/**
+ * @class
+ *
+ * This defines the prototype of a toggle switch view
+ *
+ * General spoken it is an Boolean switch.
+ *
+ * @extends M.View
+ */
+M.ToggleSwitchView = M.View.extend(
+    /** @scope M.ToggleSwitchView.prototype */ {
+
+        /**
+         * The type of this object.
+         *
+         * @type String
+         */
+        type:'M.ToggleSwitchView',
+
+        /**
+         * From the jQuery mobile page: "All form controls accept a data-mini="true" attribute that renders a smaller version of the standard-sized form elements. In the case of grouped buttons, the data-mini="true" attribute can be added to the containing controlgroup. Compare mini and normal form elements side-by-side."
+         *
+         * @type Boolean
+         */
+        isMini:NO,
+
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        onLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         * It is set through the render function. If there is no label defined the label gets set by the value.
+         *
+         * @type String
+         */
+        offLabel:'',
+
+        /**
+         *
+         * Think of it as an boolean switch so the on value is set default to true
+         *
+         * @default YES
+         * @type Boolean but could be anything
+         */
+
+        onValue:YES,
+
+        /**
+         *
+         * Think of it as an boolean switch so the off value is set default to false
+         *
+         * @default NO
+         * @type Boolean but could be anything
+         */
+        offValue:NO,
+
+        /**
+         * Optionally wrap the switch markup in a container with the data-role="fieldcontain" attribute to help visually group it in a longer form.
+         * @default YES
+         * @type Boolean
+         */
+        fieldcontain:NO,
+
+
+        /**
+         * This property specifies the recommended events for this type of view.
+         *
+         * @type Array
+         */
+        recommendedEvents: ['change'],
+
+
+        /**
+         * Renders a selection list.
+         *
+         * @private
+         * @returns {String} The toggle switch view's html representation.
+         */
+        render:function () {
+
+            this.html = '';
+            /* if there is no label put the value as label */
+            if (!this.onLabel) {
+                this.onLabel = this.onValue;
+            }
+
+            /* if there is no label put the value as label */
+            if (!this.offLabel) {
+                this.offLabel = this.offValue;
+            }
+
+            var dataRoleFieldContain = '';
+
+            /*is there is a fieldcontain defined use it*/
+            if (this.fieldcontain) {
+                dataRoleFieldContain = ' data-role="fieldcontain" ';
+            }
+
+            /*should the element be inline?*/
+            var isInline = '';
+            if (this.isInline) {
+                isInline = ' style="display: inline-block" ';
+            }
+
+            /*add the label to the view*/
+            if (this.label) {
+                this.html += '<label' + isInline + ' for="' + this.id + '">' + this.label + '</label>';
+            }
+
+            /* build the markup as jquerymobile likes it */
+            this.html += '<div' + dataRoleFieldContain + isInline + ' id="' + this.id + '_container" ' + this.style() + '>';
+            this.html += '<select name="' + this.id + '" id="' + this.id + '" data-role="slider" data-mini="' + this.isMini + '">';
+            this.html += '<option value="' + this.offValue + '">' + this.offLabel + '</option>';
+            this.html += '<option value="' + this.onValue + '">' + this.onLabel + '</option>';
+            this.html += '</select>';
+
+            this.html += '</div>';
+
+
+            /* return the markup*/
+            return this.html;
+        },
+
+        theme: function(){
+
+        },
+
+        /**
+         *
+         * add the class attribute to the HTML
+         *
+         * @return {String}
+         */
+
+        style:function () {
+            var html = ' class="';
+            if (this.cssClass) {
+                html += this.cssClass;
+            }
+            html += '" ';
+            return html;
+        },
+
+
+        /**
+         *
+         * returns the value of the selection
+         *
+         * @return {*} the value of the selection
+         */
+        getValue:function () {
+            var val = $('#' + this.id).val();
+            return val;
+        },
+
+        /**
+         *
+         * pass either the name of the option or its value to set the option and toggle the slider
+         *
+         * @param val the value to be set
+         */
+        setValue:function (val) {
+            //if the name matchs set the option to selected otherwise test the given parameter to the option value
+            var useValue = true;
+            $('#' + this.id + ' option').each(function () {
+                if ($(this).html() === val) {
+                    $(this).attr('selected', 'selected');
+                    useValue = false;
+                }
+            });
+            if (useValue) {
+                //is there an option with the paramet as value. if so then select it
+                $('#' + this.id + ' option[value*=' + val + ']').attr('selected', 'selected');
+            }
+            //toggle the view
+            $('#' + this.id).slider('refresh');
+        },
+
+
+        /**
+         * sets the value of the toggle switch to onValue
+         */
+        on:function () {
+            this.setValue(this.onValue);
+        },
+
+        /**
+         * sets the value of the toggle switch to offValue
+         */
+        off:function () {
+            this.setValue(this.offValue);
+        },
+
+
+        /**
+         * enable the toggle switch view
+         */
+        enable:function () {
+            $('#' + this.id).slider('enable');
+        },
+
+
+        /**
+         * disable the toggle switch view
+         */
+        disable:function () {
+            $('#' + this.id).slider('disable');
+        }
+
+    })
+
+
+
+
+
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2012 panacoda GmbH. All rights reserved.
