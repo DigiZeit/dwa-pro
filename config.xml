@@ -3,11 +3,11 @@
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	xmlns:android = "http://schemas.android.com/apk/res/android"
 	id		    = "com.digi.webapppro"
-  android-versionCode = "10924"
-  ios-CFBundleVersion="1.9.0.10924"
-  ios-CFBundleShortVersionString="10924"
-	versionCode = "10924"
-	version 	= "1.9.0.10924">
+  android-versionCode = "10925"
+  ios-CFBundleVersion="1.9.0.10925"
+  ios-CFBundleShortVersionString="10925"
+	versionCode = "10925"
+	version 	= "1.9.0.10925">
 
 	<name>DIGI-WebApp Pro</name>
 
