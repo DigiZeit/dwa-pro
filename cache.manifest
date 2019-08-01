@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.9.0.10973 beta, Timestamp:1564663514123
+#Application:DigiWebApp, Version:1.9.0.10974 beta, Timestamp:1564663845295
 
 
 # Explicitly cached entries
@@ -9,19 +9,19 @@ en_us.js
 jquery-1.9.1.js
 underscore-min.js
 d8-0.4.0.min.js
-theme/tmp.css
 bootstrap.js
+theme/tmp.css
 jquery_mobile.js
-jquery.xml2json_1.3.js
+jstz.js
 barcodescanner.js
 cordova.js
 childbrowser.js
-jstz.js
+jquery.xml2json_1.3.js
+Math.uuid.js
 digi_list.js
 digi_list_item.js
 digi_selection_list.js
 digi_selection_list_item.js
-Math.uuid.js
 pen.cur
 theme/style.css
 theme/images/1024x1024_90_SCHOLPP.png
@@ -33,8 +33,8 @@ theme/images/48x48_plain_about.png
 theme/images/48x48_plain_book_blue_find.png
 theme/images/48x48_plain_businessmen.png
 theme/images/48x48_plain_camera2.png
-theme/images/48x48_plain_car_compact_grey.png
 theme/images/48x48_plain_clipboard.png
+theme/images/48x48_plain_car_compact_grey.png
 theme/images/48x48_plain_clock_pause.png
 theme/images/48x48_plain_cloud_dark.png
 theme/images/48x48_plain_cup.png
@@ -52,8 +52,8 @@ theme/images/48x48_plain_led_red.png
 theme/images/48x48_plain_note_delete.png
 theme/images/48x48_plain_note_view.png
 theme/images/48x48_plain_pda_write.png
-theme/images/48x48_plain_refresh.png
 theme/images/48x48_plain_shelf.png
+theme/images/48x48_plain_refresh.png
 theme/images/48x48_plain_text_code.png
 theme/images/48x48_plain_wrench.png
 theme/images/5000x5000_90_SCHOLPP.png
@@ -71,8 +71,8 @@ theme/images/Default@3x~iphone~anyany.png
 theme/images/Default@3x~iphone~comany.png
 theme/images/DigiLogo2013_DSO.png
 theme/images/DigiLogo2013_scholpp.png
-theme/images/Icon.png
 theme/images/icon-winphone.png
+theme/images/Icon.png
 theme/images/icon_appstore_1024.png
 theme/images/icon_bookTime.png
 theme/images/icon_ios_114.png
@@ -113,8 +113,8 @@ jquery.signaturepad.js
 jquery.signaturepad.min.js
 LICENSE.txt
 package.json
-README.md
 pen.psd
+README.md
 flashcanvas.js
 flashcanvas.swf
 theme/journal.eot
