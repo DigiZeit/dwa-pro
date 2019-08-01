@@ -1452,6 +1452,130 @@ M.Environment = M.Object.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.11.2012
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/foundation/object.js');
+
+/**
+ * @class
+ *
+ * This prototype defines methods for preloading images.
+ *
+ * @extends M.Object
+ */
+M.ImagePreloader = M.Object.extend(
+/** @scope M.ImagePreloader.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImagePreloader',
+
+    images: null,
+
+    refId: '',
+
+    bodyDOM: null,
+
+    loadCounter: 0,
+
+    init: function(obj) {
+        obj.refId = obj.refId || M.UniqueId.uuid();
+        obj.bodyDOM = $('body');
+
+        return this.extend(obj);
+    },
+
+    preload: function() {
+        var that = this;
+        if(this.images && this.images.length > 0) {
+            _.each(this.images, function(i) {
+                window.setTimeout(function() {
+                    that.preloadSingleImage(i);
+                }, 1);
+            });
+        }
+    },
+
+    preloadSingleImage: function(image) {
+        var imageView = M.ImageView.design({
+            value: image,
+            cssClass: 'tmp-image-preloading',
+            events: {
+                load: {
+                    target: this,
+                    action: 'loadSingle'
+                },
+                error: {
+                    target: this,
+                    action: 'error'
+                }
+            }
+        });
+
+        this.bodyDOM.append(imageView.render());
+        imageView.registerEvents();
+    },
+
+    loadSingle: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call load event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
+            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    error: function(id) {
+        this.loadCounter++;
+
+        var imageView = M.ViewManager.getViewById(id);
+        var image = imageView.value;
+        imageView.destroy();
+
+        /* call error event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
+            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
+        }
+
+        /* call finish event? */
+        if(this.loadCounter === this.images.length) {
+            this.finish();
+        }
+    },
+
+    finish: function() {
+        /* doublecheck */
+        if(this.loadCounter !== this.images.length) {
+            return;
+        }
+
+        /* call finish event */
+        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
+            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -1965,130 +2089,6 @@ M.Math = M.Object.extend(
         });
 
         return nearestNumber;
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.11.2012
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/foundation/object.js');
-
-/**
- * @class
- *
- * This prototype defines methods for preloading images.
- *
- * @extends M.Object
- */
-M.ImagePreloader = M.Object.extend(
-/** @scope M.ImagePreloader.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImagePreloader',
-
-    images: null,
-
-    refId: '',
-
-    bodyDOM: null,
-
-    loadCounter: 0,
-
-    init: function(obj) {
-        obj.refId = obj.refId || M.UniqueId.uuid();
-        obj.bodyDOM = $('body');
-
-        return this.extend(obj);
-    },
-
-    preload: function() {
-        var that = this;
-        if(this.images && this.images.length > 0) {
-            _.each(this.images, function(i) {
-                window.setTimeout(function() {
-                    that.preloadSingleImage(i);
-                }, 1);
-            });
-        }
-    },
-
-    preloadSingleImage: function(image) {
-        var imageView = M.ImageView.design({
-            value: image,
-            cssClass: 'tmp-image-preloading',
-            events: {
-                load: {
-                    target: this,
-                    action: 'loadSingle'
-                },
-                error: {
-                    target: this,
-                    action: 'error'
-                }
-            }
-        });
-
-        this.bodyDOM.append(imageView.render());
-        imageView.registerEvents();
-    },
-
-    loadSingle: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call load event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['load'])) {
-            M.EventDispatcher.callHandler(this.events['load'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    error: function(id) {
-        this.loadCounter++;
-
-        var imageView = M.ViewManager.getViewById(id);
-        var image = imageView.value;
-        imageView.destroy();
-
-        /* call error event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['error'])) {
-            M.EventDispatcher.callHandler(this.events['error'], null, NO, [image, this.refId]);
-        }
-
-        /* call finish event? */
-        if(this.loadCounter === this.images.length) {
-            this.finish();
-        }
-    },
-
-    finish: function() {
-        /* doublecheck */
-        if(this.loadCounter !== this.images.length) {
-            return;
-        }
-
-        /* call finish event */
-        if(this.events && M.EventDispatcher.checkHandler(this.events['finish'])) {
-            M.EventDispatcher.callHandler(this.events['finish'], null, NO, [this.refId]);
-        }
     }
 
 });
@@ -4666,6 +4666,94 @@ M.Error = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      29.10.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/utility/logger.js');
+
+/**
+ * @class
+ *
+ * The observable knows all observers, mainly views, and pushes updates if necessary.
+ *
+ * @extends M.Object
+ */
+M.Observable = M.Object.extend(
+/** @scope M.Observable.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.Observable',
+
+    /**
+     * List that contains pairs of an observer with an observable. An observer is tightened to one
+     * observable, but one observable can have multiple observers.
+     *
+     * @type Array|Object
+     */
+    bindingList: null,
+
+    /**
+     * Attach an observer to an observable.
+     *
+     * @param {String} observer The observer.
+     * @param {String} observable The observable.
+     */
+    attach: function(observer, observable) {
+        if(!this.bindingList) {
+            this.bindingList = [];
+        }
+        this.bindingList.push({
+            observer: observer,
+            observable: observable
+        });
+    },
+
+    /**
+     * Detach an observer from an observable.
+     *
+     * @param {String} observer The observer.
+     */
+    detach: function(observer) {
+        /* grep is a jQuery function that finds
+         * elements in an array that satisfy a certain criteria.
+         * It works on a copy so we have to assign the "cleaned"
+         * array to our bindingList.
+         */
+        this.bindingList = _.filter(this.bindingList, function(value, index) {
+                return value.observable !== observer;
+        });
+    },
+
+    /**
+     * Notify all observers that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property that changed.
+     */
+    notifyObservers: function(key) {
+        _.each(this.bindingList, function(entry){
+            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
+                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
+                    entry.observer.valueDidChange();
+                }else{
+                    entry.observer.contentDidChange();
+                }
+            }
+        });
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Sebastian
 // Date:      28.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5174,94 +5262,6 @@ M.Model = M.Object.extend(
     setReference: function(result, that, prop, callback) {
         that.__meta[prop].refEntity = result[0];    // set reference in source model defined by that
         callback();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      29.10.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/utility/logger.js');
-
-/**
- * @class
- *
- * The observable knows all observers, mainly views, and pushes updates if necessary.
- *
- * @extends M.Object
- */
-M.Observable = M.Object.extend(
-/** @scope M.Observable.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.Observable',
-
-    /**
-     * List that contains pairs of an observer with an observable. An observer is tightened to one
-     * observable, but one observable can have multiple observers.
-     *
-     * @type Array|Object
-     */
-    bindingList: null,
-
-    /**
-     * Attach an observer to an observable.
-     *
-     * @param {String} observer The observer.
-     * @param {String} observable The observable.
-     */
-    attach: function(observer, observable) {
-        if(!this.bindingList) {
-            this.bindingList = [];
-        }
-        this.bindingList.push({
-            observer: observer,
-            observable: observable
-        });
-    },
-
-    /**
-     * Detach an observer from an observable.
-     *
-     * @param {String} observer The observer.
-     */
-    detach: function(observer) {
-        /* grep is a jQuery function that finds
-         * elements in an array that satisfy a certain criteria.
-         * It works on a copy so we have to assign the "cleaned"
-         * array to our bindingList.
-         */
-        this.bindingList = _.filter(this.bindingList, function(value, index) {
-                return value.observable !== observer;
-        });
-    },
-
-    /**
-     * Notify all observers that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property that changed.
-     */
-    notifyObservers: function(key) {
-        _.each(this.bindingList, function(entry){
-            if((key === entry.observable || (entry.observable.indexOf('.') > 0 && entry.observable.indexOf(key) > -1)) || (key.indexOf('.') > 0 && entry.observable.indexOf(key.substring(0, key.lastIndexOf('.'))))) {
-                if(entry.observer.valueBinding && (key === entry.observer.valueBinding.property || key === entry.observer.valueBinding.property.split('.')[0])){
-                    entry.observer.valueDidChange();
-                }else{
-                    entry.observer.contentDidChange();
-                }
-            }
-        });
     }
 
 });
@@ -5809,75 +5809,6 @@ M.DataProviderRemoteStorage = M.DataProvider.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      22.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-m_require('core/datastore/validator.js')
-
-/**
- * @class
- *
- * Validates a String if it represents a valid e-mail adress.
- *
- * @extends M.Validator
- */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.EmailValidator',
-
-    /**
-     * @type {RegExp} The regular expression for a valid e-mail address
-     */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
-
-    /**
-     * Validation method. Executes e-mail regex pattern to string.
-     *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
-     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
-     */
-    validate: function(obj) {
-        if (typeof(obj.value) !== 'string') {
-            return NO;
-        }
-
-        if (this.pattern.test(obj.value)) {
-            return YES;
-        }
-
-        var err = M.Error.extend({
-            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
-            code: M.ERR_VALIDATION_EMAIL,
-            errObj: {
-                msg: obj.value + ' is not a valid email adress.',
-                modelId: obj.modelId,
-                property: obj.property,
-                viewId: obj.viewId,
-                validator: 'EMAIL',
-                onSuccess: obj.onSuccess,
-                onError: obj.onError
-            }
-        });
-        this.validationErrors.push(err);
-
-        return NO;
-    }
-    
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      25.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -5965,6 +5896,75 @@ M.DateValidator = M.Validator.extend(
             return YES;
         }
     }
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Sebastian
+// Date:      22.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+m_require('core/datastore/validator.js')
+
+/**
+ * @class
+ *
+ * Validates a String if it represents a valid e-mail adress.
+ *
+ * @extends M.Validator
+ */
+M.EmailValidator = M.Validator.extend(
+/** @scope M.EmailValidator.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.EmailValidator',
+
+    /**
+     * @type {RegExp} The regular expression for a valid e-mail address
+     */
+    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+
+    /**
+     * Validation method. Executes e-mail regex pattern to string.
+     *
+     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
+     */
+    validate: function(obj) {
+        if (typeof(obj.value) !== 'string') {
+            return NO;
+        }
+
+        if (this.pattern.test(obj.value)) {
+            return YES;
+        }
+
+        var err = M.Error.extend({
+            msg: this.msg ? this.msg : obj.value + ' is not a valid email adress.',
+            code: M.ERR_VALIDATION_EMAIL,
+            errObj: {
+                msg: obj.value + ' is not a valid email adress.',
+                modelId: obj.modelId,
+                property: obj.property,
+                viewId: obj.viewId,
+                validator: 'EMAIL',
+                onSuccess: obj.onSuccess,
+                onError: obj.onError
+            }
+        });
+        this.validationErrors.push(err);
+
+        return NO;
+    }
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6335,125 +6335,138 @@ M.UrlValidator = M.Validator.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Sebastian
-// Date:      04.11.2010
+// Creator:   Dominik
+// Date:      27.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-m_require('core/foundation/model.js');
+/* Available transitions for page changes */
+M.TRANSITION = {};
+M.TRANSITION.NONE = 'none';
+M.TRANSITION.SLIDE = 'slide';
+M.TRANSITION.SLIDEUP = 'slideup';
+M.TRANSITION.SLIDEDOWN = 'slidedown';
+M.TRANSITION.POP = 'pop';
+M.TRANSITION.FADE = 'fade';
+M.TRANSITION.FLIP = 'flip';
+
+m_require('core/foundation/observable.js');
 
 /**
  * @class
  *
- * The root object for RecordManager.
+ * The root class for every controller.
  *
- * A RecordManager is used by a controllers and is an interface that makes it easy for him to
- * handle his model records.
+ * Controllers, respectively their properties, are observables. Views can observe them.
  *
  * @extends M.Object
  */
-M.RecordManager = M.Object.extend(
-/** @scope M.RecordManager.prototype */ { 
+M.Controller = M.Object.extend(
+/** @scope M.Controller.prototype */ {
+
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.RecordManager',
+    type: 'M.Controller',
 
     /**
-     * Array containing all currently loaded records.
-     *
-     * @type Object
+     * Makes the controller's properties observable.
      */
-    records: [],
+    observable: null,
 
     /**
-     * Add the given model to the modelList.
+     * Switch the active tab in the application. This includes both activating this tab
+     * visually and switching the page.
      *
-     * @param {Object} record
+     * @param {M.TabBarItemView} tab The tab to be activated.
      */
-    add: function(record) {
-        this.records.push(record);
+    switchToTab: function(tab,back) {
+		if (!back) back = NO;
+        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
+            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
+            return;
+        }
+        var currentTab = tab.parentView.activeTab;
+        var newPage = M.ViewManager.getPage(tab.page);
+
+        /* store the active tab in tab bar view */
+        tab.parentView.setActiveTab(tab);
+
+        if(tab === currentTab) {
+            var currentPage = M.ViewManager.getCurrentPage();
+            if(currentPage !== newPage) {
+                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
+            }
+        } else {
+            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
+        }
     },
 
     /**
-     * Concats an array if records to the records array.
+     * Switch the active page in the application.
      *
-     * @param {Object} record
+     * @param {Object|String} page The page to be displayed or its name.
+     * @param {String} transition The transition that should be used. Default: horizontal slide
+     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
+     * @param {Boolean} updateHistory Update the browser history. Default: YES
      */
-    addMany: function(arrOfRecords) {
+    switchToPage: function(page, transition, isBack, updateHistory) {
+        var timeStart = M.Date.now();
+        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
 
-        if(_.isArray(arrOfRecords)){
-            this.records = this.records.concat(arrOfRecords);
+        if(page) {
+            transition = transition ? transition : M.TRANSITION.SLIDE;
+            isBack = isBack !== undefined ? isBack : NO;
+            updateHistory = updateHistory !== undefined ? updateHistory : YES;
 
-        } else if(arrOfRecords.type === 'M.Model') {
-            this.add(arrOfRecords);
+            /* Now do the page change by using a jquery mobile method and pass the properties */
+            if(page.type === 'M.PageView') {
+                $.mobile.changePage($('#' + page.id), {
+                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
+                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
+                    changeHash: updateHistory,
+                    showLoadMsg: NO
+                });
+            }
+
+            /* Save the current page in the view manager */
+            M.ViewManager.setCurrentPage(page);
+        } else {
+            M.Logger.log('Page "' + page + '" not found', M.ERR);
+        }
+    },
+
+    /**
+     * This method initializes the notification of all observers, that observe the property behind 'key'.
+     *
+     * @param {String} key The key of the property to be changed.
+     * @param {Object|String} value The value to be set.
+     */
+    set: function(key, value) {
+        var keyPath = key.split('.');
+
+        if(keyPath.length === 1) {
+            this[key] = value;
+        } else {
+            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
+            for(var i = 1; i < keyPath.length - 1; i++) {
+                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
+            }
+
+            t[keyPath[keyPath.length - 1]] = value;
         }
 
-    },
-
-    /**
-     * Resets record list 
-     */
-    removeAll: function() {
-        this.records.length = 0;
-    },
-
-    /**
-     * Deletes a model record from the record array
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    remove: function(m_id) {
-
-        if(!m_id) {
-            M.Logger.log('No id given.', M.WARN);
+        if(!this.observable) {
             return;
         }
 
-        var rec = this.getRecordById(m_id);
-
-        if(rec) {
-            this.records = _.select(this.records, function(r){
-                return r.m_id !== rec.m_id;
-            });
-        }
-
-        delete rec;
-    },
-
-    /**
-    * Returns a record from the record array identified by the interal model id.
-    * @param {Number} m_id The internal model id of the model record.
-    * @deprecated
-    */
-    getRecordForId: function(m_id) {
-        return this.getRecordById(m_id);
-    },
-
-    /**
-     * Returns a record from the record array identified by the interal model id.
-     * @param {Number} m_id The internal model id of the model record.
-     */
-    getRecordById: function(m_id) {
-        var record = _.detect(this.records, function(r){
-            return r.m_id === m_id;
-        });
-        return record;
-    },
-
-    /**
-     * Debug method to print out all content from the records array to the console.
-     */
-    dumpRecords: function() {
-        _.each(this.records, function(rec){
-            //console.log(rec.m_id);
-            console.log(rec);
-        });
+        this.observable.notifyObservers(key);
     }
-    
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -7261,138 +7274,125 @@ M.View = M.Object.extend(
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.10.2010
+// Creator:   Sebastian
+// Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/* Available transitions for page changes */
-M.TRANSITION = {};
-M.TRANSITION.NONE = 'none';
-M.TRANSITION.SLIDE = 'slide';
-M.TRANSITION.SLIDEUP = 'slideup';
-M.TRANSITION.SLIDEDOWN = 'slidedown';
-M.TRANSITION.POP = 'pop';
-M.TRANSITION.FADE = 'fade';
-M.TRANSITION.FLIP = 'flip';
-
-m_require('core/foundation/observable.js');
+m_require('core/foundation/model.js');
 
 /**
  * @class
  *
- * The root class for every controller.
+ * The root object for RecordManager.
  *
- * Controllers, respectively their properties, are observables. Views can observe them.
+ * A RecordManager is used by a controllers and is an interface that makes it easy for him to
+ * handle his model records.
  *
  * @extends M.Object
  */
-M.Controller = M.Object.extend(
-/** @scope M.Controller.prototype */ {
-
+M.RecordManager = M.Object.extend(
+/** @scope M.RecordManager.prototype */ { 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.Controller',
+    type: 'M.RecordManager',
 
     /**
-     * Makes the controller's properties observable.
-     */
-    observable: null,
-
-    /**
-     * Switch the active tab in the application. This includes both activating this tab
-     * visually and switching the page.
+     * Array containing all currently loaded records.
      *
-     * @param {M.TabBarItemView} tab The tab to be activated.
+     * @type Object
      */
-    switchToTab: function(tab,back) {
-		if (!back) back = NO;
-        if(!(tab.parentView && tab.parentView.type === 'M.TabBarView')) {
-            M.Logger.log('Please provide a valid tab bar item to the switchToTab method.', M.WARN);
-            return;
-        }
-        var currentTab = tab.parentView.activeTab;
-        var newPage = M.ViewManager.getPage(tab.page);
+    records: [],
 
-        /* store the active tab in tab bar view */
-        tab.parentView.setActiveTab(tab);
-
-        if(tab === currentTab) {
-            var currentPage = M.ViewManager.getCurrentPage();
-            if(currentPage !== newPage) {
-                this.switchToPage(newPage, M.TRANSITION.FLIP, back, NO);
-            }
-        } else {
-            this.switchToPage(newPage, M.TRANSITION.FLIP, back, YES);
-        }
+    /**
+     * Add the given model to the modelList.
+     *
+     * @param {Object} record
+     */
+    add: function(record) {
+        this.records.push(record);
     },
 
     /**
-     * Switch the active page in the application.
+     * Concats an array if records to the records array.
      *
-     * @param {Object|String} page The page to be displayed or its name.
-     * @param {String} transition The transition that should be used. Default: horizontal slide
-     * @param {Boolean} isBack YES will cause a reverse-direction transition. Default: NO
-     * @param {Boolean} updateHistory Update the browser history. Default: YES
+     * @param {Object} record
      */
-    switchToPage: function(page, transition, isBack, updateHistory) {
-        var timeStart = M.Date.now();
-        page = page && typeof(page) === 'object' ? page : M.ViewManager.getPage(page);
+    addMany: function(arrOfRecords) {
 
-        if(page) {
-            transition = transition ? transition : M.TRANSITION.SLIDE;
-            isBack = isBack !== undefined ? isBack : NO;
-            updateHistory = updateHistory !== undefined ? updateHistory : YES;
+        if(_.isArray(arrOfRecords)){
+            this.records = this.records.concat(arrOfRecords);
 
-            /* Now do the page change by using a jquery mobile method and pass the properties */
-            if(page.type === 'M.PageView') {
-                $.mobile.changePage($('#' + page.id), {
-                    transition: M.Application.getConfig('useTransitions') ? transition : M.TRANSITION.NONE,
-                    reverse: M.Application.getConfig('useTransitions') ? isBack : NO,
-                    changeHash: updateHistory,
-                    showLoadMsg: NO
-                });
-            }
-
-            /* Save the current page in the view manager */
-            M.ViewManager.setCurrentPage(page);
-        } else {
-            M.Logger.log('Page "' + page + '" not found', M.ERR);
+        } else if(arrOfRecords.type === 'M.Model') {
+            this.add(arrOfRecords);
         }
+
     },
 
     /**
-     * This method initializes the notification of all observers, that observe the property behind 'key'.
-     *
-     * @param {String} key The key of the property to be changed.
-     * @param {Object|String} value The value to be set.
+     * Resets record list 
      */
-    set: function(key, value) {
-        var keyPath = key.split('.');
+    removeAll: function() {
+        this.records.length = 0;
+    },
 
-        if(keyPath.length === 1) {
-            this[key] = value;
-        } else {
-            var t = (this[keyPath[0]] = this[keyPath[0]] ? this[keyPath[0]] : {});
-            for(var i = 1; i < keyPath.length - 1; i++) {
-                t = (t[keyPath[i]] = t[keyPath[i]] ? t[keyPath[i]] : {});
-            }
+    /**
+     * Deletes a model record from the record array
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    remove: function(m_id) {
 
-            t[keyPath[keyPath.length - 1]] = value;
-        }
-
-        if(!this.observable) {
+        if(!m_id) {
+            M.Logger.log('No id given.', M.WARN);
             return;
         }
 
-        this.observable.notifyObservers(key);
+        var rec = this.getRecordById(m_id);
+
+        if(rec) {
+            this.records = _.select(this.records, function(r){
+                return r.m_id !== rec.m_id;
+            });
+        }
+
+        delete rec;
+    },
+
+    /**
+    * Returns a record from the record array identified by the interal model id.
+    * @param {Number} m_id The internal model id of the model record.
+    * @deprecated
+    */
+    getRecordForId: function(m_id) {
+        return this.getRecordById(m_id);
+    },
+
+    /**
+     * Returns a record from the record array identified by the interal model id.
+     * @param {Number} m_id The internal model id of the model record.
+     */
+    getRecordById: function(m_id) {
+        var record = _.detect(this.records, function(r){
+            return r.m_id === m_id;
+        });
+        return record;
+    },
+
+    /**
+     * Debug method to print out all content from the records array to the console.
+     */
+    dumpRecords: function() {
+        _.each(this.records, function(rec){
+            //console.log(rec.m_id);
+            console.log(rec);
+        });
     }
-
+    
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
