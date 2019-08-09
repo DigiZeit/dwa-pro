@@ -1,29 +1,29 @@
 CACHE MANIFEST
-#Application:DigiWebApp, Version:1.9.0.10987 beta, Timestamp:1565357052900
+#Application:DigiWebApp, Version:1.9.0.10988 beta, Timestamp:1565357530882
 
 
 # Explicitly cached entries
 CACHE:
 de_de.js
 en_us.js
-jquery-1.9.1.js
 underscore-min.js
+d8-0.4.0.min.js
+jquery-1.9.1.js
 theme/tmp.css
 bootstrap.js
-d8-0.4.0.min.js
 jquery_mobile.js
-jquery.xml2json_1.3.js
 barcodescanner.js
-childbrowser.js
 cordova.js
+childbrowser.js
+jquery.xml2json_1.3.js
 jstz.js
 Math.uuid.js
 digi_list.js
-digi_list_item.js
 digi_selection_list.js
+digi_list_item.js
 digi_selection_list_item.js
-pen.cur
 theme/style.css
+pen.cur
 theme/images/1024x1024_90_SCHOLPP.png
 theme/images/1080x1920_90_SCHOLPP.png
 theme/images/1536x2048_90_SCHOLPP.png
@@ -90,8 +90,8 @@ theme/images/icon_record.png
 theme/images/icon_stop.png
 theme/images/ic_launcher_hdpi.png
 theme/images/ic_launcher_ldpi.png
-theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xhdpi.png
+theme/images/ic_launcher_mdpi.png
 theme/images/ic_launcher_xxhdpi.png
 theme/images/roter_balken.png
 theme/images/splash_hdpi_480x640_DSO.9.png
@@ -102,8 +102,8 @@ theme/images/splash_xhdpi_720x960_DSO.9.png
 theme/images/splash_xxhdpi_1080x1920_DSO.9.png
 theme/images/tabSprite.png
 theme/images/tabSprite_DSO.png
-theme/images/winphone_medium_tile_202x202_DSO.png
 theme/images/winphone_small_tile_110x110_DSO.png
+theme/images/winphone_medium_tile_202x202_DSO.png
 ui.js
 jquery_mobile_plugins.js
 theme/jquery_mobile_plugins.css
