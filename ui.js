@@ -1874,6 +1874,662 @@ M.ContainerView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard itm view contains an icon and a label and can be used as the only
+ * kind of childviews for a dashboard view.
+ *
+ * @extends M.View
+ */
+M.DashboardItemView = M.View.extend(
+/** @scope M.DashboardItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardItemView',
+
+    /**
+     * The path/url to the dashboard item's icon.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * The label for the dashboard item. If no label is specified, the value will be
+     * displayed instead.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
+
+    /**
+     * Renders a dashboard item.
+     *
+     * @private
+     * @returns {String} The dashboard item view's html representation.
+     */
+    render: function() {
+        //this.computeValue();
+
+        /* reset html property */
+        this.html = '';
+
+        if(!this.icon) {
+            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
+            return this.html;
+        }
+
+        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
+
+        /* add image */
+        var image = M.ImageView.design({
+            value: this.icon
+        });
+        this.html += image.render();
+
+        /* add label */
+        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            taphold: {
+                target: this.parentView,
+                action: 'editDashboard'
+            },
+            tap: {
+                target: this.parentView,
+                action: 'dispatchTapEvent'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard item.
+     *
+     * @private
+     * @returns {String} The button's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssStyle) {
+            html += 'style="' + this.cssStyle + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      09.08.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * A dashboard view displays images and a corresponding text in a grid-like view
+ * and serves as the homescreen of an application. By tapping on of the icons, a
+ * user can access certain features of an app. By default, there are three icons
+ * in a row and three rows per page possible. But you can easily adjust this to
+ * your custom needs.
+ *
+ * @extends M.View
+ */
+M.DashboardView = M.View.extend(
+/** @scope M.DashboardView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.DashboardView',
+
+    /**
+     * This property can be used to customize the number of items a dashboard
+     * shows per line. By default this is set to three.
+     *
+     * @type Number
+     */
+    itemsPerLine: 3,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This property is used internally for storing the items of a dashboard, when using
+     * the content binding feature.
+     *
+     * @private
+     */
+    items: [],
+
+    /**
+     * This property can be used to specify whether or not the dashboard can be re-arranged
+     * by a user.
+     *
+     * @type Boolean
+     */
+    isEditable: NO,
+
+    /**
+     * This property is used internally to indicate whether the dashboard is currently in
+     * edit mode or not.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInEditMode: NO,
+
+    /**
+     * This property defines the dashboard's name. This is used internally to identify
+     * the dashboard inside the DOM.
+     *
+     * Note: If you are using more than one dashboard inside your application, make sure
+     * you provide different names.
+     *
+     * @type String
+     */
+    name: 'dashboard',
+
+    /**
+     * This property is used internally to track the position of touch events.
+     *
+     * @private
+     */
+    touchPositions: null,
+
+    /**
+     * This property is used internally to know of what type the latest touch events was.
+     *
+     * @private
+     */
+    latestTouchEventType: null,
+
+    /**
+     * Renders a dashboard.
+     *
+     * @private
+     * @returns {String} The dashboard view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '"' + this.style() + '>';
+        this.renderChildViews();
+        this.html += '</div>';
+
+        /* clear floating */
+        this.html += '<div class="tmp-dashboard-line-clear"></div>';
+
+        /* init the touchPositions property */
+        this.touchPositions = {};
+
+        return this.html;
+    },
+
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            /* lets gather the html together */
+            for(var i in childViews) {
+                /* set the dashboard item's _name and parentView property */
+                this[childViews[i]].parentView = this;
+                this[childViews[i]]._name = childViews[i];
+
+                this.html += this.renderDashboardItemView(this[childViews[i]], i);
+            }
+        }
+    },
+
+    renderUpdate: function() {
+        if(this.contentBinding) {
+            this.removeAllItems();
+
+            /* do we have something in locale storage? */
+            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
+            values = values ? JSON.parse(values) : null;
+
+            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
+            this.items = [];
+            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
+            var html = '';
+
+            /* lets gather the html together */
+            for(var i in items) {
+                html += this.renderDashboardItemView(items[i], i);
+            }
+
+            /* add the items to the DOM */
+            this.addItems(html);
+
+            /* now the items are in DOM, finally register events */
+            for(var i in this.items) {
+                this.items[i].registerEvents();
+            }
+        }
+    },
+
+    /**
+     * This method adds a given html string, contain the dasboard's items, to the DOM.
+     *
+     * @param {String} item The html representation of the dashboard items to be added.
+     */
+    addItems: function(items) {
+        $('#' + this.id).append(items);
+    },
+
+    /**
+     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).empty();
+    },
+
+    renderDashboardItemView: function(item, itemIndex) {
+        if(item && item.value && item.icon) {
+            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
+                value: item.value ? item.value : '',
+                icon: item.icon ? item.icon : '',
+                label: item.label ? item.label : (item.value ? item.value : ''),
+                parentView: this,
+                events: item.events
+            });
+            var html = '';
+
+            /* add item to array for later use */
+            this.items.push(obj);
+
+            /* is new line starting? */
+            if(itemIndex % this.itemsPerLine === 0) {
+                html += '<div class="tmp-dashboard-line">';
+            }
+
+            /* assign the desired width */
+            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
+
+            /* finally render the dashboard item and add it to the dashboard's html */
+            html += obj.render();
+
+            /* is a line finished? */
+            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
+                html += '</div><div class="tmp-dashboard-line-clear"></div>';
+            }
+
+            /* return the html */
+            return html;
+        } else {
+            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
+        }
+    },
+
+    /**
+     * This method is used internally for dispatching the tap event for a dashboard view. If the
+     * dashboard view is in edit mode, we do not dispatch the event to the application.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     *
+     * @private
+     */
+    dispatchTapEvent: function(id, event, nextEvent) {
+        /* now first call special handler for this item */
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+
+        /* now call global tap-event handler (if set) */
+        if(this.events && this.events.tap) {
+            M.EventDispatcher.callHandler(this.events.tap, event, YES);
+        }
+
+        /* now store timestamp for last tap event to kill a possible false taphold event */
+        this.latestTapEventTimestamp = +new Date();
+    },
+
+    /**
+     * This method is automatically called when a taphold event is triggered for one
+     * of the dashboard's
+     */
+    editDashboard: function(id, event, nextEvent) {
+        this.touchPositions.touchstart = {};
+        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
+            return;
+        }
+
+        if(this.isInEditMode && event) {
+            this.stopEditMode();
+        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
+            M.EventDispatcher.unregisterEvents(this.id);
+            this.isInEditMode = YES;
+            _.each(this.items, function(item) {
+                item.addCssClass('rotate' + M.Math.random(1, 2));
+                M.EventDispatcher.unregisterEvents(item.id);
+                if($.support.touch) {
+                    M.EventDispatcher.registerEvent(
+                        'touchstart',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchStart'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchend',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchEnd'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'touchmove',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editTouchMove'
+                        },
+                        item.recommendedEvents
+                    );
+                } else {
+                    M.EventDispatcher.registerEvent(
+                        'mousedown',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseDown'
+                        },
+                        item.recommendedEvents
+                    );
+                    M.EventDispatcher.registerEvent(
+                        'mouseup',
+                        item.id,
+                        {
+                            target: item.parentView,
+                            action: 'editMouseUp'
+                        },
+                        item.recommendedEvents
+                    );
+                }
+            });
+        }
+    },
+
+    stopEditMode: function() {
+        this.isInEditMode = NO;
+        _.each(this.items, function(item) {
+            item.removeCssClass('rotate1');
+            item.removeCssClass('rotate2');
+            M.EventDispatcher.unregisterEvents(item.id);
+            item.registerEvents();
+        });
+    },
+
+    setValue: function(items) {
+        this.value = items;
+        var values = [];
+        _.each(items, function(item) {
+            values.push(item.value);
+        });
+        if(localStorage) {
+            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
+        }
+    },
+
+    sortItemsByValues: function(items, values) {
+        var itemsSorted = [];
+        _.each(values, function(value) {
+            _.each(items, function(item) {
+                if(item.value === value) {
+                    itemsSorted.push(item);
+                }
+            });
+        });
+        return itemsSorted;
+    },
+
+    editTouchStart: function(id, event) {
+        this.latestTouchEventType = 'touchstart';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        this.touchPositions.touchstart = {
+            x: latest.clientX,
+            y: latest.clientY,
+            date: +new Date()
+        };
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'touchstart') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editTouchMove: function(id, event) {
+        this.latestTouchEventType = 'touchmove';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+
+        if(latest) {
+            var left = latest.pageX - parseIntRadixTen($('#' + id).css('width')) / 2;
+            var top = latest.pageY - parseIntRadixTen($('#' + id).css('height')) / 2;
+            $('#' + id).css('position', 'absolute');
+            $('#' + id).css('left', left + 'px');
+            $('#' + id).css('top', top + 'px');
+
+            /* if end event is within certain radius of start event and it took a certain time, and editing */
+            /*if(this.touchPositions.touchstart) {
+                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                        this.stopEditMode();
+                        this.editTouchEnd(id, event);
+                    }
+                }
+            }*/
+        }
+    },
+
+    editTouchEnd: function(id, event) {
+        this.latestTouchEventType = 'touchend';
+        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
+        
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    editMouseDown: function(id, event) {
+        this.latestTouchEventType = 'mousedown';
+
+        this.touchPositions.touchstart = {
+            x: event.clientX,
+            y: event.clientY,
+            date: +new Date()
+        };
+
+        /* enable mouse move for selected item */
+        M.EventDispatcher.registerEvent(
+            'mousemove',
+            id,
+            {
+                target: this,
+                action: 'editMouseMove'
+            },
+            M.ViewManager.getViewById(id).recommendedEvents
+        );
+
+        var that = this;
+        window.setTimeout(function() {
+            if(that.latestTouchEventType === 'mousedown') {
+                that.stopEditMode();
+            }
+        }, 750);
+    },
+
+    editMouseMove: function(id, event) {
+        this.latestTouchEventType = 'mousemove';
+
+        var left = event.pageX - parseIntRadixTen($('#' + id).css('width')) / 2;
+        var top = event.pageY - parseIntRadixTen($('#' + id).css('height')) / 2;
+        $('#' + id).css('position', 'absolute');
+        $('#' + id).css('left', left + 'px');
+        $('#' + id).css('top', top + 'px');
+
+        /* if end event is within certain radius of start event and it took a certain time, and editing */
+        /*if(this.touchPositions.touchstart) {
+            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
+                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
+                    this.stopEditMode();
+                    this.editTouchEnd(id, event);
+                }
+            }
+        }*/
+    },
+
+    editMouseUp: function(id, event) {
+        this.latestTouchEventType = 'mouseup';
+
+        if(event.currentTarget.id) {
+            var items = [];
+            _.each(this.items, function(item) {
+
+                /* disable mouse move for all item */
+                M.EventDispatcher.unregisterEvent('mousemove', item.id);
+
+                items.push({
+                    id: item.id,
+                    x: $('#' + item.id).position().left,
+                    y: $('#' + item.id).position().top,
+                    item: item
+                });
+                items.sort(function(a, b) {
+                    /* assume they are in one row */
+                    if(Math.abs(a.y - b.y) < 30) {
+                        if(a.x < b.x) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    /* otherwise */
+                    } else {
+                        if(a.y < b.y) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+            });
+            var objs = [];
+            _.each(items, function(item) {
+                objs.push(item.item);
+            });
+            this.setValue(objs);
+            this.renderUpdate();
+
+            if(this.isInEditMode) {
+                this.editDashboard();
+            }
+        }
+    },
+
+    /**
+     * Applies some style-attributes to the dashboard view.
+     *
+     * @private
+     * @returns {String} The dashboard's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="tmp-dashboard ' + this.cssClass + '"';
+        }
+        return html;
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
@@ -2568,6 +3224,589 @@ M.DatePickerView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
+// Date:      25.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * M.FormViews is the prototype of a form view, a container like view for grouping
+ * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
+ * validation of input views. There is no visible representation of an M.FormView,
+ * it is only used to ease the validation process and its accessing out of a
+ * controller.
+ * 
+ * @extends M.View
+ */
+M.FormView = M.View.extend(
+/** @scope M.FormView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.FormView',
+
+    /**
+     * Determines whether to automatically show an alert dialog view out of the showError method
+     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
+     * dialog view once the showError method is called.
+     *
+     * @type Boolean
+     */
+    showAlertDialogOnError: YES,
+
+    /**
+     * The title of the alert view that comes up automatically if the validation fails, depending
+     * one the 'showAlertOnError' property.
+     *
+     * @type String
+     */
+     alertTitle: 'Validation Error(s)',
+
+    /**
+     * This method triggers the validate() on all child views, respectively on their validators. If
+     * a validation error occurs, the showErrors() will be called.
+     *
+     * @returns {Boolean} The result of the validation process: valid or not.
+     */
+    validate: function() {
+        var ids = this.getIds();
+        for(var name in ids) {
+            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
+                delete ids[name];
+            }
+        }
+
+        var isValid = YES;
+        M.Validator.clearErrorBuffer();
+
+        for(var name in ids) {
+            var view = M.ViewManager.getViewById(ids[name]);
+            if(view && view.validators) {
+                if(view.cssClassOnError) {
+                    view.removeCssClass(view.cssClassOnError);
+                }
+
+                _.each(view.validators, function(validator) {
+                    if(!validator.validate(view, name)) {
+                        isValid = NO;
+                    }
+                });
+            }
+        }
+
+        if(!isValid) {
+            this.showErrors();
+        }
+
+        return isValid;
+    },
+
+    /**
+     * This method adds a css class specified by the cssClassOnError property to any
+     * view that caused a validation error and has this property specified.
+     *
+     * If the showAlertDialogOnError property is set to YES, a alert dialog view
+     * is display additionally, presenting the error messages of all invalid views.
+     */
+    showErrors: function() {
+        var errors = '';
+        _.each(M.Validator.validationErrors, function(error) {
+            if(error && error.errObj) {
+                var view = M.ViewManager.getViewById(error.errObj.viewId);
+                if(view && view.cssClassOnError) {
+                    view.addCssClass(view.cssClassOnError);
+                }
+                errors += '<li>' + error.msg + '</li>';
+            }
+        });
+
+        if(this.showAlertDialogOnError) {
+            M.DialogView.alert({
+                title: this.alertTitle,
+                message: errors
+            });
+        }
+    },
+
+    /**
+     * This method is a wrapper of M.View's clearValues() method.
+     */
+    clearForm: function() {
+        this.clearValues();
+    },
+
+    /**
+     * This method is a wrapper of M.View's getValues() method.
+     */
+    getFormValues: function() {
+        return this.getValues();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for a two column layout of a grid view.
+ *
+ * @type String
+ */
+M.TWO_COLUMNS = {
+    cssClass: 'ui-grid-a',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b'
+    }
+};
+
+/**
+ * A constant value for a three column layout of a grid view.
+ *
+ * @type String
+ */
+M.THREE_COLUMNS = {
+    cssClass: 'ui-grid-b',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c'
+    }
+};
+
+/**
+ * A constant value for a four column layout of a grid view.
+ *
+ * @type String
+ */
+M.FOUR_COLUMNS = {
+    cssClass: 'ui-grid-c',
+    columns: {
+        0: 'ui-block-a',
+        1: 'ui-block-b',
+        2: 'ui-block-c',
+        3: 'ui-block-d'
+    }
+};
+
+/**
+ * @class
+ *
+ * M.GridView defines a prototype of a grid view, that allows you to display several
+ * views horizontally aligned. Therefore you can either use a predefined layout or you
+ * can provide a custom layout.
+ * 
+ * @extends M.View
+ */
+M.GridView = M.View.extend(
+/** @scope M.GridView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.GridView',
+
+    /**
+     * The layout for the grid view. There are two predefined layouts available:
+     * 
+     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
+     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
+     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
+     *
+     * To specify your own layout, you will have to implement some css classes and
+     * then define your layout like:
+     *
+     *     cssClass: 'cssClassForWholeGrid',
+     *     columns: {
+     *         0: 'cssClassForColumn1',
+     *         1: 'cssClassForColumn2',
+     *         2: 'cssClassForColumn3',
+     *         3: 'cssClassForColumn4',
+     *         //........
+     *     }
+     *
+     * @type Object
+     */
+    layout: null,
+    
+    /**
+     * This property can be used to assign a css class to the view to get a custom styling.
+     *
+     * @type String
+     */
+    cssClass: '',
+
+    /**
+     * Renders a grid view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The grid view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Triggers render() on all children and includes some special grid view logic
+     * concerning the rendering of these child views.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            if(this.layout) {
+                var arr = this.childViews.split(' ');
+                for(var i in this.layout.columns) {
+                    if(this[arr[i]]) {
+                        this.html += '<div class="' + this.layout.columns[i] + '">';
+
+                        this[arr[i]]._name = arr[i];
+                        this.html += this[arr[i]].render();
+
+                        this.html += '</div>';
+                    }
+                }
+            } else {
+                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
+            }
+        }
+    },
+
+    /**
+     * This method themes the grid view, respectively its child views.
+     *
+     * @private
+     */
+    theme: function() {
+        this.themeChildViews();
+    },
+
+    /**
+     * Applies some style-attributes to the grid view.
+     *
+     * @private
+     * @returns {String} The grid view's styling as html representation.
+     */
+    style: function() {
+        if(this.layout) {
+            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
+            return html;
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      04.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The is the prototype of any image view. It basically renders a simple image and
+ * can be styled using a css class.
+ *
+ * @extends M.View
+ */
+M.ImageView = M.View.extend(
+/** @scope M.ImageView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.ImageView',
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap', 'error', 'load'],
+
+    /**
+     * Renders an image view based on the specified layout.
+     *
+     * @private
+     * @returns {String} The image view's html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
+        return this.html;
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for image views and
+     * their internal events.
+     */
+    registerEvents: function() {
+        this.internalEvents = {
+            error: {
+                target: this,
+                action: 'sourceIsInvalid'
+            },
+            load: {
+                target: this,
+                action: 'sourceIsValid'
+            }
+        }
+        this.bindToCaller(this, M.View.registerEvents)();
+    },
+
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).attr('src', this.value);
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the image.
+     *
+     * @private
+     */
+    theme: function() {
+    },
+    
+    /**
+     * Applies some style-attributes to the image view.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    sourceIsInvalid: function(id, event, nextEvent) {
+        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
+        $('#' + this.id).addClass('tmp-image-hidden');
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    sourceIsValid: function(id, event, nextEvent) {
+        $('#' + this.id).removeClass('tmp-image-hidden');
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      02.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for hyperlink of type email.
+ *
+ * @type String
+ */
+M.HYPERLINK_EMAIL = 'mail';
+
+/**
+ * A constant value for hyperlink of type website.
+ *
+ * @type String
+ */
+M.HYPERLINK_WEBSITE = 'website';
+
+/**
+ * A constant value for hyperlink of type phone number.
+ *
+ * @type String
+ */
+M.HYPERLINK_PHONE = 'phone';
+
+/**
+ * @class
+ *
+ * The is the prototype of any label view. It basically renders a simple plain
+ * text can be styled using several properties of M.LabelView or providing one
+ * ore more css classes.
+ *
+ * @extends M.View
+ */
+M.LabelView = M.View.extend(
+/** @scope M.LabelView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.LabelView',
+
+    /**
+     * Determines whether a new line '\n' within the label's value should be transformed
+     * into a line break '<br/>' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    newLineToBreak: YES,
+
+    /**
+     * Determines whether a tabulator '\t' within the label's value should be transformed
+     * into four spaces '&#160;' before it is rendered. Default: YES.
+     *
+     * @type Boolean
+     */
+    tabToSpaces: YES,
+
+    /**
+     * This property can be used to specify a certain hyperlink type for this label. It only
+     * works in combination with the hyperlinkTarget property.
+     *
+     * @type String
+     */
+    hyperlinkType: null,
+
+    /**
+     * This property can be used to specify a hyperlink target for this label. It only
+     * works in combination with the hyperlinkType property.
+     *
+     * @type String
+     */
+    hyperlinkTarget: null,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['tap'],
+
+    /**
+     * Renders a label view as a div tag with corresponding data-role attribute and inner
+     * text defined by value.
+     *
+     * @private
+     * @returns {String} The image view's styling as html representation.
+     */
+    render: function() {
+        this.computeValue();
+        this.html += '<div id="' + this.id + '"' + this.style() + '>';
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            switch (this.hyperlinkType) {
+                case M.HYPERLINK_EMAIL:
+                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_WEBSITE:
+                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
+                    break;
+                case M.HYPERLINK_PHONE:
+                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
+                    break;
+            }
+        }
+
+        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
+
+        if(this.hyperlinkTarget && this.hyperlinkType) {
+            this.html += '</a>';
+        }
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Updates the value of the label with DOM access by jQuery.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        this.computeValue();
+        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
+    },
+
+    /**
+     * Applies some style-attributes to the label.
+     *
+     * @private
+     * @returns {String} The label's styling as html representation.
+     */
+    style: function() {
+        var html = '';
+        if(this.isInline) {
+            html += ' style="display:inline;"';
+        }
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
+        }
+        return html;
+    },
+
+    /**
+     * This method sets the label's value and initiates its re-rendering.
+     *
+     * @param {String} value The value to be applied to the label view.
+     */
+    setValue: function(value) {
+        this.value = value;
+        this.renderUpdate();
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
 // Date:      23.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -3222,9 +4461,10 @@ M.ConfirmDialogView = M.DialogView.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      09.08.2011
+// Date:      02.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -3233,1231 +4473,110 @@ M.ConfirmDialogView = M.DialogView.extend(
 /**
  * @class
  *
- * A dashboard view displays images and a corresponding text in a grid-like view
- * and serves as the homescreen of an application. By tapping on of the icons, a
- * user can access certain features of an app. By default, there are three icons
- * in a row and three rows per page possible. But you can easily adjust this to
- * your custom needs.
+ * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
+ * view can be used to show the user that something is happening, e.g. while the application
+ * is waiting for a request to return some data.
  *
  * @extends M.View
  */
-M.DashboardView = M.View.extend(
-/** @scope M.DashboardView.prototype */ {
+M.LoaderView = M.View.extend(
+/** @scope M.LoaderView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.DashboardView',
+    type: 'M.LoaderView',
 
     /**
-     * This property can be used to customize the number of items a dashboard
-     * shows per line. By default this is set to three.
+     * This property states whether the loader has already been initialized or not.
+     *
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property counts the loader calls to show
      *
      * @type Number
      */
-    itemsPerLine: 3,
+    refCount: 0,
 
     /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This property is used internally for storing the items of a dashboard, when using
-     * the content binding feature.
-     *
-     * @private
-     */
-    items: [],
-
-    /**
-     * This property can be used to specify whether or not the dashboard can be re-arranged
-     * by a user.
-     *
-     * @type Boolean
-     */
-    isEditable: NO,
-
-    /**
-     * This property is used internally to indicate whether the dashboard is currently in
-     * edit mode or not.
-     *
-     * @private
-     * @type Boolean
-     */
-    isInEditMode: NO,
-
-    /**
-     * This property defines the dashboard's name. This is used internally to identify
-     * the dashboard inside the DOM.
-     *
-     * Note: If you are using more than one dashboard inside your application, make sure
-     * you provide different names.
+     * This property can be used to specify the default title of a loader.
      *
      * @type String
      */
-    name: 'dashboard',
-
+    defaultTitle: 'loading',
+            
     /**
-     * This property is used internally to track the position of touch events.
+     * This method initializes the loader by loading it once.
      *
-     * @private
+     * @private 
      */
-    touchPositions: null,
-
-    /**
-     * This property is used internally to know of what type the latest touch events was.
-     *
-     * @private
-     */
-    latestTouchEventType: null,
-
-    /**
-     * Renders a dashboard.
-     *
-     * @private
-     * @returns {String} The dashboard view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '"' + this.style() + '>';
-        this.renderChildViews();
-        this.html += '</div>';
-
-        /* clear floating */
-        this.html += '<div class="tmp-dashboard-line-clear"></div>';
-
-        /* init the touchPositions property */
-        this.touchPositions = {};
-
-        return this.html;
-    },
-
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            /* lets gather the html together */
-            for(var i in childViews) {
-                /* set the dashboard item's _name and parentView property */
-                this[childViews[i]].parentView = this;
-                this[childViews[i]]._name = childViews[i];
-
-                this.html += this.renderDashboardItemView(this[childViews[i]], i);
-            }
-        }
-    },
-
-    renderUpdate: function() {
-        if(this.contentBinding) {
-            this.removeAllItems();
-
-            /* do we have something in locale storage? */
-            var values = localStorage.getItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard');
-            values = values ? JSON.parse(values) : null;
-
-            /* get the items (if there is something in the LS and it fits the content bound values, use them) */
-            this.items = [];
-            var items = (values && this.value && values.length == this.value.length) ? this.sortItemsByValues(this.value, values) : this.value;
-            var html = '';
-
-            /* lets gather the html together */
-            for(var i in items) {
-                html += this.renderDashboardItemView(items[i], i);
-            }
-
-            /* add the items to the DOM */
-            this.addItems(html);
-
-            /* now the items are in DOM, finally register events */
-            for(var i in this.items) {
-                this.items[i].registerEvents();
-            }
+    initialize: function() {
+        if(!this.isInitialized) {
+            this.refCount = 0;
+            $.mobile.showPageLoadingMsg();
+            $.mobile.hidePageLoadingMsg();
+            this.isInitialized = YES;
         }
     },
 
     /**
-     * This method adds a given html string, contain the dasboard's items, to the DOM.
+     * This method shows the default loader. You can specify the displayed label with the
+     * title parameter.
      *
-     * @param {String} item The html representation of the dashboard items to be added.
+     * @param {String} title The title for this loader.
+     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
      */
-    addItems: function(items) {
-        $('#' + this.id).append(items);
+    show: function(title, hideSpinner) {
+        this.refCount++;
+        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
+        if(this.refCount == 1){
+            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
+            var loader = $('.ui-loader');
+            loader.removeClass('ui-loader-default');
+            loader.addClass('ui-loader-verbose');
+
+            /* position alert in the center of the possibly scrolled viewport */
+            var screenSize = M.Environment.getSize();
+            var scrollYOffset = window.pageYOffset;
+            var loaderHeight = loader.outerHeight();
+
+            var yPos = scrollYOffset + (screenSize[1]/2);
+            loader.css('top', yPos + 'px');
+            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+        }
     },
 
     /**
-     * This method removes all of the dashboard view's items by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
+     * This method changes the current title.
+     *
+     * @param {String} title The title for this loader.
      */
-    removeAllItems: function() {
-        $('#' + this.id).empty();
+
+    changeTitle: function(title){
+        $('.ui-loader h1').html(title);
     },
 
-    renderDashboardItemView: function(item, itemIndex) {
-        if(item && item.value && item.icon) {
-            var obj = item.type === 'M.DashboardItemView' ? item : M.DashboardItemView.design({
-                value: item.value ? item.value : '',
-                icon: item.icon ? item.icon : '',
-                label: item.label ? item.label : (item.value ? item.value : ''),
-                parentView: this,
-                events: item.events
-            });
-            var html = '';
-
-            /* add item to array for later use */
-            this.items.push(obj);
-
-            /* is new line starting? */
-            if(itemIndex % this.itemsPerLine === 0) {
-                html += '<div class="tmp-dashboard-line">';
-            }
-
-            /* assign the desired width */
-            obj.cssStyle = 'width: ' + 100/this.itemsPerLine + '%';
-
-            /* finally render the dashboard item and add it to the dashboard's html */
-            html += obj.render();
-
-            /* is a line finished? */
-            if(itemIndex % this.itemsPerLine === this.itemsPerLine - 1) {
-                html += '</div><div class="tmp-dashboard-line-clear"></div>';
-            }
-
-            /* return the html */
-            return html;
+    /**
+     * This method hides the loader.
+     *
+     * @param {Boolean} force Determines whether to force the hide of the loader.
+     */
+    hide: function(force) {
+        if(force || this.refCount <= 0) {
+            this.refCount = 0;
         } else {
-            M.Logger.log('Childview of dashboard is no valid dashboard item.', M.WARN);
+            this.refCount--;
         }
-    },
-
-    /**
-     * This method is used internally for dispatching the tap event for a dashboard view. If the
-     * dashboard view is in edit mode, we do not dispatch the event to the application.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     *
-     * @private
-     */
-    dispatchTapEvent: function(id, event, nextEvent) {
-        /* now first call special handler for this item */
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        if(this.refCount == 0){
+            $.mobile.hidePageLoadingMsg();
         }
-
-        /* now call global tap-event handler (if set) */
-        if(this.events && this.events.tap) {
-            M.EventDispatcher.callHandler(this.events.tap, event, YES);
-        }
-
-        /* now store timestamp for last tap event to kill a possible false taphold event */
-        this.latestTapEventTimestamp = +new Date();
-    },
-
-    /**
-     * This method is automatically called when a taphold event is triggered for one
-     * of the dashboard's
-     */
-    editDashboard: function(id, event, nextEvent) {
-        this.touchPositions.touchstart = {};
-        if(!this.isEditable || this.latestTapEventTimestamp > +new Date() - 500) {
-            return;
-        }
-
-        if(this.isInEditMode && event) {
-            this.stopEditMode();
-        } else if((!this.isInEditMode && event) || (this.isInEditMode && !event)) {
-            M.EventDispatcher.unregisterEvents(this.id);
-            this.isInEditMode = YES;
-            _.each(this.items, function(item) {
-                item.addCssClass('rotate' + M.Math.random(1, 2));
-                M.EventDispatcher.unregisterEvents(item.id);
-                if($.support.touch) {
-                    M.EventDispatcher.registerEvent(
-                        'touchstart',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchStart'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchend',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchEnd'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'touchmove',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editTouchMove'
-                        },
-                        item.recommendedEvents
-                    );
-                } else {
-                    M.EventDispatcher.registerEvent(
-                        'mousedown',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseDown'
-                        },
-                        item.recommendedEvents
-                    );
-                    M.EventDispatcher.registerEvent(
-                        'mouseup',
-                        item.id,
-                        {
-                            target: item.parentView,
-                            action: 'editMouseUp'
-                        },
-                        item.recommendedEvents
-                    );
-                }
-            });
-        }
-    },
-
-    stopEditMode: function() {
-        this.isInEditMode = NO;
-        _.each(this.items, function(item) {
-            item.removeCssClass('rotate1');
-            item.removeCssClass('rotate2');
-            M.EventDispatcher.unregisterEvents(item.id);
-            item.registerEvents();
-        });
-    },
-
-    setValue: function(items) {
-        this.value = items;
-        var values = [];
-        _.each(items, function(item) {
-            values.push(item.value);
-        });
-        if(localStorage) {
-            localStorage.setItem(M.LOCAL_STORAGE_PREFIX + M.Application.name + M.LOCAL_STORAGE_SUFFIX + 'dashboard', JSON.stringify(values));
-        }
-    },
-
-    sortItemsByValues: function(items, values) {
-        var itemsSorted = [];
-        _.each(values, function(value) {
-            _.each(items, function(item) {
-                if(item.value === value) {
-                    itemsSorted.push(item);
-                }
-            });
-        });
-        return itemsSorted;
-    },
-
-    editTouchStart: function(id, event) {
-        this.latestTouchEventType = 'touchstart';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        this.touchPositions.touchstart = {
-            x: latest.clientX,
-            y: latest.clientY,
-            date: +new Date()
-        };
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'touchstart') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editTouchMove: function(id, event) {
-        this.latestTouchEventType = 'touchmove';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-
-        if(latest) {
-            var left = latest.pageX - parseIntRadixTen($('#' + id).css('width')) / 2;
-            var top = latest.pageY - parseIntRadixTen($('#' + id).css('height')) / 2;
-            $('#' + id).css('position', 'absolute');
-            $('#' + id).css('left', left + 'px');
-            $('#' + id).css('top', top + 'px');
-
-            /* if end event is within certain radius of start event and it took a certain time, and editing */
-            /*if(this.touchPositions.touchstart) {
-                if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                    if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                        this.stopEditMode();
-                        this.editTouchEnd(id, event);
-                    }
-                }
-            }*/
-        }
-    },
-
-    editTouchEnd: function(id, event) {
-        this.latestTouchEventType = 'touchend';
-        var latest = event.originalEvent ? (event.originalEvent.changedTouches ? event.originalEvent.changedTouches[0] : null) : null;
-        
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    editMouseDown: function(id, event) {
-        this.latestTouchEventType = 'mousedown';
-
-        this.touchPositions.touchstart = {
-            x: event.clientX,
-            y: event.clientY,
-            date: +new Date()
-        };
-
-        /* enable mouse move for selected item */
-        M.EventDispatcher.registerEvent(
-            'mousemove',
-            id,
-            {
-                target: this,
-                action: 'editMouseMove'
-            },
-            M.ViewManager.getViewById(id).recommendedEvents
-        );
-
-        var that = this;
-        window.setTimeout(function() {
-            if(that.latestTouchEventType === 'mousedown') {
-                that.stopEditMode();
-            }
-        }, 750);
-    },
-
-    editMouseMove: function(id, event) {
-        this.latestTouchEventType = 'mousemove';
-
-        var left = event.pageX - parseIntRadixTen($('#' + id).css('width')) / 2;
-        var top = event.pageY - parseIntRadixTen($('#' + id).css('height')) / 2;
-        $('#' + id).css('position', 'absolute');
-        $('#' + id).css('left', left + 'px');
-        $('#' + id).css('top', top + 'px');
-
-        /* if end event is within certain radius of start event and it took a certain time, and editing */
-        /*if(this.touchPositions.touchstart) {
-            if(this.touchPositions.touchstart.date < +new Date() - 1500) {
-                if(Math.abs(this.touchPositions.touchstart.x - latest.clientX) < 30 && Math.abs(this.touchPositions.touchstart.y - latest.clientY) < 30) {
-                    this.stopEditMode();
-                    this.editTouchEnd(id, event);
-                }
-            }
-        }*/
-    },
-
-    editMouseUp: function(id, event) {
-        this.latestTouchEventType = 'mouseup';
-
-        if(event.currentTarget.id) {
-            var items = [];
-            _.each(this.items, function(item) {
-
-                /* disable mouse move for all item */
-                M.EventDispatcher.unregisterEvent('mousemove', item.id);
-
-                items.push({
-                    id: item.id,
-                    x: $('#' + item.id).position().left,
-                    y: $('#' + item.id).position().top,
-                    item: item
-                });
-                items.sort(function(a, b) {
-                    /* assume they are in one row */
-                    if(Math.abs(a.y - b.y) < 30) {
-                        if(a.x < b.x) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    /* otherwise */
-                    } else {
-                        if(a.y < b.y) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    }
-                });
-            });
-            var objs = [];
-            _.each(items, function(item) {
-                objs.push(item.item);
-            });
-            this.setValue(objs);
-            this.renderUpdate();
-
-            if(this.isInEditMode) {
-                this.editDashboard();
-            }
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard view.
-     *
-     * @private
-     * @returns {String} The dashboard's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="tmp-dashboard ' + this.cssClass + '"';
-        }
-        return html;
     }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for a two column layout of a grid view.
- *
- * @type String
- */
-M.TWO_COLUMNS = {
-    cssClass: 'ui-grid-a',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b'
-    }
-};
-
-/**
- * A constant value for a three column layout of a grid view.
- *
- * @type String
- */
-M.THREE_COLUMNS = {
-    cssClass: 'ui-grid-b',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c'
-    }
-};
-
-/**
- * A constant value for a four column layout of a grid view.
- *
- * @type String
- */
-M.FOUR_COLUMNS = {
-    cssClass: 'ui-grid-c',
-    columns: {
-        0: 'ui-block-a',
-        1: 'ui-block-b',
-        2: 'ui-block-c',
-        3: 'ui-block-d'
-    }
-};
-
-/**
- * @class
- *
- * M.GridView defines a prototype of a grid view, that allows you to display several
- * views horizontally aligned. Therefore you can either use a predefined layout or you
- * can provide a custom layout.
- * 
- * @extends M.View
- */
-M.GridView = M.View.extend(
-/** @scope M.GridView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.GridView',
-
-    /**
-     * The layout for the grid view. There are two predefined layouts available:
-     * 
-     * - M.TWO_COLUMNS: a two column layout, width: 50% / 50%
-     * - M.THREE_COLUMNS: a three column layout, width: 33% / 33% / 33%
-     * - M.FOUR_COLUMNS: a four column layout, width: 25% / 25% / 25%
-     *
-     * To specify your own layout, you will have to implement some css classes and
-     * then define your layout like:
-     *
-     *     cssClass: 'cssClassForWholeGrid',
-     *     columns: {
-     *         0: 'cssClassForColumn1',
-     *         1: 'cssClassForColumn2',
-     *         2: 'cssClassForColumn3',
-     *         3: 'cssClassForColumn4',
-     *         //........
-     *     }
-     *
-     * @type Object
-     */
-    layout: null,
     
-    /**
-     * This property can be used to assign a css class to the view to get a custom styling.
-     *
-     * @type String
-     */
-    cssClass: '',
-
-    /**
-     * Renders a grid view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The grid view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '" ' + this.style() + '>';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children and includes some special grid view logic
-     * concerning the rendering of these child views.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            if(this.layout) {
-                var arr = this.childViews.split(' ');
-                for(var i in this.layout.columns) {
-                    if(this[arr[i]]) {
-                        this.html += '<div class="' + this.layout.columns[i] + '">';
-
-                        this[arr[i]]._name = arr[i];
-                        this.html += this[arr[i]].render();
-
-                        this.html += '</div>';
-                    }
-                }
-            } else {
-                M.Logger.log('No layout specified for GridView (' + this.id + ')!', M.WARN);
-            }
-        }
-    },
-
-    /**
-     * This method themes the grid view, respectively its child views.
-     *
-     * @private
-     */
-    theme: function() {
-        this.themeChildViews();
-    },
-
-    /**
-     * Applies some style-attributes to the grid view.
-     *
-     * @private
-     * @returns {String} The grid view's styling as html representation.
-     */
-    style: function() {
-        if(this.layout) {
-            var html = 'class="' + this.layout.cssClass + ' ' + this.cssClass + '"';
-            return html;
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      25.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.FormViews is the prototype of a form view, a container like view for grouping
- * input views, e.g. M.TextFieldView. It covers a lot of the jobs concerning the
- * validation of input views. There is no visible representation of an M.FormView,
- * it is only used to ease the validation process and its accessing out of a
- * controller.
- * 
- * @extends M.View
- */
-M.FormView = M.View.extend(
-/** @scope M.FormView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.FormView',
-
-    /**
-     * Determines whether to automatically show an alert dialog view out of the showError method
-     * if the validation failed or not. So if set to YES, all error messages are shown in an alert
-     * dialog view once the showError method is called.
-     *
-     * @type Boolean
-     */
-    showAlertDialogOnError: YES,
-
-    /**
-     * The title of the alert view that comes up automatically if the validation fails, depending
-     * one the 'showAlertOnError' property.
-     *
-     * @type String
-     */
-     alertTitle: 'Validation Error(s)',
-
-    /**
-     * This method triggers the validate() on all child views, respectively on their validators. If
-     * a validation error occurs, the showErrors() will be called.
-     *
-     * @returns {Boolean} The result of the validation process: valid or not.
-     */
-    validate: function() {
-        var ids = this.getIds();
-        for(var name in ids) {
-            if(!!!(M.ViewManager.getViewById(ids[name]).validators)) {
-                delete ids[name];
-            }
-        }
-
-        var isValid = YES;
-        M.Validator.clearErrorBuffer();
-
-        for(var name in ids) {
-            var view = M.ViewManager.getViewById(ids[name]);
-            if(view && view.validators) {
-                if(view.cssClassOnError) {
-                    view.removeCssClass(view.cssClassOnError);
-                }
-
-                _.each(view.validators, function(validator) {
-                    if(!validator.validate(view, name)) {
-                        isValid = NO;
-                    }
-                });
-            }
-        }
-
-        if(!isValid) {
-            this.showErrors();
-        }
-
-        return isValid;
-    },
-
-    /**
-     * This method adds a css class specified by the cssClassOnError property to any
-     * view that caused a validation error and has this property specified.
-     *
-     * If the showAlertDialogOnError property is set to YES, a alert dialog view
-     * is display additionally, presenting the error messages of all invalid views.
-     */
-    showErrors: function() {
-        var errors = '';
-        _.each(M.Validator.validationErrors, function(error) {
-            if(error && error.errObj) {
-                var view = M.ViewManager.getViewById(error.errObj.viewId);
-                if(view && view.cssClassOnError) {
-                    view.addCssClass(view.cssClassOnError);
-                }
-                errors += '<li>' + error.msg + '</li>';
-            }
-        });
-
-        if(this.showAlertDialogOnError) {
-            M.DialogView.alert({
-                title: this.alertTitle,
-                message: errors
-            });
-        }
-    },
-
-    /**
-     * This method is a wrapper of M.View's clearValues() method.
-     */
-    clearForm: function() {
-        this.clearValues();
-    },
-
-    /**
-     * This method is a wrapper of M.View's getValues() method.
-     */
-    getFormValues: function() {
-        return this.getValues();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      04.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * The is the prototype of any image view. It basically renders a simple image and
- * can be styled using a css class.
- *
- * @extends M.View
- */
-M.ImageView = M.View.extend(
-/** @scope M.ImageView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.ImageView',
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'error', 'load'],
-
-    /**
-     * Renders an image view based on the specified layout.
-     *
-     * @private
-     * @returns {String} The image view's html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html = '<img id="' + this.id + '" src="' + (this.value && typeof(this.value) === 'string' ? this.value : '') + '"' + this.style() + ' />';
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for image views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            error: {
-                target: this,
-                action: 'sourceIsInvalid'
-            },
-            load: {
-                target: this,
-                action: 'sourceIsValid'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).attr('src', this.value);
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the image.
-     *
-     * @private
-     */
-    theme: function() {
-    },
-    
-    /**
-     * Applies some style-attributes to the image view.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    sourceIsInvalid: function(id, event, nextEvent) {
-        //M.Logger.log('The source \'' + this.value + '\' is invalid, so we hide the image!', M.WARN);
-        $('#' + this.id).addClass('tmp-image-hidden');
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    },
-
-    sourceIsValid: function(id, event, nextEvent) {
-        $('#' + this.id).removeClass('tmp-image-hidden');
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
-        }
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      02.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for hyperlink of type email.
- *
- * @type String
- */
-M.HYPERLINK_EMAIL = 'mail';
-
-/**
- * A constant value for hyperlink of type website.
- *
- * @type String
- */
-M.HYPERLINK_WEBSITE = 'website';
-
-/**
- * A constant value for hyperlink of type phone number.
- *
- * @type String
- */
-M.HYPERLINK_PHONE = 'phone';
-
-/**
- * @class
- *
- * The is the prototype of any label view. It basically renders a simple plain
- * text can be styled using several properties of M.LabelView or providing one
- * ore more css classes.
- *
- * @extends M.View
- */
-M.LabelView = M.View.extend(
-/** @scope M.LabelView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.LabelView',
-
-    /**
-     * Determines whether a new line '\n' within the label's value should be transformed
-     * into a line break '<br/>' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    newLineToBreak: YES,
-
-    /**
-     * Determines whether a tabulator '\t' within the label's value should be transformed
-     * into four spaces '&#160;' before it is rendered. Default: YES.
-     *
-     * @type Boolean
-     */
-    tabToSpaces: YES,
-
-    /**
-     * This property can be used to specify a certain hyperlink type for this label. It only
-     * works in combination with the hyperlinkTarget property.
-     *
-     * @type String
-     */
-    hyperlinkType: null,
-
-    /**
-     * This property can be used to specify a hyperlink target for this label. It only
-     * works in combination with the hyperlinkType property.
-     *
-     * @type String
-     */
-    hyperlinkTarget: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['tap'],
-
-    /**
-     * Renders a label view as a div tag with corresponding data-role attribute and inner
-     * text defined by value.
-     *
-     * @private
-     * @returns {String} The image view's styling as html representation.
-     */
-    render: function() {
-        this.computeValue();
-        this.html += '<div id="' + this.id + '"' + this.style() + '>';
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            switch (this.hyperlinkType) {
-                case M.HYPERLINK_EMAIL:
-                    this.html += '<a rel="external" href="mailto:' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_WEBSITE:
-                    this.html += '<a rel="external" target="_blank" href="' + this.hyperlinkTarget + '">';
-                    break;
-                case M.HYPERLINK_PHONE:
-                    this.html += '<a rel="external" href="tel:' + this.hyperlinkTarget + '">';
-                    break;
-            }
-        }
-
-        this.html += this.newLineToBreak ? this.nl2br(this.tabToSpaces ? this.tab2space(this.value) : this.value) : (this.tabToSpaces ? this.tab2space(this.value) : this.value);
-
-        if(this.hyperlinkTarget && this.hyperlinkType) {
-            this.html += '</a>';
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Updates the value of the label with DOM access by jQuery.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        this.computeValue();
-        $('#' + this.id).html(this.newLineToBreak ? this.nl2br(this.value) : this.value);
-    },
-
-    /**
-     * Applies some style-attributes to the label.
-     *
-     * @private
-     * @returns {String} The label's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.isInline) {
-            html += ' style="display:inline;"';
-        }
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method sets the label's value and initiates its re-rendering.
-     *
-     * @param {String} value The value to be applied to the label view.
-     */
-    setValue: function(value) {
-        this.value = value;
-        this.renderUpdate();
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      09.08.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * A dashboard itm view contains an icon and a label and can be used as the only
- * kind of childviews for a dashboard view.
- *
- * @extends M.View
- */
-M.DashboardItemView = M.View.extend(
-/** @scope M.DashboardItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.DashboardItemView',
-
-    /**
-     * The path/url to the dashboard item's icon.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * The label for the dashboard item. If no label is specified, the value will be
-     * displayed instead.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap', 'taphold', 'touchstart', 'touchmove', 'touchend', 'mousedown', 'mousemove', 'mouseup'],
-
-    /**
-     * Renders a dashboard item.
-     *
-     * @private
-     * @returns {String} The dashboard item view's html representation.
-     */
-    render: function() {
-        //this.computeValue();
-
-        /* reset html property */
-        this.html = '';
-
-        if(!this.icon) {
-            M.Logger.log('Please provide an icon for a dashboard item view!', M.WARN);
-            return this.html;
-        }
-
-        this.html += '<div id="' + this.id + '" class="tmp-dashboard-item" ' + this.style() + '>';
-
-        /* add image */
-        var image = M.ImageView.design({
-            value: this.icon
-        });
-        this.html += image.render();
-
-        /* add label */
-        this.html += '<div class="tmp-dashboard-item-label">' + (this.label ? this.label : this.value) + '</div>';
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            taphold: {
-                target: this.parentView,
-                action: 'editDashboard'
-            },
-            tap: {
-                target: this.parentView,
-                action: 'dispatchTapEvent'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * Applies some style-attributes to the dashboard item.
-     *
-     * @private
-     * @returns {String} The button's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssStyle) {
-            html += 'style="' + this.cssStyle + '"';
-        }
-        return html;
-    }
-
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -5068,119 +5187,268 @@ M.MapView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      02.12.2010
+// Date:      27.01.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
 /**
+ * A constant value for the map's marker animation type: none
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_NONE = 'NONE';
+
+/**
+ * A constant value for the map's marker animation type: drop
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_DROP = 'DROP';
+
+/**
+ * A constant value for the map's marker animation type: bounce
+ *
+ * @type String
+ */
+M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
+
+/**
  * @class
  *
- * M.LoaderView is the prototype for a loader a.k.a. activity indicator. This very simple
- * view can be used to show the user that something is happening, e.g. while the application
- * is waiting for a request to return some data.
+ * M.MapMarkerView is the prototype of a map marker view. It defines a set
+ * of methods for adding, removing and managing the markers of a M.MapView.
+ *
+ * The M.MapMarkerView is based on google maps markers.
  *
  * @extends M.View
  */
-M.LoaderView = M.View.extend(
-/** @scope M.LoaderView.prototype */ {
+M.MapMarkerView = M.View.extend(
+/** @scope M.MapMarkerView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.LoaderView',
+    type: 'M.MapMarkerView',
 
     /**
-     * This property states whether the loader has already been initialized or not.
+     * This property is used to save a reference to the actual google map marker.
+     * It is set automatically when the map marker is firstly initialized.
      *
-     * @type Boolean
+     * @type Object
      */
-    isInitialized: NO,
+    marker: null,
 
     /**
-     * This property counts the loader calls to show
+     * This property can be used to store additional information about a marker.
+     * Since this property is an object, you can store pretty much anything in
+     * this property.
      *
-     * @type Number
+     * This can be useful especially if you are using the click event for map
+     * markers. So you can store any information with a marker and retrieve
+     * this information on the click event.
+     *
+     * @type Object
      */
-    refCount: 0,
+    data: null,
 
     /**
-     * This property can be used to specify the default title of a loader.
+     * This property contains a reference to the marker's map view.
+     *
+     * @type M.MapView
+     */
+    map: null,
+
+    /**
+     * This property specifies the title of a map marker view. It can be used in
+     * an annotation.
      *
      * @type String
      */
-    defaultTitle: 'loading',
+    title: null,
+
+    /**
+     * This property specifies the message of a map marker view respectively for
+     * its annotation.
+     *
+     * @type String
+     */
+    message: null,
+
+    /**
+     * This property can be used to specify whether or not to show the annotation,
+     * if title and / or message are defined, automatically on click event.
+     *
+     * @type Boolean
+     */
+    showAnnotationOnClick: NO,
+
+    /**
+     * This property contains a reference to a google maps info window that is
+     * connected to this map marker. By calling either the showAnnotation() or
+     * the hideAnnotation() method, this info window can be toggled.
+     *
+     * Additionally the info window will be automatically set to visible if the
+     * showAnnotationOnClick property is set to YES.
+     *
+     * @type Object
+     */
+    annotation: null,
+
+    /**
+     * This property specifies whether the marker is draggable or not. If set
+     * to NO, a user won't be able to move the marker. For further information
+     * see the google maps API specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type Boolean
+     */
+    isDraggable: NO,
+
+    /**
+     * This property specifies the location for this map marker view, as an M.Location
+     * object. Its latitude and longitude properties are directly mapped to the position
+     * property of a google maps marker. For further information see the google maps API
+     * specification:
+     *
+     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
+     *
+     * @type M.Location
+     */
+    location: M.Location.extend({
+        latitude: 48.813338,
+        longitude: 9.178463
+    }),
+
+    /**
+     * This property can be used to specify the animation type for this map marker
+     * view. If this property is set, the markerAnimationType property of the parent
+     * map view is ignored. The following three values are possible:
+     *
+     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
+     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
+     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
+     *
+     * @type String
+     */
+    markerAnimationType: null,
+
+    /**
+     * This property can be used to specify a custom marker icon. Simply pass a valid
+     * path to an image and it will be shown instead of google's default marker.
+     *
+     * @type String
+     */
+    icon: null,
+
+    /**
+     * This property can be used to specify the display size of the icon used for the
+     * marker. This is important if you want to support e.g. the iphone's retina display.
+     *
+     * Pass along an object containing the desired width and height, e.g.:
+     *
+     *     {
+     *         width: 20,
+     *         height: 20
+     *     }
+     *
+     * @type Object
+     */
+    iconSize: null,
+
+    /**
+     * This property can be used to display a map marker icon centered about its location.
+     * By default a map marker is positioned with its bottom center at the location.
+     *
+     * @type Boolean
+     */
+    isIconCentered: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['click', 'tap'],
+
+    /**
+     * This method initializes an M.MapMarkerView. It connects a map marker directly with
+     * the parent map view and returns the created M.MapMarkerView object.
+     *
+     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
+     * initialized and can no be displayed by using the map view's addMarker() method or via
+     * content binding.
+     *
+     * @param {Object} options The options for the map marker view.
+     */
+    init: function(options) {
+        var marker = this.extend(options);
+
+        if(marker.annotation || marker.message) {
+            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
+            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
             
-    /**
-     * This method initializes the loader by loading it once.
-     *
-     * @private 
-     */
-    initialize: function() {
-        if(!this.isInitialized) {
-            this.refCount = 0;
-            $.mobile.showPageLoadingMsg();
-            $.mobile.hidePageLoadingMsg();
-            this.isInitialized = YES;
+            marker.annotation = new google.maps.InfoWindow({
+                content: content,
+                maxWidth: 100
+            });
         }
+
+        return marker;
     },
 
     /**
-     * This method shows the default loader. You can specify the displayed label with the
-     * title parameter.
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
      *
-     * @param {String} title The title for this loader.
-     * @param {Boolean} hideSpinner A boolean to specify whether to display a spinning wheel or not.
+     * It extend M.View's registerEvents method with some special stuff for list item views and
+     * their internal events.
      */
-    show: function(title, hideSpinner) {
-        this.refCount++;
-        var title = title && typeof(title) === 'string' ? title : this.defaultTitle;
-        if(this.refCount == 1){
-            $.mobile.showPageLoadingMsg('a', title, hideSpinner);
-            var loader = $('.ui-loader');
-            loader.removeClass('ui-loader-default');
-            loader.addClass('ui-loader-verbose');
-
-            /* position alert in the center of the possibly scrolled viewport */
-            var screenSize = M.Environment.getSize();
-            var scrollYOffset = window.pageYOffset;
-            var loaderHeight = loader.outerHeight();
-
-            var yPos = scrollYOffset + (screenSize[1]/2);
-            loader.css('top', yPos + 'px');
-            loader.css('margin-top', '-' + (loaderHeight/2) + 'px');
+    registerEvents: function() {
+        this.internalEvents = {
+            tap: {
+                target: this,
+                action: 'showAnnotation'
+            }
         }
+
+        var that = this;
+        google.maps.event.addListener(this.marker, 'click', function() {
+            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        });
     },
 
     /**
-     * This method changes the current title.
-     *
-     * @param {String} title The title for this loader.
+     * This method can be used to remove a map marker from a map view.
      */
-
-    changeTitle: function(title){
-        $('.ui-loader h1').html(title);
+    remove: function() {
+        this.map.removeMarker(this);
     },
 
     /**
-     * This method hides the loader.
-     *
-     * @param {Boolean} force Determines whether to force the hide of the loader.
+     * This method can be used to show a map markers annotation.
      */
-    hide: function(force) {
-        if(force || this.refCount <= 0) {
-            this.refCount = 0;
-        } else {
-            this.refCount--;
+    showAnnotation: function(id, event, nextEvent) {
+        if(this.annotation) {
+            this.annotation.open(this.map.map, this.marker);
         }
-        if(this.refCount == 0){
-            $.mobile.hidePageLoadingMsg();
+
+        /* delegate event to external handler, if specified */
+        if(this.events || this.map.events) {
+            var events = this.events ? this.events : this.map.events;
+            for(var e in events) {
+                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
+                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
+                }
+            }
         }
     }
-    
+
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
@@ -6250,941 +6518,6 @@ M.ScrollView = M.View.extend(
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      30.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * M.SelectionListItemView defines the prototype of any selection list item. It can only be used
- * as a child view for a selection list view.
- *
- * @extends M.View
- */
-M.SelectionListItemView = M.View.extend(
-/** @scope M.SelectionListItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SelectionListItemView',
-
-    /**
-     * This property can be used to specify a label for a selection list item. If
-     * set, the label will be displayed instead of the value, so you can use the
-     * item's value as an internal value.
-     *
-     * E.g. if you use a selection list to select a color, you could set an item's
-     * value to '#FF0000' but its label to 'Red'. If there is no label specified,
-     * the value is displayed instead.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * This property states whether a selection list item is selected or not.
-     *
-     * @type Boolean
-     */
-    isSelected: NO,
-
-    /**
-     * Renders a selection list item.
-     * 
-     * @private
-     * @returns {String} The selection list item view's html representation.
-     */
-    render: function() {
-        this.html = '';
-        if(this.parentView && (this.parentView.selectionMode === M.SINGLE_SELECTION_DIALOG || this.parentView.selectionMode === M.MULTIPLE_SELECTION_DIALOG)) {
-            this.html += '<option id="' + this.id + '" value="' + this.value + '"';
-
-            if((this.isSelected && typeof(this.isSelected) === 'boolean') || (this.isSelected === String(YES))) {
-                if(!this.parentView.selection) {
-                    this.html += ' selected="selected"';
-                    this.parentView.selection = this;
-                }
-            }
-
-            this.html += '>';
-            
-            this.html += this.label ? this.label : this.value;
-
-            this.html += '</option>';
-        } else {
-            this.html += '<input type="' + this.parentView.selectionMode + '" data-native-menu="false" id="' + this.id + '"';
-
-            if(this.parentView.selectionMode === M.SINGLE_SELECTION) {
-                this.html += ' name="' + (this.parentView.name ? this.parentView.name : this.parentView.id) + '"';
-            } else if(this.parentView.selectionMode === M.MULTIPLE_SELECTION) {
-                this.html += ' name="' + (this.name ? this.name : this.id) + '"';
-            }
-
-            if((this.isSelected && typeof(this.isSelected) === 'boolean') || (this.isSelected === String(YES))) {
-                if(this.parentView.selectionMode === M.SINGLE_SELECTION) {
-                    if(!this.parentView.selection) {
-                        this.html += ' checked="checked"';
-                        this.parentView.selection = this;
-                    }
-                } else {
-                    this.html += ' checked="checked"';
-
-                    if(!this.parentView.selection) {
-                        this.parentView.selection = [];
-                    }
-                    this.parentView.selection.push(this);
-                }
-            }
-
-            this.html += '/>';
-            this.html += '<label for="' + this.id + '">' + (this.label ? this.label : this.value) + '</label>';
-        }
-
-        return this.html;
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the selection list item.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.parentView) {
-            if(this.parentView.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.parentView.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-                $('#' + this.id).checkboxradio();
-            }
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      30.11.2010
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for single selection mode.
- *
- * @type String
- */
-M.SINGLE_SELECTION = 'radio';
-
-/**
- * A constant value for multiple selection mode.
- *
- * @type String
- */
-M.MULTIPLE_SELECTION = 'checkbox';
-
-/**
- * A constant value for single selection mode in a dialog / popup.
- *
- * @type String
- */
-M.SINGLE_SELECTION_DIALOG = 'select';
-
-/**
- * A constant value for multiple selection mode in a dialog / popup.
- *
- * @type String
- */
-M.MULTIPLE_SELECTION_DIALOG = 'select_multiple';
-
-m_require('ui/selection_list_item.js');
-
-/**
- * @class
- *
- * This defines the prototype of any selection list view. A selection list view displays
- * a list with several items of which either only one single item (M.SINGLE_SELECTION /
- * M.SINGLE_SELECTION_DIALOG) or many items (M.MULTIPLE_SELECTION /
- * M.MULTIPLE_SELECTION_DIALOG) can be selected.
- *
- * @extends M.View
- */
-M.SelectionListView = M.View.extend(
-/** @scope M.SelectionListView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SelectionListView',
-
-    /**
-     * Determines whether to remove all item if the list is updated or not.
-     *
-     * @type Boolean
-     */
-    removeItemsOnUpdate: YES,
-
-    /**
-     * The selection mode for this selection list. This can either be single or
-     * multiple selection. To set this value use one of the three constants:
-     *
-     * - M.SINGLE_SELECTION
-     *
-     *   This selection mode will render a selection list with several list items
-     *   of which only one can be selected. Whenever a new item is selected, the
-     *   previously selected item automatically gets de-selected. This selection
-     *   mode's behaviour is equivalent to the plain HTML's radio button.
-     *
-     *
-     * - M.SINGLE_SELECTION_DIALOG
-     *
-     *   This selection mode will render a selection list equivalent to the plain
-     *   HTML's select menu. Only the currently selected item will be visible, and
-     *   by clicking on this item, the selection list will be displayed in a dialog
-     *   respectively a popup view. By selecting on of the items, this popup will
-     *   automatically close and the selected value will be displayed.
-     *
-     *
-     * - M.MULTIPLE_SELECTION
-     *
-     *   This selection mode will render a selection list with several list items
-     *   of which all be selected. So the selection of a new item doesn't lead to
-     *   automatic de-selected of previously selected items. This selection mode's
-     *   behaviour is equivalent to the plain HTML's checkboxes.
-     *
-     *
-     * - M.MULTIPLE_SELECTION_DIALOG
-     *
-     *   This selection mode will render a selection list equivalent to the plain
-     *   HTML's select menu, but with the possibility to select multiple options.
-     *   In contrast to the single selection dialog mode, it also is possible to
-     *   select no option at all. As with the multiple selecton mode, the selection
-     *   of a new item doesn't lead to automatic de-selected of previously selected
-     *   items.
-     *
-     *   Note: This mode currently only works on mobile devices!!
-     *
-     * @type String
-     */
-    selectionMode: M.SINGLE_SELECTION,
-
-    /**
-     * The selected item(s) of this list.
-     *
-     * @type String, Array
-     */
-    selection: null,
-
-    /**
-     * This property defines the tab bar's name. This is used internally to identify
-     * the selection list inside the DOM.
-     *
-     * @type String
-     */
-    name: null,
-
-    
-    /**
-     * This property is used to specify an initial value for the selection list if
-     * it is running in 'multiple selection dialog' (M.MULTIPLE_SELECTION_DIALOG) mode.
-     * This value is then displayed at startup. You would typically use this e.g. to
-     * specify something like: 'Please select...'.
-     *
-     * As long as this initial value is 'selected', the getSelection() of this selection
-     * list will return nothing. Once a 'real' option is selected, this value will visually
-     * disappear. If at some point no option will be selected again, this initial text
-     * will be shown again.
-     *
-     * @type String
-     */
-    initialText: null,
-
-    /**
-     * The label proeprty defines a text that is shown above or next to the selection list as a 'title'
-     * for the selection list. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Determines whether to display the selection list grouped with the label specified with the label property.
-     * If set to YES, the selection list and its label are wrapped in a container and styled as a unit 'out of
-     * the box'. If set to NO, custom styling could be necessary.
-     *
-     * @type Boolean
-     */
-    isGrouped: NO,
-
-    /**
-     * This property is used internally to store the selection list's initial state. This is used to be able
-     * to reset the selection list later on using the resetSelection method.
-     *
-     * Note: This property is only used if the selection list's child views are specified directly (without
-     * content binding). Otherwise the state is stored within the content binding and does not need to be
-     * stored with this selection list.
-     *
-     * @private
-     * @type Object
-     */
-    initialState: null,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['change'],
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this selection list.
-     *
-     * @type Boolean
-     */
-    hasAsteriskOnLabel: NO,
-
-    /**
-     * This property can be used to assign a css class to the asterisk on the right of the label.
-     *
-     * @type String
-     */
-    cssClassForAsterisk: null,
-
-    /**
-     * Renders a selection list.
-     *
-     * @private
-     * @returns {String} The selection list view's html representation.
-     */
-    render: function() {
-
-        /* initialize the initialState property as new array */
-        this.initialState = [];
-
-        this.html = '<div id="' + this.id + '_container"';
-
-        if(this.isGrouped) {
-            this.html += ' data-role="fieldcontain"';
-        }
-
-        if(this.cssClass) {
-            this.html += ' class="';
-            var cssClasses = $.trim(this.cssClass).split(' ');            
-            for(var i in cssClasses) {
-                this.html += (i > 0 ? ' ' : '') + cssClasses[i] + '_container';
-            }
-            this.html += '"';
-        }
-
-        this.html += '>';
-
-        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            
-            if(this.label) {
-                this.html += '<label for="' + this.id + '">' + this.label;
-                if (this.hasAsteriskOnLabel) {
-                    if (this.cssClassForAsterisk) {
-                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                    } else {
-                        this.html += '<span>*</span></label>';
-                    }
-                } else {
-                    this.html += '</label>';
-                }
-            }
-
-            this.html += '<select name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + (this.selectionMode === M.MULTIPLE_SELECTION_DIALOG ? ' multiple="multiple"' : '') + '>';
-
-            this.renderChildViews();
-
-            this.html += '</select>';
-
-        } else {
-
-            this.html += '<fieldset data-role="controlgroup" data-native-menu="false" id="' + this.id + '">';
-
-            if(this.label) {
-                this.html += '<legend>' + this.label;
-                if (this.hasAsteriskOnLabel) {
-                    if (this.cssClassForAsterisk) {
-                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></legend>';
-                    } else {
-                        this.html += '<span>*</span></legend>';
-                    }
-                } else {
-                    this.html += '</legend>';
-                }
-            }
-
-            this.renderChildViews();
-
-            this.html += '</fieldset>';
-
-        }
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Triggers render() on all children of type M.ButtonView based on the specified
-     * selection mode (single or multiple selection).
-     *
-     * @private
-     */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            for(var i in childViews) {
-                var view = this[childViews[i]];
-                if(view.type === 'M.SelectionListItemView') {
-                    view.parentView = this;
-                    view._name = childViews[i];
-                    this.html += view.render();
-
-                    /* store list item in initialState property */
-                    this.initialState.push({
-                        value: view.value,
-                        label: view.label,
-                        isSelected: view.isSelected
-                    });
-                } else {
-                    M.Logger.log('Invalid child views specified for SelectionListView. Only SelectionListItemViews accepted.', M.WARN);
-                }
-            }
-        } else if(!this.contentBinding) {
-            M.Logger.log('No SelectionListItemViews specified.', M.WARN);
-        }
-    },
-
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for text field views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            change: {
-                target: this,
-                action: 'itemSelected'
-            }
-        }
-        this.bindToCaller(this, M.View.registerEvents)();
-    },
-
-    /**
-     * This method adds a new selection list item to the selection list view by simply appending
-     * its html representation to the selection list view inside the DOM. This method is based
-     * on jQuery's append().
-     *
-     * @param {String} item The html representation of a selection list item to be added.
-     */
-    addItem: function(item) {
-        $('#' + this.id).append(item);
-    },
-
-    /**
-     * This method removes all of the selection list view's items by removing all of its content in
-     * the DOM. This method is based on jQuery's empty().
-     */
-    removeAllItems: function() {
-        $('#' + this.id).empty();
-    },
-
-    /**
-     * Updates the the selection list view by re-rendering all of its child views, respectively its
-     * item views.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.removeItemsOnUpdate || this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            this.removeAllItems();
-
-            if(this.label && !(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG)) {
-                this.addItem('<legend>' + this.label + '</legend>');
-            } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            }
-        }
-
-        /* remove selection before applying new content */
-        this.removeSelection();
-
-        if(this.contentBinding) {
-            /* assign the value property to 'items' since this was automatically set by contentDidChange of M.View */
-            var items = this.value;
-            var withSpeedup = false;
-        	// TODO: Weyer: folgende Zeile entkommentieren
-            //withSpeedup = true; // macht z.B. in Kolonnen-Selektion auf iOS Probleme
-            if (!withSpeedup) {
-	            for(var i in items) {
-	                var item  = items[i];
-	                var obj = null;
-	                obj = M.SelectionListItemView.design({
-	                    value: (item.value !== undefined && item.value !== null) ? item.value : '',
-	                    label: item.label ? item.label : ((item.value !== undefined && item.value !== null) ? item.value : ''),
-	                    parentView: this,
-	                    isSelected: item.isSelected
-	                });
-	                if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-	                    obj.name = item.name ? item.name : (item.label ? item.label : (item.value ? item.value : ''));
-	                }
-	
-	                this.addItem(obj.render());                
-	                obj.theme();
-	            }
-            } else {
-	            var renderedItems = [];
-	            var renderedObjects = [];
-	            for(var i in items) {
-	                var item  = items[i];
-	                var obj = null;
-	                obj = M.SelectionListItemView.design({
-	                    value: (item.value !== undefined && item.value !== null) ? item.value : '',
-	                    label: item.label ? item.label : ((item.value !== undefined && item.value !== null) ? item.value : ''),
-	                    parentView: this,
-	                    isSelected: item.isSelected
-	                });
-	                if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-	                    obj.name = item.name ? item.name : (item.label ? item.label : (item.value ? item.value : ''));
-	                }
-	
-	                // Speedup: Füge alle Optionen gesammelt in den DOM ein
-	                renderedObjects.push(obj);
-	                renderedItems.push(obj.render());
-	            }
-	            this.addItem(renderedItems.join(""));
-	            for(var robj in renderedObjects) {
-	                var item  = renderedObjects[i];
-	                item.theme();
-	            }
-            }
-            this.themeUpdate();
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the selection list.
-     *
-     * @private
-     */
-    theme: function() {
-        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).selectmenu();
-            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
-                $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
-                document.getElementById(this.id).selectedIndex = -1;
-            }
-        } else if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).controlgroup();
-        }
-    },
-
-    /**
-     * Triggers the rendering engine, jQuery mobile, to style the selection list.
-     *
-     * @private
-     */
-    themeUpdate: function() {
-        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).selectmenu('refresh');
-            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
-                $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
-                document.getElementById(this.id).selectedIndex = -1;
-            } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection) {
-                var that = this;
-                var item = M.ViewManager.getViewById($('#' + this.id).find('option:first-child').attr('id'));
-                item !== undefined && item !== null ? that.setSelection(item.value) : null;
-            }
-        } else if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).controlgroup();
-        }
-    },
-
-    /**
-     * Method to append css styles inline to the rendered selection list.
-     *
-     * @private
-     * @returns {String} The selection list's styling as html representation.
-     */
-    style: function() {
-        var html = '';
-        if(this.cssClass) {
-            html += ' class="' + this.cssClass + '"';
-        }
-        return html;
-    },
-
-    /**
-     * This method is called everytime a item is selected / clicked. If the selected item
-     * changed, the defined onSelect action is triggered.
-     *
-     * @param {String} id The id of the selected item.
-     * @param {Object} event The event.
-     * @param {Object} nextEvent The application-side event handler.
-     */
-    itemSelected: function(id, event, nextEvent) {
-        var item = null;
-
-        if(this.selectionMode === M.SINGLE_SELECTION) {
-            item = M.ViewManager.getViewById($('input[name=' + (this.name ? this.name : this.id) + ']:checked').attr('id'));
-            
-            if(item !== this.selection) {
-                this.selection = item;
-
-                if(nextEvent) {
-                    M.EventDispatcher.callHandler(nextEvent, event, NO, [this.selection.value, this.selection]);
-                }
-            }
-        } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
-            item = M.ViewManager.getViewById($('#' + this.id + ' :selected').attr('id'));
-
-            if(item !== this.selection) {
-                this.selection = item;
-
-                $('#' + this.id + '_container').find('.ui-btn-text').html(item.label ? item.label : item.value);
-
-                if(nextEvent) {
-                    M.EventDispatcher.callHandler(nextEvent, event, NO, [this.selection.value, this.selection]);
-                }
-            }
-        } else if(this.selectionMode === M.MULTIPLE_SELECTION) {
-            var that = this;
-            this.selection = [];
-            $('#' + this.id).find('input:checked').each(function() {
-                that.selection.push(M.ViewManager.getViewById($(this).attr('id')));
-            });
-
-            var selectionValues = [];
-            for(var i in this.selection) {
-                selectionValues.push(this.selection[i].value);
-            }
-
-            if(nextEvent) {
-                M.EventDispatcher.callHandler(nextEvent, event, NO, [selectionValues, this.selection]);
-            }
-        } else if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-            var that = this;
-            this.selection = [];
-            $('#' + this.id).find(':selected').each(function() {
-                that.selection.push(M.ViewManager.getViewById($(this).attr('id')));
-            });
-
-            var selectionValues = [];
-            for(var i in this.selection) {
-                selectionValues.push(this.selection[i].value);
-                $('#' + this.id + '_container').find('.ui-btn-text').html(this.formatSelectionLabel(this.selection.length));
-            }
-            $('#' + this.id + '_container').find('.ui-li-count').html(this.selection ? this.selection.length : 0);
-
-            /* if there is no more item selected, reset the initial text */
-            if(this.selection.length === 0) {
-                this.themeUpdate();
-            }
-
-            if(nextEvent) {
-                M.EventDispatcher.callHandler(nextEvent, event, NO, [selectionValues, this.selection]);
-            }
-        }
-
-        /* fix the toolbar(s) again */
-        if(this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).blur();
-        }
-        
-        this.delegateValueUpdate();
-    },
-    
-    /**
-     * This method delegates any value changes to a controller, if the 'contentBindingReverse'
-     * property is specified.
-     */
-    delegateValueUpdate: function() {
-        /**
-         * delegate value updates to a bound controller, but only if the view currently is
-         * the master
-         */
-        if(this.contentBindingReverse) {
-            this.contentBindingReverse.target.set(this.contentBindingReverse.property, this.selection.value);
-        }
-    },
-
-    /**
-     * This method returns the selected item's value(s) either as a String (single selection)
-     * or as an Array (multiple selection).
-     *
-     * @param {Boolean} returnObject Determines whether to return the selected item(s) as object or not.
-     * @returns {String|Object|Array} The selected item's value(s).
-     */
-    getSelection: function(returnObject) {
-        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
-            if(this.selection) {
-                if(returnObject) {
-                    return this.selection;
-                } else {
-                    return this.selection.value;
-                }
-            }
-        } else {
-            if(this.selection) {
-                var selection = [];
-                _.each(this.selection, function(item) {
-                    if(returnObject) {
-                        selection.push(item);
-                    } else {
-                        selection.push(item.value);
-                    }
-                });
-                return selection;
-            }
-            return [];
-        }
-    },
-
-    /**
-     * This method can be used to select items programmatically. The given parameter can either
-     * be a String (single selection) or an Array (multiple selection).
-     *
-     * @param {String|Array} selection The selection that should be applied to the selection list.
-     */
-    setSelection: function(selection) {
-        var that = this;
-        if(this.selectionMode === M.SINGLE_SELECTION && (typeof(selection) === 'string' || typeof(selection) === 'number' || typeof(selection) === 'boolean')) {
-            $('#' + this.id).find('input').each(function() {
-                var item = M.ViewManager.getViewById($(this).attr('id'));
-                if(item.value == selection) {
-                    that.removeSelection();
-                    item.isSelected = YES;
-                    that.selection = item;
-                    $(this).attr('checked', 'checked');
-                    $(this).siblings('label:first').addClass('ui-radio-on');
-                    $(this).siblings('label:first').removeClass('ui-radio-off');
-                    $(this).siblings('label:first').find('span .ui-icon-radio-off').addClass('ui-icon-radio-on');
-                    $(this).siblings('label:first').find('span .ui-icon-radio-off').removeClass('ui-icon-radio-off');
-                }
-            });
-        } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG && (typeof(selection) === 'string' || typeof(selection) === 'number' || typeof(selection) === 'boolean')) {
-            var didSetSelection = NO;
-            $('#' + this.id).find('option').each(function() {
-                var item = M.ViewManager.getViewById($(this).attr('id'));
-                if(item.value == selection) {
-                    that.removeSelection();
-                    item.isSelected = YES;
-                    that.selection = item;
-                    $('#' + that.id).val(item.value);
-                    didSetSelection = YES;
-                }
-            });
-            if(didSetSelection) {
-                $('#' + this.id).selectmenu('refresh');
-            }
-        } else if(typeof(selection) === 'object') {
-            if(this.selectionMode === M.MULTIPLE_SELECTION) {
-                var removedItems = NO;
-                $('#' + this.id).find('input').each(function() {
-                    var item = M.ViewManager.getViewById($(this).attr('id'));
-                    for(var i in selection) {
-                        var selectionItem = selection[i];
-                        if(item.value == selectionItem) {
-                            if(!removedItems) {
-                                that.removeSelection();
-                                removedItems = YES;
-                            }
-                            item.isSelected = YES;
-                            that.selection.push(item);
-                            $(this).attr('checked', 'checked');
-                            $(this).siblings('label:first').removeClass('ui-checkbox-off');
-                            $(this).siblings('label:first').addClass('ui-checkbox-on');
-                            $(this).siblings('label:first').find('span .ui-icon-checkbox-off').addClass('ui-icon-checkbox-on');
-                            $(this).siblings('label:first').find('span .ui-icon-checkbox-off').removeClass('ui-icon-checkbox-off');
-                        }
-                    }
-                });
-            } else if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
-                var removedItems = NO;
-                $('#' + this.id).find('option').each(function() {
-                    var item = M.ViewManager.getViewById($(this).attr('id'));
-                    for(var i in selection) {
-                        var selectionItem = selection[i];
-                        if(item.value == selectionItem) {
-                            if(!removedItems) {
-                                that.removeSelection();
-                                removedItems = YES;
-                            }
-                            item.isSelected = YES;
-                            that.selection.push(item);
-                            $(this).attr('selected', 'selected');
-                        }
-                    }
-
-                    /* set the label */
-                    $('#' + that.id + '_container').find('.ui-btn-text').html(that.formatSelectionLabel(that.selection.length));
-                    $('#' + that.id + '_container').find('.ui-li-count').html(that.selection ? that.selection.length : 0);
-                });
-            }
-        }
-    },
-
-    /**
-     * This method de-selects all of the selection list's items.
-     */
-    removeSelection: function() {
-        var that = this;
-
-        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
-            this.selection = null;
-        } else {
-            this.selection = [];
-        }
-        
-        if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
-            $('#' + this.id).find('input').each(function() {
-                var item = M.ViewManager.getViewById($(this).attr('id'));
-                item.isSelected = NO;
-                $(this).removeAttr('checked');
-                $(this).siblings('label:first').addClass('ui-' + that.selectionMode + '-off');
-                $(this).siblings('label:first').removeClass('ui-' + that.selectionMode + '-on');
-                $(this).siblings('label:first').find('span .ui-icon-' + that.selectionMode + '-on').addClass('ui-icon-' + that.selectionMode + '-off');
-                $(this).siblings('label:first').find('span .ui-icon-' + that.selectionMode + '-on').removeClass('ui-icon-' + that.selectionMode + '-on');
-            });
-        } else {
-            $('#' + this.id).find('option').each(function() {
-                var item = M.ViewManager.getViewById($(this).attr('id'));
-                item.isSelected = NO;
-            });
-            $('#' + this.id).val('').removeAttr('checked').removeAttr('selected');
-        }
-    },
-
-    /**
-     * This method can be used to reset the selection list. This basically discards
-     * all changes made to the selection by the user or any application-sided calls
-     * and applies the original state.
-     *
-     * The 'original state' can either be the bound content or the state, specified
-     * by the originally assigned child views.
-     */
-    resetSelection: function() {
-        if(this.contentBinding) {
-            this.removeSelection();
-            this.renderUpdate();
-        } else {
-            this.contentBinding = {};
-            this.contentBinding.target = this;
-            this.contentBinding.property = 'initialState';
-            this.removeSelection();
-            this.renderUpdate();
-            this.contentBinding = null;
-        }
-    },
-
-    /**
-     *  We use this as alias for the form reset function view.clearValues() to reset the selection to its initial state
-     */
-    clearValue: function(){
-        this.resetSelection();
-    },
-
-    /**
-     * This method returns the selection list view's value.
-     *
-     * @returns {String|Array} The selected item's value(s).
-     */
-    getValue: function() {
-        return this.getSelection();
-    },
-
-    /**
-     * This method is responsible for rendering the visual text for a selection list
-     * in the M.MULTIPLE_SELECTION_DIALOG mode. It's only parameter is a number, that
-     * specifies the number of selected options of this selection list. To customize
-     * the visual output of such a list, you will need to overwrite this method within
-     * the definition of the selection list in your application.
-     *
-     * @param {Number} v The number of selected options.
-     */
-    formatSelectionLabel: function(v) {
-        return v + ' Object(s)';
-    },
-
-    /**
-     * This method disables the selection list by setting the disabled property of its
-     * html representation to true.
-     */
-    disable: function() {
-        this.isEnabled = NO;
-        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.MULTIPLE_SELECTION) {
-            $('#' + this.id).find('input').each(function() {
-                $(this).checkboxradio('disable');
-            });
-        } else {
-            $('#' + this.id).selectmenu('disable');
-            $('#' + this.id).each(function() {
-                $(this).attr('disabled', 'disabled');
-            });
-        }
-    },
-
-    /**
-     * This method enables the selection list by setting the disabled property of its
-     * html representation to false.
-     */
-    enable: function() {
-        this.isEnabled = YES;
-        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.MULTIPLE_SELECTION) {
-            $('#' + this.id).find('input').each(function() {
-                $(this).checkboxradio('enable');
-            });
-        } else {
-            $('#' + this.id).selectmenu('enable');
-            $('#' + this.id).each(function() {
-                $(this).removeAttr('disabled');
-            });
-        }
-    },
-
-    valueDidChange: function(){
-        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
-
-        if(!valueBinding) {
-            return;
-        }
-
-        var value = valueBinding.target;
-        var propertyChain = valueBinding.property.split('.');
-        _.each(propertyChain, function(level) {
-            if(value) {
-                value = value[level];
-            }
-        });
-
-        if(!value || value === undefined || value === null) {
-            //M.Logger.log('The value assigned by valueBinding (property: \'' + valueBinding.property + '\') for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ') is invalid!', M.WARN);
-            return;
-        }
-
-        this.setSelection(value);
-    }
-
-});
-
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
 // Date:      26.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -8192,9 +7525,10 @@ M.ListView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      17.11.2011
+// Date:      30.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -8203,68 +7537,282 @@ M.ListView = M.View.extend(
 /**
  * @class
  *
- * This defines the prototype for a slider view. It renders a touch-optimized slider
- * that can be used to set a number within a specified range.
+ * M.SelectionListItemView defines the prototype of any selection list item. It can only be used
+ * as a child view for a selection list view.
  *
  * @extends M.View
  */
-M.SliderView = M.View.extend(
-/** @scope M.ButtonView.prototype */ {
+M.SelectionListItemView = M.View.extend(
+/** @scope M.SelectionListItemView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.SliderView',
+    type: 'M.SelectionListItemView',
 
     /**
-     * This property contains the slider's value.
+     * This property can be used to specify a label for a selection list item. If
+     * set, the label will be displayed instead of the value, so you can use the
+     * item's value as an internal value.
+     *
+     * E.g. if you use a selection list to select a color, you could set an item's
+     * value to '#FF0000' but its label to 'Red'. If there is no label specified,
+     * the value is displayed instead.
+     *
+     * @type String
      */
-    value: 0,
+    label: null,
 
     /**
-     * This property contains the slider's initial value.
+     * This property states whether a selection list item is selected or not.
+     *
+     * @type Boolean
+     */
+    isSelected: NO,
+
+    /**
+     * Renders a selection list item.
+     * 
+     * @private
+     * @returns {String} The selection list item view's html representation.
+     */
+    render: function() {
+        this.html = '';
+        if(this.parentView && (this.parentView.selectionMode === M.SINGLE_SELECTION_DIALOG || this.parentView.selectionMode === M.MULTIPLE_SELECTION_DIALOG)) {
+            this.html += '<option id="' + this.id + '" value="' + this.value + '"';
+
+            if((this.isSelected && typeof(this.isSelected) === 'boolean') || (this.isSelected === String(YES))) {
+                if(!this.parentView.selection) {
+                    this.html += ' selected="selected"';
+                    this.parentView.selection = this;
+                }
+            }
+
+            this.html += '>';
+            
+            this.html += this.label ? this.label : this.value;
+
+            this.html += '</option>';
+        } else {
+            this.html += '<input type="' + this.parentView.selectionMode + '" data-native-menu="false" id="' + this.id + '"';
+
+            if(this.parentView.selectionMode === M.SINGLE_SELECTION) {
+                this.html += ' name="' + (this.parentView.name ? this.parentView.name : this.parentView.id) + '"';
+            } else if(this.parentView.selectionMode === M.MULTIPLE_SELECTION) {
+                this.html += ' name="' + (this.name ? this.name : this.id) + '"';
+            }
+
+            if((this.isSelected && typeof(this.isSelected) === 'boolean') || (this.isSelected === String(YES))) {
+                if(this.parentView.selectionMode === M.SINGLE_SELECTION) {
+                    if(!this.parentView.selection) {
+                        this.html += ' checked="checked"';
+                        this.parentView.selection = this;
+                    }
+                } else {
+                    this.html += ' checked="checked"';
+
+                    if(!this.parentView.selection) {
+                        this.parentView.selection = [];
+                    }
+                    this.parentView.selection.push(this);
+                }
+            }
+
+            this.html += '/>';
+            this.html += '<label for="' + this.id + '">' + (this.label ? this.label : this.value) + '</label>';
+        }
+
+        return this.html;
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the selection list item.
      *
      * @private
      */
-    initialValue: 0,
+    theme: function() {
+        if(this.parentView) {
+            if(this.parentView.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.parentView.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+                $('#' + this.id).checkboxradio();
+            }
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      30.11.2010
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * A constant value for single selection mode.
+ *
+ * @type String
+ */
+M.SINGLE_SELECTION = 'radio';
+
+/**
+ * A constant value for multiple selection mode.
+ *
+ * @type String
+ */
+M.MULTIPLE_SELECTION = 'checkbox';
+
+/**
+ * A constant value for single selection mode in a dialog / popup.
+ *
+ * @type String
+ */
+M.SINGLE_SELECTION_DIALOG = 'select';
+
+/**
+ * A constant value for multiple selection mode in a dialog / popup.
+ *
+ * @type String
+ */
+M.MULTIPLE_SELECTION_DIALOG = 'select_multiple';
+
+m_require('ui/selection_list_item.js');
+
+/**
+ * @class
+ *
+ * This defines the prototype of any selection list view. A selection list view displays
+ * a list with several items of which either only one single item (M.SINGLE_SELECTION /
+ * M.SINGLE_SELECTION_DIALOG) or many items (M.MULTIPLE_SELECTION /
+ * M.MULTIPLE_SELECTION_DIALOG) can be selected.
+ *
+ * @extends M.View
+ */
+M.SelectionListView = M.View.extend(
+/** @scope M.SelectionListView.prototype */ {
 
     /**
-     * This property specifies the min value of the slider.
+     * The type of this object.
      *
-     * @type Number
+     * @type String
      */
-    min: 0,
+    type: 'M.SelectionListView',
 
     /**
-     * This property specifies the max value of the slider.
-     *
-     * @type Number
-     */
-    max: 100,
-
-    /**
-     * This property specifies the step value of the slider.
-     *
-     * @type Number
-     */
-    step: 1,
-
-    /**
-     * This property determines whether or not to display the corresponding input of the slider.
+     * Determines whether to remove all item if the list is updated or not.
      *
      * @type Boolean
      */
-    isSliderOnly: NO,
+    removeItemsOnUpdate: YES,
 
     /**
-     * This property determines whether or not to visually highlight the left part of the slider. If
-     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     * The selection mode for this selection list. This can either be single or
+     * multiple selection. To set this value use one of the three constants:
+     *
+     * - M.SINGLE_SELECTION
+     *
+     *   This selection mode will render a selection list with several list items
+     *   of which only one can be selected. Whenever a new item is selected, the
+     *   previously selected item automatically gets de-selected. This selection
+     *   mode's behaviour is equivalent to the plain HTML's radio button.
+     *
+     *
+     * - M.SINGLE_SELECTION_DIALOG
+     *
+     *   This selection mode will render a selection list equivalent to the plain
+     *   HTML's select menu. Only the currently selected item will be visible, and
+     *   by clicking on this item, the selection list will be displayed in a dialog
+     *   respectively a popup view. By selecting on of the items, this popup will
+     *   automatically close and the selected value will be displayed.
+     *
+     *
+     * - M.MULTIPLE_SELECTION
+     *
+     *   This selection mode will render a selection list with several list items
+     *   of which all be selected. So the selection of a new item doesn't lead to
+     *   automatic de-selected of previously selected items. This selection mode's
+     *   behaviour is equivalent to the plain HTML's checkboxes.
+     *
+     *
+     * - M.MULTIPLE_SELECTION_DIALOG
+     *
+     *   This selection mode will render a selection list equivalent to the plain
+     *   HTML's select menu, but with the possibility to select multiple options.
+     *   In contrast to the single selection dialog mode, it also is possible to
+     *   select no option at all. As with the multiple selecton mode, the selection
+     *   of a new item doesn't lead to automatic de-selected of previously selected
+     *   items.
+     *
+     *   Note: This mode currently only works on mobile devices!!
+     *
+     * @type String
+     */
+    selectionMode: M.SINGLE_SELECTION,
+
+    /**
+     * The selected item(s) of this list.
+     *
+     * @type String, Array
+     */
+    selection: null,
+
+    /**
+     * This property defines the tab bar's name. This is used internally to identify
+     * the selection list inside the DOM.
+     *
+     * @type String
+     */
+    name: null,
+
+    
+    /**
+     * This property is used to specify an initial value for the selection list if
+     * it is running in 'multiple selection dialog' (M.MULTIPLE_SELECTION_DIALOG) mode.
+     * This value is then displayed at startup. You would typically use this e.g. to
+     * specify something like: 'Please select...'.
+     *
+     * As long as this initial value is 'selected', the getSelection() of this selection
+     * list will return nothing. Once a 'real' option is selected, this value will visually
+     * disappear. If at some point no option will be selected again, this initial text
+     * will be shown again.
+     *
+     * @type String
+     */
+    initialText: null,
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the selection list as a 'title'
+     * for the selection list. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Determines whether to display the selection list grouped with the label specified with the label property.
+     * If set to YES, the selection list and its label are wrapped in a container and styled as a unit 'out of
+     * the box'. If set to NO, custom styling could be necessary.
      *
      * @type Boolean
      */
-    highlightLeftPart: NO,
+    isGrouped: NO,
+
+    /**
+     * This property is used internally to store the selection list's initial state. This is used to be able
+     * to reset the selection list later on using the resetSelection method.
+     *
+     * Note: This property is only used if the selection list's child views are specified directly (without
+     * content binding). Otherwise the state is stored within the content binding and does not need to be
+     * stored with this selection list.
+     *
+     * @private
+     * @type Object
+     */
+    initialState: null,
 
     /**
      * This property specifies the recommended events for this type of view.
@@ -8274,15 +7822,7 @@ M.SliderView = M.View.extend(
     recommendedEvents: ['change'],
 
     /**
-     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
-     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
-     *
-     * @type String
-     */
-    label: null,
-
-    /**
-     * Define whether putting an asterisk to the right of the label for this slider.
+     * Define whether putting an asterisk to the right of the label for this selection list.
      *
      * @type Boolean
      */
@@ -8296,97 +7836,266 @@ M.SliderView = M.View.extend(
     cssClassForAsterisk: null,
 
     /**
-     * Renders a slider.
+     * Renders a selection list.
      *
      * @private
-     * @returns {String} The slider view's html representation.
+     * @returns {String} The selection list view's html representation.
      */
     render: function() {
-        this.html = '';
-        if(this.label) {
-            this.html += '<label for="' + this.id + '">' + this.label;
-            if (this.hasAsteriskOnLabel) {
-                if (this.cssClassForAsterisk) {
-                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
-                } else {
-                    this.html += '<span>*</span></label>';
-                }
-            } else {
-                this.html += '</label>';
-            }
+
+        /* initialize the initialState property as new array */
+        this.initialState = [];
+
+        this.html = '<div id="' + this.id + '_container"';
+
+        if(this.isGrouped) {
+            this.html += ' data-role="fieldcontain"';
         }
 
-        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
-        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
+        if(this.cssClass) {
+            this.html += ' class="';
+            var cssClasses = $.trim(this.cssClass).split(' ');            
+            for(var i in cssClasses) {
+                this.html += (i > 0 ? ' ' : '') + cssClasses[i] + '_container';
+            }
+            this.html += '"';
+        }
+
+        this.html += '>';
+
+        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            
+            if(this.label) {
+                this.html += '<label for="' + this.id + '">' + this.label;
+                if (this.hasAsteriskOnLabel) {
+                    if (this.cssClassForAsterisk) {
+                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                    } else {
+                        this.html += '<span>*</span></label>';
+                    }
+                } else {
+                    this.html += '</label>';
+                }
+            }
+
+            this.html += '<select name="' + (this.name ? this.name : this.id) + '" id="' + this.id + '"' + this.style() + (this.selectionMode === M.MULTIPLE_SELECTION_DIALOG ? ' multiple="multiple"' : '') + '>';
+
+            this.renderChildViews();
+
+            this.html += '</select>';
+
+        } else {
+
+            this.html += '<fieldset data-role="controlgroup" data-native-menu="false" id="' + this.id + '">';
+
+            if(this.label) {
+                this.html += '<legend>' + this.label;
+                if (this.hasAsteriskOnLabel) {
+                    if (this.cssClassForAsterisk) {
+                        this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></legend>';
+                    } else {
+                        this.html += '<span>*</span></legend>';
+                    }
+                } else {
+                    this.html += '</legend>';
+                }
+            }
+
+            this.renderChildViews();
+
+            this.html += '</fieldset>';
+
+        }
 
         this.html += '</div>';
-
-        /* store value as initial value for later resetting */
-        this.initialValue = this.value;
 
         return this.html;
     },
 
     /**
-     * This method registers the change event to internally re-set the value of the
-     * slider.
+     * Triggers render() on all children of type M.ButtonView based on the specified
+     * selection mode (single or multiple selection).
+     *
+     * @private
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.SelectionListItemView') {
+                    view.parentView = this;
+                    view._name = childViews[i];
+                    this.html += view.render();
+
+                    /* store list item in initialState property */
+                    this.initialState.push({
+                        value: view.value,
+                        label: view.label,
+                        isSelected: view.isSelected
+                    });
+                } else {
+                    M.Logger.log('Invalid child views specified for SelectionListView. Only SelectionListItemViews accepted.', M.WARN);
+                }
+            }
+        } else if(!this.contentBinding) {
+            M.Logger.log('No SelectionListItemViews specified.', M.WARN);
+        }
+    },
+
+    /**
+     * This method is responsible for registering events for view elements and its child views. It
+     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
+     * events.
+     *
+     * It extend M.View's registerEvents method with some special stuff for text field views and
+     * their internal events.
      */
     registerEvents: function() {
-        if(!this.internalEvents) {
-            this.internalEvents = {
-                change: {
-                    target: this,
-                    action: 'setValueFromDOM'
-                }
+        this.internalEvents = {
+            change: {
+                target: this,
+                action: 'itemSelected'
             }
         }
         this.bindToCaller(this, M.View.registerEvents)();
     },
 
     /**
-     * Updates a SliderView with DOM access by jQuery.
+     * This method adds a new selection list item to the selection list view by simply appending
+     * its html representation to the selection list view inside the DOM. This method is based
+     * on jQuery's append().
+     *
+     * @param {String} item The html representation of a selection list item to be added.
+     */
+    addItem: function(item) {
+        $('#' + this.id).append(item);
+    },
+
+    /**
+     * This method removes all of the selection list view's items by removing all of its content in
+     * the DOM. This method is based on jQuery's empty().
+     */
+    removeAllItems: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * Updates the the selection list view by re-rendering all of its child views, respectively its
+     * item views.
      *
      * @private
      */
     renderUpdate: function() {
-        /* check if the slider's value is numeric, otherwise use initial value */
-        if(isNaN(this.value)) {
-            this.value = this.initialValue;
-        /* if it is a number, but out of bounds, use min/max */
-        } else if(this.value < this.min) {
-            this.value = this.min
-        } else if(this.value > this.max) {
-            this.value = this.max
+        if(this.removeItemsOnUpdate || this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            this.removeAllItems();
+
+            if(this.label && !(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG)) {
+                this.addItem('<legend>' + this.label + '</legend>');
+            } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            }
         }
 
-        $('#' + this.id).val(this.value);
-        $('#' + this.id).slider('refresh');
+        /* remove selection before applying new content */
+        this.removeSelection();
+
+        if(this.contentBinding) {
+            /* assign the value property to 'items' since this was automatically set by contentDidChange of M.View */
+            var items = this.value;
+            var withSpeedup = false;
+        	// TODO: Weyer: folgende Zeile entkommentieren
+            //withSpeedup = true; // macht z.B. in Kolonnen-Selektion auf iOS Probleme
+            if (!withSpeedup) {
+	            for(var i in items) {
+	                var item  = items[i];
+	                var obj = null;
+	                obj = M.SelectionListItemView.design({
+	                    value: (item.value !== undefined && item.value !== null) ? item.value : '',
+	                    label: item.label ? item.label : ((item.value !== undefined && item.value !== null) ? item.value : ''),
+	                    parentView: this,
+	                    isSelected: item.isSelected
+	                });
+	                if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+	                    obj.name = item.name ? item.name : (item.label ? item.label : (item.value ? item.value : ''));
+	                }
+	
+	                this.addItem(obj.render());                
+	                obj.theme();
+	            }
+            } else {
+	            var renderedItems = [];
+	            var renderedObjects = [];
+	            for(var i in items) {
+	                var item  = items[i];
+	                var obj = null;
+	                obj = M.SelectionListItemView.design({
+	                    value: (item.value !== undefined && item.value !== null) ? item.value : '',
+	                    label: item.label ? item.label : ((item.value !== undefined && item.value !== null) ? item.value : ''),
+	                    parentView: this,
+	                    isSelected: item.isSelected
+	                });
+	                if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+	                    obj.name = item.name ? item.name : (item.label ? item.label : (item.value ? item.value : ''));
+	                }
+	
+	                // Speedup: Füge alle Optionen gesammelt in den DOM ein
+	                renderedObjects.push(obj);
+	                renderedItems.push(obj.render());
+	            }
+	            this.addItem(renderedItems.join(""));
+	            for(var robj in renderedObjects) {
+	                var item  = renderedObjects[i];
+	                item.theme();
+	            }
+            }
+            this.themeUpdate();
+        }
     },
 
     /**
-     * This method sets its value to the value it has in its DOM representation
-     * and then delegates these changes to a controller property if the
-     * contentBindingReverse property is set.
-     *
-     * Additionally call target / action if set.
-     *
-     * @param {String} id The DOM id of the event target.
-     * @param {Object} event The DOM event.
-     * @param {Object} nextEvent The next event (external event), if specified.
-     */
-    setValueFromDOM: function(id, event, nextEvent) {
-        this.value = $('#' + this.id).val();
-
-        if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
-        }
-    },
-
-    /**
-     * Applies some style-attributes to the slider.
+     * Triggers the rendering engine, jQuery mobile, to style the selection list.
      *
      * @private
-     * @returns {String} The slider's styling as html representation.
+     */
+    theme: function() {
+        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).selectmenu();
+            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
+                $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
+                document.getElementById(this.id).selectedIndex = -1;
+            }
+        } else if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).controlgroup();
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the selection list.
+     *
+     * @private
+     */
+    themeUpdate: function() {
+        if(this.selectionMode === M.SINGLE_SELECTION_DIALOG || this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).selectmenu('refresh');
+            if((this.selectionMode === M.MULTIPLE_SELECTION_DIALOG && this.initialText && this.selection && this.selection.length === 0) || (this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection && this.initialText)) {
+                $('#' + this.id + '_container').find('.ui-btn-text').html(this.initialText);
+                document.getElementById(this.id).selectedIndex = -1;
+            } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG && !this.selection) {
+                var that = this;
+                var item = M.ViewManager.getViewById($('#' + this.id).find('option:first-child').attr('id'));
+                item !== undefined && item !== null ? that.setSelection(item.value) : null;
+            }
+        } else if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).controlgroup();
+        }
+    },
+
+    /**
+     * Method to append css styles inline to the rendered selection list.
+     *
+     * @private
+     * @returns {String} The selection list's styling as html representation.
      */
     style: function() {
         var html = '';
@@ -8397,511 +8106,358 @@ M.SliderView = M.View.extend(
     },
 
     /**
-     * Do some theming/styling once the slider was added to the DOM.
+     * This method is called everytime a item is selected / clicked. If the selected item
+     * changed, the defined onSelect action is triggered.
      *
-     * @private
+     * @param {String} id The id of the selected item.
+     * @param {Object} event The event.
+     * @param {Object} nextEvent The application-side event handler.
      */
-    theme: function() {
-        if(this.isSliderOnly) {
-            $('#' + this.id).hide();
+    itemSelected: function(id, event, nextEvent) {
+        var item = null;
+
+        if(this.selectionMode === M.SINGLE_SELECTION) {
+            item = M.ViewManager.getViewById($('input[name=' + (this.name ? this.name : this.id) + ']:checked').attr('id'));
+            
+            if(item !== this.selection) {
+                this.selection = item;
+
+                if(nextEvent) {
+                    M.EventDispatcher.callHandler(nextEvent, event, NO, [this.selection.value, this.selection]);
+                }
+            }
+        } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
+            item = M.ViewManager.getViewById($('#' + this.id + ' :selected').attr('id'));
+
+            if(item !== this.selection) {
+                this.selection = item;
+
+                $('#' + this.id + '_container').find('.ui-btn-text').html(item.label ? item.label : item.value);
+
+                if(nextEvent) {
+                    M.EventDispatcher.callHandler(nextEvent, event, NO, [this.selection.value, this.selection]);
+                }
+            }
+        } else if(this.selectionMode === M.MULTIPLE_SELECTION) {
+            var that = this;
+            this.selection = [];
+            $('#' + this.id).find('input:checked').each(function() {
+                that.selection.push(M.ViewManager.getViewById($(this).attr('id')));
+            });
+
+            var selectionValues = [];
+            for(var i in this.selection) {
+                selectionValues.push(this.selection[i].value);
+            }
+
+            if(nextEvent) {
+                M.EventDispatcher.callHandler(nextEvent, event, NO, [selectionValues, this.selection]);
+            }
+        } else if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+            var that = this;
+            this.selection = [];
+            $('#' + this.id).find(':selected').each(function() {
+                that.selection.push(M.ViewManager.getViewById($(this).attr('id')));
+            });
+
+            var selectionValues = [];
+            for(var i in this.selection) {
+                selectionValues.push(this.selection[i].value);
+                $('#' + this.id + '_container').find('.ui-btn-text').html(this.formatSelectionLabel(this.selection.length));
+            }
+            $('#' + this.id + '_container').find('.ui-li-count').html(this.selection ? this.selection.length : 0);
+
+            /* if there is no more item selected, reset the initial text */
+            if(this.selection.length === 0) {
+                this.themeUpdate();
+            }
+
+            if(nextEvent) {
+                M.EventDispatcher.callHandler(nextEvent, event, NO, [selectionValues, this.selection]);
+            }
         }
 
-        if(!this.isEnabled) {
-            this.disable();
+        /* fix the toolbar(s) again */
+        if(this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).blur();
+        }
+        
+        this.delegateValueUpdate();
+    },
+    
+    /**
+     * This method delegates any value changes to a controller, if the 'contentBindingReverse'
+     * property is specified.
+     */
+    delegateValueUpdate: function() {
+        /**
+         * delegate value updates to a bound controller, but only if the view currently is
+         * the master
+         */
+        if(this.contentBindingReverse) {
+            this.contentBindingReverse.target.set(this.contentBindingReverse.property, this.selection.value);
         }
     },
 
     /**
-     * This method resets the slider to its initial value.
+     * This method returns the selected item's value(s) either as a String (single selection)
+     * or as an Array (multiple selection).
+     *
+     * @param {Boolean} returnObject Determines whether to return the selected item(s) as object or not.
+     * @returns {String|Object|Array} The selected item's value(s).
      */
-    resetSlider: function() {
-        this.value = this.initialValue;
-        this.renderUpdate();
+    getSelection: function(returnObject) {
+        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
+            if(this.selection) {
+                if(returnObject) {
+                    return this.selection;
+                } else {
+                    return this.selection.value;
+                }
+            }
+        } else {
+            if(this.selection) {
+                var selection = [];
+                _.each(this.selection, function(item) {
+                    if(returnObject) {
+                        selection.push(item);
+                    } else {
+                        selection.push(item.value);
+                    }
+                });
+                return selection;
+            }
+            return [];
+        }
     },
 
     /**
-     * This method disables the text field by setting the disabled property of its
+     * This method can be used to select items programmatically. The given parameter can either
+     * be a String (single selection) or an Array (multiple selection).
+     *
+     * @param {String|Array} selection The selection that should be applied to the selection list.
+     */
+    setSelection: function(selection) {
+        var that = this;
+        if(this.selectionMode === M.SINGLE_SELECTION && (typeof(selection) === 'string' || typeof(selection) === 'number' || typeof(selection) === 'boolean')) {
+            $('#' + this.id).find('input').each(function() {
+                var item = M.ViewManager.getViewById($(this).attr('id'));
+                if(item.value == selection) {
+                    that.removeSelection();
+                    item.isSelected = YES;
+                    that.selection = item;
+                    $(this).attr('checked', 'checked');
+                    $(this).siblings('label:first').addClass('ui-radio-on');
+                    $(this).siblings('label:first').removeClass('ui-radio-off');
+                    $(this).siblings('label:first').find('span .ui-icon-radio-off').addClass('ui-icon-radio-on');
+                    $(this).siblings('label:first').find('span .ui-icon-radio-off').removeClass('ui-icon-radio-off');
+                }
+            });
+        } else if(this.selectionMode === M.SINGLE_SELECTION_DIALOG && (typeof(selection) === 'string' || typeof(selection) === 'number' || typeof(selection) === 'boolean')) {
+            var didSetSelection = NO;
+            $('#' + this.id).find('option').each(function() {
+                var item = M.ViewManager.getViewById($(this).attr('id'));
+                if(item.value == selection) {
+                    that.removeSelection();
+                    item.isSelected = YES;
+                    that.selection = item;
+                    $('#' + that.id).val(item.value);
+                    didSetSelection = YES;
+                }
+            });
+            if(didSetSelection) {
+                $('#' + this.id).selectmenu('refresh');
+            }
+        } else if(typeof(selection) === 'object') {
+            if(this.selectionMode === M.MULTIPLE_SELECTION) {
+                var removedItems = NO;
+                $('#' + this.id).find('input').each(function() {
+                    var item = M.ViewManager.getViewById($(this).attr('id'));
+                    for(var i in selection) {
+                        var selectionItem = selection[i];
+                        if(item.value == selectionItem) {
+                            if(!removedItems) {
+                                that.removeSelection();
+                                removedItems = YES;
+                            }
+                            item.isSelected = YES;
+                            that.selection.push(item);
+                            $(this).attr('checked', 'checked');
+                            $(this).siblings('label:first').removeClass('ui-checkbox-off');
+                            $(this).siblings('label:first').addClass('ui-checkbox-on');
+                            $(this).siblings('label:first').find('span .ui-icon-checkbox-off').addClass('ui-icon-checkbox-on');
+                            $(this).siblings('label:first').find('span .ui-icon-checkbox-off').removeClass('ui-icon-checkbox-off');
+                        }
+                    }
+                });
+            } else if(this.selectionMode === M.MULTIPLE_SELECTION_DIALOG) {
+                var removedItems = NO;
+                $('#' + this.id).find('option').each(function() {
+                    var item = M.ViewManager.getViewById($(this).attr('id'));
+                    for(var i in selection) {
+                        var selectionItem = selection[i];
+                        if(item.value == selectionItem) {
+                            if(!removedItems) {
+                                that.removeSelection();
+                                removedItems = YES;
+                            }
+                            item.isSelected = YES;
+                            that.selection.push(item);
+                            $(this).attr('selected', 'selected');
+                        }
+                    }
+
+                    /* set the label */
+                    $('#' + that.id + '_container').find('.ui-btn-text').html(that.formatSelectionLabel(that.selection.length));
+                    $('#' + that.id + '_container').find('.ui-li-count').html(that.selection ? that.selection.length : 0);
+                });
+            }
+        }
+    },
+
+    /**
+     * This method de-selects all of the selection list's items.
+     */
+    removeSelection: function() {
+        var that = this;
+
+        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.SINGLE_SELECTION_DIALOG) {
+            this.selection = null;
+        } else {
+            this.selection = [];
+        }
+        
+        if(this.selectionMode !== M.SINGLE_SELECTION_DIALOG && this.selectionMode !== M.MULTIPLE_SELECTION_DIALOG) {
+            $('#' + this.id).find('input').each(function() {
+                var item = M.ViewManager.getViewById($(this).attr('id'));
+                item.isSelected = NO;
+                $(this).removeAttr('checked');
+                $(this).siblings('label:first').addClass('ui-' + that.selectionMode + '-off');
+                $(this).siblings('label:first').removeClass('ui-' + that.selectionMode + '-on');
+                $(this).siblings('label:first').find('span .ui-icon-' + that.selectionMode + '-on').addClass('ui-icon-' + that.selectionMode + '-off');
+                $(this).siblings('label:first').find('span .ui-icon-' + that.selectionMode + '-on').removeClass('ui-icon-' + that.selectionMode + '-on');
+            });
+        } else {
+            $('#' + this.id).find('option').each(function() {
+                var item = M.ViewManager.getViewById($(this).attr('id'));
+                item.isSelected = NO;
+            });
+            $('#' + this.id).val('').removeAttr('checked').removeAttr('selected');
+        }
+    },
+
+    /**
+     * This method can be used to reset the selection list. This basically discards
+     * all changes made to the selection by the user or any application-sided calls
+     * and applies the original state.
+     *
+     * The 'original state' can either be the bound content or the state, specified
+     * by the originally assigned child views.
+     */
+    resetSelection: function() {
+        if(this.contentBinding) {
+            this.removeSelection();
+            this.renderUpdate();
+        } else {
+            this.contentBinding = {};
+            this.contentBinding.target = this;
+            this.contentBinding.property = 'initialState';
+            this.removeSelection();
+            this.renderUpdate();
+            this.contentBinding = null;
+        }
+    },
+
+    /**
+     *  We use this as alias for the form reset function view.clearValues() to reset the selection to its initial state
+     */
+    clearValue: function(){
+        this.resetSelection();
+    },
+
+    /**
+     * This method returns the selection list view's value.
+     *
+     * @returns {String|Array} The selected item's value(s).
+     */
+    getValue: function() {
+        return this.getSelection();
+    },
+
+    /**
+     * This method is responsible for rendering the visual text for a selection list
+     * in the M.MULTIPLE_SELECTION_DIALOG mode. It's only parameter is a number, that
+     * specifies the number of selected options of this selection list. To customize
+     * the visual output of such a list, you will need to overwrite this method within
+     * the definition of the selection list in your application.
+     *
+     * @param {Number} v The number of selected options.
+     */
+    formatSelectionLabel: function(v) {
+        return v + ' Object(s)';
+    },
+
+    /**
+     * This method disables the selection list by setting the disabled property of its
      * html representation to true.
      */
     disable: function() {
         this.isEnabled = NO;
-        $('#' + this.id).slider('disable');
+        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.MULTIPLE_SELECTION) {
+            $('#' + this.id).find('input').each(function() {
+                $(this).checkboxradio('disable');
+            });
+        } else {
+            $('#' + this.id).selectmenu('disable');
+            $('#' + this.id).each(function() {
+                $(this).attr('disabled', 'disabled');
+            });
+        }
     },
 
     /**
-     * This method enables the text field by setting the disabled property of its
+     * This method enables the selection list by setting the disabled property of its
      * html representation to false.
      */
     enable: function() {
         this.isEnabled = YES;
-        $('#' + this.id).slider('enable');
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      27.01.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * A constant value for the map's marker animation type: none
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_NONE = 'NONE';
-
-/**
- * A constant value for the map's marker animation type: drop
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_DROP = 'DROP';
-
-/**
- * A constant value for the map's marker animation type: bounce
- *
- * @type String
- */
-M.MAP_MARKER_ANIMATION_BOUNCE = 'BOUNCE';
-
-/**
- * @class
- *
- * M.MapMarkerView is the prototype of a map marker view. It defines a set
- * of methods for adding, removing and managing the markers of a M.MapView.
- *
- * The M.MapMarkerView is based on google maps markers.
- *
- * @extends M.View
- */
-M.MapMarkerView = M.View.extend(
-/** @scope M.MapMarkerView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.MapMarkerView',
-
-    /**
-     * This property is used to save a reference to the actual google map marker.
-     * It is set automatically when the map marker is firstly initialized.
-     *
-     * @type Object
-     */
-    marker: null,
-
-    /**
-     * This property can be used to store additional information about a marker.
-     * Since this property is an object, you can store pretty much anything in
-     * this property.
-     *
-     * This can be useful especially if you are using the click event for map
-     * markers. So you can store any information with a marker and retrieve
-     * this information on the click event.
-     *
-     * @type Object
-     */
-    data: null,
-
-    /**
-     * This property contains a reference to the marker's map view.
-     *
-     * @type M.MapView
-     */
-    map: null,
-
-    /**
-     * This property specifies the title of a map marker view. It can be used in
-     * an annotation.
-     *
-     * @type String
-     */
-    title: null,
-
-    /**
-     * This property specifies the message of a map marker view respectively for
-     * its annotation.
-     *
-     * @type String
-     */
-    message: null,
-
-    /**
-     * This property can be used to specify whether or not to show the annotation,
-     * if title and / or message are defined, automatically on click event.
-     *
-     * @type Boolean
-     */
-    showAnnotationOnClick: NO,
-
-    /**
-     * This property contains a reference to a google maps info window that is
-     * connected to this map marker. By calling either the showAnnotation() or
-     * the hideAnnotation() method, this info window can be toggled.
-     *
-     * Additionally the info window will be automatically set to visible if the
-     * showAnnotationOnClick property is set to YES.
-     *
-     * @type Object
-     */
-    annotation: null,
-
-    /**
-     * This property specifies whether the marker is draggable or not. If set
-     * to NO, a user won't be able to move the marker. For further information
-     * see the google maps API specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type Boolean
-     */
-    isDraggable: NO,
-
-    /**
-     * This property specifies the location for this map marker view, as an M.Location
-     * object. Its latitude and longitude properties are directly mapped to the position
-     * property of a google maps marker. For further information see the google maps API
-     * specification:
-     *
-     *   http://code.google.com/intl/en-US/apis/maps/documentation/javascript/reference.html#MarkerOptions
-     *
-     * @type M.Location
-     */
-    location: M.Location.extend({
-        latitude: 48.813338,
-        longitude: 9.178463
-    }),
-
-    /**
-     * This property can be used to specify the animation type for this map marker
-     * view. If this property is set, the markerAnimationType property of the parent
-     * map view is ignored. The following three values are possible:
-     *
-     *   M.MAP_MARKER_ANIMATION_NONE --> no animation
-     *   M.MAP_MARKER_ANIMATION_DROP --> the marker drops onto the map
-     *   M.MAP_MARKER_ANIMATION_BOUNCE --> the marker constantly bounces
-     *
-     * @type String
-     */
-    markerAnimationType: null,
-
-    /**
-     * This property can be used to specify a custom marker icon. Simply pass a valid
-     * path to an image and it will be shown instead of google's default marker.
-     *
-     * @type String
-     */
-    icon: null,
-
-    /**
-     * This property can be used to specify the display size of the icon used for the
-     * marker. This is important if you want to support e.g. the iphone's retina display.
-     *
-     * Pass along an object containing the desired width and height, e.g.:
-     *
-     *     {
-     *         width: 20,
-     *         height: 20
-     *     }
-     *
-     * @type Object
-     */
-    iconSize: null,
-
-    /**
-     * This property can be used to display a map marker icon centered about its location.
-     * By default a map marker is positioned with its bottom center at the location.
-     *
-     * @type Boolean
-     */
-    isIconCentered: NO,
-
-    /**
-     * This property specifies the recommended events for this type of view.
-     *
-     * @type Array
-     */
-    recommendedEvents: ['click', 'tap'],
-
-    /**
-     * This method initializes an M.MapMarkerView. It connects a map marker directly with
-     * the parent map view and returns the created M.MapMarkerView object.
-     *
-     * Note: By calling this method, the map marker won't be displayed on the map. It only gets
-     * initialized and can no be displayed by using the map view's addMarker() method or via
-     * content binding.
-     *
-     * @param {Object} options The options for the map marker view.
-     */
-    init: function(options) {
-        var marker = this.extend(options);
-
-        if(marker.annotation || marker.message) {
-            var content = marker.title ? '<h1 class="ui-annotation-header">' + marker.title + '</h1>' : '';
-            content += marker.message ? '<p class="ui-annotation-message">' + marker.message + '</p>' : '';
-            
-            marker.annotation = new google.maps.InfoWindow({
-                content: content,
-                maxWidth: 100
+        if(this.selectionMode === M.SINGLE_SELECTION || this.selectionMode === M.MULTIPLE_SELECTION) {
+            $('#' + this.id).find('input').each(function() {
+                $(this).checkboxradio('enable');
+            });
+        } else {
+            $('#' + this.id).selectmenu('enable');
+            $('#' + this.id).each(function() {
+                $(this).removeAttr('disabled');
             });
         }
-
-        return marker;
     },
 
-    /**
-     * This method is responsible for registering events for view elements and its child views. It
-     * basically passes the view's event-property to M.EventDispatcher to bind the appropriate
-     * events.
-     *
-     * It extend M.View's registerEvents method with some special stuff for list item views and
-     * their internal events.
-     */
-    registerEvents: function() {
-        this.internalEvents = {
-            tap: {
-                target: this,
-                action: 'showAnnotation'
-            }
+    valueDidChange: function(){
+        var valueBinding = this.valueBinding ? this.valueBinding : (this.computedValue) ? this.computedValue.valueBinding : null;
+
+        if(!valueBinding) {
+            return;
         }
 
-        var that = this;
-        google.maps.event.addListener(this.marker, 'click', function() {
-            M.EventDispatcher.callHandler(that.internalEvents.tap, event, YES);
+        var value = valueBinding.target;
+        var propertyChain = valueBinding.property.split('.');
+        _.each(propertyChain, function(level) {
+            if(value) {
+                value = value[level];
+            }
         });
-    },
 
-    /**
-     * This method can be used to remove a map marker from a map view.
-     */
-    remove: function() {
-        this.map.removeMarker(this);
-    },
-
-    /**
-     * This method can be used to show a map markers annotation.
-     */
-    showAnnotation: function(id, event, nextEvent) {
-        if(this.annotation) {
-            this.annotation.open(this.map.map, this.marker);
+        if(!value || value === undefined || value === null) {
+            //M.Logger.log('The value assigned by valueBinding (property: \'' + valueBinding.property + '\') for ' + this.type + ' (' + (this._name ? this._name + ', ' : '') + '#' + this.id + ') is invalid!', M.WARN);
+            return;
         }
 
-        /* delegate event to external handler, if specified */
-        if(this.events || this.map.events) {
-            var events = this.events ? this.events : this.map.events;
-            for(var e in events) {
-                if(e === ((event.type === 'click' || event.type === 'touchend') ? 'tap' : event.type)) {
-                    M.EventDispatcher.callHandler(events[e], event, NO, [this]);
-                }
-            }
-        }
+        this.setSelection(value);
     }
 
 });
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
 
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitToolbarView = M.View.extend(
-/** @scope M.SplitToolbarView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitToolbarView',
-
-    showSelectedItemInMainHeader: YES,
-
-    showMenuButtonInPortraitMode: YES,
-
-    popover: null,
-
-    splitview: null,
-
-    /**
-     * Triggers render() on all children.
-     *
-     * @private
-     */
-    renderChildViews: function() {
-
-        if(this.childViews) {
-            var childViews = $.trim(this.childViews).split(' ');
-
-            var currentToolbar = 0;
-            for(var i in childViews) { // toolbar1, toolbar 2
-                
-                var toolbar = this[childViews[i]]; //zugriff wie 
-                
-                if(toolbar && toolbar.type === 'M.ToolbarView') {
-
-                    toolbar.parentView = this;
-                    if(currentToolbar === 0) {
-
-
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
-
-
-
-                    } else if(currentToolbar === 1) {
-                        //toolbar2
-                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
-
-                        /* check if this is a simple toolbar so we can add the menu button */
-                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
-                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
-                            toolbar.childViews = 'menuButton label';
-
-
-
-                            var buttonLabel = this[childViews[0]].value;
-                            toolbar.menuButton = M.ButtonView.design({
-                                value: buttonLabel,
-                                icon: 'arrow-d',
-                                anchorLocation: M.LEFT,
-                                internalEvents: {
-                                    tap: {
-                                        target: this,
-                                        action: function() {
-                                           if(!this.popover) {
-                                                var content;
-                                                if(this.splitview.contentBinding) {
-                                                    content = this.splitview.value;
-                                                } else if(this.splitview.childViews) {
-                                                    var childViews = this.splitview.getChildViewsAsArray();
-                                                    content = [];
-                                                    for(var i = 0; i < childViews.length; i++) {
-                                                        content.push(this.splitview[childViews[i]]);
-                                                    }
-                                                }
-                                                var items = [];
-                                                for(var i in content) {
-                                                    items.push(content[i]);
-                                                }
-                                                this.popover = M.PopoverView.design({
-                                                    items: items,
-                                                    splitview: this.splitview
-                                                });
-                                                this.popover.show();
-                                            } else {
-                                                this.popover.renderUpdate();
-                                                this.popover.toggle();
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            toolbar.label = M.LabelView.design({
-                                value: toolbar.value,
-                                anchorLocation: M.CENTER
-                            });
-
-                            toolbar.value = '';
-                        }
-                    } else {
-                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
-                        return;
-                    }
-                    this.html += toolbar.render();
-                    currentToolbar++;
-                } else {
-                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
-                }
-            }
-            return this.html;
-        }
-    }
-
-});
-// ==========================================================================
-// Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-// Creator:   Dominik
-// Date:      17.02.2011
-// License:   Dual licensed under the MIT or GPL Version 2 licenses.
-//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
-//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
-// ==========================================================================
-
-/**
- * @class
- *
- * This defines the prototype for any button view. A button is a view element that is
- * typically.........
- *
- * @extends M.View
- */
-M.SplitItemView = M.View.extend(
-/** @scope M.SplitItemView.prototype */ {
-
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
-    type: 'M.SplitItemView',
-
-    /**
-     * Renders a split view.
-     *
-     * @private
-     * @returns {String} The split view's html representation.
-     */
-    render: function() {
-        this.html = '<div id="' + this.id + '">';
-
-        this.renderChildViews();
-
-        this.html += '</div>';
-
-        return this.html;
-    },
-
-    /**
-     * Render update.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        // ...
-    },
-
-    /**
-     * Theme.
-     *
-     * @private
-     */
-    theme: function() {
-        // ...
-    }
-
-});
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
@@ -9345,6 +8901,444 @@ M.SplitView = M.View.extend(
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
 // Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitItemView = M.View.extend(
+/** @scope M.SplitItemView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitItemView',
+
+    /**
+     * Renders a split view.
+     *
+     * @private
+     * @returns {String} The split view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '">';
+
+        this.renderChildViews();
+
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * Render update.
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        // ...
+    },
+
+    /**
+     * Theme.
+     *
+     * @private
+     */
+    theme: function() {
+        // ...
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      17.02.2011
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * This defines the prototype for any button view. A button is a view element that is
+ * typically.........
+ *
+ * @extends M.View
+ */
+M.SplitToolbarView = M.View.extend(
+/** @scope M.SplitToolbarView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.SplitToolbarView',
+
+    showSelectedItemInMainHeader: YES,
+
+    showMenuButtonInPortraitMode: YES,
+
+    popover: null,
+
+    splitview: null,
+
+    /**
+     * Triggers render() on all children.
+     *
+     * @private
+     */
+    renderChildViews: function() {
+
+        if(this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+
+            var currentToolbar = 0;
+            for(var i in childViews) { // toolbar1, toolbar 2
+                
+                var toolbar = this[childViews[i]]; //zugriff wie 
+                
+                if(toolbar && toolbar.type === 'M.ToolbarView') {
+
+                    toolbar.parentView = this;
+                    if(currentToolbar === 0) {
+
+
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-menu-toolbar' : 'tmp-splitview-menu-toolbar';
+
+
+
+                    } else if(currentToolbar === 1) {
+                        //toolbar2
+                        toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar' : 'tmp-splitview-content-toolbar'
+
+                        /* check if this is a simple toolbar so we can add the menu button */
+                        if(!toolbar.childViews && this.showMenuButtonInPortraitMode) {
+                            toolbar.cssClass = toolbar.cssClass ? toolbar.cssClass + ' tmp-splitview-content-toolbar-show-menu-button' : 'tmp-splitview-content-toolbar-show-menu-button';
+                            toolbar.childViews = 'menuButton label';
+
+
+
+                            var buttonLabel = this[childViews[0]].value;
+                            toolbar.menuButton = M.ButtonView.design({
+                                value: buttonLabel,
+                                icon: 'arrow-d',
+                                anchorLocation: M.LEFT,
+                                internalEvents: {
+                                    tap: {
+                                        target: this,
+                                        action: function() {
+                                           if(!this.popover) {
+                                                var content;
+                                                if(this.splitview.contentBinding) {
+                                                    content = this.splitview.value;
+                                                } else if(this.splitview.childViews) {
+                                                    var childViews = this.splitview.getChildViewsAsArray();
+                                                    content = [];
+                                                    for(var i = 0; i < childViews.length; i++) {
+                                                        content.push(this.splitview[childViews[i]]);
+                                                    }
+                                                }
+                                                var items = [];
+                                                for(var i in content) {
+                                                    items.push(content[i]);
+                                                }
+                                                this.popover = M.PopoverView.design({
+                                                    items: items,
+                                                    splitview: this.splitview
+                                                });
+                                                this.popover.show();
+                                            } else {
+                                                this.popover.renderUpdate();
+                                                this.popover.toggle();
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            toolbar.label = M.LabelView.design({
+                                value: toolbar.value,
+                                anchorLocation: M.CENTER
+                            });
+
+                            toolbar.value = '';
+                        }
+                    } else {
+                        M.Logger.log('Too many child views given! M.SplitToolbarView only accepts two child views of type M.ToolbarView.', M.ERROR);
+                        return;
+                    }
+                    this.html += toolbar.render();
+                    currentToolbar++;
+                } else {
+                    M.Logger.log(childViews[i] + ' must be of type M.ToolbarView.', M.ERROR);
+                }
+            }
+            return this.html;
+        }
+    }
+
+});
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
+// Creator:   dominik
+// Date:      05.12.11
+// License:   Dual licensed under the MIT or GPL Version 2 licenses.
+//            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
+//            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
+// ==========================================================================
+
+/**
+ * @class
+ *
+ * The M.TableView renders a default HTML table, that can be dynamically filled via
+ * content binding. Depending on the table's configuration, there will be a static
+ * table header, that is visible even if there is no content. It is also possible
+ * to always update the header, when applying content binding, too.
+ *
+ * @extends M.View
+ */
+M.TableView = M.View.extend(
+/** @scope M.TableView.prototype */ {
+
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
+    type: 'M.TableView',
+
+    /**
+     * Determines whether to remove all content rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeContentRowsOnUpdate: YES,
+
+    /**
+     * Determines whether to remove the header rows if the table is updated or not.
+     *
+     * @type Boolean
+     */
+    removeHeaderRowOnUpdate: NO,
+
+    /**
+     * Determines whether the table was initialized. If this flag is set to YES,
+     * the table's header and colgroup was rendered. Depending on the table's
+     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
+     * change dynamically at runtime.
+     *
+     * @private
+     * @type Boolean
+     */
+    isInitialized: NO,
+
+    /**
+     * This property can be used to specify the table's header and cols, independent
+     * from dynamically loaded table content. It can be provided with the table's
+     * definition within a page component. The table's content, in contrast, can only
+     * be applied via content binding.
+     *
+     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
+     * be removed whenever a content binding is applied. So if the header shall be
+     * statically specified by the view component, do not set that property to YES!
+     *
+     * This property should look something like the following:
+     *
+     *   {
+     *     data: ['col1', 'col2', 'col3'],
+     *     cols: ['20%', '10%', '70%']
+     *   }
+     *
+     * Note: the cols property of this object is optional. You can also let CSS take
+     * care of the columns arrangement or simply let the browser do all the work
+     * automatically.
+     *
+     * @type Object
+     */
+    header: null,
+
+    /**
+     * Renders a table view as a table element within a div box.
+     *
+     * @private
+     * @returns {String} The table view's html representation.
+     */
+    render: function() {
+        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+
+        return this.html;
+    },
+
+    /**
+     * Applies some style-attributes to the table.
+     *
+     * @private
+     * @returns {String} The table's styling as html representation.
+     */
+    style: function() {
+        var html = ' class="tmp-table';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"'
+        return html;
+    },
+
+    /**
+     * This method is called once the initial rendering was applied to the
+     * DOM. So this is where we will add the table's header (if there is
+     * one specified)
+     */
+    theme: function() {
+        if(this.header) {
+            this.renderHeader();
+        }
+    },
+
+    /**
+     * This method renders the table's header. Based on the table's configuration,
+     * this can either happen right at the first rendering or on every content
+     * binding update.
+     *
+     * @private
+     */
+    renderHeader: function() {
+        /* render the table header (if there is one) and define the cols */
+        if(this.header && this.header.data) {
+
+            /* render the colgroup element (define the columns) */
+            if(this.header.cols && this.header.cols.length > 0) {
+                html = '<colgroup>';
+                _.each(this.header.cols, function(col) {
+                    html += '<col width="' + col + '">';
+                });
+                html += '</colgroup>';
+                $('#' + this.id).prepend(html);
+            }
+
+            /* render the table header */
+            html = '<tr>';
+            _.each(this.header.data, function(col) {
+                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
+            });
+            html += '</tr>';
+            this.addRow(html, YES);
+        }
+    },
+
+    /**
+     * Updates the table based on its content binding. This should look like the following:
+     *
+     *   {
+     *     header: {
+     *       data: ['col1', 'col2', 'col3'],
+     *       cols: ['20%', '10%', '70%']
+     *     },
+     *     content: [
+     *       [25, 'Y, 'Lorem Ipsum'],
+     *       [25, 46, 'Dolor Sit'],
+     *       [25, 46, 'Amet']
+     *     ]
+     *   }
+     *
+     * Note: If the content binding specifies a header object, any previously rendered
+     * header (and the col definition) will be overwritten!
+     *
+     * @private
+     */
+    renderUpdate: function() {
+        var html;
+        var content = this.value;
+
+        /* clear the table before filling it up again */
+        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
+            this.removeAllRows();
+        } else if(this.removeContentRowsOnUpdate) {
+            this.removeContentRows();
+        }
+
+        if(content && content.content && content.content.length > 0) {
+
+            /* render the table header (if there is one) */
+            if(content.header && content.header.data) {
+                this.header = content.header;
+                this.renderHeader();
+            }
+
+            /* render the table's content (row by row) */
+            if(content.content && content.content.length > 0) {
+                var that = this;
+                var zebraFlag = 0;
+                _.each(content.content, function(row) {
+                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
+                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
+                    _.each(row, function(col, index) {
+                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
+                    });
+                    html += '</tr>';
+                    that.addRow(html);
+                });
+            }
+
+        }
+        else {
+            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        }
+    },
+
+    /**
+     * This method adds a new row to the table view by simply appending its html representation
+     * to the table view inside the DOM. This method is based on jQuery's append().
+     *
+     * @param {String} row The html representation of a table row to be added.
+     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     */
+    addRow: function(row, addToTableHeader) {
+        if(addToTableHeader) {
+            $('#' + this.id + ' thead').append(row);
+        } else {
+            $('#' + this.id + ' tbody').append(row);
+        }
+    },
+
+    /**
+     * This method removes all of the table view's rows by removing all of its content in the DOM. This
+     * method is based on jQuery's empty().
+     */
+    removeAllRows: function() {
+        $('#' + this.id).empty();
+    },
+
+    /**
+     * This method removes all content rows of the table view by removing the corresponding
+     * html in the DOM. This method is based on jQuery's remove().
+     */
+    removeContentRows: function() {
+        $('#' + this.id + ' tr td').parent().remove();
+    }
+
+});
+
+// ==========================================================================
+// Project:   The M-Project - Mobile HTML5 Application Framework
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 //            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      16.11.2010
@@ -9632,10 +9626,9 @@ M.TabBarItemView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
-//            (c) 2011 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      09.11.2010
+// Date:      17.11.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -9644,161 +9637,238 @@ M.TabBarItemView = M.View.extend(
 /**
  * @class
  *
- * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
- * two child views and provides an easy mechanism to toggle between these two views. An
- * easy example would be to define two different button views that can be toggled, a more
- * complex scenario would be to define two content views (M.ScrollView) with own child views
- * and toggle between them.
+ * This defines the prototype for a slider view. It renders a touch-optimized slider
+ * that can be used to set a number within a specified range.
  *
  * @extends M.View
  */
-M.ToggleView = M.View.extend(
-/** @scope M.ToggleView.prototype */ {
+M.SliderView = M.View.extend(
+/** @scope M.ButtonView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.ToggleView',
+    type: 'M.SliderView',
 
     /**
-     * States whether the toggle view currently displays its first child view or its second
-     * child view.
-     *
-     * @type Boolean
+     * This property contains the slider's value.
      */
-    isInFirstState: YES,
+    value: 0,
 
     /**
-     * Determines whether to toggle the view on click. This might be useful if the child views
-     * are e.g. buttons.
-     *
-     * @type Boolean
-     */
-    toggleOnClick: NO,
-
-    /**
-     * Contains a reference to the currently displayed view.
-     *
-     * @type M.View
-     */
-    currentView: null,
-
-    /**
-     * Renders a ToggleView and its child views.
+     * This property contains the slider's initial value.
      *
      * @private
-     * @returns {String} The toggle view's html representation.
+     */
+    initialValue: 0,
+
+    /**
+     * This property specifies the min value of the slider.
+     *
+     * @type Number
+     */
+    min: 0,
+
+    /**
+     * This property specifies the max value of the slider.
+     *
+     * @type Number
+     */
+    max: 100,
+
+    /**
+     * This property specifies the step value of the slider.
+     *
+     * @type Number
+     */
+    step: 1,
+
+    /**
+     * This property determines whether or not to display the corresponding input of the slider.
+     *
+     * @type Boolean
+     */
+    isSliderOnly: NO,
+
+    /**
+     * This property determines whether or not to visually highlight the left part of the slider. If
+     * this is set to YES, the track from the left edge to the slider handle will be highlighted.
+     *
+     * @type Boolean
+     */
+    highlightLeftPart: NO,
+
+    /**
+     * This property specifies the recommended events for this type of view.
+     *
+     * @type Array
+     */
+    recommendedEvents: ['change'],
+
+    /**
+     * The label proeprty defines a text that is shown above or next to the slider as a 'title'
+     * for the slider. e.g. "Name:". If no label is specified, no label will be displayed.
+     *
+     * @type String
+     */
+    label: null,
+
+    /**
+     * Define whether putting an asterisk to the right of the label for this slider.
+     *
+     * @type Boolean
+     */
+    hasAsteriskOnLabel: NO,
+
+    /**
+     * This property can be used to assign a css class to the asterisk on the right of the label.
+     *
+     * @type String
+     */
+    cssClassForAsterisk: null,
+
+    /**
+     * Renders a slider.
+     *
+     * @private
+     * @returns {String} The slider view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '">';
+        this.html = '';
+        if(this.label) {
+            this.html += '<label for="' + this.id + '">' + this.label;
+            if (this.hasAsteriskOnLabel) {
+                if (this.cssClassForAsterisk) {
+                    this.html += '<span class="' + this.cssClassForAsterisk + '">*</span></label>';
+                } else {
+                    this.html += '<span>*</span></label>';
+                }
+            } else {
+                this.html += '</label>';
+            }
+        }
 
-        this.renderChildViews();
+        this.html += '<div id="' + this.id + '_container" class="tmp-slider-container' + (this.isSliderOnly ? ' tmp-slider-is-slider-only' : '') + '">';
+        this.html += '<input id="' + this.id + '" type="range" data-highlight="' + this.highlightLeftPart + '" min="' + this.min + '" max="' + this.max + '" step="' + this.step + '" value="' + this.value + '"' + this.style() + '>';
 
         this.html += '</div>';
-        
+
+        /* store value as initial value for later resetting */
+        this.initialValue = this.value;
+
         return this.html;
     },
 
     /**
-     * This method renders one child view of the toggle view, based on the isInFirstState
-     * property: YES = first child view, NO = second child view.
+     * This method registers the change event to internally re-set the value of the
+     * slider.
      */
-    renderChildViews: function() {
-        if(this.childViews) {
-            var childViews = this.getChildViewsAsArray();
-
-            if(childViews.length !== 2) {
-                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
-            } else {
-                for(var i in childViews) {
-                    if(this[childViews[i]]) {
-                        if(this.toggleOnClick) {
-                            this[childViews[i]].internalEvents = {
-                                vclick: {
-                                    target: this,
-                                    action: 'toggleView'
-                                }
-                            }
-                        }
-                        this[childViews[i]]._name = childViews[i];
-                        this[childViews[i]].parentView = this;
-                        
-                        this.html += '<div id="' + this.id + '_' + i + '">';
-                        this.html += this[childViews[i]].render();
-                        this.html += '</div>';
-                    }
+    registerEvents: function() {
+        if(!this.internalEvents) {
+            this.internalEvents = {
+                change: {
+                    target: this,
+                    action: 'setValueFromDOM'
                 }
-                this.currentView = this[childViews[0]];
             }
         }
+        this.bindToCaller(this, M.View.registerEvents)();
     },
 
     /**
-     * This method toggles the child views by first emptying the toggle view's content
-     * and then rendering the next child view by calling renderUpdateChildViews().
+     * Updates a SliderView with DOM access by jQuery.
+     *
+     * @private
      */
-    toggleView: function(id, event, nextEvent) {
-        this.isInFirstState = !this.isInFirstState;
-        var currentViewIndex = this.isInFirstState ? 0 : 1;
-        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
-        $('#' + this.id + '_' + currentViewIndex).show();
-
-        /* set current view */
-        var childViews = this.getChildViewsAsArray();
-        if(this[childViews[currentViewIndex]]) {
-            this.currentView = this[childViews[currentViewIndex]];
+    renderUpdate: function() {
+        /* check if the slider's value is numeric, otherwise use initial value */
+        if(isNaN(this.value)) {
+            this.value = this.initialValue;
+        /* if it is a number, but out of bounds, use min/max */
+        } else if(this.value < this.min) {
+            this.value = this.min
+        } else if(this.value > this.max) {
+            this.value = this.max
         }
+
+        $('#' + this.id).val(this.value);
+        $('#' + this.id).slider('refresh');
+    },
+
+    /**
+     * This method sets its value to the value it has in its DOM representation
+     * and then delegates these changes to a controller property if the
+     * contentBindingReverse property is set.
+     *
+     * Additionally call target / action if set.
+     *
+     * @param {String} id The DOM id of the event target.
+     * @param {Object} event The DOM event.
+     * @param {Object} nextEvent The next event (external event), if specified.
+     */
+    setValueFromDOM: function(id, event, nextEvent) {
+        this.value = $('#' + this.id).val();
 
         if(nextEvent) {
-            M.EventDispatcher.callHandler(nextEvent, event, YES);
+            M.EventDispatcher.callHandler(nextEvent, event, NO, [this.value, this.id]);
         }
     },
 
     /**
-     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
-     * the view, its id or its name.
+     * Applies some style-attributes to the slider.
      *
-     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
-     * done.
-     *
-     * @param {Object|String} view The corresponding view.
+     * @private
+     * @returns {String} The slider's styling as html representation.
      */
-    setView: function(view) {
-        if(typeof(view) === 'string') {
-            /* assume a name was given */
-            var childViews = this.getChildViewsAsArray();
-            if(_.indexOf(childViews, view) >= 0) {
-                view = this[view];
-            /* assume an id was given */
-            } else {
-                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
-            }
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
         }
-
-        if(view && typeof(view) === 'object' && view.parentView === this) {
-            if(this.currentView !== view) {
-                this.toggleView();
-            }
-        } else {
-            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
-        }
+        return html;
     },
 
     /**
-     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
-     * its child views.
+     * Do some theming/styling once the slider was added to the DOM.
      *
      * @private
      */
     theme: function() {
-        if(this.currentView) {
-            this.themeChildViews();
-            var currentViewIndex = this.isInFirstState ? 0 : 1;
-
-            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        if(this.isSliderOnly) {
+            $('#' + this.id).hide();
         }
+
+        if(!this.isEnabled) {
+            this.disable();
+        }
+    },
+
+    /**
+     * This method resets the slider to its initial value.
+     */
+    resetSlider: function() {
+        this.value = this.initialValue;
+        this.renderUpdate();
+    },
+
+    /**
+     * This method disables the text field by setting the disabled property of its
+     * html representation to true.
+     */
+    disable: function() {
+        this.isEnabled = NO;
+        $('#' + this.id).slider('disable');
+    },
+
+    /**
+     * This method enables the text field by setting the disabled property of its
+     * html representation to false.
+     */
+    enable: function() {
+        this.isEnabled = YES;
+        $('#' + this.id).slider('enable');
     }
 
 });
@@ -10649,9 +10719,10 @@ M.ToggleSwitchView = M.View.extend(
 
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   Dominik
-// Date:      16.02.2011
+// Date:      09.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -10660,119 +10731,161 @@ M.ToggleSwitchView = M.View.extend(
 /**
  * @class
  *
- * Comment ...
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
  *
  * @extends M.View
  */
-M.WebView = M.View.extend(
-/** @scope M.WebView.prototype */ {
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.WebView',
+    type: 'M.ToggleView',
 
     /**
-     * This property can be used to specify wheter a user should be able to srcoll
-     * within the web view or not.
-     *
-     * Note: If set to NO, the external web content must take care of fitting in the
-     * web view. Otherwise some part of the web page won't be visible.
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
      *
      * @type Boolean
      */
-    isScrollable: YES,
+    isInFirstState: YES,
 
     /**
-     * This property specifies the recommended events for this type of view.
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
      *
-     * @type Array
+     * @type Boolean
      */
-    recommendedEvents: ['load'],
+    toggleOnClick: NO,
 
     /**
-     * This method renders a web view as a simple iFrame element.
+     * Contains a reference to the currently displayed view.
+     *
+     * @type M.View
+     */
+    currentView: null,
+
+    /**
+     * Renders a ToggleView and its child views.
      *
      * @private
-     * @returns {String} The button view's html representation.
+     * @returns {String} The toggle view's html representation.
      */
     render: function() {
-        this.computeValue();
-        this.checkURL();
-        this.html = '<div id="' + this.id + '"></div>';
+        this.html = '<div id="' + this.id + '">';
 
+        this.renderChildViews();
+
+        this.html += '</div>';
+        
         return this.html;
     },
 
     /**
-     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
+     * This method renders one child view of the toggle view, based on the isInFirstState
+     * property: YES = first child view, NO = second child view.
+     */
+    renderChildViews: function() {
+        if(this.childViews) {
+            var childViews = this.getChildViewsAsArray();
+
+            if(childViews.length !== 2) {
+                M.Logger.log('M.ToggleView requires exactly 2 child views, but ' + childViews.length + ' are given (' + (this.name ? this.name + ', ' : '') + this.id + ')!', M.WARN);
+            } else {
+                for(var i in childViews) {
+                    if(this[childViews[i]]) {
+                        if(this.toggleOnClick) {
+                            this[childViews[i]].internalEvents = {
+                                vclick: {
+                                    target: this,
+                                    action: 'toggleView'
+                                }
+                            }
+                        }
+                        this[childViews[i]]._name = childViews[i];
+                        this[childViews[i]].parentView = this;
+                        
+                        this.html += '<div id="' + this.id + '_' + i + '">';
+                        this.html += this[childViews[i]].render();
+                        this.html += '</div>';
+                    }
+                }
+                this.currentView = this[childViews[0]];
+            }
+        }
+    },
+
+    /**
+     * This method toggles the child views by first emptying the toggle view's content
+     * and then rendering the next child view by calling renderUpdateChildViews().
+     */
+    toggleView: function(id, event, nextEvent) {
+        this.isInFirstState = !this.isInFirstState;
+        var currentViewIndex = this.isInFirstState ? 0 : 1;
+        $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
+        $('#' + this.id + '_' + currentViewIndex).show();
+
+        /* set current view */
+        var childViews = this.getChildViewsAsArray();
+        if(this[childViews[currentViewIndex]]) {
+            this.currentView = this[childViews[currentViewIndex]];
+        }
+
+        if(nextEvent) {
+            M.EventDispatcher.callHandler(nextEvent, event, YES);
+        }
+    },
+
+    /**
+     * This method can be used to set on of the toggle view's child views as the active one. Simply pass
+     * the view, its id or its name.
+     *
+     * If a view or id is passed, that does not match on of the toggle view's child views, nothing will be
+     * done.
+     *
+     * @param {Object|String} view The corresponding view.
+     */
+    setView: function(view) {
+        if(typeof(view) === 'string') {
+            /* assume a name was given */
+            var childViews = this.getChildViewsAsArray();
+            if(_.indexOf(childViews, view) >= 0) {
+                view = this[view];
+            /* assume an id was given */
+            } else {
+                view = M.ViewManager.getViewById(view) ? M.ViewManager.getViewById(view) : view;
+            }
+        }
+
+        if(view && typeof(view) === 'object' && view.parentView === this) {
+            if(this.currentView !== view) {
+                this.toggleView();
+            }
+        } else {
+            M.Logger.log('No valid view passed for toggle view \'' + this._name + '\'.', M.WARN);
+        }
+    },
+
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
      *
      * @private
      */
     theme: function() {
-        this.renderUpdate();
-    },
+        if(this.currentView) {
+            this.themeChildViews();
+            var currentViewIndex = this.isInFirstState ? 0 : 1;
 
-    /**
-     * This method is called whenever the content bound by content binding changes.
-     * It forces the web view to re-render meaning to load the updated url stored
-     * in the value property.
-     *
-     * @private
-     */
-    renderUpdate: function() {
-        if(this.value) {
-            this.computeValue();
-            this.checkURL();
+            $('#' + this.id + '_' + (currentViewIndex > 0 ? 0 : 1)).hide();
         }
-
-        if(this.value && this.html && this.html.indexOf('<div') === 0) {
-            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
-            $('#' + this.id).replaceWith(this.html);
-            this.registerEvents();
-        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
-            $('#' + this.id).attr('src', this.value);
-        }
-    },
-
-    /**
-     * This method is used to check the given URL and to make sure there is an
-     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
-     *
-     * @private
-     */
-    checkURL: function() {
-        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
-            this.value = 'http://' + this.value;
-        }
-    },
-
-    /**
-     * This method simply applies an internal CSS class to the web view and,
-     * if available, the CSS class specified by the cssClass property of that
-     * view element.
-     *
-     * @private
-     * @returns {String} The web view's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-webview';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"';
-        return html;
-    },
-
-    /**
-     * This method can be used to force the web view to reload its original
-     * URL. This can either be the one specified by the value property or the
-     * one specified by the currently bound content.
-     */
-    reload: function() {
-        $('#' + this.id).attr('src', this.value);
     }
 
 });
@@ -11032,9 +11145,9 @@ M.ToolbarView = M.View.extend(
 });
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c) 2011 panacoda GmbH. All rights reserved.
-// Creator:   dominik
-// Date:      05.12.11
+// Copyright: (c) 2012 panacoda GmbH. All rights reserved.
+// Creator:   Dominik
+// Date:      16.02.2011
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -11043,231 +11156,119 @@ M.ToolbarView = M.View.extend(
 /**
  * @class
  *
- * The M.TableView renders a default HTML table, that can be dynamically filled via
- * content binding. Depending on the table's configuration, there will be a static
- * table header, that is visible even if there is no content. It is also possible
- * to always update the header, when applying content binding, too.
+ * Comment ...
  *
  * @extends M.View
  */
-M.TableView = M.View.extend(
-/** @scope M.TableView.prototype */ {
+M.WebView = M.View.extend(
+/** @scope M.WebView.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.TableView',
+    type: 'M.WebView',
 
     /**
-     * Determines whether to remove all content rows if the table is updated or not.
+     * This property can be used to specify wheter a user should be able to srcoll
+     * within the web view or not.
+     *
+     * Note: If set to NO, the external web content must take care of fitting in the
+     * web view. Otherwise some part of the web page won't be visible.
      *
      * @type Boolean
      */
-    removeContentRowsOnUpdate: YES,
+    isScrollable: YES,
 
     /**
-     * Determines whether to remove the header rows if the table is updated or not.
+     * This property specifies the recommended events for this type of view.
      *
-     * @type Boolean
+     * @type Array
      */
-    removeHeaderRowOnUpdate: NO,
+    recommendedEvents: ['load'],
 
     /**
-     * Determines whether the table was initialized. If this flag is set to YES,
-     * the table's header and colgroup was rendered. Depending on the table's
-     * configuration (e.g. the removeHeaderRowOnUpdate property), this flag might
-     * change dynamically at runtime.
+     * This method renders a web view as a simple iFrame element.
      *
      * @private
-     * @type Boolean
-     */
-    isInitialized: NO,
-
-    /**
-     * This property can be used to specify the table's header and cols, independent
-     * from dynamically loaded table content. It can be provided with the table's
-     * definition within a page component. The table's content, in contrast, can only
-     * be applied via content binding.
-     *
-     * Note: If the removeHeaderRowOnUpdate property is set to YES, the header will
-     * be removed whenever a content binding is applied. So if the header shall be
-     * statically specified by the view component, do not set that property to YES!
-     *
-     * This property should look something like the following:
-     *
-     *   {
-     *     data: ['col1', 'col2', 'col3'],
-     *     cols: ['20%', '10%', '70%']
-     *   }
-     *
-     * Note: the cols property of this object is optional. You can also let CSS take
-     * care of the columns arrangement or simply let the browser do all the work
-     * automatically.
-     *
-     * @type Object
-     */
-    header: null,
-
-    /**
-     * Renders a table view as a table element within a div box.
-     *
-     * @private
-     * @returns {String} The table view's html representation.
+     * @returns {String} The button view's html representation.
      */
     render: function() {
-        this.html = '<div id="' + this.id + '_container"><table id="' + this.id +'"' + this.style() + '><thead></thead><tbody></tbody></table></div>';
+        this.computeValue();
+        this.checkURL();
+        this.html = '<div id="' + this.id + '"></div>';
 
         return this.html;
     },
 
     /**
-     * Applies some style-attributes to the table.
+     * Check if we can switch to iframe or need to keep div since there's no valid url yet.
      *
      * @private
-     * @returns {String} The table's styling as html representation.
-     */
-    style: function() {
-        var html = ' class="tmp-table';
-        if(this.cssClass) {
-            html += ' ' + this.cssClass;
-        }
-        html += '"'
-        return html;
-    },
-
-    /**
-     * This method is called once the initial rendering was applied to the
-     * DOM. So this is where we will add the table's header (if there is
-     * one specified)
      */
     theme: function() {
-        if(this.header) {
-            this.renderHeader();
-        }
+        this.renderUpdate();
     },
 
     /**
-     * This method renders the table's header. Based on the table's configuration,
-     * this can either happen right at the first rendering or on every content
-     * binding update.
-     *
-     * @private
-     */
-    renderHeader: function() {
-        /* render the table header (if there is one) and define the cols */
-        if(this.header && this.header.data) {
-
-            /* render the colgroup element (define the columns) */
-            if(this.header.cols && this.header.cols.length > 0) {
-                html = '<colgroup>';
-                _.each(this.header.cols, function(col) {
-                    html += '<col width="' + col + '">';
-                });
-                html += '</colgroup>';
-                $('#' + this.id).prepend(html);
-            }
-
-            /* render the table header */
-            html = '<tr>';
-            _.each(this.header.data, function(col) {
-                html += '<th class="tmp-table-th">' + (col && col.toString() ? col.toString() : '') + '</th> ';
-            });
-            html += '</tr>';
-            this.addRow(html, YES);
-        }
-    },
-
-    /**
-     * Updates the table based on its content binding. This should look like the following:
-     *
-     *   {
-     *     header: {
-     *       data: ['col1', 'col2', 'col3'],
-     *       cols: ['20%', '10%', '70%']
-     *     },
-     *     content: [
-     *       [25, 'Y, 'Lorem Ipsum'],
-     *       [25, 46, 'Dolor Sit'],
-     *       [25, 46, 'Amet']
-     *     ]
-     *   }
-     *
-     * Note: If the content binding specifies a header object, any previously rendered
-     * header (and the col definition) will be overwritten!
+     * This method is called whenever the content bound by content binding changes.
+     * It forces the web view to re-render meaning to load the updated url stored
+     * in the value property.
      *
      * @private
      */
     renderUpdate: function() {
-        var html;
-        var content = this.value;
-
-        /* clear the table before filling it up again */
-        if(this.removeHeaderRowOnUpdate && this.removeContentRowsOnUpdate) {
-            this.removeAllRows();
-        } else if(this.removeContentRowsOnUpdate) {
-            this.removeContentRows();
+        if(this.value) {
+            this.computeValue();
+            this.checkURL();
         }
 
-        if(content && content.content && content.content.length > 0) {
-
-            /* render the table header (if there is one) */
-            if(content.header && content.header.data) {
-                this.header = content.header;
-                this.renderHeader();
-            }
-
-            /* render the table's content (row by row) */
-            if(content.content && content.content.length > 0) {
-                var that = this;
-                var zebraFlag = 0;
-                _.each(content.content, function(row) {
-                    zebraFlag = (zebraFlag === 0 ? 1 : 0);
-                    html = '<tr class="tmp-table-tr-' + (zebraFlag === 1 ? 'a' : 'b') + '">';
-                    _.each(row, function(col, index) {
-                        html += '<td class="tmp-table-td col_'+index+'">' + (col && col.toString() ? col.toString() : '') + '</td> ';
-                    });
-                    html += '</tr>';
-                    that.addRow(html);
-                });
-            }
-
-        }
-        else {
-            M.Logger.log('The specified content binding for the table view (' + this.id + ') is invalid!', M.WARN);
+        if(this.value && this.html && this.html.indexOf('<div') === 0) {
+            this.html = '<iframe id="' + this.id + '"' + this.style() + ' src="' + this.value + '" scrolling="' + (this.isScrollable ? 'YES' : 'NO') + '"></iframe>';
+            $('#' + this.id).replaceWith(this.html);
+            this.registerEvents();
+        } else if(this.value && this.html && this.html.indexOf('<iframe') === 0) {
+            $('#' + this.id).attr('src', this.value);
         }
     },
 
     /**
-     * This method adds a new row to the table view by simply appending its html representation
-     * to the table view inside the DOM. This method is based on jQuery's append().
+     * This method is used to check the given URL and to make sure there is an
+     * HTTP/HTTPS prefix. Otherwise there could occur problems with Espresso.
      *
-     * @param {String} row The html representation of a table row to be added.
-     * @param {Boolean} addToTableHeader Determines whether or not to add the row to the table's header.
+     * @private
      */
-    addRow: function(row, addToTableHeader) {
-        if(addToTableHeader) {
-            $('#' + this.id + ' thead').append(row);
-        } else {
-            $('#' + this.id + ' tbody').append(row);
+    checkURL: function() {
+        if(this.value && this.value.lastIndexOf('http://') < 0 && this.value.lastIndexOf('https://') < 0) {
+            this.value = 'http://' + this.value;
         }
     },
 
     /**
-     * This method removes all of the table view's rows by removing all of its content in the DOM. This
-     * method is based on jQuery's empty().
+     * This method simply applies an internal CSS class to the web view and,
+     * if available, the CSS class specified by the cssClass property of that
+     * view element.
+     *
+     * @private
+     * @returns {String} The web view's styling as html representation.
      */
-    removeAllRows: function() {
-        $('#' + this.id).empty();
+    style: function() {
+        var html = ' class="tmp-webview';
+        if(this.cssClass) {
+            html += ' ' + this.cssClass;
+        }
+        html += '"';
+        return html;
     },
 
     /**
-     * This method removes all content rows of the table view by removing the corresponding
-     * html in the DOM. This method is based on jQuery's remove().
+     * This method can be used to force the web view to reload its original
+     * URL. This can either be the one specified by the value property or the
+     * one specified by the currently bound content.
      */
-    removeContentRows: function() {
-        $('#' + this.id + ' tr td').parent().remove();
+    reload: function() {
+        $('#' + this.id).attr('src', this.value);
     }
 
 });
