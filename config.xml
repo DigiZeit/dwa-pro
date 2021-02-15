@@ -2,12 +2,12 @@
 <widget xmlns	= "http://www.w3.org/ns/widgets"
 	xmlns:gap	= "http://phonegap.com/ns/1.0"
 	xmlns:android = "http://schemas.android.com/apk/res/android"
-	id		    = "com.digi.webapppro"
-	android-versionCode = "11018"
-	versionCode = "11018"
-	version 	= "1.9.0.11018">
+	id		    = "com.digi.webappprodash"
+	android-versionCode = "11019"
+	versionCode = "11019"
+	version 	= "1.9.0.11019">
 
-	<name>DIGI-WebApp Pro</name>
+	<name>-DIGI-WebApp Pro-</name>
 
 	<description>
 		Die mobile Zeiterfassung für das Handwerk!
@@ -140,7 +140,7 @@
   <allow-intent href="https://*/*" />
 
   <gap:config-file platform="ios" parent="CFBundleShortVersionString">
-    <string>11018</string>
+    <string>11019</string>
   </gap:config-file>
 
   <gap:config-file platform="ios" parent="UIStatusBarHidden">
